@@ -121,10 +121,12 @@ import { injection } from '@/util/inject'
 import { InstanceModsServiceKey, MarketType } from '@xmcl/runtime-api'
 import { clientModrinthV2, clientCurseforgeV1 } from '@/util/clients'
 import { useGamepad } from '@/composables/gamepad'
+import { useBigPicture } from '@/composables/bigPicture'
 import './gamepad.css'
 
 const { t } = useI18n()
 const { notify } = useNotifier()
+const { isBigPicture } = useBigPicture()
 
 const gamepad = useGamepad()
 const buttonALabel = gamepad.buttonA
@@ -253,6 +255,7 @@ async function installSuggestedMod() {
 
 // Offer the controller mod once per instance when the gamepad is active.
 function maybeSuggestControllerMod() {
+  if (isBigPicture.value) return
   if (gamepad.disableModPrompt.value) return
   if (!gamepad.enabled.value || !gamepad.connected.value) return
   if (!suggestedMod.value) return

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <AppGamepadToast />
     <AppGamepadQuickMenu />
     <AppGamepadModDialog />
     <AppGamepadSteamDeckDialog />
@@ -12,6 +13,7 @@ import { useRouter } from 'vue-router'
 import { useGamepad, kGamepad } from '@/composables/gamepad'
 import { useCommandPaletteVisible } from '@/composables/commandPalette'
 import { useDialog } from '@/composables/dialog'
+import AppGamepadToast from './AppGamepadToast.vue'
 import AppGamepadQuickMenu from './AppGamepadQuickMenu.vue'
 import AppGamepadModDialog from './AppGamepadModDialog.vue'
 import AppGamepadSteamDeckDialog from './AppGamepadSteamDeckDialog.vue'

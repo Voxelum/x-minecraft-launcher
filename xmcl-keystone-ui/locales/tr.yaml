@@ -514,17 +514,10 @@ instances:
   edition: Sürüm
   editionJava: Java Sürümü
   editionBedrock: Bedrock Sürümü
-  editionBedrockHint: >-
-    Bedrock Sürümü, Microsoft Store uygulaması üzerinden başlatılır. Bir Bedrock
-    lisansına sahip olmanız gerekir. Modlar, kaynak paketleri ve diğer Java'ya
-    özgü özellikler kullanılamaz.
+  editionBedrockHint: Bedrock Sürümü, Microsoft Store uygulaması üzerinden başlatılır. Bir Bedrock lisansına sahip olmanız gerekir. Modlar, kaynak paketleri ve diğer Java'ya özgü özellikler kullanılamaz.
   editionBedrockWindowsOnly: Bedrock Sürümü yalnızca Windows yapımında desteklenir.
   linkSharedFolders: Klasörleri örnekler arasında paylaş
-  linkSharedFoldersHint: >-
-    Bu klasörleri başlatıcının paylaşılan klasörlerine bağlantı olarak
-    oluşturun, böylece bu örnek içeriklerini bağlı diğer tüm örneklerle
-    paylaşır. Bu bir kopya değildir — bir örnekte yapılan değişiklikler tümünde
-    görünür. İşaretlenmemiş klasörler bu örneğe özel kalır.
+  linkSharedFoldersHint: Bu klasörleri başlatıcının paylaşılan klasörlerine bağlantı olarak oluşturun, böylece bu örnek içeriklerini bağlı diğer tüm örneklerle paylaşır. Bu bir kopya değildir — bir örnekte yapılan değişiklikler tümünde görünür. İşaretlenmemiş klasörler bu örneğe özel kalır.
   linkFailed: '{folder} klasörü paylaşılan klasöre bağlanamadı'
   addPrismDescription: Mevcut PrismLauncher örneğini içe aktar.
 items:
@@ -988,35 +981,35 @@ multiplayer:
   updateSharedInstanceConfirm: Güncelle ve başlat
   updateSharedInstanceDescription: Paylaşılan modlar {instance} ile farklı. Başlatmadan önce bu örnek ana bilgisayarla eşleşecek şekilde güncellensin mi? Değiştirilmiş mevcut dosyalar yedeklenecektir.
   updateSharedInstanceTitle: Paylaşılan örnek güncellensin mi?
-  addFunds: "Bakiye ekle"
-  availableBalance: "Kullanılabilir bakiye"
-  balanceHint: "XMCL Together hizmetleri için kullanılabilir"
-  billing: "Faturalandırma"
-  billingDescription: "Aktarma erişimini, Together Home planını ve ödemelerini yönet."
-  billingError: "Together faturalandırması yüklenemedi. Biraz sonra tekrar dene."
-  buyTogether: "Together satın al"
-  cancelTogether: "Planı iptal et"
-  checkout: "Waffo ödeme sayfasını aç"
-  connectionTogetherWarning: "Bir oda üyesi bir süredir sana bağlanamıyor. Odadaki herkesin bağlantısını iyileştirmek için XMCL Together'ı dene. Together'a yalnızca oda sahibi ihtiyaç duyar."
-  masterPurchaseHint: "Odadaki herkesin bağlantısını iyileştirmek için Together Home'a yalnızca oda sahibinin ihtiyacı vardır."
-  natTogetherWarning: "Yönlendiricin oda sahibine bağlanmakta zorlanıyor olabilir. Bağlantılar başarısız olursa, seninle arkadaşların arasındaki bağlantıyı iyileştirmek için XMCL Together'ı dene. Oda için Together'ı yalnızca oda sahibinin satın alması gerekir."
-  togetherName: "Minecraft Together"
-  trialDescription: "1 GB aktarma trafiği içeren 7 günlük bir deneme."
-  trialTitle: "Bağlantı denemesi"
-  tryTogether: "Together'ı dene"
-  month: "ay"
-  orderStatus: "Waffo siparişi: {status}"
-  planDescription: "Aylık 20 GB yönetilen aktarma trafiği ve modpack'in için yapay zekâ destekli sorun giderme."
-  waffoHint: "Ödemeler Waffo Pancake üzerinden güvenli bir şekilde tamamlanır. XMCL kart numaranı asla almaz."
+  addFunds: Bakiye ekle
+  availableBalance: Kullanılabilir bakiye
+  balanceHint: XMCL Together hizmetleri için kullanılabilir
+  billing: Faturalandırma
+  billingDescription: Aktarma erişimini, Together Home planını ve ödemelerini yönet.
+  billingError: Together faturalandırması yüklenemedi. Biraz sonra tekrar dene.
+  buyTogether: Together satın al
+  cancelTogether: Planı iptal et
+  checkout: Waffo ödeme sayfasını aç
+  connectionTogetherWarning: Bir oda üyesi bir süredir sana bağlanamıyor. Odadaki herkesin bağlantısını iyileştirmek için XMCL Together'ı dene. Together'a yalnızca oda sahibi ihtiyaç duyar.
+  masterPurchaseHint: Odadaki herkesin bağlantısını iyileştirmek için Together Home'a yalnızca oda sahibinin ihtiyacı vardır.
+  natTogetherWarning: Yönlendiricin oda sahibine bağlanmakta zorlanıyor olabilir. Bağlantılar başarısız olursa, seninle arkadaşların arasındaki bağlantıyı iyileştirmek için XMCL Together'ı dene. Oda için Together'ı yalnızca oda sahibinin satın alması gerekir.
+  togetherName: Minecraft Together
+  trialDescription: 1 GB aktarma trafiği içeren 7 günlük bir deneme.
+  trialTitle: Bağlantı denemesi
+  tryTogether: Together'ı dene
+  month: ay
+  orderStatus: 'Waffo siparişi: {status}'
+  planDescription: Aylık 20 GB yönetilen aktarma trafiği ve modpack'in için yapay zekâ destekli sorun giderme.
+  waffoHint: Ödemeler Waffo Pancake üzerinden güvenli bir şekilde tamamlanır. XMCL kart numaranı asla almaz.
   subscription:
-    active: "Aktif"
-    cancelled: "İptal edildi"
-    payment_due: "Ödeme bekleniyor"
+    active: Aktif
+    cancelled: İptal edildi
+    payment_due: Ödeme bekleniyor
   trial:
-    active: "Deneme etkin"
-    available: "Ücretsiz deneme kullanılabilir"
-    expired: "Deneme kullanıldı"
-    unavailable: "Deneme kullanılamıyor"
+    active: Deneme etkin
+    available: Ücretsiz deneme kullanılabilir
+    expired: Deneme kullanıldı
+    unavailable: Deneme kullanılamıyor
   loginRequiredDescription: P2P çok oyunculu oyun XMCL çevrimiçi hizmetlerini kullanır. Devam etmek için bir XMCL Hesabında oturum açın.
   loginRequiredTitle: P2P çok oyunculu oyun için giriş yapın
   complete: Tamamla
@@ -1144,23 +1137,23 @@ resourcepack:
   noPacksInstalled: Hiç kaynak paketiniz yüklü değil.
 save:
   map:
-    tabTitle: "Dünya Haritası"
+    tabTitle: Dünya Haritası
   progress:
     zoomIn: Yakınlaştır
     zoomOut: Uzaklaştır
-    loading: "İlerleme yükleniyor…"
-    noData: "İlerleme Bulunamadı"
-    noDataHint: "Gelişimleri, istatistikleri ve görev ilerlemesini kaydetmek için bu dünyada oynayın."
-    quests: "Görevler"
-    advancements: "Gelişimler"
-    done: "Tamamlandı"
-    inProgress: "Devam Ediyor"
-    all: "Tümü"
-    treeView: "Ağaç Görünümü"
-    filterPlaceholder: "Ada göre filtrele…"
-    root: "Başlangıç"
-    exitFullscreen: "Tam Ekrandan Çık"
-    locked: "Kilitli"
+    loading: İlerleme yükleniyor…
+    noData: İlerleme Bulunamadı
+    noDataHint: Gelişimleri, istatistikleri ve görev ilerlemesini kaydetmek için bu dünyada oynayın.
+    quests: Görevler
+    advancements: Gelişimler
+    done: Tamamlandı
+    inProgress: Devam Ediyor
+    all: Tümü
+    treeView: Ağaç Görünümü
+    filterPlaceholder: Ada göre filtrele…
+    root: Başlangıç
+    exitFullscreen: Tam Ekrandan Çık
+    locked: Kilitli
   linkShared: Kayıtları örnekler arasında paylaş
   linkSharedHint: Bu örneğin saves klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin aynı dünyaları paylaşmasını sağlayın. Mevcut kayıtlar paylaşılan klasörde birleştirilir.
   allowCheats: Hilelere İzin Ver
@@ -1229,6 +1222,7 @@ save:
   noSavesFound: Dünya kaydı bulunamadı
   noSavesInstalled: Hiç dünya kaydınız yok.
   world: Dünya
+  empty: No worlds found
 screenshots:
   empty: Hiç ekran görüntünüz yok
   playRandom: Karıştır
@@ -1481,7 +1475,7 @@ setting:
   general: Genel
   githubRelease: Github Yayını
   globalJava: Tercih edilen Java
-  globalJavaHint: "Otomatik modda önce bu Java denenir ve yalnızca oyun sürümüyle uyumlu olmadığında otomatik algılamaya geri dönülür."
+  globalJavaHint: Otomatik modda önce bu Java denenir ve yalnızca oyun sürümüyle uyumlu olmadığında otomatik algılamaya geri dönülür.
   globalSetting: Global Instance Ayarı
   globalSettingHint: Instance varsayılan olarak bu ayarları kullanacaktır.
   importSettings: Ayarları İçe Aktar
@@ -1668,6 +1662,7 @@ shaderPack:
   search: Shader paketleri ara...
   noLocalPacksFound: Aramanızla eşleşen yerel gölgelendirici paketi bulunamadı.
   noPacksInstalled: Hiç gölgelendirici paketiniz yüklü değil.
+  'off': 'Off'
 shared:
   pressKeyCombination: Tuş kombinasyonuna basın...
   add: Ekle
@@ -1969,7 +1964,7 @@ userSkin:
   addNewSkin: Yeni Cilt Ekle
   editSkin: Cildi Düzenle
   skinName: Cilt Adı
-  skinNamePlaceholder: 'ör. En Sevdiğim Cilt'
+  skinNamePlaceholder: ör. En Sevdiğim Cilt
   localFile: Yerel Dosya
   urlOrPlayer: URL / Oyuncu Adı
   urlOrPlayerPlaceholder: Cilt görselinin URL'sini veya Minecraft kullanıcı adını girin
@@ -2163,3 +2158,125 @@ gamepad:
   steamDeckDesc: Steam Deck üzerinde çalıştığınızı algıladık. Oyun Modunda tam Steam arayüzü ve kontrolcü entegrasyonu için X Minecraft Başlatıcısını Steam Kütüphanenize Steam dışı bir oyun olarak eklemek ister misiniz?
   steamDeckAddBtn: Steam'e Ekle ({btn})
   steamDeckCancelBtn: İptal Et ({btn})
+  disconnected: Controller Disconnected
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

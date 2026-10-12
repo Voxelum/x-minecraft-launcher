@@ -10,7 +10,7 @@ import { computed, isRef, onScopeDispose, ref, watch, type InjectionKey, type Re
  * - focus restoration when overlays open and close
  */
 
-export type GamepadType = 'xbox' | 'steamdeck' | 'ps5' | 'ps4' | 'ps3' | 'ps2'
+export type GamepadType = 'xbox' | 'steamdeck' | 'ps5' | 'ps4' | 'ps3' | 'ps2' | 'wii' | 'switch'
 
 /** W3C "Standard Gamepad" button indices. */
 export const GamepadButtonIndex = {
@@ -41,6 +41,15 @@ export function isPlayStationType(type: GamepadType) {
 export function detectGamepadType(id: string): GamepadType {
   const s = id.toLowerCase()
   if (s.includes('steam deck') || s.includes('valve') || s.includes('neptune')) return 'steamdeck'
+  if (
+    s.includes('wii') ||
+    s.includes('wiimote') ||
+    s.includes('rvl-cnt') ||
+    s.includes('dolphin') ||
+    s.includes('057e:0306') ||
+    s.includes('057e:0330')
+  ) return 'wii'
+  if (s.includes('switch') || s.includes('pro controller') || s.includes('joy-con') || s.includes('057e:2009')) return 'switch'
   if (s.includes('ps5') || s.includes('dualsense') || s.includes('054c:0ce6')) return 'ps5'
   if (s.includes('ps4') || s.includes('dualshock 4') || s.includes('054c:05c4') || s.includes('054c:09cc')) return 'ps4'
   if (s.includes('ps3') || s.includes('dualshock 3') || s.includes('sony playstation 3')) return 'ps3'
@@ -50,6 +59,14 @@ export function detectGamepadType(id: string): GamepadType {
 }
 
 export function cleanGamepadName(id: string): string {
+  const s = id.toLowerCase()
+  if (s.includes('dolphin')) return 'Nintendo Wiimote (Dolphin)'
+  if (s.includes('rvl-cnt') || s.includes('wiimote')) return 'Nintendo Wii Remote'
+  if (s.includes('wii u')) return 'Nintendo Wii U Pro Controller'
+  if (s.includes('wii')) return 'Nintendo Wii Controller'
+  if (s.includes('joy-con')) return 'Nintendo Joy-Con'
+  if (s.includes('switch') && s.includes('pro')) return 'Nintendo Switch Pro Controller'
+
   return id
     .replace(/\s*\(Vendor:.*?\)/i, '')
     .replace(/\s*\(Input:.*?\)/i, '')
@@ -78,6 +95,10 @@ export function getGamepadLabels(type: GamepadType): GamepadLabels {
   switch (type) {
     case 'steamdeck':
       return { confirm: 'A', cancel: 'B', keyboard: 'Y', backspace: 'X', bumpers: 'L1/R1', triggers: 'L2/R2', back: 'View', menu: 'Menu' }
+    case 'wii':
+      return { confirm: 'A', cancel: 'B', keyboard: '1', backspace: '2', bumpers: 'L/R', triggers: 'ZL/ZR', back: '-', menu: '+' }
+    case 'switch':
+      return { confirm: 'A', cancel: 'B', keyboard: 'X', backspace: 'Y', bumpers: 'L/R', triggers: 'ZL/ZR', back: '-', menu: '+' }
     case 'ps5':
       return { confirm: '✕', cancel: '◯', keyboard: '△', backspace: '▢', bumpers: 'L1/R1', triggers: 'L2/R2', back: 'Create', menu: 'Options' }
     case 'ps4':
@@ -135,9 +156,27 @@ export function vibrateGamepad(options?: GamepadRumbleOptions) {
  */
 const useSharedGamepads = createGlobalState(() => useBrowserGamepad())
 
-/** The pad we treat as "the controller": a standard-mapped one, else the first. */
+export function isVirtualGamepad(id: string): boolean {
+  const s = (id || '').toLowerCase()
+  return s.includes('vjoy') || s.includes('virtual joystick') || s.includes('virtual gamepad')
+}
+
+/** The pad we treat as "the controller": prioritize real physical controllers over virtual ones. */
 function pickGamepad(pads: readonly Gamepad[]): Gamepad | undefined {
-  return pads.find((g) => g.mapping === 'standard') ?? pads[0]
+  const connectedPads = pads.filter((g) => !!g && g.connected)
+  if (connectedPads.length === 0) return undefined
+
+  // 1. Prefer physical standard-mapped controllers
+  const physicalStandard = connectedPads.find((g) => !isVirtualGamepad(g.id) && g.mapping === 'standard')
+  if (physicalStandard) return physicalStandard
+
+  // 2. Prefer any physical controller (including non-standard like Wii Remote, DirectInput pads)
+  const physicalAny = connectedPads.find((g) => !isVirtualGamepad(g.id))
+  if (physicalAny) return physicalAny
+
+  // If ONLY virtual joysticks (like vJoy) are connected, do NOT automatically pick them
+  // unless an actual input is received from them (handled in updatePreferred).
+  return undefined
 }
 
 /* ------------------------ contextual X / Y actions ------------------------- */
@@ -308,13 +347,22 @@ function resolveNavigationRoot(explicit?: HTMLElement | null): Document | HTMLEl
   })
 
   if (visibleOverlays.length > 0) return visibleOverlays[visibleOverlays.length - 1]
+
+  const bpContainer = document.querySelector<HTMLElement>('.bp-container')
+  if (bpContainer) return bpContainer
+
   return document
 }
 
 export function getFocusableElements(explicitRoot?: HTMLElement | null): HTMLElement[] {
   const root = resolveNavigationRoot(explicitRoot)
+  const bpContainer = document.querySelector<HTMLElement>('.bp-container')
   const elements = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
   return elements.filter((el) => {
+    // If Big Picture mode is open, never allow focus to land on elements outside the Big Picture container
+    if (bpContainer && !bpContainer.contains(el) && !el.closest('.v-overlay, .v-dialog')) {
+      return false
+    }
     // Let pages opt an element (or a whole subtree) out of gamepad navigation.
     if (el.closest('[data-gamepad-skip]')) return false
     // Vuetify text fields / selects wrap a visually-collapsed native input in a
@@ -607,6 +655,16 @@ export interface GamepadContext {
   onCancel?: () => void
   /** Start pressed while this context is active (e.g. to close the menu). */
   onMenu?: () => void
+  /** Select pressed while this context is active (e.g. to open task manager). */
+  onSelect?: () => void
+  /** L3 pressed while this context is active (e.g. to open help / guide). */
+  onHelp?: () => void
+  /** LB+Select pressed while this context is active (e.g. to open feedback). */
+  onFeedback?: () => void
+  /** R3 pressed while this context is active (e.g. to trigger virtual keyboard). */
+  onKeyboard?: () => void
+  /** L1/R1 pressed while this context is active (e.g. switch tabs). */
+  onTab?: (direction: 'prev' | 'next') => void
   /** Overrides the default focus navigation (moveFocus) when provided. */
   onNavigate?: (direction: 'up' | 'down' | 'left' | 'right') => void
   root?: () => HTMLElement | null
@@ -641,21 +699,34 @@ const useGamepadCore = createGlobalState(() => {
   const autoOpenKeyboard = useLocalStorage('gamepad_auto_open_keyboard', true)
   const focusTooltips = useLocalStorage('gamepad_focus_tooltips', true)
   const disableModPrompt = useLocalStorage('gamepad_disable_mod_prompt', false)
+  const hasEverConnectedGamepad = useLocalStorage('xmcl_gamepad_ever_connected', false)
   const setEnabled = (value: boolean) => {
     enabled.value = value
   }
 
   // The pad currently driving input: the one most recently interacted with,
-  // else the first standard controller. Everything user-visible is derived live.
+  // else the first physical controller. Everything user-visible is derived live.
   const preferredIndex = ref<number | null>(null)
   const activeGamepad = computed<Gamepad | undefined>(() => {
     const pads = gamepads.value
     if (preferredIndex.value !== null) {
-      const found = pads.find((g) => g.index === preferredIndex.value)
+      const found = pads.find((g) => g.index === preferredIndex.value && g.connected)
       if (found) return found
     }
     return pickGamepad(pads)
   })
+
+  // Watch for any real physical controller to mark hasEverConnectedGamepad
+  watch(
+    () => gamepads.value,
+    (pads) => {
+      const real = pads.some((g) => g && g.connected && !isVirtualGamepad(g.id))
+      if (real) {
+        hasEverConnectedGamepad.value = true
+      }
+    },
+    { immediate: true },
+  )
 
   const connected = computed(() => !!activeGamepad.value)
   watch(connected, (conn) => {
@@ -753,9 +824,16 @@ const useGamepadCore = createGlobalState(() => {
   /** Remember the most-recently-interacted pad so it wins as the active one. */
   function updatePreferred() {
     for (const gp of gamepads.value) {
+      if (!gp || !gp.connected) continue
       const anyButton = gp.buttons.some((b) => b.pressed)
-      const anyAxis = gp.axes.some((a) => Math.abs(a) > 0.5)
-      if (anyButton || anyAxis) preferredIndex.value = gp.index
+      const anyAxis = gp.axes.some((a) => Math.abs(a) > 0.35)
+      if (anyButton || anyAxis) {
+        preferredIndex.value = gp.index
+        if (!isVirtualGamepad(gp.id)) {
+          hasEverConnectedGamepad.value = true
+        }
+        return
+      }
     }
   }
 
@@ -765,11 +843,15 @@ const useGamepadCore = createGlobalState(() => {
 
   function isTextEntryFocused() {
     const active = document.activeElement
+    if (!active || active === document.body) return false
     if (active instanceof HTMLTextAreaElement) return true
     if (active instanceof HTMLInputElement) {
       return !['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'range', 'reset', 'submit'].includes(active.type)
     }
-    return active instanceof HTMLElement && (active.isContentEditable || active.getAttribute('role') === 'textbox')
+    if (active instanceof HTMLElement) {
+      if (active.isContentEditable || active.getAttribute('role') === 'textbox') return true
+    }
+    return false
   }
 
   function syncPreviousButtons(buttons: readonly GamepadButton[]) {
@@ -785,6 +867,8 @@ const useGamepadCore = createGlobalState(() => {
     const current = document.activeElement as HTMLElement
     if (current && current !== document.body) {
       current.click()
+      current.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }))
+
       if (
         current.tagName === 'INPUT' ||
         current.tagName === 'TEXTAREA' ||
@@ -872,15 +956,43 @@ const useGamepadCore = createGlobalState(() => {
 
   function handleContext(ctx: GamepadContext, buttons: readonly GamepadButton[], axes: readonly number[], now: number) {
     if (justPressed(buttons, GamepadButtonIndex.A)) {
-      ctx.onConfirm?.()
+      if (ctx.onConfirm) ctx.onConfirm()
+      else activateFocused()
       return
     }
     if (justPressed(buttons, GamepadButtonIndex.B)) {
-      ctx.onCancel?.()
+      if (ctx.onCancel) ctx.onCancel()
+      else actions?.back()
       return
     }
     if (justPressed(buttons, GamepadButtonIndex.Start) && ctx.onMenu) {
       ctx.onMenu()
+      return
+    }
+    if (justPressed(buttons, GamepadButtonIndex.Select)) {
+      if (pressed(buttons, GamepadButtonIndex.L1) && ctx.onFeedback) {
+        ctx.onFeedback()
+        return
+      }
+      if (ctx.onSelect) {
+        ctx.onSelect()
+        return
+      }
+    }
+    if (justPressed(buttons, GamepadButtonIndex.L3) && ctx.onHelp) {
+      ctx.onHelp()
+      return
+    }
+    if (justPressed(buttons, GamepadButtonIndex.R3) && ctx.onKeyboard) {
+      ctx.onKeyboard()
+      return
+    }
+    if (justPressed(buttons, GamepadButtonIndex.L1) && ctx.onTab) {
+      ctx.onTab('prev')
+      return
+    }
+    if (justPressed(buttons, GamepadButtonIndex.R1) && ctx.onTab) {
+      ctx.onTab('next')
       return
     }
     // Directional input: a context may override navigation, else focus moves.
@@ -922,8 +1034,27 @@ const useGamepadCore = createGlobalState(() => {
     // Steam's on-screen keyboard shares the controller with the launcher.
     // Do not let its navigation move focus, scroll, or activate launcher UI.
     if (isTextEntryFocused()) {
+      if (justPressed(buttons, GamepadButtonIndex.B)) {
+        const active = document.activeElement as HTMLElement | null
+        if (active) {
+          active.blur?.()
+          const input = active.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea')
+          input?.blur?.()
+        }
+      }
       syncPreviousButtons(buttons)
       return
+    }
+
+    // Emergency / Force Kill Game Combo: LB + RB + B or clicking both sticks (L3 + R3)
+    const isBumpersHold = pressed(buttons, GamepadButtonIndex.L1) && pressed(buttons, GamepadButtonIndex.R1)
+    if (
+      (isBumpersHold && justPressed(buttons, GamepadButtonIndex.B)) ||
+      (justPressed(buttons, GamepadButtonIndex.L3) && pressed(buttons, GamepadButtonIndex.R3)) ||
+      (justPressed(buttons, GamepadButtonIndex.R3) && pressed(buttons, GamepadButtonIndex.L3))
+    ) {
+      window.dispatchEvent(new CustomEvent('gamepad-force-kill'))
+      vibrateGamepad({ duration: 300, strongMagnitude: 0.8, weakMagnitude: 0.8 })
     }
 
     // Prompt to enable when a button is pressed and we are not active yet.
@@ -941,14 +1072,19 @@ const useGamepadCore = createGlobalState(() => {
     syncPreviousButtons(buttons)
   }
 
-  // Fires once per frame on the snapshot's identity change. The source is
-  // independent of `preferredIndex` (which `processFrame` writes), so the sync
-  // callback can never re-trigger itself.
-  watch(() => pickGamepad(gamepads.value), processFrame, { flush: 'sync' })
+  // Fires once per frame on the snapshot's identity change.
+  watch(() => activeGamepad.value, processFrame, { flush: 'sync' })
 
-  onConnected(() => {
+  onConnected((index) => {
     // A fresh controller re-opens the enable prompt for this session.
     promptDismissed.value = false
+    const pad = gamepads.value.find((g) => g.index === index)
+    if (pad && !isVirtualGamepad(pad.id)) {
+      preferredIndex.value = index
+      hasEverConnectedGamepad.value = true
+    } else if (preferredIndex.value === null) {
+      preferredIndex.value = index
+    }
   })
   onDisconnected((index) => {
     if (preferredIndex.value === index) preferredIndex.value = null
@@ -965,6 +1101,7 @@ const useGamepadCore = createGlobalState(() => {
     autoOpenKeyboard,
     focusTooltips,
     disableModPrompt,
+    hasEverConnectedGamepad,
     connected,
     type,
     name,

@@ -10,7 +10,10 @@
         :color="currentTab === loader.id ? 'primary' : undefined"
         class="flex-1 min-w-[80px] max-w-[120px] flex flex-col items-center justify-center py-4 cursor-pointer hover:bg-white/5 transition-colors border-2"
         :style="{ borderColor: currentTab === loader.id ? 'rgba(var(--v-theme-primary), 1)' : 'transparent' }"
+        tabindex="0"
+        data-gamepad-focusable
         @click="selectLoader(loader.id)"
+        @keydown.enter.prevent="selectLoader(loader.id)"
       >
         <img :src="loader.icon" width="36" height="36" class="mb-2 transition-transform hover:scale-110" />
         <span class="text-xs font-semibold">{{ loader.name }}</span>
@@ -140,6 +143,7 @@ const {
 } = useInstanceEditVersions(props.data, versions)
 
 const loaders = [
+  { id: 'vanilla', name: 'Vanilla', icon: BuiltinImages.minecraft },
   { id: 'forge', name: 'Forge', icon: BuiltinImages.forge },
   { id: 'fabric', name: 'Fabric', icon: BuiltinImages.fabric },
   { id: 'quilt', name: 'Quilt', icon: BuiltinImages.quilt },
@@ -184,6 +188,10 @@ function resetToVanilla() {
 }
 
 function selectLoader(loader: string) {
+  if (loader === 'vanilla') {
+    resetToVanilla()
+    return
+  }
   // Toggle off when clicking the already-selected loader, reverting to vanilla.
   if (currentTab.value === loader) {
     resetToVanilla()

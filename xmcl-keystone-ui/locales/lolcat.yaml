@@ -6,13 +6,10 @@ AppShareInstanceDialog:
   editScopeDescription: CHOOZ TEH FILEZ PEEPS CAN GRAB AFTER DEY FIND DIS RUNNIN GAEM ON LAN.
   editScopeTitle: EDIT SHARIN RANGE
   instanceToShare: RUNNIN GAEM
-  alterDownloadDescription: >-
-    IF U NO WANT BREAK CURREN INSTANCE. U CAN ALSO MAKE NEW INSTANCE FROM UR FREN'S CONFIG. CLICK DA BUTTON BELOW TO MAKE INSTANCE.
+  alterDownloadDescription: IF U NO WANT BREAK CURREN INSTANCE. U CAN ALSO MAKE NEW INSTANCE FROM UR FREN'S CONFIG. CLICK DA BUTTON BELOW TO MAKE INSTANCE.
   baseInfo: BASIC SETTINGZ
-  description: >-
-    AFTR U SHARE DA PROFILE, OTHR PLACE CAN DOWNLOD THESE FILEZ THRU UR COMPUTAH.
-  downloadDescription: >-
-    PLZ CHECK DA FILEZ UR FREN GAVE U. PICK DA FILE U WANT TO DOWNLOD. IT WILL GO TO CURREN INSTANCE {name}.
+  description: AFTR U SHARE DA PROFILE, OTHR PLACE CAN DOWNLOD THESE FILEZ THRU UR COMPUTAH.
+  downloadDescription: PLZ CHECK DA FILEZ UR FREN GAVE U. PICK DA FILE U WANT TO DOWNLOD. IT WILL GO TO CURREN INSTANCE {name}.
   downloadNotifyTitle: DOWNLOD INSTANCE FROM {user}
   downloadTitle: DOWNLOD FILEZ FROM OTHR FRENS
   filesToDownload: PICK FILEZ TO DOWNLOD
@@ -41,12 +38,11 @@ ago:
   second: '{duration} SEC AGO | {duration} SECZ AGO'
 askAICrash:
   copyPrompt: COPY DA PROMPT TO ASK AI
-  description: >-
-    LET AI HALP U TO UNDERSTAND DA GAME CRASH! FOLLOW DA INSTRUKSHUNS BELOW TO ASK AI ABOUT THIS GAME CRASH!
+  description: LET AI HALP U TO UNDERSTAND DA GAME CRASH! FOLLOW DA INSTRUKSHUNS BELOW TO ASK AI ABOUT THIS GAME CRASH!
   selectPlatform: OPEN AN AI PLATFORM AN PASTE DA PROMPT U JUS COPIED.
 authProfileAddedNotification: AUTH PROFILE {name} ADDED
 bedrock:
-  installBedrockVersion: 'Downloading Bedrock {version}'
+  installBedrockVersion: Downloading Bedrock {version}
   versionsTitle: Version manager
   versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
   versionsError: Failed to load the version list. Check your network and try again.
@@ -61,9 +57,9 @@ bedrock:
   developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
   enableDeveloperMode: Enable Developer Mode
   enableDeveloperModeFailed: Failed to enable Developer Mode
-  downloadFailed: 'Failed to download Bedrock {version}'
+  downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
-  removeFailed: 'Failed to remove Bedrock {version}'
+  removeFailed: Failed to remove Bedrock {version}
 baseSetting:
   title: INSTANCE SETTINGZ
 browseApp:
@@ -137,8 +133,7 @@ curseforgeCategory:
 dataMigration:
   apply: APPLY SETTING
   placeholder: PLZ CLICK HERE TO PICK DIRECTORY
-  setRootCause: >-
-    U WILL LOSE UR DATA (MAPS, RESOURCE PAKS, MODZ) IF U CLOSE DA LAWNCHER AT THIS PROCESS!
+  setRootCause: U WILL LOSE UR DATA (MAPS, RESOURCE PAKS, MODZ) IF U CLOSE DA LAWNCHER AT THIS PROCESS!
   setRootDescription: THIS WILL CHANGE DA ROOT DATA FOLDR OF THIS LAUNCHER AN MINECWAFT.
   setRootTitle: SET TO A NEW STORAGE LOCASHUN
   unknownError: UNKNOWN OOPSIE! PLZ RETRY OR CONTACT DA DEVELOPR!
@@ -182,15 +177,12 @@ diagnosis:
     name: CANNOT FIND JAVA TO LAUNCH MINECWAFT!
   missingLibraries:
     message: LAWNCHER WILL INSTALL LIBRAWRIES FUR U
-    name: >-
-      MISSING {name} LIBRAWRY | MISSING {name} LIBRAWRY | MISSING {count} LIBRAWRIES | MISSING {count} LIBRAWRIES
+    name: MISSING {name} LIBRAWRY | MISSING {name} LIBRAWRY | MISSING {count} LIBRAWRIES | MISSING {count} LIBRAWRIES
   missingVersion:
     message: CLICK TO INSTALL THIS VERSHUN
     name: TEH VERSHUN {version} IS NOT INSTALLED!
   unresolvedFiles:
-    description: >-
-      {count} fil cudnt b rezolvd durin install | {count} filez cudnt b rezolvd
-      durin install
+    description: '{count} fil cudnt b rezolvd durin install | {count} filez cudnt b rezolvd durin install'
     title: Unrezolvd Filez
   unzipFileNotFound:
     description: CANNOT FIND {file}
@@ -217,29 +209,23 @@ env:
     fit: PICK FIT
     none: PICK NONE
 errors:
-  BadForgeInstallerJarError: >-
-    CANNOT PARSE FORGE INSTALLER JAR FILE. MAYBE DA FORGE HAZ NEW INSTALLER FILE FORMAT? CONTACT DEVS IF THIS ISSUE PERSISTS.
+  BadForgeInstallerJarError: CANNOT PARSE FORGE INSTALLER JAR FILE. MAYBE DA FORGE HAZ NEW INSTALLER FILE FORMAT? CONTACT DEVS IF THIS ISSUE PERSISTS.
   BadInstanceType: 'NOT A VALID INSTANCE: {type}'
   BodyTimeoutError: HTTP BODY TIMEOUT
   ChecksumNotMatchError: CHECKSUM NOT MATCHED! EXPECTED {expect}. ACTUAL {actual}.
   ConnectTimeoutError: CONNEKSHUN TIMEOUT TO SERVER.
   DNSNotFoundError: DNS LOOKUP OOPSIE
-  DatabaseNotOpened: >-
-    DATABASE IS NOT OPENED! TEH LAWNCHER WONT WORK PROPERLY! PLZ PICK A DATA DIRECTORY DA LAWNCHER CAN ACCESS. U CAN TRY TO RESET DA DATA ROOT IN SETTING PAGE.
-  DiskIsFull: >-
-    UR DISK IS FULL! CANNOT WRITE ANYFING TO DISK! ALL FEATUREZ MITE NOT BE FUNCTIONAL!
+  DatabaseNotOpened: DATABASE IS NOT OPENED! TEH LAWNCHER WONT WORK PROPERLY! PLZ PICK A DATA DIRECTORY DA LAWNCHER CAN ACCESS. U CAN TRY TO RESET DA DATA ROOT IN SETTING PAGE.
+  DiskIsFull: UR DISK IS FULL! CANNOT WRITE ANYFING TO DISK! ALL FEATUREZ MITE NOT BE FUNCTIONAL!
   DownloadAggregateError: FAILD TO DOWNLOD FILE.
-  DownloadFileSystemError: >-
-    OOPSIE DURING ACCESSING DA DOWNLOD FILE PATH. PLZ ENSURE DA LAWNCHER HAZ PERMISHUN TO WRITE ON IT.
+  DownloadFileSystemError: OOPSIE DURING ACCESSING DA DOWNLOD FILE PATH. PLZ ENSURE DA LAWNCHER HAZ PERMISHUN TO WRITE ON IT.
   HeadersTimeoutError: HTTP HEADER TIMEOUT
   NotFoundError: 404 NOT FOUND (SAD CAT)
   SocketError: SERVER SOCKET OOPSIE
 eula:
-  body: >-
-    BY CHECKING DA CHECKBOX BUTTON, U R INDICATING UR AGREEMENT TO MINECWAFT'S {eula}.
+  body: BY CHECKING DA CHECKBOX BUTTON, U R INDICATING UR AGREEMENT TO MINECWAFT'S {eula}.
 exception:
-  http: >-
-    HTTP REQUEST TO {url} FAILED. STATUS CODE {statusCode}. {code}. PLZ RETRY OR CHECK UR NETWORK. IF THIS ERROR PERSISTS, PLZ SEND A REPORT TO DEV TEAM.
+  http: HTTP REQUEST TO {url} FAILED. STATUS CODE {statusCode}. {code}. PLZ RETRY OR CHECK UR NETWORK. IF THIS ERROR PERSISTS, PLZ SEND A REPORT TO DEV TEAM.
 extensions:
   mrpack: MODRINTH MODPACK
   zip: ZIP FILE
@@ -289,14 +275,12 @@ feedback:
   github: GITHUB ISSUE
   githubDescription: OPEN AN GITHUB ISSUE TO TELL UR THOT
   githubOpenIssue: GITHUB
-  hint: >-
-    CLICK DA BUTTON TO MAKE DA REPORT AN CONTACT DA DEVELOPR TEAM. TEH REPORT WILL CONTAIN UR DEVICE INFO INCLUDING OPERATIN SYSTEM TYP, VERSHUN, USER NAME (IN UR OS), ETC.
+  hint: CLICK DA BUTTON TO MAKE DA REPORT AN CONTACT DA DEVELOPR TEAM. TEH REPORT WILL CONTAIN UR DEVICE INFO INCLUDING OPERATIN SYSTEM TYP, VERSHUN, USER NAME (IN UR OS), ETC.
   kook: KOOK
   kookDescription: KOOK IS AN ALTERNATE APP FUR DISCORD FUR CHINESE MAINLAND USERS
   name: FEEDBACK
   qq: QQ GROUP
-  qqDescription: >-
-    ENTER DA FEEDBACK QQ GROUP AN DIRECT TALK WITH AUTHORZ. GROUP NUMBR: {number}
+  qqDescription: 'ENTER DA FEEDBACK QQ GROUP AN DIRECT TALK WITH AUTHORZ. GROUP NUMBR: {number}'
   qqEnterGroup: JOIN
 fileDetail:
   fileSize: FILE SIZE
@@ -390,8 +374,7 @@ instance:
   lastPlayed: LAST PLAYED
   launchArguments: LAUNCH ARGUMENTS PREVUE
   launchServer: LAUNCH LOCALHOST SERVR
-  linkFileDesc: >-
-    THIS WILL OVERWRITE INSTANCE LOCAL {file} WITH DA GLOBAL {file}. ARE U SURE TO LINK IT?
+  linkFileDesc: THIS WILL OVERWRITE INSTANCE LOCAL {file} WITH DA GLOBAL {file}. ARE U SURE TO LINK IT?
   linkFileTitle: ARE U SURE TO LINK {file}?
   mcOptions: MINECWAFT OPSHUNS
   mcOptionsHint: ADDITIONAL MINECWAFT LAUNCH ARGUMENTS
@@ -443,19 +426,16 @@ instanceInstallSkip:
   ignore: IGNORE
   skip: SKIP
   title: POTENTIAL BAD FILE SOURC
-  warning: >-
-    SOME FILEZ ARE DOWNLODED MULTIPLE TIMES WITH CHECKSUM UNMATCHING. THIS MAY BE DUE TO DA FACT THAT DA ORIGINAL CHECKSUM IS INCORRECT. PLZ CHECK. IF U CONFIRM DA CURREN FILEZ ARE VALID, U CAN SKIP DA VALIDASHUN CHECK.
+  warning: SOME FILEZ ARE DOWNLODED MULTIPLE TIMES WITH CHECKSUM UNMATCHING. THIS MAY BE DUE TO DA FACT THAT DA ORIGINAL CHECKSUM IS INCORRECT. PLZ CHECK. IF U CONFIRM DA CURREN FILEZ ARE VALID, U CAN SKIP DA VALIDASHUN CHECK.
 instanceLauncher:
   search: Sniff instncez...
   showAll: Sho All Instncez
   title: All Instncez
 instanceSetting:
   disableAuthlibInjector: DISABL AUTHLIB INJECTOR
-  disableAuthlibInjectorDescription: >-
-    IF U R USING THIRD-PARTY SKIN SYSTEM. TEH AUTHLIB INJECTOR CAN HALP U TO DISPLAY SKIN IN GAME.
+  disableAuthlibInjectorDescription: IF U R USING THIRD-PARTY SKIN SYSTEM. TEH AUTHLIB INJECTOR CAN HALP U TO DISPLAY SKIN IN GAME.
   disableElyByAuthlib: DISABL ELY.BY'S AUTHLIB REPLACEMENT
-  disableElyByAuthlibDescription: >-
-    ELY.BY HAZ A UNIQUE AUTHLIB REPLACEMENT TO DISPLAY SKIN UNIVERSALLY IN ANY SERVR.
+  disableElyByAuthlibDescription: ELY.BY HAZ A UNIQUE AUTHLIB REPLACEMENT TO DISPLAY SKIN UNIVERSALLY IN ANY SERVR.
   fastLaunch: TURBO LAUNCH!
   fastLaunchHint: IGNORE DA USER STATUS AN EXISTING UNFIXED PROBLEMZ
   hideLauncher: HIDE DA LAUNCHER AFTER LAUNCH
@@ -470,22 +450,18 @@ instanceTemplate:
 instanceUpdate:
   basic: SETTING UPDAT
   files: FILE UPDATS
-  loaderChanged: >-
-    TEH MODLOADER OF THIS INSTANCE HAZ BEEN CHANGED. TEH OLD MODLOADER IS {modloader}, AN DA NEW MODLOADER IS {newModloader}.
+  loaderChanged: TEH MODLOADER OF THIS INSTANCE HAZ BEEN CHANGED. TEH OLD MODLOADER IS {modloader}, AN DA NEW MODLOADER IS {newModloader}.
   summary: ADD {add} FILEZ. REMOVE {remove} FILEZ. KEEP {keep} FILEZ.
   title: UPDAT INSTANCE
   update: START UPDAT
 instances:
   add: MAKE GAME
-  addCurseForgeDescription: >-
-    IMPORT FROM CURSEFORGE DATA FOLDR. U NEED TO PICK CURSEFORGE'S ROOT DATA FOLDR
+  addCurseForgeDescription: IMPORT FROM CURSEFORGE DATA FOLDR. U NEED TO PICK CURSEFORGE'S ROOT DATA FOLDR
   addDescription: MAKE A NEW INSTANCE FROM SCRATCH
   addMMCDescription: IMPORT EXISTING MULTIMC INSTANCE. U NEED TO PICK DA DATA FOLDR FROM MULTIMC.
-  addModrinthDescription: >-
-    IMPORT EXISTING MODRINTH INSTANCE. U NEED TO PICK DA MODRINTH ROOT DATA FOLDR.
+  addModrinthDescription: IMPORT EXISTING MODRINTH INSTANCE. U NEED TO PICK DA MODRINTH ROOT DATA FOLDR.
   addVanilla: MAKE FROM VANILLA-LIKE MINECWAFT
-  addVanillaDescription: >-
-    IMPORT FROM COMMON .MINECRAFT FOLDR. THIS WILL DUPLCIATE DA ORIGINAL GAME PROFILE TO XMCL.
+  addVanillaDescription: IMPORT FROM COMMON .MINECRAFT FOLDR. THIS WILL DUPLCIATE DA ORIGINAL GAME PROFILE TO XMCL.
   fix: REPAIR
   folder: FOLDR
   folderSetting: FOLDR SETTINGZ
@@ -494,16 +470,10 @@ instances:
   edition: EDISHUN
   editionJava: JAVA EDISHUN
   editionBedrock: BEDROK EDISHUN
-  editionBedrockHint: >-
-    BEDROK EDISHUN LAUNCHZ THRU DA MICROSOFT STORE APP. U NEEDZ 2 OWN A BEDROK
-    LICENSE. MODZ, REZORCE PAKZ AN OTHR JAVA-ONLY THINGZ R NOT AVAILABUL.
+  editionBedrockHint: BEDROK EDISHUN LAUNCHZ THRU DA MICROSOFT STORE APP. U NEEDZ 2 OWN A BEDROK LICENSE. MODZ, REZORCE PAKZ AN OTHR JAVA-ONLY THINGZ R NOT AVAILABUL.
   editionBedrockWindowsOnly: BEDROK EDISHUN ONLY WERKZ ON DA WINDOWS BUILD.
   linkSharedFolders: SHARE FOLDERZ AKROSS INSTANCEZ
-  linkSharedFoldersHint: >-
-    MAEK DEEZ FOLDERZ INTO LINKZ TO DA LAUNCHR SHARD FOLDERZ SO DIS INSTANCE
-    SHARE STUFFZ WIF ALL OTHR LINKD INSTANCEZ. DIS NOT A COPY — CHANGEZ IN ONE
-    INSTANCE SHOW UP IN ALL OF DEM. UNCHEKD FOLDERZ STAY PRIVATE TO DIS
-    INSTANCE.
+  linkSharedFoldersHint: MAEK DEEZ FOLDERZ INTO LINKZ TO DA LAUNCHR SHARD FOLDERZ SO DIS INSTANCE SHARE STUFFZ WIF ALL OTHR LINKD INSTANCEZ. DIS NOT A COPY — CHANGEZ IN ONE INSTANCE SHOW UP IN ALL OF DEM. UNCHEKD FOLDERZ STAY PRIVATE TO DIS INSTANCE.
   linkFailed: COULD NOT LINK DA {folder} FOLDR TO DA SHARD FOLDR
   addPrismDescription: Imprt exsting PrismLauncher instnce.
 items:
@@ -557,12 +527,10 @@ launchBlocked:
     description: SOME OOPSIES CAUSE DA LAUNCH FAILED.
     title: LAUNCH FAILED
   launchInvalidJavaPath:
-    description: >-
-      TEH SELECTED JAVA IS MISSING OR INVALID. PLZ PICK A NEW ONE. <SPAN CLASS="HIGHLIGHT"> {javaPath} </SPAN>
+    description: TEH SELECTED JAVA IS MISSING OR INVALID. PLZ PICK A NEW ONE. <SPAN CLASS="HIGHLIGHT"> {javaPath} </SPAN>
     title: INVALID JAVA PATH
   launchJavaNoPermission:
-    description: >-
-      TEH LAWNCHER DOESNT HAZ PERMISHUN TO EXECUTE DA JAVA <SPAN CLASS="HIGHLIGHT"> {javaPath} </SPAN>. EITHR CHANGE DA PERMISHUN OF DA JAVA FILE OR RAISE DA PERMISHUN OF LAWNCHER.
+    description: TEH LAWNCHER DOESNT HAZ PERMISHUN TO EXECUTE DA JAVA <SPAN CLASS="HIGHLIGHT"> {javaPath} </SPAN>. EITHR CHANGE DA PERMISHUN OF DA JAVA FILE OR RAISE DA PERMISHUN OF LAWNCHER.
     title: NO PERMISHUN TO LAUNCH
   launchNoProperJava:
     description: NO PROPER JAVA CAN BE SELECTED TO LAUNCH DA GAME. ({javaPath} IS INVALID?)
@@ -571,31 +539,25 @@ launchBlocked:
     description: CANNOT RESOLVE VERSHUN <SPAN CLASS="HIGHLIGHT">{version}</SPAN> TO LAUNCH.
     title: NO VERSHUN SELECTED
   launchSpawnProcessFailed:
-    description: >-
-      PLZ CHECK UR JAVA, OR GIVE MORE PERMISSIONS TO DA LAWNCHER AN RETRY. IF THIS STILL DOESNT WORK, PLZ CONTACT DA DEVS.
+    description: PLZ CHECK UR JAVA, OR GIVE MORE PERMISSIONS TO DA LAWNCHER AN RETRY. IF THIS STILL DOESNT WORK, PLZ CONTACT DA DEVS.
     title: FAIL TO START GAME PROCESS
-  unexpectedText: >-
-    THIS IS UNEXPECTED. U CAN RESTART DA LAWNCHER TO MITIGATE DA ISSUE. PLZ CONTACT AUTHOR IF THIS ISSUE HAPPENS AGAIN.
+  unexpectedText: THIS IS UNEXPECTED. U CAN RESTART DA LAWNCHER TO MITIGATE DA ISSUE. PLZ CONTACT AUTHOR IF THIS ISSUE HAPPENS AGAIN.
 launchFailed:
   crash: GAME CRASHED!! (SAD CAT)
   description: THERE IS NO CRASH REPORT. THIS THIS DA ERROR LOG AN LATEST LOG.
   elyByAuthlib:
-    description: >-
-      TEH ELY.BY AUTHLIB REPLACEMENT WAS USED FUR MINECWAFT VERSHUN {version}, BUT THIS VERSHUN MAY NOT BE FULLY COMPATIBLE.
-    suggestion: >-
-      U CAN DISABL ELY.BY'S AUTHLIB REPLACEMENT IN DA INSTANCE SETTINGZ TO AVOID THIS ISSUE.
+    description: TEH ELY.BY AUTHLIB REPLACEMENT WAS USED FUR MINECWAFT VERSHUN {version}, BUT THIS VERSHUN MAY NOT BE FULLY COMPATIBLE.
+    suggestion: U CAN DISABL ELY.BY'S AUTHLIB REPLACEMENT IN DA INSTANCE SETTINGZ TO AVOID THIS ISSUE.
     title: ELY.BY AUTHLIB COMPATIBILITY ISSUE
   failedToLaunch: LAUNCH FAILED TO LAUNCH
   latestLog: LATEST LOG
   title: GAME EXITED WITH ABNORMAL CODE
 launchPreExecuteCommandFailed:
-  description: >-
-    TEH PRE-EXECUTE COMMAND FAILED WITH AN OOPSIE: {error}. PLZ CHECK DA COMMAND AN TRY AGAIN.
+  description: 'TEH PRE-EXECUTE COMMAND FAILED WITH AN OOPSIE: {error}. PLZ CHECK DA COMMAND AN TRY AGAIN.'
   title: PRE-EXECUTE COMMAND FAILED
 launchStatus:
   assigningMemory: ASSIGNING MEMRY
-  elyByWarning: >-
-    ELY.BY AUTHLIB REPLACEMENT IS ENABLED. SOME MINECWAFT VERSHUNS MAY NOT BE COMPATIBLE AN CUD CRASH. U CAN DISABL IT IN INSTANCE SETTINGZ IF ISSUES OCCUR.
+  elyByWarning: ELY.BY AUTHLIB REPLACEMENT IS ENABLED. SOME MINECWAFT VERSHUNS MAY NOT BE COMPATIBLE AN CUD CRASH. U CAN DISABL IT IN INSTANCE SETTINGZ IF ISSUES OCCUR.
   exit: EXIT GAME?
   injectingAuthLib: SETTING UP THIRD-PARTY AUTHLIB
   launching: LAUNCHING...
@@ -611,8 +573,7 @@ localVersion:
   auto: AUTO COMPUTED
   empty: NO VERSHUN INSTALLED
   hint: LAUNCH A SPECIFIC LOCAL VERSHUN DIRECTLY
-  reinstallDescription: >-
-    IF U THINK THIS VERSHUN INSTALLASHUN HAZ SOME PROBLEMZ, U CAN TRY TO REINSTALL IT.
+  reinstallDescription: IF U THINK THIS VERSHUN INSTALLASHUN HAZ SOME PROBLEMZ, U CAN TRY TO REINSTALL IT.
   reinstallTitle: REINSTALL {version}
   title: LOCAL VERSHUN | LOCAL VERSHUNS
 logLevel:
@@ -638,14 +599,10 @@ loginError:
   fetchMinecraftProfileFailed: 'FAIL TO FETCH MINECWAFT PROFILE: {reason}'
   illegalEmail: E-MAIL MUST BE VALID
   invalidCredentials: INVALID CREDENTIALS. BAD USERNAME OR PASSWORD.
-  loginMinecraftByXboxFailed: >-
-    FAIL TO EXCHANGE MINECWAFT TOKEN BY XBOX TOKEN. PLZ MAKE SURE U HAZ MINECWAFT IN XBOX, OR RETRY.
-  loginXboxAgeRestricted: >-
-    FAIL TO LOGIN XBOX DUE DA DA AGE ISSUE. PLZ MAKE SURE DA AGE IS SET FUR UR MICROSOFT ACCOUNT AN DA AGE IS ABOVE 18.
-  loginXboxFailed: >-
-    FAIL TO LOGIN XBOX BY MICROSOFT TOKEN. PLZ MAKE SURE U HAZ AN INDEPENDENT XBOX ACCOUNT TO UR MICROSOFT ACCOUNT. PLZ TRY AGAIN.
-  noProfileForNewUser: >-
-    NO GAME PROFILE FOUND! IF U R A NEW MINECWAFT USER, PLZ LOGIN AT LEAST ONE TIME IN MINECWAFT OFFISHUL LAUNCHER.
+  loginMinecraftByXboxFailed: FAIL TO EXCHANGE MINECWAFT TOKEN BY XBOX TOKEN. PLZ MAKE SURE U HAZ MINECWAFT IN XBOX, OR RETRY.
+  loginXboxAgeRestricted: FAIL TO LOGIN XBOX DUE DA DA AGE ISSUE. PLZ MAKE SURE DA AGE IS SET FUR UR MICROSOFT ACCOUNT AN DA AGE IS ABOVE 18.
+  loginXboxFailed: FAIL TO LOGIN XBOX BY MICROSOFT TOKEN. PLZ MAKE SURE U HAZ AN INDEPENDENT XBOX ACCOUNT TO UR MICROSOFT ACCOUNT. PLZ TRY AGAIN.
+  noProfileForNewUser: NO GAME PROFILE FOUND! IF U R A NEW MINECWAFT USER, PLZ LOGIN AT LEAST ONE TIME IN MINECWAFT OFFISHUL LAUNCHER.
   requestFailed: LOGIN FAILED, WE DO NOT KNOW DA EXACT REASON. PLZ RETRY.
   requireEmail: E-MAIL IS REQUIRED
   requirePassword: PASSWORD IS REQUIRED
@@ -690,8 +647,7 @@ mod:
   disableAll: DISABL ALL
   dropHint: DROP MOD'S .JAR/.LITEMOD HERE TO IMPORT.
   duplicatedDetected: '{count} DUPLICATED MODZ'
-  duplicatedDetectedDescription: >-
-    FOUND MODZ WITH SAME MOD ID BUT DIFFERENT FILEZ. THIS MITE CAUSE MINECWAFT CRASH. PLZ PICK DA FILE U WANT TO KEEP.
+  duplicatedDetectedDescription: FOUND MODZ WITH SAME MOD ID BUT DIFFERENT FILEZ. THIS MITE CAUSE MINECWAFT CRASH. PLZ PICK DA FILE U WANT TO KEEP.
   enableAll: ENABL ALL
   enabled: '{count} MODZ ENABLED'
   filter: FILTR MODZ
@@ -704,8 +660,7 @@ mod:
   hasUpdate: MOD HAZ A NEW VERSHUN!
   incompatible: INCOMPATIBLE MOD.
   incompatibleHint: SHOW INCOMPATIBLE
-  incompatibleHintDescription: >-
-    SOME MODZ DEPENDENCIEZ MITE BE MISSING. OR SOME DEPENDENCIEZ VERSHUNS DO NOT MATCHED.
+  incompatibleHintDescription: SOME MODZ DEPENDENCIEZ MITE BE MISSING. OR SOME DEPENDENCIEZ VERSHUNS DO NOT MATCHED.
   maybeCompatible: MAYBE COMPATIBLE.
   modloaderSelectHint: TEH MOD SUPPORT FOLLOWING MOD LOADERZ. PLZ PICK ONE TO INSTALL.
   modloaderSelectNotSupported: NOT FOUND {modloader} FUR MINECWAFT {minecraft}
@@ -735,11 +690,9 @@ modFilter:
   incompatibleOnly: ONLY SHOW INCOMPATIBLE OR MISSING DEPENDENCIEZ MISSING MODZ
   unusedOnly: ONLY SHOW UNUSED LIBRAWRIES MODZ
 modInstall:
-  archived: >-
-    {name} HAZ BEEN ARCHIVED. {name} WILL NOT RECEIV ANY FURTHER UPDATS UNLESS DA AUTHOR DECIDES TO UNARCHIVE DA PROJECT.
+  archived: '{name} HAZ BEEN ARCHIVED. {name} WILL NOT RECEIV ANY FURTHER UPDATS UNLESS DA AUTHOR DECIDES TO UNARCHIVE DA PROJECT.'
   autoUpgrade:
-    description: >-
-      U HAZ CHANGED DA MINECWAFT VERSHUN. WOULD U LIKE TO AUTOMATICALLY UPDAT COMPATIBLE MODZ TO VERSHUNS THAT MATCH MINECWAFT {version}?
+    description: U HAZ CHANGED DA MINECWAFT VERSHUN. WOULD U LIKE TO AUTOMATICALLY UPDAT COMPATIBLE MODZ TO VERSHUNS THAT MATCH MINECWAFT {version}?
     'no': SKIP
     title: UPDAT MODZ?
     'yes': UPDAT MODZ
@@ -776,8 +729,7 @@ modpack:
   author: AUTHOR NAME
   authorHint: THIS MITE BE USED TO SIGN AN EXPORTED MODPACK (CURSEFORGE)
   description: DESCRIPSHUN
-  descriptionHint: >-
-    GENERAL DESCRIPSHUN FUR U MODPACK. MITE BE USED FUR EXPORTING AS CURSEFORGE MODPACK.
+  descriptionHint: GENERAL DESCRIPSHUN FUR U MODPACK. MITE BE USED FUR EXPORTING AS CURSEFORGE MODPACK.
   dropHint: DROP MODPACK ZIP TO HERE TO IMPORT
   emitCurseforge: EXPORT CURSEFORGE MODPACK
   emitModrinth: EXPORT MODRINTH MODPACK
@@ -797,11 +749,10 @@ modpackImportConfirm:
   description: DETECT U DROP A FILE INTO DA LAWNCHER. ARE U TRYING TO IMPORT A MODPACK?
   title: ARE U TRYING TO IMPORT A MODPACK?
 modpackUpdateOrCreate:
-  createNew: 'Maek noo wan'
-  description: >-
-    An instance "{name}" fur dis modpak already haz. U wants updat it or maek noo wan?
-  title: 'INSTANCE ALREADY HAZ'
-  update: 'Updat old wan'
+  createNew: Maek noo wan
+  description: An instance "{name}" fur dis modpak already haz. U wants updat it or maek noo wan?
+  title: INSTANCE ALREADY HAZ
+  update: Updat old wan
 modrinth:
   browseUrl: OPEN IN BROWSR {url}
   categories:
@@ -926,8 +877,7 @@ modrinth:
   license: LICENSE
   licenses:
     name: LICENSES
-  loginHint: >-
-    TEH OPERASHUN REQUIRES MODRINTH TO PERFORM. TEH LAWNCHER WILL OPEN A BROWSR WINDOW TO LOGIN MODRINTH.
+  loginHint: TEH OPERASHUN REQUIRES MODRINTH TO PERFORM. TEH LAWNCHER WILL OPEN A BROWSR WINDOW TO LOGIN MODRINTH.
   loginTitle: LOGIN TO MODRINTH
   modLoaders:
     name: MOD LOADERS
@@ -971,35 +921,35 @@ multiplayer:
   updateSharedInstanceConfirm: UPDAET AN PLAY
   updateSharedInstanceDescription: SHARED MODZ R DIFFRUNT FROM {instance}. UPDAET DIS INSTANCE TO MATCH TEH HOST BFORE PLAYIN? CHANGED FILEZ WILL BE BAKD UP.
   updateSharedInstanceTitle: UPDAET SHARED INSTANCE?
-  addFunds: "Add moar funds"
-  availableBalance: "Funds nao available"
-  balanceHint: "Usable for XMCL Together servicez"
-  billing: "Billz"
-  billingDescription: "Manage relay access, ur Together Home plan, and payz."
-  billingError: "Together billz cud not load. Try again in a lil moment."
-  buyTogether: "Buy Together"
-  cancelTogether: "Cancel plan"
-  checkout: "Open Waffo checkout"
-  connectionTogetherWarning: "Room member haz been unable to connect to u fur a while. Try XMCL Together to make connectivity better fur everybuddy in teh room. Only teh room master needs Together."
-  masterPurchaseHint: "Only teh room master needs Together Home to make connectivity better fur everybuddy in teh room."
-  natTogetherWarning: "Ur router may haf trouble connecting to teh room master. If connections fail, try XMCL Together to improve connectivity between u and ur frenz. Only teh room master needs to buy Together fur teh room."
-  togetherName: "Minecraft Together"
-  trialDescription: "One 7-day trial with 1 GB relay traffic. Much connect."
-  trialTitle: "Connectivity trial"
-  tryTogether: "Try Together"
-  month: "month"
-  orderStatus: "Waffo order: {status}"
-  planDescription: "20 GB managed relay traffic every month, plus AI troubleshooting fur ur modpack."
-  waffoHint: "Payments happen securely on Waffo Pancake. XMCL never gets ur card number, promise."
+  addFunds: Add moar funds
+  availableBalance: Funds nao available
+  balanceHint: Usable for XMCL Together servicez
+  billing: Billz
+  billingDescription: Manage relay access, ur Together Home plan, and payz.
+  billingError: Together billz cud not load. Try again in a lil moment.
+  buyTogether: Buy Together
+  cancelTogether: Cancel plan
+  checkout: Open Waffo checkout
+  connectionTogetherWarning: Room member haz been unable to connect to u fur a while. Try XMCL Together to make connectivity better fur everybuddy in teh room. Only teh room master needs Together.
+  masterPurchaseHint: Only teh room master needs Together Home to make connectivity better fur everybuddy in teh room.
+  natTogetherWarning: Ur router may haf trouble connecting to teh room master. If connections fail, try XMCL Together to improve connectivity between u and ur frenz. Only teh room master needs to buy Together fur teh room.
+  togetherName: Minecraft Together
+  trialDescription: One 7-day trial with 1 GB relay traffic. Much connect.
+  trialTitle: Connectivity trial
+  tryTogether: Try Together
+  month: month
+  orderStatus: 'Waffo order: {status}'
+  planDescription: 20 GB managed relay traffic every month, plus AI troubleshooting fur ur modpack.
+  waffoHint: Payments happen securely on Waffo Pancake. XMCL never gets ur card number, promise.
   subscription:
-    active: "Active nao"
-    cancelled: "Cancelled nao"
-    payment_due: "Payment due nao"
+    active: Active nao
+    cancelled: Cancelled nao
+    payment_due: Payment due nao
   trial:
-    active: "Trial active nao"
-    available: "Free trial available, yay"
-    expired: "Trial used up"
-    unavailable: "Trial unavailable nao"
+    active: Trial active nao
+    available: Free trial available, yay
+    expired: Trial used up
+    unavailable: Trial unavailable nao
   loginRequiredDescription: P2P multiplayer uses XMCL onlinez. Sign in 2 an XMCL Account 2 continue.
   loginRequiredTitle: Sign in 4 P2P multiplayer
   complete: COMPLETE
@@ -1008,7 +958,7 @@ multiplayer:
   copied: COPIED!
   copy: COPY
   copyGroupToFriendHint: LET UR FRENS JOIN DA GROUP WITH THIS ID
-  copyLocalHint: >
+  copyLocalHint: |
     "PLZ COPY DA LOCAL SDP TEXT AN SEND IT TO UR OBJECT TO HAZ UR OBJECT ENTER THIS TEXT IN DA JOIN CONNEKSHUN <SPAN>A TOKEN CAN BE ONLY USED FUR <SPAN STYLE="COLOR: RED; FONT-WEIGHT: BOLD;">ONE PEER</SPAN>! U CANNOT SEND DA SAME TOKEN TO MULTIPLE PEERS!</SPAN> <BR> <SPAN CLASS="HINT-TEXT" STYLE="FONT-STYLE: ITALIC;">IF U NEED TO CONNECT MULTIPLE PEERS, U NEED TO MAKE <SPAN STYLE="FONT-WEIGHT: BOLD; COLOR: RGBA(245, 158, 11)">MULTIPLE</SPAN> CONNEKSHUNS.</SPAN>"
   createLocalToken: MAKE LOCAL TOKEN
   currentIpTitle: DETECTED PUBLIC IP
@@ -1018,11 +968,10 @@ multiplayer:
   disconnectDescription: ARE U SURE U WANT TO DISCONNECT WITH USER {user}({id})?
   disconnected: DISCONNECTED
   enterRemoteToken: ENTER REMOTE TOKEN
-  enterRemoteTokenHint: >-
-    ONCE UR PEER ENTERS UR TOKEN, U NEED TO ENTER HIS TOKEN TO DA TEXT AREA BELOW. CLICK CONFIRM TO CONNECT.
+  enterRemoteTokenHint: ONCE UR PEER ENTERS UR TOKEN, U NEED TO ENTER HIS TOKEN TO DA TEXT AREA BELOW. CLICK CONFIRM TO CONNECT.
   exposedPortDescription: TEH PORT U EXPOSED TO OTHR PEERS
   exposedPorts: FORWARDED PORTZ
-  gatheringIce: >
+  gatheringIce: |
     "PLZ WAIT FUR DA ICE SERVR TO COLLECT ENOUGH INFORMASHUN ABOUT UR NETWORK. IF U R IMPATIENT AN THERE IS ENOUGH INFORMASHUN, U CAN GIVE DA CURREN SDP TO DA OTHR PARTY IN ADVANCE AN CLICK NEXT PLZ SEND DA <SPAN CLASS="V-CHIP V-CHIP--LABEL V-SIZE--SMALL" STYLE="TEXT-FONT: BOLD" >LOCAL TOKEN</SPAN> TO UR PEER, U PEER ENTER UR TOKEN IN <SPAN CLASS="V-CHIP V-CHIP--LABEL V-SIZE--SMALL" STYLE="TEXT-FONT: BOLD"> JOIN CONNEKSHUN </SPAN> SECSHUN. <BR> TEH ICE SERVR MITE NEED SOME TIME TO COLLECT UR INFO TO MAKE <SPAN CLASS="V-CHIP V-CHIP--LABEL V-SIZE--SMALL" STYLE="TEXT-FONT: BOLD">LOCAL TOKEN</SPAN>.<BR> U DO NOT NEED TO WAIT UNTIL DA ICE STATUS IS COMPLETE. IF DA TOKEN BELOW REMAINS UNCHANGED, U CAN COPY IT AN SEND IT TO UR PEER."
   groupId: GROUP ID
   illegalTokenDescription: BAD TOKEN, PLZ MAKE SURE DA TOKEN FROM UR PEER IS CORRECT
@@ -1032,8 +981,7 @@ multiplayer:
   joinOrCreateGroup: JOIN/MAKE GROUP
   joinOrCreateGroupHint: GET GROUP ID FROM UR FRENS OR MAKE A GROUP
   kernel: P2P KERNEL
-  kernelDescription: >-
-    USE EITHR NATIVE WEBRTC OR NODE-DATACHANNEL. ONLY SWITCH THIS WHEN UR P2P CONNEKSHUN SOMETIME CRASHES DA LAWNCHER WINDOW.
+  kernelDescription: USE EITHR NATIVE WEBRTC OR NODE-DATACHANNEL. ONLY SWITCH THIS WHEN UR P2P CONNEKSHUN SOMETIME CRASHES DA LAWNCHER WINDOW.
   leaveGroup: LEAVE GROUP
   localToken: LOCAL TOKEN
   manualConnect: MANUALLY CONNECT
@@ -1043,8 +991,7 @@ multiplayer:
   otherExposedPortDescription: TEH PORT FORWARDED BY {user}
   placeholder: CONNECT WITH OTHR USERS TO PLAY MINECWAFT ON LAN!
   previous: PREVIOUS
-  receiveHint: >-
-    AFTR DA OTHR PARTY ENTERS UR TOKEN, UR CONNEKSHUN WILL BE CREATED AUTOMATICALLY. NAO U CAN CLOSE DA DIALOG.
+  receiveHint: AFTR DA OTHR PARTY ENTERS UR TOKEN, UR CONNEKSHUN WILL BE CREATED AUTOMATICALLY. NAO U CAN CLOSE DA DIALOG.
   receiveRemoteTokenHint: PLZ ENTER DA TOKEN FROM UR PEER HERE.
   remoteToken: REMOTE TOKEN
   routerInfo: ROUTR INFO
@@ -1054,8 +1001,7 @@ multiplayer:
   start: START
   startNewP2PConnection: CLICK DA START BUTTON TO MAKE A NEW PEER CONNEKSHUN
   connectionError: CONNEKSHN BORKED
-  connectionFailedHint: >-
-    Cant connectz. Bof NAT typez maybe sad.
+  connectionFailedHint: Cant connectz. Bof NAT typez maybe sad.
 myStuff: MAH STUFF
 natType:
   blocked: BLOCKED
@@ -1110,14 +1056,11 @@ quiltVersion:
   empty: QUILT DOES NOT SUPPORT MINECWAFT {version}
 resourcepack:
   linkShared: SHARE UR RESOURCE PACKZ ACROSS ALL INSTANCEZ
-  linkSharedHint: >-
-    LINKZ DIS INSTANCE resourcepacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ
-    CAN HAZ SAME PACKZ. OLD PACKZ GETS MERGD IN2 DA SHARY FOLDR.
+  linkSharedHint: LINKZ DIS INSTANCE resourcepacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ SAME PACKZ. OLD PACKZ GETS MERGD IN2 DA SHARY FOLDR.
   compatible: COMPATIBLE FORMAT {format} WITH {version}
   defaultDescription: TEH DEFAULT LOOK AN FEEL OF MINECWAFT
   delete:
-    content: >-
-      THIS WILL REMOVE DA RESOURC PAK FILE FROM DISK, AN WE CANNOT UNDO IT. ARE U SURE U WANT TO DO THIS?
+    content: THIS WILL REMOVE DA RESOURC PAK FILE FROM DISK, AN WE CANNOT UNDO IT. ARE U SURE U WANT TO DO THIS?
     title: DELET DA RESOURC PAK
   dropHint: DROP RESOURC PAK'S FOLDR/ZIP HERE TO IMPORT.
   enable: '{count} RESOURC PAKS ENABLED'
@@ -1134,34 +1077,31 @@ save:
   resetView: Reset da view
   mapHintPan: Drag 2 move
   map:
-    tabTitle: "Wurld Map"
+    tabTitle: Wurld Map
   progress:
     zoomIn: Zoom in
     zoomOut: Zoom out
-    loading: "Loadin ur progress..."
-    noData: "No progress heer"
-    noDataHint: "Play in dis wurld to get shiny advancements, stats, an quest progress!"
-    quests: "Questz"
-    advancements: "Shiny Advancements"
-    done: "Dun!"
-    inProgress: "Workin on it"
-    all: "All da thingz"
-    treeView: "Tree Viewz"
-    filterPlaceholder: "Find by naem..."
-    root: "Rootz"
-    exitFullscreen: "Leave da big screen"
-    locked: "No can haz yet"
+    loading: Loadin ur progress...
+    noData: No progress heer
+    noDataHint: Play in dis wurld to get shiny advancements, stats, an quest progress!
+    quests: Questz
+    advancements: Shiny Advancements
+    done: Dun!
+    inProgress: Workin on it
+    all: All da thingz
+    treeView: Tree Viewz
+    filterPlaceholder: Find by naem...
+    root: Rootz
+    exitFullscreen: Leave da big screen
+    locked: No can haz yet
   linkShared: SHARE UR SAVEZ ACROSS ALL INSTANCEZ
-  linkSharedHint: >-
-    LINKZ DIS INSTANCE saves FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ
-    SAME WERLDZ. OLD SAVEZ GETS MERGD IN2 DA SHARY FOLDR.
+  linkSharedHint: LINKZ DIS INSTANCE saves FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ SAME WERLDZ. OLD SAVEZ GETS MERGD IN2 DA SHARY FOLDR.
   allowCheats: ALLOW CHEATS
   copy:
     name: COPY SAVE
   createNew: MAKE NEW WORLD
   createdWorlds: U HAZ {count} WORLDZ
-  deleteHint: >-
-    THIS OPERASHUN CANNOT BE REVERTED. U WILL LOSE DA SAVE DATA FOREVR. ARE U SURE U WANT TO DELET THIS SAVE?
+  deleteHint: THIS OPERASHUN CANNOT BE REVERTED. U WILL LOSE DA SAVE DATA FOREVR. ARE U SURE U WANT TO DELET THIS SAVE?
   deleteTitle: DELET DA SAVE
   difficulty: DIFFICULTY
   dropHint: DRAG SAVE ZIP HERE TO IMPORT
@@ -1190,6 +1130,7 @@ save:
   openFolder: Open savez fldr
   searchHint: Sniff worldz on CurseForge
   searchSaves: Sniff savez
+  empty: No worlds found
 screenshots:
   empty: U DONT HAZ ANY SCREENSHOTS
   playRandom: SHUFFLE
@@ -1385,11 +1326,9 @@ setting:
   about: ABOUT
   aboutBmclDescription: BMCL API PROVIDEZ CONVENEENT DOWNLODZ FUR USRZ IN CHINEEZ MAINLUND
   aboutContributors: 🧑‍💻 CONTRUBUTORS 🧑‍💻
-  aboutDenoDescription: >-
-    XMCL LEVERAGEZ DENO DEPLOY'S HASSEL-FRU PLATFURM FUR SERVERLUS JAVASCRIPT APPLICASHUNZ
+  aboutDenoDescription: XMCL LEVERAGEZ DENO DEPLOY'S HASSEL-FRU PLATFURM FUR SERVERLUS JAVASCRIPT APPLICASHUNZ
   aboutLicense: MIT LICENSE
-  aboutLicenseInfo: >-
-    FRU CUD SINING ON WUNDUZ PROVDED BI SIGNPATH.IO, CERTIFICAT BI SIGNPATH FUNDASHUN
+  aboutLicenseInfo: FRU CUD SINING ON WUNDUZ PROVDED BI SIGNPATH.IO, CERTIFICAT BI SIGNPATH FUNDASHUN
   aboutSponsors: 😇 SPONORZ 😇
   advancedJavaOptions: ADVANCED JAVA OPSHUNS
   advancedSettings: ADVANCED SETTINGZ
@@ -1399,8 +1338,7 @@ setting:
     official: OFFISHUL (MOJANG)
   appearance: APPEARANCE
   appearanceDescription: CUSTOMIZE DA LAUNCHER APPEARANCE
-  appxUpdateHint: >-
-    TEH LAWNCHER WILL DOWNLOD AN EXECUTE INSTALLR. IF POPUP INSTALLR FAILED, PLZ RUN IT MANUALLY.
+  appxUpdateHint: TEH LAWNCHER WILL DOWNLOD AN EXECUTE INSTALLR. IF POPUP INSTALLR FAILED, PLZ RUN IT MANUALLY.
   authenticationSettings: AUTHENTICASHUN
   backdropBlur: BACKDROP BLUR
   backgroundColorAbove: SHOW BACKGROUND COLOR AS OVERLAY
@@ -1459,16 +1397,14 @@ setting:
   general: GENERAL
   githubRelease: GITHUB RELEASE
   globalJava: Favrit Java
-  globalJavaHint: "In auto moad dis Java getz tride furst, an only fallz bak to auto-detekshun when it no can play nice wif teh gaem verzhun."
+  globalJavaHint: In auto moad dis Java getz tride furst, an only fallz bak to auto-detekshun when it no can play nice wif teh gaem verzhun.
   globalSetting: GLOBAL INSTANCE SETTING
   globalSettingHint: INSTANCE WILL USE THESE SETTINGZ BY DEFAULT.
   importSettings: IMPORT SETTINGZ
   importSettingsHint: LOAD SETTINGZ FROM A PREVIOUSLY EXPORTED FILE
   instanceTheme:
-    activeDescription: >-
-      THIS INSTANCE IS USING A CUSTOM THEEM. U CAN DELET IT TO USE DA GLOBAL THEEM.
-    description: >-
-      ENABL A CUSTOM THEEM FUR THIS INSTANCE. THIS WILL MAKE A COPY OF DA CURREN GLOBAL THEEM.
+    activeDescription: THIS INSTANCE IS USING A CUSTOM THEEM. U CAN DELET IT TO USE DA GLOBAL THEEM.
+    description: ENABL A CUSTOM THEEM FUR THIS INSTANCE. THIS WILL MAKE A COPY OF DA CURREN GLOBAL THEEM.
     name: INSTANCE THEEM
   language: LANGUAG
   languageDescription: TEH DISPLAY LANGUAG
@@ -1483,13 +1419,10 @@ setting:
   linuxTitlebar: NATIVE TITLE BAR
   linuxTitlebarDescription: USE NATIVE LINUX TITLE BAR FUR LAUNCHER
   location: STORE LOCASHUN
-  manualUpdateHint: >-
-    TEH VERSHUN CANNOT BE UPDATED AUTOMATICALLY. PLZ DOWNLOD DA LAUNCHER AGAIN FROM DA OFFISHUL WEBSITE!
-  maunalUpdateHint: >-
-    TEH VERSHUN CANNOT BE AUTO-UPDATED. PLZ REDOWNLOD DA LAUNCHER FROM DA WEBSITE!
+  manualUpdateHint: TEH VERSHUN CANNOT BE UPDATED AUTOMATICALLY. PLZ DOWNLOD DA LAUNCHER AGAIN FROM DA OFFISHUL WEBSITE!
+  maunalUpdateHint: TEH VERSHUN CANNOT BE AUTO-UPDATED. PLZ REDOWNLOD DA LAUNCHER FROM DA WEBSITE!
   maxSockets: PER HOST
-  maxSocketsDescription: >-
-    LIMIT DA MAXIMUM NUMBR OF SOCKETS TO ALLOW PER HOST OR FUR ALL HOSTS IN TOTAL. 0 MEANS NO LIMIT.
+  maxSocketsDescription: LIMIT DA MAXIMUM NUMBR OF SOCKETS TO ALLOW PER HOST OR FUR ALL HOSTS IN TOTAL. 0 MEANS NO LIMIT.
   maxSocketsTitle: MAX HTTP SOCKETS
   memoryAssignment: MEMRY ASSIGNMENT
   migrateFromOther: IMPORT FROM OTHR LAUNCHER
@@ -1512,8 +1445,7 @@ setting:
     all: ALL
     legacy: LEGACY VERSHUN ONLY
   resetAllSettings: RESET ALL SETTINGZ
-  resetAllSettingsConfirmMessage: >-
-    THIS WILL PERMANENTLY DELET ALL SETTINGZ, ACCOUNTS, INSTANCES, GROUPS, AN CACHED DATA. THIS ACSHUN CANNOT BE UNDONE. U SURE?
+  resetAllSettingsConfirmMessage: THIS WILL PERMANENTLY DELET ALL SETTINGZ, ACCOUNTS, INSTANCES, GROUPS, AN CACHED DATA. THIS ACSHUN CANNOT BE UNDONE. U SURE?
   resetAllSettingsConfirmTitle: RESET ALL SETTINGZ?
   resetAllSettingsHint: RESET LAUNCHER TO FACTORY DEFAULTS (DELETES EVRYTHING)
   resetAllSettingsSuccess: ALL SETTINGZ HAZ BEEN RESET. TEH LAUNCHER WILL RESTART.
@@ -1556,8 +1488,7 @@ setting:
   themeShareDescription: U CAN SHARE DA THEEM WITH UR FREN.
   update: UPDAT
   useBmclAPI: USE BMCL API
-  useBmclAPIDescription: >-
-    USE BMCLAPI TO DOWNLOD MINECWAFT WHEN U R IN CHINESE MAINLAND. (THIS WONT AFFECT U IF U R NOT IN CHINESE MAINLAND)
+  useBmclAPIDescription: USE BMCLAPI TO DOWNLOD MINECWAFT WHEN U R IN CHINESE MAINLAND. (THIS WONT AFFECT U IF U R NOT IN CHINESE MAINLAND)
   useProxy: HTTP PROXY
   useProxyDescription: TEH PROXY SERVR ADDWESS FUR DA HTTP REQUEST
   viewBackgroundMusic: VUE MUSICS
@@ -1580,37 +1511,28 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: >-
-      TEH DATA ROOT IS NOT A COMMON .MINECRAFT DIRECTORY. SINCE XMCL DATA DIRECTORY STRUCTURE IS DIFFERENT FROM VANILLA, WE DO NOT RECOMMEND TO USE DA COMMON .MINECRAFT DIRECTORY AS A DATA ROOT.
+    description: TEH DATA ROOT IS NOT A COMMON .MINECRAFT DIRECTORY. SINCE XMCL DATA DIRECTORY STRUCTURE IS DIFFERENT FROM VANILLA, WE DO NOT RECOMMEND TO USE DA COMMON .MINECRAFT DIRECTORY AS A DATA ROOT.
     drives: RECOMMEND LOCASHUNS
     name: SET DATA DIRECTORY
-  defaultLayoutDescription: >-
-    TEH DEFAULT LAYOUT IS TRYING TO ENHANCE DA GAME "INSTANCE" CONCEPT. IT LOOKS LIKE APPS LIKE DISCORD. ITS ALSO INSPIRED BY OTHR GAME LAUNCHER APPS LIKE STEAM, ETC.
+  defaultLayoutDescription: TEH DEFAULT LAYOUT IS TRYING TO ENHANCE DA GAME "INSTANCE" CONCEPT. IT LOOKS LIKE APPS LIKE DISCORD. ITS ALSO INSPIRED BY OTHR GAME LAUNCHER APPS LIKE STEAM, ETC.
   defaultPath: DEFAULT PATH
   error:
     badDataRoot: INVALID DIRECTORY FUR LAUNCHER DATA! PLZ TRY ANOTHR DIRECTORY!
-    exists: >-
-      SELECTED DIRECTORY IS NOT EMPTY. ITS OKAY BUT PLZ MAKE SURE U BACKUP UR DATA.
-    invalidChar: >-
-      PATH CONTAINS INVALID CHARACTRZ! IT CUD CAUSE MINECWAFT FAIL TO START! PLAESE ONLY USE ENGLISH CHARACTRZ AN SYMBOL!
-    noPermission: >-
-      LAUNCHER DOES NOT HAZ PERMISHUN TO ACCESS SELECTED DIRECTORY! PLZ TRY ANOTHR ONE.
+    exists: SELECTED DIRECTORY IS NOT EMPTY. ITS OKAY BUT PLZ MAKE SURE U BACKUP UR DATA.
+    invalidChar: PATH CONTAINS INVALID CHARACTRZ! IT CUD CAUSE MINECWAFT FAIL TO START! PLAESE ONLY USE ENGLISH CHARACTRZ AN SYMBOL!
+    noPermission: LAUNCHER DOES NOT HAZ PERMISHUN TO ACCESS SELECTED DIRECTORY! PLZ TRY ANOTHR ONE.
     nonDictionary: SELECTED PATH IS A FILE! PLZ PICK A DIRECTORY!
-  focusLayoutDescription: >-
-    TEH FOCUS LAYOUT IS DA LEGACY LAYOUT OF DA MINECWAFT LAUNCHER. IT IS DESIGNED TO BE USED WITH A SINGLE INSTANCE OR FEW INSTANCES.
+  focusLayoutDescription: TEH FOCUS LAYOUT IS DA LEGACY LAYOUT OF DA MINECWAFT LAUNCHER. IT IS DESIGNED TO BE USED WITH A SINGLE INSTANCE OR FEW INSTANCES.
   game:
     name: IMPORT EXISTING GAME
   locale:
-    description: >-
-      PICK UR PREFERRED LANGUAG IF WE HAZ IT! IF U DONT SEE UR NATIVE LANGUAG AN U WANT TO HALP, U CAN VISIT OUR GITHUB TO SUBMIT PULL REQUESTS TO TRANSLATE!
+    description: PICK UR PREFERRED LANGUAG IF WE HAZ IT! IF U DONT SEE UR NATIVE LANGUAG AN U WANT TO HALP, U CAN VISIT OUR GITHUB TO SUBMIT PULL REQUESTS TO TRANSLATE!
     language: LANGUAG
     name: SET LANGUAG
   path: CURREN PATH
 shaderPack:
   linkShared: SHARE UR SHADR PACKZ ACROSS ALL INSTANCEZ
-  linkSharedHint: >-
-    LINKZ DIS INSTANCE shaderpacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ
-    CAN HAZ SAME SHADRZ. OLD PACKZ GETS MERGD IN2 DA SHARY FOLDR.
+  linkSharedHint: LINKZ DIS INSTANCE shaderpacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ SAME SHADRZ. OLD PACKZ GETS MERGD IN2 DA SHARY FOLDR.
   disabled: DISABLED SHADER PAKS
   dropHint: IMPORT SHADER PAK
   empty: NO SHADER PAK ALLOCATED
@@ -1628,6 +1550,7 @@ shaderPack:
   market: Shadr Markit
   noPacks: No shadr packz instold
   search: Sniff shadr packz...
+  'off': 'Off'
 shared:
   close: Close dis
   pressKeyCombination: PRESS KEY COMBO...
@@ -1824,12 +1747,10 @@ tutorial:
 universalDrop:
   unknownResource: UNKNOWN
 unresolvedFiles:
-  description: >-
-    Deez filez cudnt b downloaded durin install. Sniff out a matchin sourse,
-    install da matchez, or ignor filez 2 launch anyway.
+  description: Deez filez cudnt b downloaded durin install. Sniff out a matchin sourse, install da matchez, or ignor filez 2 launch anyway.
   empty: All filez r rezolvd! Yay!
-  ignoreSelected: 'Ignor {count}'
-  install: 'Install {count} matchd'
+  ignoreSelected: Ignor {count}
+  install: Install {count} matchd
   matched: Matchd
   noMatch: No findz
   search: Sniff sourcez
@@ -1839,7 +1760,7 @@ unresolvedFiles:
     modrinth-hash: Modrinth hash
     modrinth-name: Modrinth
   title: Unrezolvd Filez
-  via: 'via {source}'
+  via: via {source}
 upstream:
   downgrade: DOWNGRADE
   onlyShowCurrentVersion: ONLY SHOW CURREN MINECWAFT VERSHUN
@@ -1861,8 +1782,7 @@ userAccount:
   removeTitle: REMOVE ACCOUNT
 userCape:
   changeTitle: CHANGE UR CAPE
-  description: >-
-    CAPES ARE SPECIAL REWARDZ PLAYRZ CAN UNLOCK THROUGH DIFFERENT EVENTZ, CAMPAIGNS, AN OTHR HAPPY HAPPENINGS. HERE U CAN PICK BETWEEN DA CAPES U CURRENTLY OWN:
+  description: 'CAPES ARE SPECIAL REWARDZ PLAYRZ CAN UNLOCK THROUGH DIFFERENT EVENTZ, CAMPAIGNS, AN OTHR HAPPY HAPPENINGS. HERE U CAN PICK BETWEEN DA CAPES U CURRENTLY OWN:'
   noCape: NO CAPE
 userService:
   add: ADD MORE SERVICEZ
@@ -1969,7 +1889,6 @@ migrateMinecraft:
   name: Migrate Minecraft Filez
 reinstall:
   name: Reinstol {version}
-
 blueprint:
   name: BlooPrint | BlooPrints
   count: '{count} blooPrints'
@@ -2017,3 +1936,156 @@ blueprint:
     action: Replace
   formats:
     structure: Vanilla Structure
+gamepad:
+  connected: Controller Connected
+  guideTitle: Controller Controls
+  enableSwitchLabel: Gamepad Controls
+  enabledState: Enabled
+  disabledState: Disabled
+  toggle: Toggle
+  disabledNotify: Gamepad controls disabled.
+  disconnected: Controller Disconnected
+  enabledNotify: Gamepad controls enabled! Use D-pad/Left stick to navigate, {btnA} to select, {btnB} to go back.
+  guide:
+    confirm: Select
+    navigate: Navigate
+    tabs: Switch tabs
+    sections: Switch sections
+    launch: Launch game
+    instanceSettings: Instance settings
+  modSuggestTitle: Controller Mod
+  modSuggestBody: To use your gamepad inside Minecraft, a controller mod is recommended. Would you like to install the appropriate mod for your modloader?
+  modInstall: Install Mod
+  modSkip: Skip
+  modDone: Done
+  modInstalled: Controller mod installed successfully! It will be active next time you launch Minecraft.
+  modInstalledNotify: '{name} has been installed for in-game controller support.'
+  modNotFound: No compatible version found for {loader} on Minecraft {version}.
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+  settingSteamTitle: Add Launcher to Steam
+  steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
+  steamAlreadyAddedNotify: Launcher is already in your Steam Library.
+  steamDeckTitle: Steam Deck Detected
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckAddBtn: Add to Steam ({btn})
+  steamDeckCancelBtn: Cancel ({btn})
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

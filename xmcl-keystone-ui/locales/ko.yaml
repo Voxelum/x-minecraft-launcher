@@ -504,14 +504,10 @@ instances:
   edition: 에디션
   editionJava: 자바 에디션
   editionBedrock: 베드락 에디션
-  editionBedrockHint: >-
-    베드락 에디션은 Microsoft Store 앱을 통해 실행됩니다. 베드락 라이선스를 소유해야 합니다. 모드, 리소스 팩 및 기타 자바
-    전용 기능은 사용할 수 없습니다.
+  editionBedrockHint: 베드락 에디션은 Microsoft Store 앱을 통해 실행됩니다. 베드락 라이선스를 소유해야 합니다. 모드, 리소스 팩 및 기타 자바 전용 기능은 사용할 수 없습니다.
   editionBedrockWindowsOnly: 베드락 에디션은 Windows 빌드에서만 지원됩니다.
   linkSharedFolders: 인스턴스 간에 폴더 공유
-  linkSharedFoldersHint: >-
-    이 폴더들을 런처의 공유 폴더에 대한 링크로 만들어 이 인스턴스가 연결된 다른 모든 인스턴스와 내용을 공유하도록 합니다. 이것은 복사가
-    아닙니다. 한 인스턴스에서 변경한 내용이 모든 인스턴스에 나타납니다. 선택하지 않은 폴더는 이 인스턴스 전용으로 유지됩니다.
+  linkSharedFoldersHint: 이 폴더들을 런처의 공유 폴더에 대한 링크로 만들어 이 인스턴스가 연결된 다른 모든 인스턴스와 내용을 공유하도록 합니다. 이것은 복사가 아닙니다. 한 인스턴스에서 변경한 내용이 모든 인스턴스에 나타납니다. 선택하지 않은 폴더는 이 인스턴스 전용으로 유지됩니다.
   linkFailed: '{folder} 폴더를 공유 폴더에 연결하지 못했습니다'
   addPrismDescription: 기존 PrismLauncher 인스턴스 가져오기.
   folder: 폴더
@@ -976,35 +972,35 @@ multiplayer:
   updateSharedInstanceConfirm: 업데이트 후 실행
   updateSharedInstanceDescription: 공유된 모드가 {instance}와 다릅니다. 실행하기 전에 이 인스턴스를 호스트와 일치하도록 업데이트할까요? 기존에 변경된 파일은 백업됩니다.
   updateSharedInstanceTitle: 공유 인스턴스를 업데이트할까요?
-  addFunds: "잔액 추가"
-  availableBalance: "사용 가능 잔액"
-  balanceHint: "XMCL Together 서비스에 사용 가능"
-  billing: "결제"
-  billingDescription: "릴레이 액세스, Together Home 플랜 및 결제를 관리합니다."
-  billingError: "Together 결제를 불러오지 못했습니다. 잠시 후 다시 시도하세요."
-  buyTogether: "Together 구매"
-  cancelTogether: "플랜 취소"
-  checkout: "Waffo 결제 열기"
-  connectionTogetherWarning: "방 구성원 한 명이 한동안 사용자에게 연결하지 못하고 있습니다. 방의 모든 구성원이 더 원활하게 연결되도록 XMCL Together를 사용해 보세요. Together는 방장만 필요합니다."
-  masterPurchaseHint: "방의 모든 구성원이 더 원활하게 연결되도록 Together Home은 방장만 필요합니다."
-  natTogetherWarning: "라우터가 방장에게 연결하는 데 문제가 있을 수 있습니다. 연결에 실패하면 사용자와 친구들의 연결을 개선하기 위해 XMCL Together를 사용해 보세요. 이 방에서 Together를 구매해야 하는 사람은 방장뿐입니다."
-  togetherName: "Minecraft Together"
-  trialDescription: "1 GB 릴레이 트래픽이 포함된 7일 체험판 1회입니다."
-  trialTitle: "연결성 체험판"
-  tryTogether: "Together 사용해 보기"
-  month: "개월"
-  orderStatus: "Waffo 주문: {status}"
-  planDescription: "매월 20 GB의 관리형 릴레이 트래픽과 모드팩 문제 해결을 위한 AI 지원을 제공합니다."
-  waffoHint: "결제는 Waffo Pancake에서 안전하게 처리됩니다. XMCL은 카드 번호를 받지 않습니다."
+  addFunds: 잔액 추가
+  availableBalance: 사용 가능 잔액
+  balanceHint: XMCL Together 서비스에 사용 가능
+  billing: 결제
+  billingDescription: 릴레이 액세스, Together Home 플랜 및 결제를 관리합니다.
+  billingError: Together 결제를 불러오지 못했습니다. 잠시 후 다시 시도하세요.
+  buyTogether: Together 구매
+  cancelTogether: 플랜 취소
+  checkout: Waffo 결제 열기
+  connectionTogetherWarning: 방 구성원 한 명이 한동안 사용자에게 연결하지 못하고 있습니다. 방의 모든 구성원이 더 원활하게 연결되도록 XMCL Together를 사용해 보세요. Together는 방장만 필요합니다.
+  masterPurchaseHint: 방의 모든 구성원이 더 원활하게 연결되도록 Together Home은 방장만 필요합니다.
+  natTogetherWarning: 라우터가 방장에게 연결하는 데 문제가 있을 수 있습니다. 연결에 실패하면 사용자와 친구들의 연결을 개선하기 위해 XMCL Together를 사용해 보세요. 이 방에서 Together를 구매해야 하는 사람은 방장뿐입니다.
+  togetherName: Minecraft Together
+  trialDescription: 1 GB 릴레이 트래픽이 포함된 7일 체험판 1회입니다.
+  trialTitle: 연결성 체험판
+  tryTogether: Together 사용해 보기
+  month: 개월
+  orderStatus: 'Waffo 주문: {status}'
+  planDescription: 매월 20 GB의 관리형 릴레이 트래픽과 모드팩 문제 해결을 위한 AI 지원을 제공합니다.
+  waffoHint: 결제는 Waffo Pancake에서 안전하게 처리됩니다. XMCL은 카드 번호를 받지 않습니다.
   subscription:
-    active: "활성"
-    cancelled: "취소됨"
-    payment_due: "결제 기한 도래"
+    active: 활성
+    cancelled: 취소됨
+    payment_due: 결제 기한 도래
   trial:
-    active: "체험 활성"
-    available: "무료 체험 사용 가능"
-    expired: "체험판 사용됨"
-    unavailable: "체험판 사용 불가"
+    active: 체험 활성
+    available: 무료 체험 사용 가능
+    expired: 체험판 사용됨
+    unavailable: 체험판 사용 불가
   loginRequiredDescription: P2P 멀티플레이어는 XMCL 온라인 서비스를 사용합니다. 계속하려면 XMCL 계정에 로그인하세요.
   loginRequiredTitle: P2P 멀티플레이어 로그인
   complete: 완료
@@ -1132,23 +1128,23 @@ resourcepack:
   noPacksInstalled: 설치된 리소스 팩이 없습니다.
 save:
   map:
-    tabTitle: "세계 지도"
+    tabTitle: 세계 지도
   progress:
     zoomIn: 확대
     zoomOut: 축소
-    loading: "진행 상황 불러오는 중…"
-    noData: "진행 상황이 없습니다"
-    noDataHint: "이 세계에서 플레이하면 발전 과제, 통계 및 퀘스트 진행 상황이 기록됩니다."
-    quests: "퀘스트"
-    advancements: "발전 과제"
-    done: "완료"
-    inProgress: "진행 중"
-    all: "전체"
-    treeView: "트리 보기"
-    filterPlaceholder: "이름으로 필터링…"
-    root: "시작점"
-    exitFullscreen: "전체 화면 종료"
-    locked: "잠김"
+    loading: 진행 상황 불러오는 중…
+    noData: 진행 상황이 없습니다
+    noDataHint: 이 세계에서 플레이하면 발전 과제, 통계 및 퀘스트 진행 상황이 기록됩니다.
+    quests: 퀘스트
+    advancements: 발전 과제
+    done: 완료
+    inProgress: 진행 중
+    all: 전체
+    treeView: 트리 보기
+    filterPlaceholder: 이름으로 필터링…
+    root: 시작점
+    exitFullscreen: 전체 화면 종료
+    locked: 잠김
   linkShared: 인스턴스 간 세이브 공유
   linkSharedHint: 이 인스턴스의 saves 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 월드를 공유하도록 합니다. 기존 세이브는 공유 폴더로 병합됩니다.
   copy:
@@ -1217,6 +1213,7 @@ save:
   useMouseRotate: 마우스로 화면 회전
   useScrollZoom: 마우스 휠로 확대/축소
   world: 월드
+  empty: No worlds found
 screenshots:
   empty: 스크린샷이 없습니다
   playRandom: 무작위 재생
@@ -1476,7 +1473,7 @@ setting:
   general: 일반
   githubRelease: Github 릴리스
   globalJava: 선호하는 Java
-  globalJavaHint: "자동 모드에서 이 Java를 먼저 시도하고, 게임 버전과 호환되지 않을 때만 자동 감지로 대체합니다."
+  globalJavaHint: 자동 모드에서 이 Java를 먼저 시도하고, 게임 버전과 호환되지 않을 때만 자동 감지로 대체합니다.
   globalSetting: 전체 인스턴스 설정
   globalSettingHint: 인스턴스는 기본적으로 이 설정을 사용합니다.
   importSettings: 설정 가져오기
@@ -1660,6 +1657,7 @@ shaderPack:
   search: 셰이더 팩 검색...
   noLocalPacksFound: 검색어와 일치하는 로컬 셰이더 팩을 찾을 수 없습니다.
   noPacksInstalled: 설치된 셰이더 팩이 없습니다.
+  'off': 'Off'
 shared:
   pressKeyCombination: 키 조합을 누르세요...
   add: 추가
@@ -2164,3 +2162,125 @@ gamepad:
   steamDeckDesc: Steam Deck에서 실행 중임이 감지되었습니다. 게이밍 모드에서 온전한 Steam 오버레이 및 컨트롤러 연동을 위해 X Minecraft 런처를 Steam 라이브러리에 비 Steam 게임으로 추가하시겠습니까?
   steamDeckAddBtn: Steam에 추가 ({btn})
   steamDeckCancelBtn: 취소 ({btn})
+  disconnected: Controller Disconnected
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

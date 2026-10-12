@@ -37,7 +37,7 @@
       data-testid="gamepad-toggle-card"
     >
       <div class="gp-qm-card__title">
-        <v-icon size="18" class="mr-2">{{ isPlayStation ? 'sports_esports' : 'videogame_asset' }}</v-icon>
+        <v-icon size="18" class="mr-2">sports_esports</v-icon>
         {{ gamepadName || (isPlayStation ? 'PlayStation Controller' : 'Xbox / Steam Deck Controller') }}
       </div>
 
@@ -109,6 +109,20 @@
         />
       </div>
 
+      <div
+        class="gp-qm-switch cursor-pointer mt-2"
+        :class="{ 'gp-qm-switch--focused': zone === 'switch' && switchIndex === 4 }"
+        @click="onEnterBigPicture"
+      >
+        <div class="gp-qm-switch__text">
+          <div class="gp-qm-switch__label flex items-center gap-1">
+            <v-icon size="16" color="primary">tv</v-icon>
+            {{ t('bigPicture.enter') }}
+          </div>
+        </div>
+        <v-icon size="18" color="primary">chevron_right</v-icon>
+      </div>
+
       <div v-if="!enabled" class="gp-qm-hints">
         <span class="gp-qm-hint"><span class="gp-btn__key">{{ buttonALabel }}</span> {{ t('gamepad.toggle') }}</span>
         <span class="gp-qm-hint"><span class="gp-btn__key">{{ buttonBLabel }}</span> {{ t('shared.back') }}</span>
@@ -124,10 +138,17 @@ import { useNotifier } from '@/composables/notifier'
 import { useCommandPaletteVisible } from '@/composables/commandPalette'
 import { injection } from '@/util/inject'
 import { useGamepad } from '@/composables/gamepad'
+import { useBigPicture } from '@/composables/bigPicture'
 import './gamepad.css'
 
 const { t } = useI18n()
 const { notify } = useNotifier()
+const { enterBigPicture } = useBigPicture()
+
+function onEnterBigPicture() {
+  close()
+  enterBigPicture()
+}
 
 const gamepad = useGamepad()
 const enabled = gamepad.enabled
@@ -179,7 +200,7 @@ function close() {
 type Zone = 'list' | 'switch'
 const zone = ref<Zone>('list')
 const switchIndex = ref<number>(0)
-const SWITCH_COUNT = 4
+const SWITCH_COUNT = 5
 
 const paletteInput = () => document.querySelector<HTMLElement>('.palette-card input')
 
@@ -257,6 +278,9 @@ function toggleCurrentSwitch() {
       break
     case 3:
       disableModPrompt.value = !disableModPrompt.value
+      break
+    case 4:
+      onEnterBigPicture()
       break
   }
 }

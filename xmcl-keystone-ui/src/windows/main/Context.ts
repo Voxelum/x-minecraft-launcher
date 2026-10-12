@@ -7,6 +7,7 @@ import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
+import { kBigPicture, useBigPicture } from '@/composables/bigPicture'
 import { kInstanceBlueprints, useInstanceBlueprints } from '@/composables/instanceBlueprints'
 import {
   kInstanceDefaultSource,
@@ -131,9 +132,11 @@ export default defineComponent({
     const serverInfo = useInstanceServerInfo(instance.path)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
+    const bigPicture = useBigPicture()
+    provide(kBigPicture, bigPicture)
     const blueprints = useInstanceBlueprints(
       instance.path,
-      computed(() => router.currentRoute.value.meta.blueprintState === true),
+      computed(() => router.currentRoute.value.meta.blueprintState === true || bigPicture.isBigPicture.value),
     )
     const shaderPacks = useInstanceShaderPacks(
       instance.path,
