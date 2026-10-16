@@ -156,9 +156,67 @@ export function vibrateGamepad(options?: GamepadRumbleOptions) {
  */
 const useSharedGamepads = createGlobalState(() => useBrowserGamepad())
 
+export function isNonGamepadDevice(id: string): boolean {
+  const s = (id || '').toLowerCase()
+  return (
+    s.includes('mouse') ||
+    s.includes('keyboard') ||
+    s.includes('touch') ||
+    s.includes('pen') ||
+    s.includes('tablet') ||
+    s.includes('sensor') ||
+    s.includes('headset') ||
+    s.includes('audio') ||
+    s.includes('macro') ||
+    s.includes('consumer control') ||
+    s.includes('system control') ||
+    s.includes('trackball') ||
+    s.includes('gyro')
+  )
+}
+
 export function isVirtualGamepad(id: string): boolean {
   const s = (id || '').toLowerCase()
-  return s.includes('vjoy') || s.includes('virtual joystick') || s.includes('virtual gamepad')
+  return (
+    s.includes('vjoy') ||
+    s.includes('virtual joystick') ||
+    s.includes('virtual gamepad') ||
+    s.includes('vgamepad') ||
+    s.includes('virtual controller')
+  )
+}
+
+export function isRealGamepad(g: Gamepad): boolean {
+  if (!g || !g.connected) return false
+  const id = g.id || ''
+  if (isVirtualGamepad(id) || isNonGamepadDevice(id)) return false
+
+  // Standard mapping with sufficient buttons (standard gamepads have at least 10 buttons)
+  if (g.mapping === 'standard' && g.buttons.length >= 10) return true
+
+  // Or matches known controller types with at least 4 buttons
+  const s = id.toLowerCase()
+  const isKnownController = (
+    s.includes('xbox') ||
+    s.includes('playstation') ||
+    s.includes('dualshock') ||
+    s.includes('dualsense') ||
+    s.includes('switch') ||
+    s.includes('joy-con') ||
+    s.includes('wii') ||
+    s.includes('steam deck') ||
+    s.includes('valve') ||
+    s.includes('8bitdo') ||
+    s.includes('gamepad') ||
+    s.includes('controller') ||
+    s.includes('logitech gamepad') ||
+    s.includes('f310') ||
+    s.includes('f710') ||
+    s.includes('stadia') ||
+    s.includes('luna')
+  )
+
+  return isKnownController && g.buttons.length >= 4
 }
 
 /** The pad we treat as "the controller": prioritize real physical controllers over virtual ones. */
@@ -167,11 +225,11 @@ function pickGamepad(pads: readonly Gamepad[]): Gamepad | undefined {
   if (connectedPads.length === 0) return undefined
 
   // 1. Prefer physical standard-mapped controllers
-  const physicalStandard = connectedPads.find((g) => !isVirtualGamepad(g.id) && g.mapping === 'standard')
+  const physicalStandard = connectedPads.find((g) => isRealGamepad(g) && g.mapping === 'standard')
   if (physicalStandard) return physicalStandard
 
-  // 2. Prefer any physical controller (including non-standard like Wii Remote, DirectInput pads)
-  const physicalAny = connectedPads.find((g) => !isVirtualGamepad(g.id))
+  // 2. Prefer any real physical controller (including non-standard like Wii Remote, DirectInput pads)
+  const physicalAny = connectedPads.find((g) => isRealGamepad(g))
   if (physicalAny) return physicalAny
 
   // If ONLY virtual joysticks (like vJoy) are connected, do NOT automatically pick them
@@ -720,7 +778,7 @@ const useGamepadCore = createGlobalState(() => {
   watch(
     () => gamepads.value,
     (pads) => {
-      const real = pads.some((g) => g && g.connected && !isVirtualGamepad(g.id))
+      const real = pads.some((g) => g && isRealGamepad(g))
       if (real) {
         hasEverConnectedGamepad.value = true
       }
