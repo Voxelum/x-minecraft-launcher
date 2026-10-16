@@ -1,7 +1,7 @@
 <template>
   <v-list-item
     v-context-menu="getContextMenuItems"
-    v-shared-tooltip="() => ({ text: tooltip, color: hasUpdate ? 'primary' : 'black' })"
+    v-shared-tooltip="() => ({ text: tooltip, ariaLabel: (isEnabled ? item.localizedTitle : '') || title || item.title, color: hasUpdate ? 'primary' : 'black' })"
     :style="{
       minHeight: height ? height + 'px' : undefined,
       maxHeight: height ? height + 'px' : undefined,
@@ -15,6 +15,8 @@
       dense,
     }"
     :active="selected"
+    :role="selectionMode ? 'option' : undefined"
+    :aria-selected="selectionMode ? checked : undefined"
     :lines="dense ? 'one' : 'two'"
     link
     @mouseenter="hover = true"
@@ -29,24 +31,26 @@
   >
     <template #prepend>
       <slot name="prepend" />
-      <v-avatar
+      <div
         v-if="selectionMode"
-        :size="dense ? 30 : 40"
-        class="flex items-center justify-center"
+        class="market-item__selection"
+        aria-hidden="true"
       >
         <v-checkbox-btn
           :model-value="checked"
+          tabindex="-1"
+          readonly
           density="comfortable"
           :ripple="false"
           class="market-item__checkbox pointer-events-none"
         />
-      </v-avatar>
+      </div>
       <v-avatar
-        v-else
         :size="dense ? 30 : 40"
       >
         <img
           ref="iconImage"
+          alt=""
           v-fallback-img="BuiltinImages.unknownServer"
           class="market-item__icon"
           :class="{ 'opacity-20': item.installed.length === 0 && hover && !item.unsupported }"
@@ -392,6 +396,12 @@ const onInstall = async () => {
   margin-inline-start: 8px;
   padding-inline-start: 24px !important;
   width: calc(100% - 8px);
+}
+.market-item__selection {
+  display: flex;
+  flex: 0 0 32px;
+  align-items: center;
+  margin-inline-end: 8px;
 }
 .market-item__icon {
   width: 100%;

@@ -31,6 +31,18 @@
           <v-icon> checklist </v-icon>
         </v-btn>
         <v-btn
+          v-if="isLocalView"
+          v-shared-tooltip="() => t('mod.collapseAllGroups')"
+          :aria-label="t('mod.collapseAllGroups')"
+          :disabled="groups.length === 0"
+          icon
+          variant="text"
+          density="comfortable"
+          @click="onCollapseAllGroups"
+        >
+          <v-icon> unfold_less </v-icon>
+        </v-btn>
+        <v-btn
           v-if="!isLocalView"
           v-shared-tooltip="() => groupInstalled === 'off' ? t('mod.installedFilterOff') : groupInstalled === 'group' ? t('mod.groupInstalled') : t('mod.hideInstalled')"
           :class="{ 'v-btn--active': groupInstalled !== 'off' }"
@@ -530,6 +542,7 @@ const isLocalView = computed(() => {
 const {
   localGroupedItems,
   groupCollapsedState,
+  collapseAllGroups,
   renameGroup,
   ungroup,
   group,
@@ -748,6 +761,16 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 
 const route = useRoute()
 const { replace } = useRouter()
+
+function onCollapseAllGroups() {
+  collapseAllGroups()
+  // Match individual collapse: close details only when their group is hidden.
+  if (localGroupedItems.value.some(item => 'projects' in item && isProjectInModGroup(item, route.query.id as string | undefined))) {
+    const query = { ...route.query }
+    delete query.id
+    replace({ query })
+  }
+}
 
 function onGroupCollapse(group: ProjectGroup<ModFile>, collapsed: boolean) {
   groupCollapsedState.value = { ...groupCollapsedState.value, [group.name]: collapsed }
