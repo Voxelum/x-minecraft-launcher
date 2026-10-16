@@ -572,6 +572,15 @@ export namespace Version {
       } as BadVersionJsonError)
     }
 
+    const hasFullModularAsm =
+      Boolean(librariesMap['org.ow2.asm:asm']) &&
+      Boolean(librariesMap['org.ow2.asm:asm-tree']) &&
+      Boolean(librariesMap['org.ow2.asm:asm-commons']) &&
+      Boolean(librariesMap['org.ow2.asm:asm-analysis'])
+    if (hasFullModularAsm && librariesMap['org.ow2.asm:asm-all']) {
+      delete librariesMap['org.ow2.asm:asm-all']
+    }
+
     return {
       id,
       assetIndex,

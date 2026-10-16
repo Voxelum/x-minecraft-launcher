@@ -49,7 +49,7 @@ export function useProjectInstall(runtime: Ref<RuntimeVersions>,
       const version = versions?.[0]
       const deps = await getSWRV(getModrinthDependenciesModel(ref(version), loader, config), config)
       const artifactUrl = (version.files.find(file => file.primary) ?? version.files[0])?.url
-      await modrinthInstaller.installWithDependencies(version.id, version.loaders, proj.icon_url, item.installed, deps || [], artifactUrl)
+      await modrinthInstaller.installWithDependencies(version.id, version.loaders, proj.icon_url, item.installed, deps || [], artifactUrl, version.game_versions)
     } else if (curseforgeId) {
       const proj = await getSWRV(getCurseforgeProjectModel(ref(curseforgeId)), config)
       if (!proj) {

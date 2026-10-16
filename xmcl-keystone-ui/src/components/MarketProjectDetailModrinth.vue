@@ -214,6 +214,7 @@ const onInstall = async (v: ProjectDetailVersion) => {
       effectiveInstalled.value,
       resolvedDeps ?? [],
       (selectedVersion?.files.find(file => file.primary) ?? selectedVersion?.files[0])?.url,
+      selectedVersion?.game_versions,
     )
     if (result !== false) {
       emit('installed', v)

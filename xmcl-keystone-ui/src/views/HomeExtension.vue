@@ -36,7 +36,7 @@
 
 <script lang=ts setup>
 import AvatarItemList from '@/components/AvatarItemList.vue'
-import { useExtensionItemsGamePlay, useExtensionItemsVersion } from '@/composables/extensionItems'
+import { useExtensionItemsGamePlay, useExtensionItemsVersion, useExtensionItemsModLoader } from '@/composables/extensionItems'
 import { kInstance } from '@/composables/instance'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kCompact } from '@/composables/scrollTop'
@@ -55,7 +55,8 @@ const active = ref(false)
 const compact = injection(kCompact)
 
 const versionItems = useExtensionItemsVersion(instance, versionHeader)
+const modLoaderItem = useExtensionItemsModLoader(instance)
 const playDataItems = useExtensionItemsGamePlay(instance)
-const items = computed(() => [...versionItems.value, ...playDataItems.value])
+const items = computed(() => [...versionItems.value, modLoaderItem.value, ...playDataItems.value])
 
 </script>

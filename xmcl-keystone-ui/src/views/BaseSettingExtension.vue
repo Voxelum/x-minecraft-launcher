@@ -102,7 +102,7 @@
 <script lang="ts" setup>
 import AvatarItemList from '@/components/AvatarItemList.vue'
 import type { AvatarItemProps } from '@/components/AvatarItem.vue'
-import { useExtensionItemsGamePlay, useExtensionItemsVersion } from '@/composables/extensionItems'
+import { useExtensionItemsGamePlay, useExtensionItemsVersion, useExtensionItemsModLoader } from '@/composables/extensionItems'
 import { kInstance } from '@/composables/instance'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceTheme } from '@/composables/instanceTheme'
@@ -137,6 +137,7 @@ const compact = injection(kCompact)
 const isNarrow = useMediaQuery('(max-width: 900px)')
 
 const versionItems = useExtensionItemsVersion(instance, versionHeader)
+const modLoaderItem = useExtensionItemsModLoader(instance)
 const gameplayItems = useExtensionItemsGamePlay(instance)
 
 const targetQuery = useQuery('target')
@@ -254,22 +255,9 @@ const contextItems = computed<AvatarItemProps[]>(() => {
       text: customCss.value ? t('baseSetting.info.custom') : t('baseSetting.info.notSet'),
     }]
   }
-  const runtime = instance.value.runtime
-  const loader = [
-    ['NeoForge', runtime.neoForged],
-    ['Forge', runtime.forge],
-    ['Fabric', runtime.fabricLoader],
-    ['Quilt', runtime.quiltLoader],
-    ['OptiFine', runtime.optifine],
-    ['LabyMod', runtime.labyMod],
-  ].find(([, value]) => value)
   return [
     ...versionItems.value,
-    {
-      icon: 'extension',
-      title: t('baseSetting.info.modLoader'),
-      text: loader ? `${loader[0]} ${loader[1]}` : t('baseSetting.info.vanilla'),
-    },
+    modLoaderItem.value,
     {
       ...gameplayItems.value[0],
       text: gameplayItems.value[0]?.text || basename(instance.value.path),

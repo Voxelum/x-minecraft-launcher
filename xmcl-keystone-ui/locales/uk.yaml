@@ -793,6 +793,18 @@ modpackUpdateOrCreate:
   description: Екземпляр "{name}" для цього модпака вже існує. Бажаєте оновити його чи створити новий?
   title: Екземпляр уже існує
   update: Оновити наявний
+modloader:
+  manage: 'Керування модлоадерами'
+  manageHint: 'Увімкніть, приховайте або додайте модлоадери для вашого списку'
+  reset: 'Скинути до стандартних'
+  installed: 'Модлоадери'
+  builtin: 'Вбудований'
+  custom: 'Власний'
+  hide: 'Приховати'
+  add: 'Додати з API'
+  addBtn: 'Додати'
+  apiUrlHint: 'API URL або назва лоадера'
+  emptyCustom: 'Не знайдено локальних версій для цього лоадера. Помістіть JSON версії в папку versions.'
 modrinth:
   browseUrl: Відкрити в браузері {url}
   categories:

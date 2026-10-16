@@ -131,12 +131,12 @@
               persistent-hint
               variant="outlined"
               readonly
-              label="Fabric"
+              :label="fabricLoaderCustom?.name || 'Fabric'"
               density="compact"
               hide-details
             >
               <template #prepend-inner>
-                <img :src="BuiltinImages.fabric" width="28" />
+                <img :src="fabricLoaderCustom?.icon || BuiltinImages.fabric" width="28" />
               </template>
             </v-text-field>
             <v-text-field
@@ -307,6 +307,7 @@ import {
 } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
+import { resolveFabricCustomLoader } from '@/composables/modloaderCustom'
 
 const selected = ref([] as string[])
 const search = ref('')
@@ -376,6 +377,10 @@ const tOperations = computed(
 
 const { getColorCode } = useVuetifyColor()
 const runtime = computed(() => upgrade.value?.edit?.runtime || ({} as Record<string, string>))
+const fabricLoaderCustom = computed(() => {
+  if (!runtime.value.fabricLoader) return undefined
+  return resolveFabricCustomLoader(runtime.value.minecraft, runtime.value.fabricLoader)
+})
 
 const getVersionString = (oldVersion?: string, newVersion?: string) =>
   oldVersion !== newVersion ? `${oldVersion} -> ${newVersion}` : newVersion

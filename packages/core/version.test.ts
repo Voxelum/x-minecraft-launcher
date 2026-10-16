@@ -548,11 +548,49 @@ describe('Version', () => {
     })
   })
 
-  // it("should be able to extends the version", async function () {
-  //     const ver = await Version.parse(this.gameDirectory, "1.12.2-Liteloader1.12.2-1.12.2-SNAPSHOT");
-  //     const ver2 = await Version.parse(this.gameDirectory, "1.12.2-forge-14.23.5.2852");
+  describe('ASM library conflict resolution', () => {
+    test('deduplicates asm-all when modular asm is present', () => {
+      const child = Version.normalizeVersionJson(JSON.stringify({
+        id: 'b1.7.3-Babric',
+        mainClass: 'net.fabricmc.loader.impl.launch.knot.KnotClient',
+        libraries: [
+          { name: 'org.ow2.asm:asm:9.11' },
+          { name: 'org.ow2.asm:asm-tree:9.11' },
+          { name: 'org.ow2.asm:asm-commons:9.11' },
+          { name: 'org.ow2.asm:asm-analysis:9.11' },
+        ],
+      }), 'minecraft')
+      const parent = Version.normalizeVersionJson(JSON.stringify({
+        id: 'b1.7.3',
+        mainClass: 'net.minecraft.client.Minecraft',
+        libraries: [
+          { name: 'org.ow2.asm:asm-all:4.1' },
+        ],
+      }), 'minecraft')
 
-  //     const out = Version.extendsVersion("test", ver, ver2);
-  //     assert(out);
-  // });
+      const resolved = Version.resolve('minecraft', [child, parent])
+      expect(resolved.libraries.find((lib) => lib.name.includes('asm-all'))).toBeUndefined()
+      expect(resolved.libraries.find((lib) => lib.name === 'org.ow2.asm:asm:9.11')).toBeDefined()
+    })
+
+    test('preserves asm-all when only partial modular asm is present', () => {
+      const child = Version.normalizeVersionJson(JSON.stringify({
+        id: 'b1.7.3-Custom',
+        mainClass: 'net.fabricmc.loader.impl.launch.knot.KnotClient',
+        libraries: [
+          { name: 'org.ow2.asm:asm:9.11' },
+        ],
+      }), 'minecraft')
+      const parent = Version.normalizeVersionJson(JSON.stringify({
+        id: 'b1.7.3',
+        mainClass: 'net.minecraft.client.Minecraft',
+        libraries: [
+          { name: 'org.ow2.asm:asm-all:4.1' },
+        ],
+      }), 'minecraft')
+
+      const resolved = Version.resolve('minecraft', [child, parent])
+      expect(resolved.libraries.find((lib) => lib.name.includes('asm-all'))).toBeDefined()
+    })
+  })
 })

@@ -2,6 +2,7 @@ import { BuiltinImages } from '@/constant'
 import { kInstances } from '@/composables/instances'
 import { injection } from '@/util/inject'
 import { Tasks } from '@xmcl/runtime-api'
+import { resolveFabricCustomLoader } from './modloaderCustom'
 
 export interface TaskIconInfo {
   type: 'image' | 'icon'
@@ -44,6 +45,10 @@ export function useTaskIcon() {
       return { type: 'image', src: BuiltinImages.neoForged }
     }
     if (task.type === 'installFabric') {
+      const custom = resolveFabricCustomLoader(task.minecraft, task.loader)
+      if (custom?.icon) {
+        return { type: 'image', src: custom.icon }
+      }
       return { type: 'image', src: BuiltinImages.fabric }
     }
     if (task.type === 'installQuilt') {

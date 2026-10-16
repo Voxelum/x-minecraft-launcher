@@ -1058,6 +1058,18 @@ modpackUpdateOrCreate:
   description: An instance "{name}" for this modpack already exists. Do you want to update it or create a new one?
   title: Instance already exists
   update: Update existing
+modloader:
+  manage: Manage Mod Loaders
+  manageHint: Enable, hide, or add mod loaders for your launcher
+  reset: Reset to Defaults
+  installed: Mod Loaders
+  builtin: Built-in
+  custom: Custom
+  hide: Hide
+  add: Add from API
+  addBtn: Add
+  apiUrlHint: API URL or loader name
+  emptyCustom: No local versions matching this loader. Place version JSON in the versions folder.
 modrinth:
   browseUrl: Open In Browser {url}
   categories:

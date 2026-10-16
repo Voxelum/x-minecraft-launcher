@@ -72,13 +72,14 @@ export function getModrinthVersionModel(
         return []
       }
       const loader = get(loaders)
-      const result = (
+      let result = (
         await clientModrinthV2.getProjectVersions(projectId, {
           loaders: loader ? [loader] : undefined,
           gameVersions: get(gameVersions),
           featured,
         })
       ).map(markRaw)
+
       return result
     },
   }

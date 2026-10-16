@@ -12,13 +12,14 @@
   >
     <slot>
       <img
-        v-if="image"
+        v-if="image && !imgFailed"
         class="sidebar-notch-item__image"
         :src="image"
         :width="28"
         :height="28"
+        @error="imgFailed = true"
       >
-      <v-icon v-else class="sidebar-notch-item__icon" :size="iconSize">{{ icon }}</v-icon>
+      <v-icon v-else class="sidebar-notch-item__icon" :size="iconSize">{{ icon || 'inventory_2' }}</v-icon>
     </slot>
   </component>
 </template>
@@ -39,6 +40,11 @@ const props = defineProps<{
   active?: boolean
   contextMenu?: () => ContextMenuItem[]
 }>()
+
+const imgFailed = ref(false)
+watch(() => props.image, () => {
+  imgFailed.value = false
+})
 
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void

@@ -847,14 +847,22 @@ export async function generateArguments(options: LaunchOption) {
     }
   }
 
+  const hasModularAsm =
+    version.libraries.some((lib) => lib.groupId === 'org.ow2.asm' && lib.artifactId === 'asm') &&
+    version.libraries.some((lib) => lib.groupId === 'org.ow2.asm' && lib.artifactId === 'asm-tree') &&
+    version.libraries.some((lib) => lib.groupId === 'org.ow2.asm' && lib.artifactId === 'asm-commons') &&
+    version.libraries.some((lib) => lib.groupId === 'org.ow2.asm' && lib.artifactId === 'asm-analysis')
+  const classpathLibs = version.libraries
+    .filter((lib) => !lib.isNative)
+    .filter((lib) => !(hasModularAsm && lib.groupId === 'org.ow2.asm' && lib.artifactId === 'asm-all'))
+
   const jvmOptions = {
     natives_directory: nativeRoot.replaceAll('\\', '/'),
     launcher_name: launcherName,
     launcher_version: launcherBrand,
     game_directory: gamePath.replaceAll('\\', '/'),
     classpath: [
-      ...version.libraries
-        .filter((lib) => !lib.isNative)
+      ...classpathLibs
         .map((lib) => mc.getLibraryByPath(lib.download.path)),
       mc.getVersionJar(version.minecraftVersion),
       ...(options.extraClassPaths || []),

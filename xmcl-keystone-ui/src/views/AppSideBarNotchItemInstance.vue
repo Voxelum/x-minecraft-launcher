@@ -9,6 +9,7 @@ import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { BuiltinImages } from '../constant'
+import { resolveFabricCustomLoader, resolveCustomLoaderFromInstance } from '@/composables/modloaderCustom'
 import AppSideBarNotchItem from './AppSideBarNotchItem.vue'
 
 const props = defineProps<{
@@ -38,9 +39,30 @@ const runtimes = computed(() => {
   if (inst.runtime.forge) iconAndVersion.push({ icon: BuiltinImages.forge, text: inst.runtime.forge })
   if (inst.runtime.labyMod) iconAndVersion.push({ icon: BuiltinImages.labyMod, text: inst.runtime.labyMod })
   if (inst.runtime.neoForged) iconAndVersion.push({ icon: BuiltinImages.neoForged, text: inst.runtime.neoForged })
-  if (inst.runtime.fabricLoader) iconAndVersion.push({ icon: BuiltinImages.fabric, text: inst.runtime.fabricLoader })
+  if (inst.runtime.fabricLoader) {
+    const custom = resolveFabricCustomLoader(inst.runtime.minecraft, inst.runtime.fabricLoader)
+    iconAndVersion.push({ icon: custom?.icon || BuiltinImages.fabric, text: inst.runtime.fabricLoader })
+  }
   if (inst.runtime.quiltLoader) iconAndVersion.push({ icon: BuiltinImages.quilt, text: inst.runtime.quiltLoader })
   if (inst.runtime.optifine) iconAndVersion.push({ icon: BuiltinImages.optifine, text: inst.runtime.optifine })
+  if (!inst.runtime.forge && !inst.runtime.fabricLoader && !inst.runtime.neoForged && !inst.runtime.quiltLoader && !inst.runtime.optifine && !inst.runtime.labyMod) {
+    let customLoader: { name: string; icon?: string; version?: string } | undefined
+    try {
+      const storage = typeof window !== 'undefined' && window.localStorage ? window.localStorage : undefined
+      const raw = storage ? (storage.getItem('xmcl_user_custom_modloaders') || storage.getItem('modloaders_custom_v1')) : null
+      if (raw) {
+        const list = JSON.parse(raw)
+        if (Array.isArray(list)) {
+          customLoader = resolveCustomLoaderFromInstance(inst, list)
+        }
+      }
+    } catch {}
+    if (customLoader) {
+      iconAndVersion.push({ icon: customLoader.icon || BuiltinImages.craftingTable, text: customLoader.version || customLoader.name })
+    } else if (inst.version) {
+      iconAndVersion.push({ icon: BuiltinImages.craftingTable, text: inst.version })
+    }
+  }
   return iconAndVersion
 })
 

@@ -23,7 +23,7 @@ import { useQuery } from '@/composables/query'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 
-const { runtime } = injection(kInstance)
+const { instance, runtime } = injection(kInstance)
 const { blueprints } = injection(kInstanceBlueprints)
 const keyword = useQuery('keyword')
 const { t } = useI18n()
@@ -34,6 +34,6 @@ const extensionItems = computed(() => [
     title: t('blueprint.name', { count: 2 }),
     text: t('blueprint.count', { count: blueprints.value.length }),
   },
-  ...getExtensionItemsFromRuntime(runtime.value),
+  ...getExtensionItemsFromRuntime(runtime.value, instance.value.version),
 ])
 </script>
