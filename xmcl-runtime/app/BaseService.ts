@@ -16,6 +16,7 @@ import { readFile, readdir, stat, pathExists } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { statfs } from 'fs/promises'
 import { join, resolve } from 'path'
+import { spawn } from 'child_process'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
 import {
   endRendererAction,
@@ -209,6 +210,59 @@ export class BaseService extends AbstractService implements IBaseService {
    */
   openDirectory(path: string) {
     return this.app.shell.openDirectory(path)
+  }
+
+  /**
+   * Show on-screen / virtual keyboard (Steam Deck virtual keyboard or Windows touch keyboard / OSK)
+   */
+  async showVirtualKeyboard(preferSteam?: boolean): Promise<boolean> {
+    const env = await this.getEnvironment()
+    const isSteamDeck = env.steamDeck || process.env.STEAM_DECK === '1' || process.env.USER === 'deck'
+
+    if (preferSteam || isSteamDeck) {
+      try {
+        await this.app.shell.openInBrowser('steam://open/keyboard')
+        return true
+      } catch (err) {
+        this.logger.warn(`Failed to open steam://open/keyboard: ${err}`)
+        if (process.platform === 'linux') {
+          try {
+            spawn('steam', ['-open', 'steam://open/keyboard'], { detached: true, stdio: 'ignore' }).unref()
+            return true
+          } catch {}
+        }
+      }
+    }
+
+    if (process.platform === 'win32') {
+      const commonProgramFiles = process.env.CommonProgramFiles || 'C:\\Program Files\\Common Files'
+      const tabTipPath = join(commonProgramFiles, 'microsoft shared', 'ink', 'TabTip.exe')
+      if (await pathExists(tabTipPath)) {
+        try {
+          spawn(tabTipPath, [], { detached: true, stdio: 'ignore' }).unref()
+          return true
+        } catch (err) {
+          this.logger.warn(`Failed to launch TabTip.exe: ${err}`)
+        }
+      }
+
+      const systemRoot = process.env.SystemRoot || 'C:\\Windows'
+      const oskPath = join(systemRoot, 'System32', 'osk.exe')
+      try {
+        spawn(oskPath, [], { detached: true, stdio: 'ignore' }).unref()
+        return true
+      } catch (err) {
+        this.logger.warn(`Failed to launch osk.exe: ${err}`)
+      }
+      return false
+    }
+
+    try {
+      await this.app.shell.openInBrowser('steam://open/keyboard')
+      return true
+    } catch {
+      return false
+    }
   }
 
   /**

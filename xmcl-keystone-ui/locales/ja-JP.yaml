@@ -44,7 +44,7 @@ askAICrash:
   selectPlatform: AIプラットフォームを開き、コピーしたプロンプトを貼り付けます。
 authProfileAddedNotification: 認証プロファイル {name} が追加されました
 bedrock:
-  installBedrockVersion: 'Downloading Bedrock {version}'
+  installBedrockVersion: Downloading Bedrock {version}
   versionsTitle: Version manager
   versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
   versionsError: Failed to load the version list. Check your network and try again.
@@ -59,9 +59,9 @@ bedrock:
   developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
   enableDeveloperMode: Enable Developer Mode
   enableDeveloperModeFailed: Failed to enable Developer Mode
-  downloadFailed: 'Failed to download Bedrock {version}'
+  downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
-  removeFailed: 'Failed to remove Bedrock {version}'
+  removeFailed: Failed to remove Bedrock {version}
 baseSetting:
   title: 基本設定
 browseApp:
@@ -179,8 +179,7 @@ diagnosis:
     name: Minecraftを立ち上げるためのJavaが見つかりません!
   missingLibraries:
     message: ランチャーがライブラリをインストールします。
-    name: >-
-      見つからない {name} ライブラリ | 見つからない {name} ライブラリ | {count} 個のライブラリが見つかりません | {count} 個のライブラリが見つかりません
+    name: 見つからない {name} ライブラリ | 見つからない {name} ライブラリ | {count} 個のライブラリが見つかりません | {count} 個のライブラリが見つかりません
   missingVersion:
     message: クリックしてこのバージョンをインストールします。
     name: バージョン {version} はインストールされていません!
@@ -207,15 +206,13 @@ env:
     fit: 選択
     none: 選択しない
 errors:
-  BadForgeInstallerJarError: >-
-    Forge インストーラーのJarを解析できません。Forgeが新しいインストーラーのフォーマットを採用したのかもしれません? この問題が続く場合は開発者に連絡してください。
+  BadForgeInstallerJarError: Forge インストーラーのJarを解析できません。Forgeが新しいインストーラーのフォーマットを採用したのかもしれません? この問題が続く場合は開発者に連絡してください。
   BadInstanceType: '有効な起動構成ではありません: {type}'
   BodyTimeoutError: HTTPがタイムアウトしました
   ChecksumNotMatchError: 'チェックサムが一致しませんでした! 想定: {expect}. 結果 {actual}.'
   ConnectTimeoutError: サーバーへの接続がタイムアウトしました。
   DNSNotFoundError: DNS ルックアップエラー
-  DatabaseNotOpened: >-
-    データベースが開けませんでした! ランチャーは適切に動作できません! ランチャーがアクセスできるデータディレクトリを選択するか、データのルートディレクトリを設定からリセットすることができます。
+  DatabaseNotOpened: データベースが開けませんでした! ランチャーは適切に動作できません! ランチャーがアクセスできるデータディレクトリを選択するか、データのルートディレクトリを設定からリセットすることができます。
   DiskIsFull: |-
     あなたのディスクはいっぱいです！
     ディスクに何も書くことはできません！
@@ -228,8 +225,7 @@ errors:
 eula:
   body: このチェックボックスを押すことで、Minecraftの {eula} に同意したことになります。
 exception:
-  http: >-
-    {url} へのHTTPリクエストに失敗しました。エラーコードは {code}、ステータスコードは {statusCode} です。再度試すか、ネットワーク接続を確認してください。エラーが続く場合は、レポートを開発者に送ってください。
+  http: '{url} へのHTTPリクエストに失敗しました。エラーコードは {code}、ステータスコードは {statusCode} です。再度試すか、ネットワーク接続を確認してください。エラーが続く場合は、レポートを開発者に送ってください。'
 extensions:
   mrpack: Modrinth Modpack
   zip: Zip ファイル
@@ -456,8 +452,7 @@ instanceTemplate:
 instanceUpdate:
   basic: 設定の更新
   files: ファイルのアップデート
-  loaderChanged: >-
-    この起動構成のModloaderが変更されました。以前のModloaderは {modloader}, 現在のModloacerは {newModloader}です。
+  loaderChanged: この起動構成のModloaderが変更されました。以前のModloaderは {modloader}, 現在のModloacerは {newModloader}です。
   summary: |-
     {add}ファイルを追加します。
     {remove}ファイルを削除します。
@@ -486,13 +481,10 @@ instances:
   edition: エディション
   editionJava: Java Edition
   editionBedrock: Bedrock Edition
-  editionBedrockHint: >-
-    Bedrock Edition は Microsoft Store アプリを通じて起動します。Bedrock のライセンスを所有している必要があります。Mod、リソースパックなどの
-    Java 専用機能は利用できません。
+  editionBedrockHint: Bedrock Edition は Microsoft Store アプリを通じて起動します。Bedrock のライセンスを所有している必要があります。Mod、リソースパックなどの Java 専用機能は利用できません。
   editionBedrockWindowsOnly: Bedrock Edition は Windows ビルドでのみサポートされています。
   linkSharedFolders: インスタンス間でフォルダーを共有
-  linkSharedFoldersHint: >-
-    これらのフォルダーをランチャーの共有フォルダーへのリンクとして作成し、このインスタンスがリンクされた他のすべてのインスタンスと内容を共有するようにします。これはコピーではありません。1つのインスタンスで加えた変更はすべてのインスタンスに反映されます。チェックしていないフォルダーはこのインスタンス専用のままです。
+  linkSharedFoldersHint: これらのフォルダーをランチャーの共有フォルダーへのリンクとして作成し、このインスタンスがリンクされた他のすべてのインスタンスと内容を共有するようにします。これはコピーではありません。1つのインスタンスで加えた変更はすべてのインスタンスに反映されます。チェックしていないフォルダーはこのインスタンス専用のままです。
   linkFailed: '{folder} フォルダーを共有フォルダーにリンクできませんでした'
   addPrismDescription: 既存のPrismLauncherインスタンスをインポート。
 items:
@@ -546,12 +538,10 @@ launchBlocked:
     description: いくつかのエラーが発生し、起動に失敗しました。
     title: 起動に失敗
   launchInvalidJavaPath:
-    description: >-
-      選択されたJavaは存在しないか、無効です。他のJavaを選択してください。<span class="highlight"> {javaPath} </span>
+    description: 選択されたJavaは存在しないか、無効です。他のJavaを選択してください。<span class="highlight"> {javaPath} </span>
     title: 無効なJavaパス
   launchJavaNoPermission:
-    description: >-
-      ランチャーはJava <span class="highlight"> {javaPath} </span> を実行する権限がありません。Javaのファイルの権限を変更するか、ランチャーの権限を昇格してください。
+    description: ランチャーはJava <span class="highlight"> {javaPath} </span> を実行する権限がありません。Javaのファイルの権限を変更するか、ランチャーの権限を昇格してください。
     title: 起動する権限が不足
   launchNoProperJava:
     description: ゲームを起動するための適切なJavaがありません。 ({javaPath}が無効かもしれません)
@@ -567,8 +557,7 @@ launchFailed:
   crash: ゲームがクラッシュしました!!!!
   description: クラッシュレポートはありません。エラーログと最新のログです。
   elyByAuthlib:
-    description: >-
-      Minecraft バージョン {version} に対して Ely.by の Authlib 置換が使用されましたが、このバージョンは完全に互換性がない可能性があります。
+    description: Minecraft バージョン {version} に対して Ely.by の Authlib 置換が使用されましたが、このバージョンは完全に互換性がない可能性があります。
     suggestion: この問題を回避するには、インスタンス設定で Ely.by の Authlib 置換を無効にできます。
     title: Ely.by Authlib の互換性の問題
   failedToLaunch: ランチャーの起動に失敗
@@ -576,8 +565,7 @@ launchFailed:
   title: ゲームが異常なコードで終了しました
 launchStatus:
   assigningMemory: メモリを割り当て中
-  elyByWarning: >-
-    Ely.by の Authlib 置換が有効になっています。いくつかの Minecraft バージョンは互換性がなく、クラッシュする可能性があります。問題が発生した場合はインスタンス設定で無効にしてください。
+  elyByWarning: Ely.by の Authlib 置換が有効になっています。いくつかの Minecraft バージョンは互換性がなく、クラッシュする可能性があります。問題が発生した場合はインスタンス設定で無効にしてください。
   exit: ゲームを終了しますか?
   injectingAuthLib: サードパーティAuthLibを設定中
   launching: 起動中...
@@ -619,13 +607,11 @@ loginError:
   fetchMinecraftProfileFailed: Minecraftプロファイルの取得に失敗しました。 {reason}
   illegalEmail: メールアドレスが無効です
   invalidCredentials: 認証情報が無効です。ユーザー名またはパスワードが間違っています。
-  loginMinecraftByXboxFailed: >-
-    XboxトークンのMinecraftトークンへの引き換えに失敗しました。XboxでMinecraftを所持しているか確認してください。再度試してください。
+  loginMinecraftByXboxFailed: XboxトークンのMinecraftトークンへの引き換えに失敗しました。XboxでMinecraftを所持しているか確認してください。再度試してください。
   loginXboxAgeRestricted: |-
     年齢の問題が原因でXboxのログインに失敗します。
     Microsoftアカウントの年齢が設定されており、年齢が18を超えていることを確認してください。
-  loginXboxFailed: >-
-    MicrosoftトークンでのXboxへのログインに失敗しました。Microsoftアカウントへ接続された孤立していないXboxアカウントか確認してください。再度試してください。
+  loginXboxFailed: MicrosoftトークンでのXboxへのログインに失敗しました。Microsoftアカウントへ接続された孤立していないXboxアカウントか確認してください。再度試してください。
   noProfileForNewUser: |-
     ゲームプロファイルは見つかりません！
     新しいMinecraftユーザーの場合は、Minecraftの公式ランチャーで少なくとも1回ログインしてください。
@@ -725,8 +711,7 @@ modFilter:
 modInstall:
   archived: '{name} はアーカイブされました。 作者がアーカイブを解除しない限り {name} はアップデートを受け取りません。'
   autoUpgrade:
-    description: >-
-      Minecraftのバージョンを変更しました。互換性のあるModを自動的に Minecraft {version} に対応するバージョンに更新しますか？
+    description: Minecraftのバージョンを変更しました。互換性のあるModを自動的に Minecraft {version} に対応するバージョンに更新しますか？
     'no': スキップ
     title: Modをアップデートしますか？
     'yes': Modをアップデート
@@ -785,11 +770,10 @@ modpackImportConfirm:
     modpackをインポートしようとしていますか？
   title: modpackをインポートしようとしていますか？
 modpackUpdateOrCreate:
-  createNew: '新規作成'
-  description: >-
-    このModパックのインスタンス「{name}」は既に存在します。更新しますか、それとも新規作成しますか？
-  title: 'インスタンスは既に存在します'
-  update: '既存を更新'
+  createNew: 新規作成
+  description: このModパックのインスタンス「{name}」は既に存在します。更新しますか、それとも新規作成しますか？
+  title: インスタンスは既に存在します
+  update: 既存を更新
 modrinth:
   browseUrl: ブラウザで開く {url}
   categories:
@@ -960,35 +944,35 @@ multiplayer:
   updateSharedInstanceConfirm: 更新して起動
   updateSharedInstanceDescription: 共有されたModが{instance}と異なります。起動前にこのインスタンスをホストに合わせて更新しますか？変更済みの既存ファイルはバックアップされます。
   updateSharedInstanceTitle: 共有インスタンスを更新しますか？
-  addFunds: "残高を追加"
-  availableBalance: "利用可能残高"
-  balanceHint: "XMCL Together のサービスに利用できます"
-  billing: "請求"
-  billingDescription: "リレーアクセス、Together Home プラン、お支払いを管理します。"
-  billingError: "Together の請求情報を読み込めませんでした。しばらくしてからもう一度お試しください。"
-  buyTogether: "Together を購入"
-  cancelTogether: "プランを解約"
-  checkout: "Waffo の決済を開く"
-  connectionTogetherWarning: "ルームメンバーの1人がしばらくあなたに接続できていません。ルーム全員の接続性を改善するには XMCL Together をお試しください。Together が必要なのはルームマスターだけです。"
-  masterPurchaseHint: "ルーム全員の接続性を改善するには、ルームマスターだけが Together Home を必要とします。"
-  natTogetherWarning: "ルーターがルームマスターへの接続に問題を抱えている可能性があります。接続に失敗する場合は、あなたと友達の接続性を改善するため XMCL Together をお試しください。ルームの Together を購入する必要があるのはルームマスターだけです。"
-  togetherName: "Minecraft Together"
-  trialDescription: "1 GB のリレートラフィックを含む7日間のトライアルを1回利用できます。"
-  trialTitle: "接続性トライアル"
-  tryTogether: "Together を試す"
-  month: "月"
-  orderStatus: "Waffo の注文: {status}"
-  planDescription: "毎月20 GBの管理リレートラフィックに加え、ModpackのAIトラブルシューティングを利用できます。"
-  waffoHint: "お支払いは Waffo Pancake で安全に完了します。XMCL がカード番号を受け取ることはありません。"
+  addFunds: 残高を追加
+  availableBalance: 利用可能残高
+  balanceHint: XMCL Together のサービスに利用できます
+  billing: 請求
+  billingDescription: リレーアクセス、Together Home プラン、お支払いを管理します。
+  billingError: Together の請求情報を読み込めませんでした。しばらくしてからもう一度お試しください。
+  buyTogether: Together を購入
+  cancelTogether: プランを解約
+  checkout: Waffo の決済を開く
+  connectionTogetherWarning: ルームメンバーの1人がしばらくあなたに接続できていません。ルーム全員の接続性を改善するには XMCL Together をお試しください。Together が必要なのはルームマスターだけです。
+  masterPurchaseHint: ルーム全員の接続性を改善するには、ルームマスターだけが Together Home を必要とします。
+  natTogetherWarning: ルーターがルームマスターへの接続に問題を抱えている可能性があります。接続に失敗する場合は、あなたと友達の接続性を改善するため XMCL Together をお試しください。ルームの Together を購入する必要があるのはルームマスターだけです。
+  togetherName: Minecraft Together
+  trialDescription: 1 GB のリレートラフィックを含む7日間のトライアルを1回利用できます。
+  trialTitle: 接続性トライアル
+  tryTogether: Together を試す
+  month: 月
+  orderStatus: 'Waffo の注文: {status}'
+  planDescription: 毎月20 GBの管理リレートラフィックに加え、ModpackのAIトラブルシューティングを利用できます。
+  waffoHint: お支払いは Waffo Pancake で安全に完了します。XMCL がカード番号を受け取ることはありません。
   subscription:
-    active: "有効"
-    cancelled: "解約済み"
-    payment_due: "支払い期限"
+    active: 有効
+    cancelled: 解約済み
+    payment_due: 支払い期限
   trial:
-    active: "トライアル有効"
-    available: "無料トライアルを利用可能"
-    expired: "トライアル使用済み"
-    unavailable: "トライアル利用不可"
+    active: トライアル有効
+    available: 無料トライアルを利用可能
+    expired: トライアル使用済み
+    unavailable: トライアル利用不可
   loginRequiredDescription: P2P マルチプレイヤーでは XMCL のオンラインサービスを使用します。続行するには XMCL アカウントにサインインしてください。
   loginRequiredTitle: P2P マルチプレイヤーにサインイン
   complete: 完了
@@ -997,8 +981,7 @@ multiplayer:
   copied: コピー済み!
   copy: コピー
   copyGroupToFriendHint: このIDでフレンドをグループに追加できます
-  copyLocalHint: >-
-    "ローカルSDPテキストをコピーして接続に参加してください <span>一つのトークンで接続できるピアは <span style="color: red; font-weight: bold;">1つ</span>のみです! 同じトークンを複数のピアに送ることはできません!</span> <br> <span class="hint-text" style="font-style: italic;">複数のピアに接続する必要がある場合、 <span style="font-weight: bold; color: rgba(245, 158, 11)">複数の</span>接続を作ってください</span>"
+  copyLocalHint: '"ローカルSDPテキストをコピーして接続に参加してください <span>一つのトークンで接続できるピアは <span style="color: red; font-weight: bold;">1つ</span>のみです! 同じトークンを複数のピアに送ることはできません!</span> <br> <span class="hint-text" style="font-style: italic;">複数のピアに接続する必要がある場合、 <span style="font-weight: bold; color: rgba(245, 158, 11)">複数の</span>接続を作ってください</span>"'
   createLocalToken: ローカルトークンを作成
   currentIpTitle: 検出されたパブリックIP
   currentNatTitle: '現在のネットワーク (NAT):'
@@ -1047,8 +1030,7 @@ multiplayer:
   start: スタート
   startNewP2PConnection: スタートボタンをクリックして新しいピアへの接続を作成します
   connectionError: 接続エラー
-  connectionFailedHint: >-
-    接続を確立できません。両方のピアのNATタイプが互換性があるか確認してください。
+  connectionFailedHint: 接続を確立できません。両方のピアのNATタイプが互換性があるか確認してください。
 myStuff: 私の作品
 natType:
   blocked: ブロックされた
@@ -1138,7 +1120,7 @@ blueprint:
     loading: プレビューを読み込み中...
     empty: この設計図には表示できるブロックがありません。
     hint: '{count} 個のブロック · {x}×{y}×{z}'
-    controls: 'WASD：移動 · スペース/Shift：上昇/下降 · ドラッグ：視点移動 · スクロール：ズーム'
+    controls: WASD：移動 · スペース/Shift：上昇/下降 · ドラッグ：視点移動 · スクロール：ズーム
   convert:
     title: フォーマットを変換
     hint: この設計図を別のフォーマットに変換します。新しいファイルが作成されます。
@@ -1157,8 +1139,7 @@ blueprint:
     action: 置換
 resourcepack:
   linkShared: リソースパックをインスタンス間で共有
-  linkSharedHint: >-
-    このインスタンスの resourcepacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じリソースパックを使用します。既存のパックは共有フォルダーに統合されます。
+  linkSharedHint: このインスタンスの resourcepacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じリソースパックを使用します。既存のパックは共有フォルダーに統合されます。
   compatible: 適合するフォーマット {format} バージョン {version}
   defaultDescription: デフォルトのMinecraftのルック＆フィール
   delete:
@@ -1177,26 +1158,25 @@ resourcepack:
   search: リソースパックを検索...
 save:
   map:
-    tabTitle: "ワールドマップ"
+    tabTitle: ワールドマップ
   progress:
     zoomIn: 拡大
     zoomOut: 縮小
-    loading: "進捗を読み込み中…"
-    noData: "進捗が見つかりません"
-    noDataHint: "このワールドでプレイすると、進捗、統計、クエストの達成状況が記録されます。"
-    quests: "クエスト"
-    advancements: "進捗"
-    done: "完了"
-    inProgress: "進行中"
-    all: "すべて"
-    treeView: "ツリー表示"
-    filterPlaceholder: "名前で絞り込み…"
-    root: "開始点"
-    exitFullscreen: "全画面表示を終了"
-    locked: "未解除"
+    loading: 進捗を読み込み中…
+    noData: 進捗が見つかりません
+    noDataHint: このワールドでプレイすると、進捗、統計、クエストの達成状況が記録されます。
+    quests: クエスト
+    advancements: 進捗
+    done: 完了
+    inProgress: 進行中
+    all: すべて
+    treeView: ツリー表示
+    filterPlaceholder: 名前で絞り込み…
+    root: 開始点
+    exitFullscreen: 全画面表示を終了
+    locked: 未解除
   linkShared: セーブデータをインスタンス間で共有
-  linkSharedHint: >-
-    このインスタンスの saves フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じワールドを共有します。既存のセーブデータは共有フォルダーに統合されます。
+  linkSharedHint: このインスタンスの saves フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じワールドを共有します。既存のセーブデータは共有フォルダーに統合されます。
   chunkSelectMode: チャンクを選択
   panMode: パン
   chunkSelected: '{count} 個のチャンクを選択中'
@@ -1209,13 +1189,11 @@ save:
   clearSelection: 選択をクリア
   copyChunks: チャンクをコピー
   pasteChunks: '{count} 個のチャンクを貼り付け'
-  pasteChunksPlaceHint: >-
-    マウスを動かして {count} 個のチャンクを配置し、クリックして貼り付けます。配置先の既存のチャンクは上書きされます。Esc でキャンセルします。
+  pasteChunksPlaceHint: マウスを動かして {count} 個のチャンクを配置し、クリックして貼り付けます。配置先の既存のチャンクは上書きされます。Esc でキャンセルします。
   pasteChunksCancel: キャンセル
   deleteChunks: チャンクを削除
   deleteChunksTitle: 選択したチャンクを削除
-  deleteChunksHint: >-
-    選択した {count} 個のチャンクを削除しますか？この操作は取り消せません。次にそのエリアがゲーム内で読み込まれると、チャンクは再生成されます。
+  deleteChunksHint: 選択した {count} 個のチャンクを削除しますか？この操作は取り消せません。次にそのエリアがゲーム内で読み込まれると、チャンクは再生成されます。
   mapLoading: マップを読み込み中…
   noRegions: このワールドにはプレビューできる生成済みのリージョンがありません。
   dimOverworld: オーバーワールド
@@ -1246,6 +1224,7 @@ save:
   openFolder: セーブフォルダを開く
   searchHint: CurseForgeでワールドを検索
   searchSaves: セーブを検索
+  empty: No worlds found
 screenshots:
   empty: スクリーンショットがありません
   playRandom: シャッフル
@@ -1513,7 +1492,7 @@ setting:
   general: 一般
   githubRelease: Github リリース
   globalJava: 優先する Java
-  globalJavaHint: "自動モードではまずこの Java を試し、ゲームバージョンと互換性がない場合のみ自動検出にフォールバックします。"
+  globalJavaHint: 自動モードではまずこの Java を試し、ゲームバージョンと互換性がない場合のみ自動検出にフォールバックします。
   globalSetting: グローバル設定
   globalSettingHint: 起動構成はこれらの設定をデフォルトとして設定します
   importSettings: 設定をインポート
@@ -1634,12 +1613,10 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: >-
-      データのルートは一般的な.minecraftディレクトリではありません。XMCLのディレキトリ構造はバニラとは互換性がないので、.minecraftをデータのルートに設定することは推奨されません。
+    description: データのルートは一般的な.minecraftディレクトリではありません。XMCLのディレキトリ構造はバニラとは互換性がないので、.minecraftをデータのルートに設定することは推奨されません。
     drives: 推奨の言語
     name: データディレクトリを設定
-  defaultLayoutDescription: >-
-    デフォルトのレイアウトは"インスタンス"コンセプトを強化しようとしています。Discordのような感じです。Steamなど他のランチャーからもインスパイアされています。
+  defaultLayoutDescription: デフォルトのレイアウトは"インスタンス"コンセプトを強化しようとしています。Discordのような感じです。Steamなど他のランチャーからもインスパイアされています。
   defaultPath: デフォルトのパス
   error:
     badDataRoot: ランチャーデータのためのディレクトリが無効です! 他のディレクトリを選択してください!
@@ -1654,15 +1631,13 @@ setup:
   game:
     name: すでに存在するゲームをインポート
   locale:
-    description: >-
-      もしある場合はあなたの最も好ましい言語を選択してください! もしネイティブの言語が無く足すケア必要な場合は、私達のGithubで翻訳についてプルリクエストをしてください!
+    description: もしある場合はあなたの最も好ましい言語を選択してください! もしネイティブの言語が無く足すケア必要な場合は、私達のGithubで翻訳についてプルリクエストをしてください!
     language: 言語
     name: 言語を設定
   path: 現在のパス
 shaderPack:
   linkShared: シェーダーパックをインスタンス間で共有
-  linkSharedHint: >-
-    このインスタンスの shaderpacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じシェーダーパックを使用します。既存のパックは共有フォルダーに統合されます。
+  linkSharedHint: このインスタンスの shaderpacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じシェーダーパックを使用します。既存のパックは共有フォルダーに統合されます。
   disabled: シェーダーパックが無効です
   dropHint: シェーダーパックをインポート
   empty: シェーダーパックがありません
@@ -1680,6 +1655,7 @@ shaderPack:
   market: シェーダーマーケット
   noPacks: シェーダーパックがインストールされていません
   search: シェーダーパックを検索...
+  'off': 'Off'
 shared:
   close: 閉じる
   pressKeyCombination: キーの組み合わせを押してください...
@@ -1739,8 +1715,8 @@ task:
   running: 実行中...
   succeed: 完了
   eta: 残り約 {time}
-  remaining: '残り {size}'
-  totalRemaining: '残り {size}'
+  remaining: 残り {size}
+  totalRemaining: 残り {size}
   op:
     update: 更新
     export: エクスポート
@@ -1885,7 +1861,7 @@ unresolvedFiles:
   description: これらのファイルはインストール中にダウンロードできませんでした。一致するソースを検索してインストールするか、ファイルを無視して起動してください。
   empty: すべてのファイルが解決されました。
   ignoreSelected: '{count} 件を無視'
-  install: '一致した {count} 件をインストール'
+  install: 一致した {count} 件をインストール
   matched: 一致
   noMatch: 見つかりません
   search: ソースを検索
@@ -2028,3 +2004,156 @@ migrateMinecraft:
   name: Minecraftファイルを移行
 reinstall:
   name: '{version} を再インストール'
+gamepad:
+  connected: Controller Connected
+  guideTitle: Controller Controls
+  enableSwitchLabel: Gamepad Controls
+  enabledState: Enabled
+  disabledState: Disabled
+  toggle: Toggle
+  disabledNotify: Gamepad controls disabled.
+  disconnected: Controller Disconnected
+  enabledNotify: Gamepad controls enabled! Use D-pad/Left stick to navigate, {btnA} to select, {btnB} to go back.
+  guide:
+    confirm: Select
+    navigate: Navigate
+    tabs: Switch tabs
+    sections: Switch sections
+    launch: Launch game
+    instanceSettings: Instance settings
+  modSuggestTitle: Controller Mod
+  modSuggestBody: To use your gamepad inside Minecraft, a controller mod is recommended. Would you like to install the appropriate mod for your modloader?
+  modInstall: Install Mod
+  modSkip: Skip
+  modDone: Done
+  modInstalled: Controller mod installed successfully! It will be active next time you launch Minecraft.
+  modInstalledNotify: '{name} has been installed for in-game controller support.'
+  modNotFound: No compatible version found for {loader} on Minecraft {version}.
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+  settingSteamTitle: Add Launcher to Steam
+  steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
+  steamAlreadyAddedNotify: Launcher is already in your Steam Library.
+  steamDeckTitle: Steam Deck Detected
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckAddBtn: Add to Steam ({btn})
+  steamDeckCancelBtn: Cancel ({btn})
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode
