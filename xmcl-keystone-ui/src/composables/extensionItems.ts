@@ -5,6 +5,7 @@ import { Instance } from '@xmcl/instance'
 import { VersionHeader, VersionServiceKey, getExpectVersion, BedrockServiceKey } from '@xmcl/runtime-api'
 import { useDateString } from './date'
 import { useService } from './service'
+import { useModloadersCustom, resolveFabricCustomLoader, resolveCustomLoaderFromInstance, DEFAULT_LOADER_IDS } from './modloaderCustom'
 
 export function useExtensionItemsGamePlay(instance: Ref<Instance>) {
   const { t } = useI18n()
@@ -61,6 +62,7 @@ export function useExtensionItemsVersion(instance: Ref<Instance>, versionHeader:
   const { t } = useI18n()
   const { showVersionDirectory } = useService(VersionServiceKey)
   const { getInstallation } = useService(BedrockServiceKey)
+  const { allLoaders } = useModloadersCustom()
 
   const bedrockVersion = ref('')
   const bedrockInstalled = ref(false)
@@ -100,8 +102,15 @@ export function useExtensionItemsVersion(instance: Ref<Instance>, versionHeader:
       return items
     }
 
-    const icon = runtime.forge ? BuiltinImages.forge : runtime.fabricLoader ? BuiltinImages.fabric : runtime.quiltLoader
-      ? BuiltinImages.quilt : runtime.neoForged ? BuiltinImages.neoForged : runtime.optifine ? BuiltinImages.optifine : runtime.labyMod ? BuiltinImages.labyMod : BuiltinImages.minecraft
+    let custom: { name: string; icon?: string; version?: string } | undefined
+    if (runtime.fabricLoader) {
+      custom = resolveFabricCustomLoader(runtime.minecraft, runtime.fabricLoader)
+    } else if (!runtime.forge && !runtime.neoForged && !runtime.quiltLoader && !runtime.optifine && !runtime.labyMod) {
+      custom = resolveCustomLoaderFromInstance(instance.value, allLoaders.value)
+    }
+
+    const icon = custom?.icon || (runtime.forge ? BuiltinImages.forge : runtime.fabricLoader ? BuiltinImages.fabric : runtime.quiltLoader
+      ? BuiltinImages.quilt : runtime.neoForged ? BuiltinImages.neoForged : runtime.optifine ? BuiltinImages.optifine : runtime.labyMod ? BuiltinImages.labyMod : BuiltinImages.minecraft)
     if (versionHeader.value) {
       items.push({
         avatar: icon,
@@ -110,13 +119,68 @@ export function useExtensionItemsVersion(instance: Ref<Instance>, versionHeader:
         onclick: () => onShowLocalVersion()
       })
     } else {
+      let expect = getExpectVersion(runtime)
+      if (instance.value.version && expect === runtime.minecraft) {
+        expect = `${expect} (${custom?.name || instance.value.version})`
+      }
       items.push({
         avatar: icon,
         title: t('version.notInstalled') as string,
-        text: getExpectVersion(runtime),
+        text: expect,
       })
     }
     return items as AvatarItemProps[]
   })
+
   return items
+}
+
+export function useExtensionItemsModLoader(instance: Ref<Instance>) {
+  const { t } = useI18n()
+  const { allLoaders } = useModloadersCustom()
+
+  const item = computed<AvatarItemProps>(() => {
+    const runtime = instance.value.runtime
+    const loader = [
+      ['NeoForge', runtime.neoForged, BuiltinImages.neoForged],
+      ['Forge', runtime.forge, BuiltinImages.forge],
+      ['Fabric', runtime.fabricLoader, BuiltinImages.fabric],
+      ['Quilt', runtime.quiltLoader, BuiltinImages.quilt],
+      ['OptiFine', runtime.optifine, BuiltinImages.optifine],
+      ['LabyMod', runtime.labyMod, BuiltinImages.labyMod],
+    ].find(([, value]) => value)
+
+    let custom: { name: string; icon?: string; version?: string } | undefined
+    if (runtime.fabricLoader) {
+      custom = resolveFabricCustomLoader(runtime.minecraft, runtime.fabricLoader)
+    }
+
+    if (!loader && !custom) {
+      custom = resolveCustomLoaderFromInstance(instance.value, allLoaders.value)
+    }
+
+    let loaderText = t('baseSetting.info.vanilla')
+    let avatar: string | undefined
+
+    if (custom) {
+      const verText = (loader ? loader[1] : '') || custom.version || instance.value.version
+      loaderText = verText ? `${custom.name} ${verText}` : custom.name
+      avatar = custom.icon
+    } else if (loader) {
+      loaderText = `${loader[0]} ${loader[1]}`
+      avatar = loader[2] as string
+    } else if (instance.value.version) {
+      loaderText = instance.value.version
+    }
+
+    return {
+      icon: avatar ? undefined : 'extension',
+      avatar,
+      title: t('baseSetting.info.modLoader'),
+      text: loaderText,
+      responsive: true,
+    }
+  })
+
+  return item
 }

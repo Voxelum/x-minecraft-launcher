@@ -457,6 +457,7 @@ const onInstall = async (mod: ProjectVersion) => {
       effectiveInstalled.value,
       resolvedDeps ?? [],
       curseforgeFile.value?.downloadUrl,
+      curseforgeFile.value?.gameVersions,
     )
     emit('installed', mod)
   } finally {

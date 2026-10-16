@@ -2,6 +2,7 @@ import { injection } from '@/util/inject'
 import { TaskState, Tasks } from '@xmcl/runtime-api'
 import { Ref, computed, inject, shallowRef } from 'vue'
 import { kTaskManager } from './taskManager'
+import { resolveFabricCustomLoader } from './modloaderCustom'
 
 export function useTaskCount() {
   const { tasks } = inject(kTaskManager, {
@@ -130,8 +131,10 @@ export function useLocalizedTaskFunc() {
 
     // Install Fabric Task
     if (task.type === 'installFabric') {
-      const title = t('installFabric.name') + ' ' + task.loader
-      return { title, subtitle: '' }
+      const custom = resolveFabricCustomLoader(task.minecraft, task.loader)
+      const loaderName = custom?.name || 'Fabric'
+      const title = t('installFabric.name').replace(/fabric/i, loaderName) + ' ' + task.loader
+      return { title, subtitle: task.minecraft || '' }
     }
 
     // Install Quilt Task

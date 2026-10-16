@@ -45,6 +45,131 @@ describe('generateBaseName', () => {
   test('should only use first matching loader (forge > fabric > quilt > neoForged > labyMod)', () => {
     expect(generateBaseName(rt({ minecraft: '1.20.1', forge: '47.2.0', fabricLoader: '0.14.21' }))).toBe('1.20.1-forge47.2.0')
   })
+
+  test('should prioritize custom modloader version when provided', () => {
+    expect(generateBaseName(rt({ minecraft: '1.20.1', forge: '47.4.10' }), '3.1.0-beta.2+26.2')).toBe('1.20.1-3.1.0-beta.2')
+  })
+
+  test('should format name with custom modloader metadata from localStorage', () => {
+    const store: Record<string, string> = {
+      xmcl_user_custom_modloaders: JSON.stringify([
+        {
+          id: 'connector',
+          name: 'Sinytra Connector',
+          versions: [{ version: '3.1.0-beta.2+26.2' }],
+        },
+      ]),
+    }
+    const orig = (globalThis as any).localStorage
+    ;(globalThis as any).localStorage = {
+      getItem: (key: string) => store[key] || null,
+      setItem: (key: string, val: string) => { store[key] = val },
+      removeItem: (key: string) => { delete store[key] },
+    }
+    try {
+      expect(generateBaseName(rt({ minecraft: '1.20.1', forge: '47.4.10' }), '3.1.0-beta.2+26.2')).toBe('1.20.1-Sinytra-Connector-3.1.0-beta.2')
+    } finally {
+      ;(globalThis as any).localStorage = orig
+    }
+  })
+
+  test('should format name for Babric when b1.7.3 and fabricLoader are used', () => {
+    expect(generateBaseName(rt({ minecraft: 'b1.7.3', fabricLoader: '0.19.5' }))).toBe('b1.7.3-Babric-0.19.5')
+  })
+
+  test('should format name for Legacy Fabric when legacy version and fabricLoader are used without localStorage', () => {
+    expect(generateBaseName(rt({ minecraft: '1.8.9', fabricLoader: '0.14.21' }))).toBe('1.8.9-Legacy-Fabric-0.14.21')
+  })
+
+  test('should format name for Ornithe when ornithe version and fabricLoader are used without localStorage', () => {
+    expect(generateBaseName(rt({ minecraft: '1.2.5', fabricLoader: '0.16.10' }))).toBe('1.2.5-Ornithe-0.16.10')
+  })
+
+  test('should format name with custom modloader from localStorage when fabricLoader is used', () => {
+    const store: Record<string, string> = {
+      xmcl_user_custom_modloaders: JSON.stringify([
+        {
+          id: 'legacy-fabric',
+          name: 'Legacy Fabric',
+          gameVersions: ['1.13.2'],
+          versions: [{ version: '0.14.21' }],
+        },
+      ]),
+    }
+    const orig = (globalThis as any).localStorage
+    ;(globalThis as any).localStorage = {
+      getItem: (key: string) => store[key] || null,
+      setItem: (key: string, val: string) => { store[key] = val },
+      removeItem: (key: string) => { delete store[key] },
+    }
+    try {
+      expect(generateBaseName(rt({ minecraft: '1.13.2', fabricLoader: '0.14.21' }))).toBe('1.13.2-Legacy-Fabric-0.14.21')
+    } finally {
+      ;(globalThis as any).localStorage = orig
+    }
+  })
+
+  test('should format name for any future custom modloader matching by icon or version', () => {
+    const store: Record<string, string> = {
+      xmcl_user_custom_modloaders: JSON.stringify([
+        {
+          id: 'future-loader',
+          name: 'Future Super Loader',
+          icon: 'custom-icon-url-123',
+          versions: [{ version: '5.0.0' }],
+        },
+      ]),
+    }
+    const orig = (globalThis as any).localStorage
+    ;(globalThis as any).localStorage = {
+      getItem: (key: string) => store[key] || null,
+      setItem: (key: string, val: string) => { store[key] = val },
+      removeItem: (key: string) => { delete store[key] },
+    }
+    try {
+      // By fabricLoader
+      expect(generateBaseName(rt({ minecraft: '1.21.1', fabricLoader: '5.0.0' }))).toBe('1.21.1-Future-Super-Loader-5.0.0')
+      // By icon
+      expect(generateBaseName(rt({ minecraft: '1.21.1', neoForged: '21.1.50' }), '', 'custom-icon-url-123')).toBe('1.21.1-Future-Super-Loader-21.1.50')
+    } finally {
+      ;(globalThis as any).localStorage = orig
+    }
+  })
+
+  test('should not mistake standard modern Fabric for custom loaders even if Babric/Legacy exist in localStorage', () => {
+    const store: Record<string, string> = {
+      xmcl_user_custom_modloaders: JSON.stringify([
+        {
+          id: 'babric',
+          name: 'Babric',
+          gameVersions: ['b1.7.3', 'b1.7.2'],
+          versions: [{ version: '0.19.5' }],
+        },
+        {
+          id: 'legacy-fabric',
+          name: 'Legacy Fabric',
+          gameVersions: ['1.12.2', '1.8.9'],
+          versions: [{ version: '0.16.14' }],
+        },
+      ]),
+    }
+    const orig = (globalThis as any).localStorage
+    ;(globalThis as any).localStorage = {
+      getItem: (key: string) => store[key] || null,
+      setItem: (key: string, val: string) => { store[key] = val },
+      removeItem: (key: string) => { delete store[key] },
+    }
+    try {
+      // 1.20.1 with fabric 0.19.5 (same version as babric) must remain official fabric!
+      expect(generateBaseName(rt({ minecraft: '1.20.1', fabricLoader: '0.19.5' }))).toBe('1.20.1-fabric0.19.5')
+      // b1.7.3 with fabric 0.19.5 should be Babric
+      expect(generateBaseName(rt({ minecraft: 'b1.7.3', fabricLoader: '0.19.5' }))).toBe('b1.7.3-Babric-0.19.5')
+      // 1.12.2 with fabric 0.16.14 should be Legacy Fabric
+      expect(generateBaseName(rt({ minecraft: '1.12.2', fabricLoader: '0.16.14' }))).toBe('1.12.2-Legacy-Fabric-0.16.14')
+    } finally {
+      ;(globalThis as any).localStorage = orig
+    }
+  })
 })
 
 describe('generateDistinctName', () => {

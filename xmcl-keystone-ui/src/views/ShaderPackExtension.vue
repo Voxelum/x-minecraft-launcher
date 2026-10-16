@@ -40,10 +40,10 @@ import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import { useQuery } from '@/composables/query'
 
-const { runtime: version } = injection(kInstance)
+const { instance, runtime: version } = injection(kInstance)
 
 const extensionItems = computed(() => {
-  const items = getExtensionItemsFromRuntime(version.value)
+  const items = getExtensionItemsFromRuntime(version.value, instance.value.version)
   const optifineIndex = items.findIndex((item) => item.title === 'Optifine')
   if (optifineIndex !== -1) {
     items.splice(optifineIndex, 1)

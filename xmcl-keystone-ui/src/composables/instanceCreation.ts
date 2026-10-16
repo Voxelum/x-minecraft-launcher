@@ -135,7 +135,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
       )
     }
     return generateDistinctName(
-      generateBaseName(data.runtime),
+      generateBaseName(data.runtime, data.version, data.icon),
       instances.value.map((i) => i.name),
     )
   })

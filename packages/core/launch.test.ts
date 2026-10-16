@@ -341,9 +341,106 @@ describe('Launcher', () => {
         quickPlaySingleplayer: 'New World',
       })
       expect(args[args.indexOf('--quickPlaySingleplayer') + 1]).toEqual('New World')
-      // Should not contain server arguments
       expect(args.indexOf('--server')).toBe(-1)
       expect(args.indexOf('--quickPlayMultiplayer')).toBe(-1)
+    })
+
+    test('should exclude asm-all from classpath when complete modular asm is present', async ({ mock }) => {
+      const args = await generateArguments({
+        version: {
+          id: 'b1.7.3-Babric',
+          minecraftVersion: 'b1.7.3',
+          assets: 'legacy',
+          mainClass: 'net.fabricmc.loader.impl.launch.knot.KnotClient',
+          libraries: [
+            {
+              name: 'org.ow2.asm:asm:9.11',
+              groupId: 'org.ow2.asm',
+              artifactId: 'asm',
+              version: '9.11',
+              isNative: false,
+              download: { path: 'org/ow2/asm/asm/9.11/asm-9.11.jar', sha1: '', size: 0, url: '' },
+            },
+            {
+              name: 'org.ow2.asm:asm-tree:9.11',
+              groupId: 'org.ow2.asm',
+              artifactId: 'asm-tree',
+              version: '9.11',
+              isNative: false,
+              download: { path: 'org/ow2/asm/asm-tree/9.11/asm-tree-9.11.jar', sha1: '', size: 0, url: '' },
+            },
+            {
+              name: 'org.ow2.asm:asm-commons:9.11',
+              groupId: 'org.ow2.asm',
+              artifactId: 'asm-commons',
+              version: '9.11',
+              isNative: false,
+              download: { path: 'org/ow2/asm/asm-commons/9.11/asm-commons-9.11.jar', sha1: '', size: 0, url: '' },
+            },
+            {
+              name: 'org.ow2.asm:asm-analysis:9.11',
+              groupId: 'org.ow2.asm',
+              artifactId: 'asm-analysis',
+              version: '9.11',
+              isNative: false,
+              download: { path: 'org/ow2/asm/asm-analysis/9.11/asm-analysis-9.11.jar', sha1: '', size: 0, url: '' },
+            },
+            {
+              name: 'org.ow2.asm:asm-all:4.1',
+              groupId: 'org.ow2.asm',
+              artifactId: 'asm-all',
+              version: '4.1',
+              isNative: false,
+              download: { path: 'org/ow2/asm/asm-all/4.1/asm-all-4.1.jar', sha1: '', size: 0, url: '' },
+            },
+          ],
+          arguments: { game: [], jvm: ['-cp', '${classpath}'] },
+        } as any,
+        gamePath: mock,
+        javaPath: '/test/java',
+      })
+      const cpIndex = args.indexOf('-cp')
+      expect(cpIndex).not.toBe(-1)
+      const cp = args[cpIndex + 1]
+      expect(cp).toContain('asm-9.11.jar')
+      expect(cp).not.toContain('asm-all-4.1.jar')
+    })
+
+    test('should keep asm-all in classpath when modular asm is incomplete', async ({ mock }) => {
+      const args = await generateArguments({
+        version: {
+          id: 'b1.7.3-Incomplete',
+          minecraftVersion: 'b1.7.3',
+          assets: 'legacy',
+          mainClass: 'net.fabricmc.loader.impl.launch.knot.KnotClient',
+          libraries: [
+            {
+              name: 'org.ow2.asm:asm:9.11',
+              groupId: 'org.ow2.asm',
+              artifactId: 'asm',
+              version: '9.11',
+              isNative: false,
+              download: { path: 'org/ow2/asm/asm/9.11/asm-9.11.jar', sha1: '', size: 0, url: '' },
+            },
+            {
+              name: 'org.ow2.asm:asm-all:4.1',
+              groupId: 'org.ow2.asm',
+              artifactId: 'asm-all',
+              version: '4.1',
+              isNative: false,
+              download: { path: 'org/ow2/asm/asm-all/4.1/asm-all-4.1.jar', sha1: '', size: 0, url: '' },
+            },
+          ],
+          arguments: { game: [], jvm: ['-cp', '${classpath}'] },
+        } as any,
+        gamePath: mock,
+        javaPath: '/test/java',
+      })
+      const cpIndex = args.indexOf('-cp')
+      expect(cpIndex).not.toBe(-1)
+      const cp = args[cpIndex + 1]
+      expect(cp).toContain('asm-9.11.jar')
+      expect(cp).toContain('asm-all-4.1.jar')
     })
   })
 

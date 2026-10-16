@@ -26,7 +26,13 @@
           :label="t('shared.name')"
           :rules="nameRules"
           required
-        />
+        >
+          <template #prepend-inner>
+            <v-avatar size="24" rounded class="mr-1">
+              <v-img :src="getInstanceIcon(content as any, undefined)" />
+            </v-avatar>
+          </template>
+        </v-text-field>
         <v-text-field
           v-if="content.edition !== 'bedrock'"
           v-model="content.author"
@@ -86,6 +92,7 @@ import { injection } from '@/util/inject'
 import { required } from '@/util/props'
 import { kInstanceCreation } from '../composables/instanceCreation'
 import { getEffectiveInstanceName, validateInstanceName } from '@/util/instanceName'
+import { getInstanceIcon } from '@/util/favicon'
 import ErrorView from './ErrorView.vue'
 import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
 import StepperAdvanceContent from './StepperAdvanceContent.vue'

@@ -32,12 +32,25 @@ export function useModrinthInstaller(
     return installFiles(target, [], files)
   }
 
-  async function installWithDependencies(versionId: string, loaders: string[], icon: string | undefined, installed: ProjectFile[], deps: Array<{ recommendedVersion: ProjectVersion; project: Project; type: string }>, artifactUrl?: string) {
+  async function installWithDependencies(versionId: string, loaders: string[], icon: string | undefined, installed: ProjectFile[], deps: Array<{ recommendedVersion: ProjectVersion; project: Project; type: string }>, artifactUrl?: string, gameVersions?: string[]) {
     const _path = path.value
     const _runtime = runtime.value
     const _allFiles = allFiles.value
-    if (isNoModLoader(runtime.value)) {
-      const success = await installDefaultModLoader(_path, _runtime, loaders)
+    const currentMc = _runtime.minecraft
+    const needsGameVersionAdapt = Boolean(gameVersions && gameVersions.length > 0 && !gameVersions.includes(currentMc))
+    const hasCompatibleLoader = loaders.some(l => {
+      if (l === 'fabric' && (_runtime.fabricLoader || _runtime.quiltLoader)) return true
+      if (l === 'forge' && _runtime.forge) return true
+      if (l === 'neoforge' && _runtime.neoForged) return true
+      if (l === 'quilt' && _runtime.quiltLoader) return true
+      return false
+    })
+
+    const hasConnector = _allFiles.some(f => f.path.toLowerCase().includes('connector'))
+    const isConnectorCompatible = hasConnector && (_runtime.neoForged || _runtime.forge) && (loaders.includes('fabric') || loaders.includes('quilt'))
+
+    if (isNoModLoader(runtime.value) || (!hasCompatibleLoader && !isConnectorCompatible) || needsGameVersionAdapt) {
+      const success = await installDefaultModLoader(_path, _runtime, loaders, gameVersions)
       if (!success) {
         return false
       }

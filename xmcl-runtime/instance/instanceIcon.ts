@@ -48,8 +48,23 @@ export function toMediaIconUrl(iconPath: string): string {
  * the instance's current absolute path. External URLs (http/https/data) and
  * global image URLs are returned unchanged.
  */
+export function isBundledAssetIcon(icon: string | undefined): boolean {
+  if (!icon) return false
+  if (icon.startsWith('@/assets/') || icon.startsWith('/assets/') || icon.startsWith('assets/')) {
+    return true
+  }
+  const mediaPath = getMediaIconPath(icon)
+  if (mediaPath && (mediaPath.startsWith('@/assets/') || mediaPath.startsWith('/assets/') || mediaPath.startsWith('assets/'))) {
+    return true
+  }
+  return false
+}
+
 export function resolveInstanceIcon(icon: string | undefined, instancePath: string): string {
   if (!icon) return ''
+  if (isBundledAssetIcon(icon)) {
+    return ''
+  }
   if (hasScheme(icon)) return icon
   const abs = isAbsolute(icon) ? icon : join(instancePath, icon)
   return toMediaIconUrl(abs)
@@ -66,6 +81,9 @@ export function resolveInstanceIcon(icon: string | undefined, instancePath: stri
  */
 export function serializeInstanceIcon(icon: string | undefined, instancePath: string): string {
   if (!icon) return ''
+  if (isBundledAssetIcon(icon)) {
+    return ''
+  }
   const mediaPath = getMediaIconPath(icon)
   if (!mediaPath) return icon
   const rel = relative(instancePath, mediaPath)

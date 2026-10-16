@@ -594,6 +594,35 @@ export class InstallCoordinator {
     request: Extract<VersionInstallRequest, { type: 'instance' }>,
   ) {
     const runtime = request.runtime
+    if (runtime.forge === '[recommended]' || runtime.forge === 'recommended') {
+      const forges = await this.versionMetadataService.getForgeVersions(runtime.minecraft).catch(() => [])
+      const actual = forges.find((v) => v.type === 'recommended')?.version || forges[0]?.version
+      if (actual) {
+        runtime.forge = actual
+        await this.instanceService.editInstance({ instancePath: request.instancePath, runtime: { ...runtime } }).catch(() => {})
+      }
+    } else if (runtime.forge === '[latest]' || runtime.forge === 'latest') {
+      const forges = await this.versionMetadataService.getForgeVersions(runtime.minecraft).catch(() => [])
+      const actual = forges.find((v) => v.type === 'latest')?.version || forges[0]?.version
+      if (actual) {
+        runtime.forge = actual
+        await this.instanceService.editInstance({ instancePath: request.instancePath, runtime: { ...runtime } }).catch(() => {})
+      }
+    }
+    if (runtime.neoForged === '[latest]' || runtime.neoForged === 'latest' || runtime.neoForged === '[recommended]' || runtime.neoForged === 'recommended') {
+      const neos = await this.versionMetadataService.getNeoForgedVersions(runtime.minecraft).catch(() => [])
+      if (neos && neos[0]) {
+        runtime.neoForged = neos[0]
+        await this.instanceService.editInstance({ instancePath: request.instancePath, runtime: { ...runtime } }).catch(() => {})
+      }
+    }
+    if (runtime.fabricLoader === '[latest]' || runtime.fabricLoader === 'latest') {
+      const { loaderVersions } = await this.versionMetadataService.getFabricVersions().catch(() => ({ loaderVersions: [] }))
+      if (loaderVersions && loaderVersions[0]) {
+        runtime.fabricLoader = loaderVersions[0].version
+        await this.instanceService.editInstance({ instancePath: request.instancePath, runtime: { ...runtime } }).catch(() => {})
+      }
+    }
     const local = selectLocalVersion(
       this.versionService.state.local,
       runtime,
@@ -618,6 +647,7 @@ export class InstallCoordinator {
             issue,
             preferredJava: this.instanceService.state.all[request.instancePath]?.java,
           }),
+          request.instancePath,
         )
       } catch (error) {
         if (!isMissingVersionJsonError(error)) throw error
@@ -641,16 +671,25 @@ export class InstallCoordinator {
         },
         getForgeVersion: async (minecraft, forge) => {
           const versions = await this.versionMetadataService.getForgeVersions(minecraft)
+          if (forge === '[recommended]' || forge === 'recommended') {
+            return versions.find((version) => version.type === 'recommended') || versions[0]
+          }
+          if (forge === '[latest]' || forge === 'latest') {
+            return versions.find((version) => version.type === 'latest') || versions[0]
+          }
           return versions.find((version) => version.version === forge)
         },
         getNeoForgedVersion: async (minecraft, neoForged) => {
           const versions = await this.versionMetadataService.getNeoForgedVersions(minecraft)
+          if (neoForged === '[latest]' || neoForged === 'latest' || neoForged === '[recommended]' || neoForged === 'recommended') {
+            return versions[0]
+          }
           return versions.find((version) => version === neoForged)
         },
         getLabyModManifest: () => this.versionMetadataService.getLabyModManifest(),
       },
     )
-    return this.applyInstanceVersionRecipe(recipe)
+    return this.applyInstanceVersionRecipe(recipe, request.instancePath)
   }
 
   private async applyServerRecipe(request: Extract<VersionInstallRequest, { type: 'server' }>) {
@@ -741,7 +780,18 @@ export class InstallCoordinator {
           side: 'server',
         })
       } else if (runtime.fabricLoader) {
-        version = await this.applyFabricRecipe(minecraft, runtime.fabricLoader, undefined, 'server')
+        const instance = this.instanceService.state.all[request.path]
+        let provider: 'ornithe' | 'babric' | 'legacy-fabric' | 'fabric' | undefined
+        const icon = instance?.icon
+        const ver = instance?.version
+        if (icon?.includes('ornithe') || ver?.includes('ornithe')) {
+          provider = 'ornithe'
+        } else if (icon?.includes('babric') || ver?.includes('babric') || minecraft === 'b1.7.3' || minecraft === 'b1.7.2') {
+          provider = 'babric'
+        } else if (icon?.includes('legacy-fabric') || icon?.includes('legacy_fabric') || ver?.includes('legacy-fabric') || ver?.includes('legacy_fabric')) {
+          provider = 'legacy-fabric'
+        }
+        version = await this.applyFabricRecipe(minecraft, runtime.fabricLoader, undefined, 'server', provider)
       } else if (runtime.quiltLoader) {
         version = await this.applyQuiltRecipe(minecraft, runtime.quiltLoader, undefined, 'server')
       }
@@ -851,6 +901,7 @@ export class InstallCoordinator {
     loader: string,
     base?: string,
     side: 'client' | 'server' = 'client',
+    provider?: 'ornithe' | 'babric' | 'legacy-fabric' | 'fabric',
   ) {
     const task = this.tasks.create<InstallFabricTask>({
       type: 'installFabric',
@@ -870,12 +921,31 @@ export class InstallCoordinator {
         side === 'client'
           ? `/v2/versions/loader/${minecraft}/${loader}/profile/json`
           : `/v2/versions/loader/${minecraft}/${loader}/server/json`
-      const profileUrls = [
-        ...(shouldOverrideApiSet(this.settings, this.gfw.inside)
-          ? getApiSets(this.settings).map((set) => `${set.url}/fabric-meta${profilePath}`)
-          : []),
-        `${DEFAULT_META_URL_FABRIC}${profilePath}`,
-      ]
+
+      let resolvedProvider = provider
+      if (!resolvedProvider) {
+        if (minecraft === 'b1.7.3' || minecraft === 'b1.7.2') {
+          resolvedProvider = 'babric'
+        }
+      }
+
+      let profileUrls: string[]
+      if (resolvedProvider === 'ornithe') {
+        const sidePath = side === 'client' ? 'profile' : 'server'
+        profileUrls = [`https://meta.ornithemc.net/v3/versions/fabric-loader/${minecraft}/${loader}/${sidePath}/json`]
+      } else if (resolvedProvider === 'babric') {
+        profileUrls = [`https://meta.babric.glass-launcher.net${profilePath}`]
+      } else if (resolvedProvider === 'legacy-fabric') {
+        profileUrls = [`https://meta.legacyfabric.net${profilePath}`]
+      } else {
+        profileUrls = [
+          ...(shouldOverrideApiSet(this.settings, this.gfw.inside)
+            ? getApiSets(this.settings).map((set) => `${set.url}/fabric-meta${profilePath}`)
+            : []),
+          `${DEFAULT_META_URL_FABRIC}${profilePath}`,
+        ]
+      }
+
       const workflow = createFabricInstallWorkflow({
         minecraft: this.getPath(),
         minecraftVersion: minecraft,
@@ -1040,6 +1110,14 @@ export class InstallCoordinator {
     let installer: InstallFile
     const legacyUniversal = options.type === 'forge' && options.minecraft.startsWith('1.4.')
     if (options.type === 'forge') {
+      if (options.version === '[recommended]' || options.version === 'recommended' || options.version === '[latest]' || options.version === 'latest') {
+        const forges = await this.versionMetadataService.getForgeVersions(options.minecraft)
+        const resolved = (options.version.includes('recommended') ? forges.find((v) => v.type === 'recommended') : undefined) || forges[0]
+        if (resolved) {
+          options.version = resolved.version
+          if (resolved.installer) options.installer = resolved.installer
+        }
+      }
       artifactVersion = resolveForgeArtifactVersion(options.minecraft, options.version)
       installer = resolveForgeInstallerFile(
         artifactVersion,
@@ -1049,6 +1127,10 @@ export class InstallCoordinator {
         legacyUniversal,
       ).file
     } else {
+      if (options.version === '[latest]' || options.version === 'latest' || options.version === '[recommended]' || options.version === 'recommended') {
+        const neos = await this.versionMetadataService.getNeoForgedVersions(options.minecraft)
+        if (neos[0]) options.version = neos[0]
+      }
       const legacy = options.version.startsWith('47.') || options.version.startsWith('1.20.1-47.')
       const project = legacy ? 'forge' : 'neoforge'
       const publishedVersion =
@@ -1218,7 +1300,7 @@ export class InstallCoordinator {
     }
   }
 
-  private applyInstanceVersionRecipe(recipe: VersionInstallManifest) {
+  private applyInstanceVersionRecipe(recipe: VersionInstallManifest, instancePath?: string) {
     const context = {
       timings: [] as Array<{
         task: string
@@ -1240,7 +1322,7 @@ export class InstallCoordinator {
           })
     return task.wrap(
       this.installContext.run(context, () =>
-        this.applyInstanceVersionRecipeImpl(recipe, context, task),
+        this.applyInstanceVersionRecipeImpl(recipe, context, task, instancePath),
       ),
     )
   }
@@ -1256,6 +1338,7 @@ export class InstallCoordinator {
       }>
     },
     task: TaskInstance<Task>,
+    instancePath?: string,
   ) {
     if (recipe.schemaVersion !== 2) {
       throw new Error(`Unsupported instance version recipe schema: ${recipe.schemaVersion}`)
@@ -1418,10 +1501,23 @@ export class InstallCoordinator {
             })
           }
           if (layer.type === 'fabric') {
+            const instance = instancePath ? this.instanceService.state.all[instancePath] : undefined
+            let provider: 'ornithe' | 'babric' | 'legacy-fabric' | 'fabric' | undefined
+            const icon = instance?.icon
+            const ver = instance?.version
+            if (icon?.includes('ornithe') || ver?.includes('ornithe')) {
+              provider = 'ornithe'
+            } else if (icon?.includes('babric') || ver?.includes('babric') || minecraft === 'b1.7.3' || minecraft === 'b1.7.2') {
+              provider = 'babric'
+            } else if (icon?.includes('legacy-fabric') || icon?.includes('legacy_fabric') || ver?.includes('legacy-fabric') || ver?.includes('legacy_fabric')) {
+              provider = 'legacy-fabric'
+            }
             return this.applyFabricRecipe(
               minecraft,
               layer.loader,
               base === minecraft ? undefined : base,
+              'client',
+              provider,
             )
           }
           if (layer.type === 'quilt') {

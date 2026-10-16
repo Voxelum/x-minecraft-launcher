@@ -37,7 +37,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { kSearchModel } from '@/composables/search'
 import { useQuery } from '@/composables/query'
 
-const { runtime: version } = injection(kInstance)
+const { instance, runtime: version } = injection(kInstance)
 const { curseforgeCategory, modrinthCategories, gameVersion, source } = injection(kSearchModel)
 const { mods: modFiles } = injection(kInstanceModsContext)
 const { t } = useI18n()
@@ -105,7 +105,7 @@ const extensionItems = computed(() => [
     title: t('mod.name', { count: 2 }),
     text: t('mod.enabled', { count: modFiles.value.filter(v => v.enabled).length }),
   },
-  ...getExtensionItemsFromRuntime(version.value),
+  ...getExtensionItemsFromRuntime(version.value, instance.value.version),
 ])
 
 </script>

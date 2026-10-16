@@ -12,10 +12,17 @@
       <div class="flex items-center px-6 pt-6 pb-4">
         <div class="flex items-center gap-3 flex-grow">
           <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden"
             style="background-color: rgba(var(--v-theme-primary), 0.12)"
           >
-            <v-icon size="22" color="primary">add</v-icon>
+            <v-img
+              v-if="creationIcon"
+              :src="creationIcon"
+              width="28"
+              height="28"
+              class="rounded"
+            />
+            <v-icon v-else size="22" color="primary">add</v-icon>
           </div>
           <div
             class="text-base font-bold tracking-tight"
@@ -206,6 +213,8 @@
 import StepConfig from '@/components/StepConfig.vue'
 import StepServer from '@/components/StepServer.vue'
 import StepperFooter from '@/components/StepperFooter.vue'
+import { BuiltinImages } from '@/constant'
+import { getInstanceIcon } from '@/util/favicon'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
@@ -263,6 +272,11 @@ const { path } = injection(kInstance)
 const creation = useInstanceCreation(gameProfile, instances)
 const { create, reset, error, update, loading } = creation
 provide(kInstanceCreation, creation)
+
+const creationIcon = computed(() => {
+  if (creation.data.edition === 'bedrock') return BuiltinImages.bedrock
+  return getInstanceIcon(creation.data as any, undefined)
+})
 
 // Dialog model
 const { openModpack } = useService(ModpackServiceKey)
