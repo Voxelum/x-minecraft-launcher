@@ -717,6 +717,7 @@ minecraftVersion:
   showAlpha: Snapshot mutatása
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Összes csoport összecsukása
   acceptVersion: Elfogadás {version}
   applyGroupRules: Alkalmazza a mentett csoportosítási szabályokat
   compatible: Kompatibilis mod.

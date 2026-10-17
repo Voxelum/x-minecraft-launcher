@@ -663,6 +663,7 @@ minecraftVersion:
   showAlpha: スナップショットを表示
   snapshot: スナップショット
 mod:
+  collapseAllGroups: すべてのグループを折りたたむ
   acceptVersion: '{version} を受け入れる'
   applyGroupRules: 保存されたグループ化ルールを適用します
   compatible: 利用可能なModです。

@@ -677,6 +677,7 @@ minecraftVersion:
   showAlpha: 顯示快照版
   snapshot: 快照版
 mod:
+  collapseAllGroups: 摺疊所有分組
   acceptVersion: 推薦 {version}
   applyGroupRules: 套用已儲存的分組規則
   compatible: 可用於目前版本。

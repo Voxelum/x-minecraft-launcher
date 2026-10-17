@@ -704,6 +704,7 @@ minecraftVersion:
   showAlpha: Snapshot Göster
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Tüm grupları daralt
   acceptVersion: Kabul Et {version}
   applyGroupRules: Kaydedilen gruplama kurallarını uygula
   compatible: Uyumlu Mod.

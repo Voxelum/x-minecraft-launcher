@@ -751,6 +751,7 @@ minecraftVersion:
   showAlpha: عرض التجريبية (Snapshot)
   snapshot: نسخة تجريبية (Snapshot)
 mod:
+  collapseAllGroups: طي كل المجموعات
   acceptVersion: قبول {version}
   applyGroupRules: تطبيق قواعد التجميع المحفوظة
   compatible: مود متوافق.

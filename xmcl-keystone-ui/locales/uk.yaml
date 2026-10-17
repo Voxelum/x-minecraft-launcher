@@ -742,6 +742,7 @@ minecraftVersion:
   showAlpha: Показати знімки стану (Snapshot)
   snapshot: Знімок стану (Snapshot)
 mod:
+  collapseAllGroups: Згорнути всі групи
   acceptVersion: Прийняти {version}
   applyGroupRules: Застосувати збережені правила групування
   compatible: Сумісний мод.

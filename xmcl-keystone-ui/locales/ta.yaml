@@ -751,6 +751,7 @@ minecraftVersion:
   showAlpha: ஸ்னாப்ஷாட்டைக்காட்டு
   snapshot: ஸ்னாப்ஷாட் (Snapshot)
 mod:
+  collapseAllGroups: அனைத்து குழுக்களையும் சுருக்கு
   acceptVersion: '{version} ஐ ஏற்றுக்கொள்'
   applyGroupRules: சேமித்த குழுவாக்க விதிகளைப் பயன்படுத்து
   compatible: இணக்கமான மாட்.

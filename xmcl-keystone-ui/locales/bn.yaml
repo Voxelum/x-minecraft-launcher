@@ -751,6 +751,7 @@ minecraftVersion:
   showAlpha: স্ন্যাপশট দেখান
   snapshot: স্ন্যাপশট (Snapshot)
 mod:
+  collapseAllGroups: সব গ্রুপ গুটিয়ে নিন
   acceptVersion: '{version} গ্রহণ করুন'
   applyGroupRules: সংরক্ষিত গ্রুপিং নিয়ম প্রয়োগ করুন
   compatible: সামঞ্জস্যপূর্ণ মড।

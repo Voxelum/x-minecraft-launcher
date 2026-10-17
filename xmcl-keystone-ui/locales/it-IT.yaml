@@ -685,6 +685,7 @@ minecraftVersion:
   showAlpha: Mostra snapshot
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Comprimi tutti i gruppi
   acceptVersion: Accetta {version}
   applyGroupRules: Applicare le regole di raggruppamento salvate
   compatible: Mod compatibile.

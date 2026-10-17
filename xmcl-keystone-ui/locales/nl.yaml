@@ -697,6 +697,7 @@ minecraftVersion:
   showAlpha: Toon Snapshots
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Alle groepen inklappen
   acceptVersion: Accepteer {version}
   applyGroupRules: Opgeslagen groeperingsregels toepassen
   compatible: Compatibele Mod.
