@@ -1,12 +1,12 @@
 <template>
   <v-app v-if="!showSetup" class="h-full max-h-screen overflow-hidden select-none" :class="{ 'dark': isDark }">
     <AppBackground />
-    <div class="w-full h-full absolute left-0 header-overlay" :style="{
+    <div v-if="!isBigPicture" class="w-full h-full absolute left-0 header-overlay" :style="{
       height: headerHeight + 70 + 'px',
       'background-image': `linear-gradient(${appBarColor} 0%, color-mix(in srgb, ${appBarColor}, transparent) 65%, transparent 100%)`
     }">
     </div>
-    <AppSystemBar :back="sidebarStyle === 'notch'" />
+    <AppSystemBar v-if="!isBigPicture" :back="sidebarStyle === 'notch'" />
     <div
       class="app-layout flex-grow relative flex overflow-auto"
       :class="[layoutClasses, { 'workspace-side-panel-attached': hasAttachedWorkspacePanel }]"
@@ -25,7 +25,6 @@
     <AppNotifier />
     <AppOmniDialog :agent-enabled="true" />
     <AppAddInstanceDialog />
-    <AppImportUrlDialog />
     <AppGameExitDialog />
     <AppUnauthenticatedWarningDialog />
     <AppMultiplayerLoginDialog />
@@ -35,6 +34,9 @@
     <component :is="lazyDialogComponent" v-if="lazyDialogComponent" />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
     <AppGamepadPrompt />
+    <transition name="bp-mode">
+      <AppBigPictureView v-if="isBigPicture" />
+    </transition>
   </v-app>
   <v-app v-else class="h-full max-h-screen overflow-hidden" :class="{ 'dark': isDark }">
     <AppSystemBar no-user no-task />
@@ -53,7 +55,6 @@ import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useAgentChatHotkey } from '@/composables/agentChat'
-import { useModpackUrlPaste } from '@/composables/modpackPaste'
 import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
 import { kDialogModel } from '@/composables/dialog'
@@ -72,7 +73,6 @@ import { kSidebarSettings, useInjectSidebarSettings, useSidebarSettings } from '
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
-import AppImportUrlDialog from '@/views/AppImportUrlDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
 import AppOmniDialog from '@/views/AppOmniDialog.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
@@ -92,6 +92,8 @@ import { useUserMenuControl } from '@/composables/userMenu'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
 import AppGamepadPrompt from '@/views/AppGamepadPrompt.vue'
+import AppBigPictureView from '@/views/AppBigPictureView.vue'
+import { kBigPicture, useBigPicture } from '@/composables/bigPicture'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 import { kMultiplayerEntry, useMultiplayerEntry } from '@/composables/multiplayerEntry'
 
@@ -120,6 +122,10 @@ const lazyDialogComponent = computed(() => lazyDialogComponents[dialogModel.curr
 const developerMode = computed(() => state.value?.developerMode ?? false)
 
 
+const bigPicture = useBigPicture()
+provide(kBigPicture, bigPicture)
+const { isBigPicture } = bigPicture
+
 provide('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false }))
 provide(kLocalizedContent, useLocalizedContentControl())
 provide(kInstanceLauncher, useInstanceLauncher())
@@ -146,8 +152,6 @@ provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && ro
 useCommandPaletteHotkey()
 // Bind Ctrl/Cmd+Shift+A to open the agent chat panel.
 useAgentChatHotkey()
-// Bind Ctrl/Cmd+V to import modpack from clipboard URL.
-useModpackUrlPaste()
 
 const defaultColor = useInstanceGroupDefaultColor()
 

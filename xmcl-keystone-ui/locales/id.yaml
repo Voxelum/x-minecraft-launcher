@@ -1036,35 +1036,35 @@ multiplayer:
   updateSharedInstanceConfirm: Perbarui dan jalankan
   updateSharedInstanceDescription: Mod yang dibagikan berbeda dengan {instance}. Perbarui instans ini agar sesuai dengan host sebelum dijalankan? Berkas yang telah diubah akan dicadangkan.
   updateSharedInstanceTitle: Perbarui instans yang dibagikan?
-  addFunds: "Tambah dana"
-  availableBalance: "Saldo tersedia"
-  balanceHint: "Tersedia untuk layanan XMCL Together"
-  billing: "Penagihan"
-  billingDescription: "Kelola akses relay, paket Together Home, dan pembayaran Anda."
-  billingError: "Penagihan Together tidak dapat dimuat. Coba lagi sebentar."
-  buyTogether: "Beli Together"
-  cancelTogether: "Batalkan paket"
-  checkout: "Buka pembayaran Waffo"
-  connectionTogetherWarning: "Seorang anggota ruangan tidak dapat terhubung ke Anda selama beberapa waktu. Coba XMCL Together untuk meningkatkan konektivitas semua orang di ruangan. Hanya master ruangan yang memerlukan Together."
-  masterPurchaseHint: "Hanya master ruangan yang memerlukan Together Home untuk meningkatkan konektivitas semua orang di ruangan."
-  natTogetherWarning: "Router Anda mungkin mengalami masalah saat terhubung ke master ruangan. Jika koneksi gagal, coba XMCL Together untuk meningkatkan koneksi antara Anda dan teman-teman. Hanya master ruangan yang perlu membeli Together untuk ruangan ini."
-  togetherName: "Minecraft Together"
-  trialDescription: "Satu uji coba selama 7 hari dengan 1 GB lalu lintas relay."
-  trialTitle: "Uji coba konektivitas"
-  tryTogether: "Coba Together"
-  month: "bulan"
-  orderStatus: "Pesanan Waffo: {status}"
-  planDescription: "20 GB lalu lintas relay terkelola setiap bulan, ditambah pemecahan masalah modpack dengan AI."
-  waffoHint: "Pembayaran diselesaikan dengan aman di Waffo Pancake. XMCL tidak pernah menerima nomor kartu Anda."
+  addFunds: Tambah dana
+  availableBalance: Saldo tersedia
+  balanceHint: Tersedia untuk layanan XMCL Together
+  billing: Penagihan
+  billingDescription: Kelola akses relay, paket Together Home, dan pembayaran Anda.
+  billingError: Penagihan Together tidak dapat dimuat. Coba lagi sebentar.
+  buyTogether: Beli Together
+  cancelTogether: Batalkan paket
+  checkout: Buka pembayaran Waffo
+  connectionTogetherWarning: Seorang anggota ruangan tidak dapat terhubung ke Anda selama beberapa waktu. Coba XMCL Together untuk meningkatkan konektivitas semua orang di ruangan. Hanya master ruangan yang memerlukan Together.
+  masterPurchaseHint: Hanya master ruangan yang memerlukan Together Home untuk meningkatkan konektivitas semua orang di ruangan.
+  natTogetherWarning: Router Anda mungkin mengalami masalah saat terhubung ke master ruangan. Jika koneksi gagal, coba XMCL Together untuk meningkatkan koneksi antara Anda dan teman-teman. Hanya master ruangan yang perlu membeli Together untuk ruangan ini.
+  togetherName: Minecraft Together
+  trialDescription: Satu uji coba selama 7 hari dengan 1 GB lalu lintas relay.
+  trialTitle: Uji coba konektivitas
+  tryTogether: Coba Together
+  month: bulan
+  orderStatus: 'Pesanan Waffo: {status}'
+  planDescription: 20 GB lalu lintas relay terkelola setiap bulan, ditambah pemecahan masalah modpack dengan AI.
+  waffoHint: Pembayaran diselesaikan dengan aman di Waffo Pancake. XMCL tidak pernah menerima nomor kartu Anda.
   subscription:
-    active: "Aktif"
-    cancelled: "Dibatalkan"
-    payment_due: "Pembayaran jatuh tempo"
+    active: Aktif
+    cancelled: Dibatalkan
+    payment_due: Pembayaran jatuh tempo
   trial:
-    active: "Uji coba aktif"
-    available: "Uji coba gratis tersedia"
-    expired: "Uji coba telah digunakan"
-    unavailable: "Uji coba tidak tersedia"
+    active: Uji coba aktif
+    available: Uji coba gratis tersedia
+    expired: Uji coba telah digunakan
+    unavailable: Uji coba tidak tersedia
   loginRequiredDescription: Multipemain P2P menggunakan layanan online XMCL. Masuk ke Akun XMCL untuk melanjutkan.
   loginRequiredTitle: Masuk untuk multipemain P2P
   complete: Selesai
@@ -1257,23 +1257,23 @@ resourcepack:
   unselected: Paket Sumber Daya Tidak Terpilih
 save:
   map:
-    tabTitle: "Peta Dunia"
+    tabTitle: Peta Dunia
   progress:
     zoomIn: Perbesar
     zoomOut: Perkecil
-    loading: "Memuat progres…"
-    noData: "Tidak Ada Progres"
-    noDataHint: "Mainkan dunia ini untuk mencatat kemajuan, statistik, dan progres misi."
-    quests: "Misi"
-    advancements: "Kemajuan"
-    done: "Selesai"
-    inProgress: "Sedang Berlangsung"
-    all: "Semua"
-    treeView: "Tampilan Pohon"
-    filterPlaceholder: "Filter berdasarkan nama…"
-    root: "Awal"
-    exitFullscreen: "Keluar dari Layar Penuh"
-    locked: "Terkunci"
+    loading: Memuat progres…
+    noData: Tidak Ada Progres
+    noDataHint: Mainkan dunia ini untuk mencatat kemajuan, statistik, dan progres misi.
+    quests: Misi
+    advancements: Kemajuan
+    done: Selesai
+    inProgress: Sedang Berlangsung
+    all: Semua
+    treeView: Tampilan Pohon
+    filterPlaceholder: Filter berdasarkan nama…
+    root: Awal
+    exitFullscreen: Keluar dari Layar Penuh
+    locked: Terkunci
   allowCheats: Izinkan Cheat
   copy:
     name: Salin Save
@@ -1342,6 +1342,7 @@ save:
   useMouseRotate: Gunakan mouse untuk memutar tampilan
   useScrollZoom: Gunakan roda gulir untuk memperbesar
   world: Dunia
+  empty: No worlds found
 screenshots:
   empty: Anda tidak memiliki tangkapan layar
   gallery: Galeri Tangkapan Layar
@@ -1611,7 +1612,7 @@ setting:
   general: Umum
   githubRelease: Rilis GitHub
   globalJava: Java pilihan
-  globalJavaHint: "Dalam mode otomatis, Java ini dicoba terlebih dahulu dan hanya beralih ke deteksi otomatis jika tidak kompatibel dengan versi gim."
+  globalJavaHint: Dalam mode otomatis, Java ini dicoba terlebih dahulu dan hanya beralih ke deteksi otomatis jika tidak kompatibel dengan versi gim.
   globalSetting: Pengaturan Instansi Global
   globalSettingHint: Instansi akan menggunakan pengaturan ini secara default.
   importSettings: Impor Pengaturan
@@ -1781,6 +1782,7 @@ shaderPack:
   selectSearchHint: Cari dan pilih Paket Shader
   showDirectory: Tampilkan direktori paket shader
   showFile: Tampilkan paket shader ini di folder
+  'off': 'Off'
 shared:
   pressKeyCombination: Tekan kombinasi tombol...
   add: Tambah
@@ -1845,8 +1847,8 @@ task:
   running: Sedang berjalan...
   succeed: Selesai
   eta: tersisa ~{time}
-  remaining: 'tersisa {size}'
-  totalRemaining: 'Tersisa {size}'
+  remaining: tersisa {size}
+  totalRemaining: Tersisa {size}
   op:
     update: Perbarui
     export: Ekspor
@@ -2088,7 +2090,7 @@ userSkin:
   addNewSkin: Tambah Skin Baru
   editSkin: Edit Skin
   skinName: Nama Skin
-  skinNamePlaceholder: 'mis. Skin Favorit Saya'
+  skinNamePlaceholder: mis. Skin Favorit Saya
   localFile: Berkas Lokal
   urlOrPlayer: URL / Nama Pemain
   urlOrPlayerPlaceholder: Masukkan URL gambar skin atau nama pengguna Minecraft
@@ -2154,3 +2156,125 @@ gamepad:
   steamDeckDesc: Kami mendeteksi bahwa Anda berjalan di Steam Deck. Apakah Anda ingin menambahkan XMCL ke Perpustakaan Steam Anda sebagai game non-Steam untuk integrasi overlay Steam dan pengontrol penuh dalam Mode Game?
   steamDeckAddBtn: Tambahkan ke Steam ({btn})
   steamDeckCancelBtn: Batal ({btn})
+  disconnected: Controller Disconnected
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

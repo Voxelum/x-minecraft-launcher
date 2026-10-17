@@ -86,6 +86,41 @@
       icon="videocam"
     />
 
+    <!-- Big Picture Mode (only visible when a gamepad is connected) -->
+    <template v-if="gamepadConnected">
+      <v-divider class="my-3" />
+      <SettingItem :title="t('bigPicture.title')" :description="t('bigPicture.description')">
+        <template #title>
+          <v-icon start size="small" color="primary">tv</v-icon>
+          {{ t('bigPicture.title') }}
+        </template>
+        <template #action>
+          <v-btn
+            color="primary"
+            data-testid="enter-big-picture-btn"
+            @click="enterBigPicture"
+          >
+            <v-icon start size="small">sports_esports</v-icon>
+            {{ t('bigPicture.enter') }}
+          </v-btn>
+        </template>
+      </SettingItem>
+
+      <SettingItemSwitcher
+        v-model="bigPictureDefaultLaunch"
+        :title="t('bigPicture.launchByDefault')"
+        :description="t('bigPicture.launchByDefaultHint')"
+        icon="login"
+      />
+
+      <SettingItemSwitcher
+        v-model="bigPictureAutoOnGamepad"
+        :title="t('bigPicture.autoOnGamepad')"
+        :description="t('bigPicture.autoOnGamepadHint')"
+        icon="sports_esports"
+      />
+    </template>
+
     <!-- Quick Action Shortcut -->
     <v-divider class="my-3" />
     <SettingItemHotkey
@@ -215,6 +250,15 @@ import { formatShortcutDisplay } from '@/util/shortcut'
 import { useDialog } from '../composables/dialog'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
+import { useBigPicture } from '@/composables/bigPicture'
+import { useGamepad } from '@/composables/gamepad'
+
+const {
+  enterBigPicture,
+  defaultLaunch: bigPictureDefaultLaunch,
+  autoOnGamepad: bigPictureAutoOnGamepad,
+} = useBigPicture()
+const { hasEverConnectedGamepad, connected: gamepadConnected } = useGamepad()
 
 const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
 const getDirErroText = useGetDataDirErrorText()

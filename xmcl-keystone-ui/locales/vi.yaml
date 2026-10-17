@@ -1036,35 +1036,35 @@ multiplayer:
   updateSharedInstanceConfirm: Cập nhật và khởi chạy
   updateSharedInstanceDescription: Các mod được chia sẻ khác với {instance}. Cập nhật phiên bản này để khớp với máy chủ trước khi khởi chạy? Các tệp hiện có đã thay đổi sẽ được sao lưu.
   updateSharedInstanceTitle: Cập nhật phiên bản được chia sẻ?
-  addFunds: "Thêm tiền"
-  availableBalance: "Số dư khả dụng"
-  balanceHint: "Có thể sử dụng cho các dịch vụ XMCL Together"
-  billing: "Thanh toán"
-  billingDescription: "Quản lý quyền truy cập relay, gói Together Home và các khoản thanh toán."
-  billingError: "Không thể tải thông tin thanh toán Together. Vui lòng thử lại sau ít phút."
-  buyTogether: "Mua Together"
-  cancelTogether: "Hủy gói"
-  checkout: "Mở trang thanh toán Waffo"
-  connectionTogetherWarning: "Một thành viên trong phòng đã không thể kết nối với bạn trong một thời gian. Hãy thử XMCL Together để cải thiện kết nối cho mọi người trong phòng. Chỉ chủ phòng cần Together."
-  masterPurchaseHint: "Chỉ chủ phòng cần Together Home để cải thiện kết nối cho mọi người trong phòng."
-  natTogetherWarning: "Bộ định tuyến của bạn có thể gặp khó khăn khi kết nối với chủ phòng. Nếu kết nối thất bại, hãy thử XMCL Together để cải thiện kết nối giữa bạn và bạn bè. Chỉ chủ phòng cần mua Together cho phòng."
-  togetherName: "Minecraft Together"
-  trialDescription: "Một lần dùng thử trong 7 ngày với 1 GB lưu lượng relay."
-  trialTitle: "Dùng thử kết nối"
-  tryTogether: "Dùng thử Together"
-  month: "tháng"
-  orderStatus: "Đơn hàng Waffo: {status}"
-  planDescription: "20 GB lưu lượng relay được quản lý mỗi tháng, cùng với hỗ trợ AI khắc phục sự cố modpack."
-  waffoHint: "Thanh toán được hoàn tất an toàn trên Waffo Pancake. XMCL không bao giờ nhận số thẻ của bạn."
+  addFunds: Thêm tiền
+  availableBalance: Số dư khả dụng
+  balanceHint: Có thể sử dụng cho các dịch vụ XMCL Together
+  billing: Thanh toán
+  billingDescription: Quản lý quyền truy cập relay, gói Together Home và các khoản thanh toán.
+  billingError: Không thể tải thông tin thanh toán Together. Vui lòng thử lại sau ít phút.
+  buyTogether: Mua Together
+  cancelTogether: Hủy gói
+  checkout: Mở trang thanh toán Waffo
+  connectionTogetherWarning: Một thành viên trong phòng đã không thể kết nối với bạn trong một thời gian. Hãy thử XMCL Together để cải thiện kết nối cho mọi người trong phòng. Chỉ chủ phòng cần Together.
+  masterPurchaseHint: Chỉ chủ phòng cần Together Home để cải thiện kết nối cho mọi người trong phòng.
+  natTogetherWarning: Bộ định tuyến của bạn có thể gặp khó khăn khi kết nối với chủ phòng. Nếu kết nối thất bại, hãy thử XMCL Together để cải thiện kết nối giữa bạn và bạn bè. Chỉ chủ phòng cần mua Together cho phòng.
+  togetherName: Minecraft Together
+  trialDescription: Một lần dùng thử trong 7 ngày với 1 GB lưu lượng relay.
+  trialTitle: Dùng thử kết nối
+  tryTogether: Dùng thử Together
+  month: tháng
+  orderStatus: 'Đơn hàng Waffo: {status}'
+  planDescription: 20 GB lưu lượng relay được quản lý mỗi tháng, cùng với hỗ trợ AI khắc phục sự cố modpack.
+  waffoHint: Thanh toán được hoàn tất an toàn trên Waffo Pancake. XMCL không bao giờ nhận số thẻ của bạn.
   subscription:
-    active: "Đang hoạt động"
-    cancelled: "Đã hủy"
-    payment_due: "Đến hạn thanh toán"
+    active: Đang hoạt động
+    cancelled: Đã hủy
+    payment_due: Đến hạn thanh toán
   trial:
-    active: "Đang dùng thử"
-    available: "Có bản dùng thử miễn phí"
-    expired: "Đã dùng bản dùng thử"
-    unavailable: "Không có bản dùng thử"
+    active: Đang dùng thử
+    available: Có bản dùng thử miễn phí
+    expired: Đã dùng bản dùng thử
+    unavailable: Không có bản dùng thử
   loginRequiredDescription: Chế độ nhiều người chơi P2P sử dụng dịch vụ trực tuyến XMCL. Hãy đăng nhập vào Tài khoản XMCL để tiếp tục.
   loginRequiredTitle: Đăng nhập để chơi nhiều người P2P
   complete: Hoàn tất
@@ -1257,23 +1257,23 @@ resourcepack:
   unselected: Các gói tài nguyên chưa chọn
 save:
   map:
-    tabTitle: "Bản đồ thế giới"
+    tabTitle: Bản đồ thế giới
   progress:
     zoomIn: Phóng to
     zoomOut: Thu nhỏ
-    loading: "Đang tải tiến trình…"
-    noData: "Không tìm thấy tiến trình"
-    noDataHint: "Chơi trong thế giới này để ghi lại tiến trình, thống kê và tiến độ nhiệm vụ."
-    quests: "Nhiệm vụ"
-    advancements: "Tiến trình"
-    done: "Hoàn thành"
-    inProgress: "Đang thực hiện"
-    all: "Tất cả"
-    treeView: "Chế độ cây"
-    filterPlaceholder: "Lọc theo tên…"
-    root: "Điểm bắt đầu"
-    exitFullscreen: "Thoát toàn màn hình"
-    locked: "Đã khóa"
+    loading: Đang tải tiến trình…
+    noData: Không tìm thấy tiến trình
+    noDataHint: Chơi trong thế giới này để ghi lại tiến trình, thống kê và tiến độ nhiệm vụ.
+    quests: Nhiệm vụ
+    advancements: Tiến trình
+    done: Hoàn thành
+    inProgress: Đang thực hiện
+    all: Tất cả
+    treeView: Chế độ cây
+    filterPlaceholder: Lọc theo tên…
+    root: Điểm bắt đầu
+    exitFullscreen: Thoát toàn màn hình
+    locked: Đã khóa
   allowCheats: Cho phép gian lận (Cheats)
   copy:
     name: Sao chép thế giới
@@ -1342,6 +1342,7 @@ save:
   useMouseRotate: Sử dụng chuột để xoay góc nhìn
   useScrollZoom: Sử dụng bánh xe cuộn để thu phóng
   world: Thế giới
+  empty: No worlds found
 screenshots:
   empty: Bạn chưa có ảnh chụp màn hình nào
   gallery: Thư viện ảnh chụp màn hình
@@ -1611,7 +1612,7 @@ setting:
   general: Chung
   githubRelease: Bản phát hành Github
   globalJava: Java ưu tiên
-  globalJavaHint: "Ở chế độ tự động, Java này được thử trước và chỉ quay lại dò tìm tự động khi nó không tương thích với phiên bản trò chơi."
+  globalJavaHint: Ở chế độ tự động, Java này được thử trước và chỉ quay lại dò tìm tự động khi nó không tương thích với phiên bản trò chơi.
   globalSetting: Cài đặt phiên bản toàn cục
   globalSettingHint: Các phiên bản game sẽ sử dụng các cài đặt này theo mặc định.
   importSettings: Nhập cài đặt
@@ -1781,6 +1782,7 @@ shaderPack:
   selectSearchHint: Tìm kiếm và chọn gói Shader
   showDirectory: Hiển thị thư mục gói shader
   showFile: Hiển thị gói shader này trong thư mục
+  'off': 'Off'
 shared:
   pressKeyCombination: Nhấn tổ hợp phím...
   add: Thêm
@@ -1845,8 +1847,8 @@ task:
   running: Đang chạy...
   succeed: Đã hoàn thành
   eta: còn lại ~{time}
-  remaining: 'còn {size}'
-  totalRemaining: 'Còn lại {size}'
+  remaining: còn {size}
+  totalRemaining: Còn lại {size}
   op:
     update: Cập nhật
     export: Xuất
@@ -2154,3 +2156,125 @@ gamepad:
   steamDeckDesc: Chúng tôi phát hiện bạn đang chạy trên Steam Deck. Bạn có muốn thêm XMCL vào Thư viện Steam của mình dưới dạng trò chơi ngoài Steam để tích hợp đầy đủ lớp phủ Steam và điều khiển trong Gaming Mode không?
   steamDeckAddBtn: Thêm vào Steam ({btn})
   steamDeckCancelBtn: Hủy ({btn})
+  disconnected: Controller Disconnected
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

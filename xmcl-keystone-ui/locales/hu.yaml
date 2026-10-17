@@ -11,8 +11,7 @@ AppShareInstanceDialog:
     Létrehozhat egy új példányt a partner konfigurációjából is.
     Példány létrehozásához kattintson az alábbi gombra.
   baseInfo: Alapvető beállítások
-  description: >-
-    Miután megosztottad a profilt, más helyről is letöltheted ezeket a fájlokat az alábbi módon a számítógépeden keresztül.
+  description: Miután megosztottad a profilt, más helyről is letöltheted ezeket a fájlokat az alábbi módon a számítógépeden keresztül.
   downloadDescription: |-
     Kérjük, ellenőrizze a társától kapott fájlokat.
     Válassza ki a letölteni kívánt fájlt.
@@ -45,14 +44,13 @@ ago:
   second: '{duration} másodperce | {duration} másodperce'
 askAICrash:
   copyPrompt: Másolja a felszólítást, hogy megkérdezze az AI -t
-  description: >-
+  description: |-
     Hagyja, hogy az AI segítsen megérteni a játék összeomlását!
-
     Kövesse az alábbi utasításokat, hogy megkérdezze az AI -t a játék összeomlásáról!
   selectPlatform: Nyisson meg egy AI platformot, és illessze be az éppen lemásolt promptot.
 authProfileAddedNotification: Belépési profil {name} hozzáadva
 bedrock:
-  installBedrockVersion: 'Downloading Bedrock {version}'
+  installBedrockVersion: Downloading Bedrock {version}
   versionsTitle: Version manager
   versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
   versionsError: Failed to load the version list. Check your network and try again.
@@ -67,9 +65,9 @@ bedrock:
   developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
   enableDeveloperMode: Enable Developer Mode
   enableDeveloperModeFailed: Failed to enable Developer Mode
-  downloadFailed: 'Failed to download Bedrock {version}'
+  downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
-  removeFailed: 'Failed to remove Bedrock {version}'
+  removeFailed: Failed to remove Bedrock {version}
 baseSetting:
   title: Alapbeállítások
 browseApp:
@@ -143,13 +141,11 @@ curseforgeCategory:
 dataMigration:
   apply: Alkalmazás
   placeholder: Kérlek kattints ide a könyvtár kiválasztásához
-  setRootCause: >-
-    Elveszíted az adataidat (pályák, forráscsomagok, modok), ha bezárod a Launcher-t ebben a folyamatban!
+  setRootCause: Elveszíted az adataidat (pályák, forráscsomagok, modok), ha bezárod a Launcher-t ebben a folyamatban!
   setRootDescription: Ez megváltoztatja az minecraft gyökér adatmappáját a Launchernek.
   setRootTitle: Új tárolási hely beállítása
   unknownError: Ismeretlen hiba! Kérlek próbáld újra, vagy lépj kapcsolatba a fejlesztővel!
-  waitReload: >-
-    Adatok áthelyezése. Kérlek, ne zárd be a Launcher-t, különben elveszíted az adataidat.
+  waitReload: Adatok áthelyezése. Kérlek, ne zárd be a Launcher-t, különben elveszíted az adataidat.
 delete:
   name: Törlöd {name}
   'no': Nem
@@ -189,15 +185,12 @@ diagnosis:
     name: Nem található a Java a Minecraft indításához!
   missingLibraries:
     message: A Launcher telepíti neked a könyvtárakat
-    name: >-
-      Hiányzó {name} könyvtár | Hiányzó {name} könyvtár | Hiányzó {count} könyvtár | Hiányzó {count} Könyvtár
+    name: Hiányzó {name} könyvtár | Hiányzó {name} könyvtár | Hiányzó {count} könyvtár | Hiányzó {count} Könyvtár
   missingVersion:
     message: Kattints erre a verzióra a telepítéshez
     name: A {version} verzió nincs telepítve!
   unresolvedFiles:
-    description: >-
-      {count} fájlt nem sikerült feloldani a telepítés során | {count} fájlt nem
-      sikerült feloldani a telepítés során
+    description: '{count} fájlt nem sikerült feloldani a telepítés során | {count} fájlt nem sikerült feloldani a telepítés során'
     title: Feloldatlan fájlok
   unzipFileNotFound:
     description: Nem található {file}
@@ -224,30 +217,26 @@ env:
     fit: Válassza az Illesztés lehetőséget
     none: Válassza a Nincs lehetőséget
 errors:
-  BadForgeInstallerJarError: >-
-    Nem tudja elemezni a forge telepítő jar fájlt. Lehet, hogy a forge új kiterjesztéssel rendelkezik? Lépj kapcsolatba a fejlesztőkkel, ha ez a probléma továbbra is fennáll.
+  BadForgeInstallerJarError: Nem tudja elemezni a forge telepítő jar fájlt. Lehet, hogy a forge új kiterjesztéssel rendelkezik? Lépj kapcsolatba a fejlesztőkkel, ha ez a probléma továbbra is fennáll.
   BadInstanceType: 'Nem érvényes példány: {type}'
   BodyTimeoutError: HTTP test időtúllépés
   ChecksumNotMatchError: Az ellenőrző összeg nem egyezik! Várható {expect}. Tényleges {actual}.
   ConnectTimeoutError: A szerverhez való kapcsolódás időtúllépése.
   DNSNotFoundError: DNS keresési hiba
-  DatabaseNotOpened: >-
-    Az adatbázis nincs megnyitva! Az Launcher nem működik megfelelően! Kérlek, válassz egy olyan adatkönyvtárat, amelyhez az Launcher hozzáférhet. Megpróbálhatod visszaállítani az adatgyökeret a beállítások oldalon.
+  DatabaseNotOpened: Az adatbázis nincs megnyitva! Az Launcher nem működik megfelelően! Kérlek, válassz egy olyan adatkönyvtárat, amelyhez az Launcher hozzáférhet. Megpróbálhatod visszaállítani az adatgyökeret a beállítások oldalon.
   DiskIsFull: |-
     A lemezed tele van!
     Nem írhat semmit a lemezre!
     Lehet, hogy minden funkció nem funkcionális!
   DownloadAggregateError: A fájl letöltése sikertelen.
-  DownloadFileSystemError: >-
-    Hiba a letöltési fájl elérési útvonalának megadásakor. Kérlek, győződj meg róla, hogy az Launchernej van írási jogosultsága.
+  DownloadFileSystemError: Hiba a letöltési fájl elérési útvonalának megadásakor. Kérlek, győződj meg róla, hogy az Launchernej van írási jogosultsága.
   HeadersTimeoutError: HTTP Fejléc időtúllépés
   NotFoundError: 404 Nem található
   SocketError: Kiszolgálói foglalathiba
 eula:
   body: A jelölőnégyzet bejelölésével jelzi, hogy beleegyezik a Minecraft {eula}-be.
 exception:
-  http: >-
-    A {url} HTTP-kérés sikertelen. Állapotkód {statusCode}. {code}. Kérlek, próbáld meg újra, vagy ellenőrizd a hálózatodat. Ha ez a hiba továbbra is fennáll, kérlek küldj jelentést a fejlesztői csapatnak.
+  http: A {url} HTTP-kérés sikertelen. Állapotkód {statusCode}. {code}. Kérlek, próbáld meg újra, vagy ellenőrizd a hálózatodat. Ha ez a hiba továbbra is fennáll, kérlek küldj jelentést a fejlesztői csapatnak.
 extensions:
   mrpack: Modrinth modcsomag
   zip: Zip Fájl
@@ -297,14 +286,12 @@ feedback:
   github: Github problémák
   githubDescription: Nyiss egy Github problémát, hogy elmondd a gondolatodat
   githubOpenIssue: Github
-  hint: >-
-    Kattints a gombra a jelentés létrehozásához és a fejlesztői csapat eléréséhez. A jelentés tartalmazza az eszközadatokat, beleértve az operációs rendszer típusát, verzióját, felhasználónevedet stb.
+  hint: Kattints a gombra a jelentés létrehozásához és a fejlesztői csapat eléréséhez. A jelentés tartalmazza az eszközadatokat, beleértve az operációs rendszer típusát, verzióját, felhasználónevedet stb.
   kook: Kook
   kookDescription: Kook egy alternatív app a Discordra Kínai felhasználóknak
   name: Visszajelzés
   qq: QQ Csoport
-  qqDescription: >-
-    Lépj be a visszajelző QQ-csoportba, és beszélgess közvetlenül a készítőkkel. Csoport száma: {number}
+  qqDescription: 'Lépj be a visszajelző QQ-csoportba, és beszélgess közvetlenül a készítőkkel. Csoport száma: {number}'
   qqEnterGroup: Csatlakozás
 fileDetail:
   fileSize: Fájl méret
@@ -382,13 +369,11 @@ instance:
   deleteFailed: Nem sikerült törölni a példányt
   deleteFailedPermission: Más program foglalta el a fájlt
   deleteFile: Példányfájlok törlése
-  deleteHint: >-
-    A példányadatok örökre lekerülnek a lemezről. Biztos vagy benne, hogy ezt akarod csinálni?
+  deleteHint: A példányadatok örökre lekerülnek a lemezről. Biztos vagy benne, hogy ezt akarod csinálni?
   duplicate: Duplikált játék
   duplicatedName: Duplikált név
   fileApi: A szinkronizáló fájlkiszolgáló API url címe
-  fileApiHint: >-
-    Az url a példányfájlok szinkronizálásához egy távoli konfigurációs kiszolgálóról.
+  fileApiHint: Az url a példányfájlok szinkronizálásához egy távoli konfigurációs kiszolgálóról.
   fullscreen: Teljes képernyő
   height: Magasság
   hideCard: Kártya elrejtése
@@ -424,11 +409,9 @@ instance:
   showInstance: Játék mappa megjelenítése
   updates: Frissítések
   useSharedOptions: Használja a megosztott játékbeállításokat
-  useSharedOptionsDesc: >-
-    Ezzel összekapcsolja az options.txt fájlt egy több példányban megosztott fájllal
+  useSharedOptionsDesc: Ezzel összekapcsolja az options.txt fájlt egy több példányban megosztott fájllal
   useSharedServersList: Használja a megosztott szerverek listáját
-  useSharedServersListDesc: >-
-    Ez összekapcsolja a servers.da fájlt egy megosztott fájllal a példányok között
+  useSharedServersListDesc: Ez összekapcsolja a servers.da fájlt egy megosztott fájllal a példányok között
   vmOptions: JVM Beállítások
   vmOptionsHint: Extra argumentumok átadása a JVM-nek
   vmVar: Környezeti változók
@@ -456,29 +439,22 @@ instanceInstallSkip:
   ignore: Figyelmen kívül hagyni
   skip: Kihagyás
   title: Lehetséges sérült fájlforrás
-  warning: >-
+  warning: |-
     Egyes fájlok többször is letöltődnek, ellenőrzőösszeg-egyeztetés nélkül.
-
     Ennek oka lehet, hogy az eredeti ellenőrző összeg hibás.
-
     Kérjük, ellenőrizze.
-
     Ha megerősíti, hogy az aktuális fájlok érvényesek, kihagyhatja az érvényesítési ellenőrzést.
 instanceSetting:
   disableAuthlibInjector: Az authlib injektor kikapcsolása
-  disableAuthlibInjectorDescription: >-
-    Ha harmadik féltől származó kinézet rendszert használsz. Az authlib injector segíthet a skin megjelenítésében a játékban.
+  disableAuthlibInjectorDescription: Ha harmadik féltől származó kinézet rendszert használsz. Az authlib injector segíthet a skin megjelenítésében a játékban.
   disableElyByAuthlib: Az ely.by authlib cseréjének kikapcsolása
-  disableElyByAuthlibDescription: >-
-    Az Ely.by rendelkezik egy egyedi authlib cserével a kinézet univerzális megjelenítéséhez bármilyen szerveren.
+  disableElyByAuthlibDescription: Az Ely.by rendelkezik egy egyedi authlib cserével a kinézet univerzális megjelenítéséhez bármilyen szerveren.
   fastLaunch: Gyors indítás
-  fastLaunchHint: >-
-    Figyelmen kívül hagyja a felhasználói státuszt és a létező, nem javított problémákat
+  fastLaunchHint: Figyelmen kívül hagyja a felhasználói státuszt és a létező, nem javított problémákat
   hideLauncher: A Launcher elrejtése indítás után
   icon: Kép kiválasztása
   showLog: Minecraft napló megnézése
-  showLogHint: >-
-    Felugrik egy ablak a Minecraft naplójának streamelésére a játék elindulása után.
+  showLogHint: Felugrik egy ablak a Minecraft naplójának streamelésére a játék elindulása után.
   syncGameLanguage: Játék nyelvének szinkronizálása
   syncGameLanguageDescription: Indításkor automatikusan szinkronizálja a Minecraft nyelvét az indító nyelvével
 instanceTemplate:
@@ -509,8 +485,7 @@ instances:
     Importálja a meglévő Modrinth példányt.
     Ki kell választania a Modrinth gyökér adatmappát.
   addVanilla: Létrehozás vanilla-szerű Minecraftból
-  addVanillaDescription: >-
-    Importálás a közös .minecraft mappából. Ez duplikálja az eredeti játékprofilt az XMCL-be.
+  addVanillaDescription: Importálás a közös .minecraft mappából. Ez duplikálja az eredeti játékprofilt az XMCL-be.
   fix: Javítás
   folder: Mappa
   folderSetting: Mappa beállításai
@@ -519,18 +494,10 @@ instances:
   edition: Kiadás
   editionJava: Java kiadás
   editionBedrock: Bedrock kiadás
-  editionBedrockHint: >-
-    A Bedrock kiadás a Microsoft Store alkalmazáson keresztül indul. Rendelkezned
-    kell Bedrock licenccel. A modok, erőforráscsomagok és egyéb, csak Java alatt
-    elérhető funkciók nem használhatók.
+  editionBedrockHint: A Bedrock kiadás a Microsoft Store alkalmazáson keresztül indul. Rendelkezned kell Bedrock licenccel. A modok, erőforráscsomagok és egyéb, csak Java alatt elérhető funkciók nem használhatók.
   editionBedrockWindowsOnly: A Bedrock kiadás csak a Windows-változatban támogatott.
   linkSharedFolders: Mappák megosztása példányok között
-  linkSharedFoldersHint: >-
-    Hozza létre ezeket a mappákat az indító megosztott mappáira mutató
-    hivatkozásként, hogy ez a példány megossza a tartalmukat az összes többi
-    összekapcsolt példánnyal. Ez nem másolás — az egyik példányban végzett
-    módosítások az összesben megjelennek. A be nem jelölt mappák a példány
-    számára priváttak maradnak.
+  linkSharedFoldersHint: Hozza létre ezeket a mappákat az indító megosztott mappáira mutató hivatkozásként, hogy ez a példány megossza a tartalmukat az összes többi összekapcsolt példánnyal. Ez nem másolás — az egyik példányban végzett módosítások az összesben megjelennek. A be nem jelölt mappák a példány számára priváttak maradnak.
   linkFailed: Nem sikerült a(z) {folder} mappát a megosztott mappához kapcsolni
   addPrismDescription: Meglévő PrismLauncher-példány importálása.
 items:
@@ -584,47 +551,37 @@ launchBlocked:
     description: Néhány hiba miatt az indítás sikertelen volt.
     title: Sikertelen indítás
   launchInvalidJavaPath:
-    description: >-
-      A kiválasztott java hiányzik vagy érvénytelen. Kérlek, válassz egy újat. <span class="highlight"> {javaPath} </span>
+    description: A kiválasztott java hiányzik vagy érvénytelen. Kérlek, válassz egy újat. <span class="highlight"> {javaPath} </span>
     title: Érvénytelen Java elérési útvonal
   launchJavaNoPermission:
-    description: >-
-      A Launchernek nincs jogosultsága a java indításához<span class="highlight"> {javaPath} </span>. vagy módosítsd az engedélyt a java fájl vagy növeld a Launcher engedélyeit.
+    description: A Launchernek nincs jogosultsága a java indításához<span class="highlight"> {javaPath} </span>. vagy módosítsd az engedélyt a java fájl vagy növeld a Launcher engedélyeit.
     title: Nincs engedély az indításhoz
   launchNoProperJava:
-    description: >-
-      A játék indításához nem lehet megfelelő java-t kiválasztani. ({javaPath} ez érvénytelen?)
+    description: A játék indításához nem lehet megfelelő java-t kiválasztani. ({javaPath} ez érvénytelen?)
     title: Nem található megfelelő java
   launchNoVersionInstalled:
-    description: >-
-      Nem lehet feloldani a verziót <span class="highlight">{version}</span> az indításhoz.
+    description: Nem lehet feloldani a verziót <span class="highlight">{version}</span> az indításhoz.
     title: Nincs kiválasztott verzió
   launchSpawnProcessFailed:
-    description: >-
-      Kérlek ellenőrizd a java-t, vagy adj több engedélyt az Launchernek, és próbáld újra. Ha ez még mindig nem működik, kérlek, vedd fel a kapcsolatot a fejlesztőkkel.
+    description: Kérlek ellenőrizd a java-t, vagy adj több engedélyt az Launchernek, és próbáld újra. Ha ez még mindig nem működik, kérlek, vedd fel a kapcsolatot a fejlesztőkkel.
     title: A játékfolyamat nem indul el
-  unexpectedText: >-
-    Ez váratlanul ért. A probléma enyhítése érdekében újraindíthatod a Launchert. Kérlek, vedd fel a kapcsolatot a készítővel, ha ez a probléma ismét előfordul.
+  unexpectedText: Ez váratlanul ért. A probléma enyhítése érdekében újraindíthatod a Launchert. Kérlek, vedd fel a kapcsolatot a készítővel, ha ez a probléma ismét előfordul.
 launchFailed:
   crash: A játék összeomlott!!
   description: Nincs jelentést az összeomlásról. Ez a hibanapló és a legutóbbi napló.
   elyByAuthlib:
-    description: >-
-      Az Ely.by Authlib pótlást a Minecraft {version} verzióhoz használtuk, de ez a verzió esetleg nem teljesen kompatibilis.
-    suggestion: >-
-      Az Ely.by Authlib pótlást letilthatod az instance beállításaiban, hogy elkerüld ezt a problémát.
+    description: Az Ely.by Authlib pótlást a Minecraft {version} verzióhoz használtuk, de ez a verzió esetleg nem teljesen kompatibilis.
+    suggestion: Az Ely.by Authlib pótlást letilthatod az instance beállításaiban, hogy elkerüld ezt a problémát.
     title: Ely.by Authlib kompatibilitási probléma
   failedToLaunch: Az indítás sikertelen volt
   latestLog: Legújabb napló
   title: A játék abnormális kóddal lépett ki
 launchPreExecuteCommandFailed:
-  description: >-
-    A végrehajtás előtti parancs hiba miatt sikertelen volt: {error}. Kérjük, ellenőrizze a parancsot, és próbálja meg újra.
+  description: 'A végrehajtás előtti parancs hiba miatt sikertelen volt: {error}. Kérjük, ellenőrizze a parancsot, és próbálja meg újra.'
   title: A végrehajtás előtti parancs sikertelen
 launchStatus:
   assigningMemory: Memória kiosztása
-  elyByWarning: >-
-    Az Ely.by Authlib pótlás engedélyezve van. Néhány Minecraft verzió inkompatibilis lehet és összeomolhat. Ha problémák merülnek fel, tiltsd le az instance beállításaiban.
+  elyByWarning: Az Ely.by Authlib pótlás engedélyezve van. Néhány Minecraft verzió inkompatibilis lehet és összeomolhat. Ha problémák merülnek fel, tiltsd le az instance beállításaiban.
   exit: Kilépés?
   injectingAuthLib: Harmadik fél AuthLib beállítása
   launching: Indítás...
@@ -640,8 +597,7 @@ localVersion:
   auto: Automatikusan számolt
   empty: Nincs telepített verzió
   hint: Egy adott helyi verzió közvetlen indítása
-  reinstallDescription: >-
-    Ha úgy gondolod, hogy ennek a verziónak a telepítése problémás, megpróbálhatod újratelepíteni.
+  reinstallDescription: Ha úgy gondolod, hogy ennek a verziónak a telepítése problémás, megpróbálhatod újratelepíteni.
   reinstallTitle: Újratelepítés {version}
   title: Helyi verzió | Helyi verziók
 logLevel:
@@ -660,34 +616,26 @@ login:
   signupDescription: Új köztünk?
   userRelogin: A felhasználói hozzáférési token lejárt. Kérlek, jelentkezz be újra!
 loginError:
-  acquireMicrosoftTokenFailed: >-
-    Nem sikerült megszerezni a Microsoft tokent. Ez hálózati probléma lehet. Kérlek, próbáld meg újra.
-  badNetworkOrServer: >-
-    Kérlek, ellenőrizd a hálózati kapcsolatodat! Vagy lehet, hogy a hitelesítési szerver nem működik!
+  acquireMicrosoftTokenFailed: Nem sikerült megszerezni a Microsoft tokent. Ez hálózati probléma lehet. Kérlek, próbáld meg újra.
+  badNetworkOrServer: Kérlek, ellenőrizd a hálózati kapcsolatodat! Vagy lehet, hogy a hitelesítési szerver nem működik!
   checkOwnershipFailed: Nem tudtuk leellenőrizni a játék tulajdonjogát. Kérlek próbáld újra.
   connectionReset: Nem sikerül a bejelentkezés, mivel a szerver visszaállítja a kapcsolatot
   fetchMinecraftProfileFailed: 'Nem sikerült lekérni a Minecraft-profilt: {reason}'
   illegalEmail: Az e-mailnek érvényesnek kell lennie
   invalidCredentials: Érvénytelen hitelesítő adatok. Érvénytelen felhasználónév vagy jelszó.
-  loginMinecraftByXboxFailed: >-
-    Nem sikerült a Minecraft tokent lekérni az Xboxtól. Kérlek ellenőrizd, hogy megvan-e a játék Xboxon és próbáld újra.
-  loginXboxAgeRestricted: >-
+  loginMinecraftByXboxFailed: Nem sikerült a Minecraft tokent lekérni az Xboxtól. Kérlek ellenőrizd, hogy megvan-e a játék Xboxon és próbáld újra.
+  loginXboxAgeRestricted: |-
     Nem jelentkezik be az Xbox -ba az életkorkibocsátás miatt.
-
     Kérjük, ellenőrizze, hogy a Microsoft -fiókhoz be van -e állítva, és az életkor 18 felett van.
-  loginXboxFailed: >-
-    Nem sikerül bejelentkezni az Xboxra Microsoft tokennel. Kérlek, győződj meg róla, hogy az xbox-fiókodat összekapcsoltad a Microsoft-fiókoddal. Kérlek, próbáld meg újra.
-  noProfileForNewUser: >-
+  loginXboxFailed: Nem sikerül bejelentkezni az Xboxra Microsoft tokennel. Kérlek, győződj meg róla, hogy az xbox-fiókodat összekapcsoltad a Microsoft-fiókoddal. Kérlek, próbáld meg újra.
+  noProfileForNewUser: |-
     Nincs játékprofil!
-
     Ha Ön új Minecraft felhasználó, kérjük, jelentkezzen be legalább egyszer a Minecraft hivatalos indítójába.
-  requestFailed: >-
-    A bejelentkezés sikertelen volt, a pontos okot nem tudjuk. Kérlek, próbáld meg újra.
+  requestFailed: A bejelentkezés sikertelen volt, a pontos okot nem tudjuk. Kérlek, próbáld meg újra.
   requireEmail: E-mail szükséges
   requirePassword: Jelszó szükséges
   requireUsername: Felhasználónév szükséges
-  timeout: >-
-    Bejelentkezési időtúllépés. Próbáld újra vagy ellenőrizd a hálózati kapcsolatot.
+  timeout: Bejelentkezési időtúllépés. Próbáld újra vagy ellenőrizd a hálózati kapcsolatot.
 logsCrashes:
   crashes: Hibanaplók
   logs: Naplók
@@ -775,17 +723,14 @@ modFilter:
   dependenciesInstallOnly: Csak az elmulasztott függőségi modokat mutatja be
   disabledOnly: Csak a fogyatékossággal élő modokat jelenítse meg
   hasUpdateOnly: Csak a Show -nak van frissítése
-  incompatibleOnly: >-
-    Csak az összeegyeztethetetlen vagy hiányzó függőségek hiányzó modokat mutatnak
+  incompatibleOnly: Csak az összeegyeztethetetlen vagy hiányzó függőségek hiányzó modokat mutatnak
   unusedOnly: Csak a fel nem használt könyvtárak modokat mutatják be
 modInstall:
-  archived: >-
+  archived: |-
     {name} archiválva.
-
     {name} nem kap további frissítéseket, kivéve, ha a szerző úgy dönt, hogy visszavonja a projekt archiválását.
   autoUpgrade:
-    description: >-
-      Megváltoztattad a Minecraft verziót. Szeretnéd automatikusan frissíteni a kompatibilis modokat a Minecraft {version}-nak megfelelő verziókra?
+    description: Megváltoztattad a Minecraft verziót. Szeretnéd automatikusan frissíteni a kompatibilis modokat a Minecraft {version}-nak megfelelő verziókra?
     'no': Kihagyás
     title: Modok frissítése?
     'yes': Modok frissítése
@@ -822,8 +767,7 @@ modpack:
   author: Készítő neve
   authorHint: Ezt lehet használni, hogy aláírd az exportált modcsomagot (Curseforge)
   description: Leírás
-  descriptionHint: >-
-    A modcsomag általános leírása. Használható a curseforge modcsomag exportálásához.
+  descriptionHint: A modcsomag általános leírása. Használható a curseforge modcsomag exportálásához.
   dropHint: Húzd ide a modcsomag zip fájlát az importáláshoz
   emitCurseforge: Emit Curseforge modcsomag
   emitModrinth: Emit Modrinth modcsomag
@@ -831,8 +775,7 @@ modpack:
   emitModrinthStrictDescription: Csak a modrinth dokumentumban felsorolt 4 domain URL-je engedélyezett.
   export: Exportálás modcsomagként
   exportDirectory: Exportkönyvtár
-  exportDirectoryDescription: >-
-    A modpack alapértelmezés szerint a Modpack -t a letöltési mappába exportálják
+  exportDirectoryDescription: A modpack alapértelmezés szerint a Modpack -t a letöltési mappába exportálják
   includeAssets: Tartalmazott elemek
   includes: Fájlok, amelyek tartalmazzák
   modpackVersion: Modpcsomag verzió
@@ -846,11 +789,10 @@ modpackImportConfirm:
     Modpackot próbál importálni?
   title: Modpackot próbál importálni?
 modpackUpdateOrCreate:
-  createNew: 'Új létrehozása'
-  description: >-
-    Már létezik egy "{name}" nevű példány ehhez a modpackhez. Szeretnéd frissíteni, vagy újat létrehozni?
-  title: 'A példány már létezik'
-  update: 'Meglévő frissítése'
+  createNew: Új létrehozása
+  description: Már létezik egy "{name}" nevű példány ehhez a modpackhez. Szeretnéd frissíteni, vagy újat létrehozni?
+  title: A példány már létezik
+  update: Meglévő frissítése
 modrinth:
   browseUrl: Megnyitás böngészőben {url}
   categories:
@@ -1021,35 +963,35 @@ multiplayer:
   updateSharedInstanceConfirm: Frissítés és indítás
   updateSharedInstanceDescription: A megosztott modok eltérnek a(z) {instance} modjaitól. Frissíted ezt a példányt, hogy indítás előtt megegyezzen a gazdagépével? A meglévő módosított fájlokról biztonsági másolat készül.
   updateSharedInstanceTitle: Megosztott példány frissítése?
-  addFunds: "Egyenleg feltöltése"
-  availableBalance: "Elérhető egyenleg"
-  balanceHint: "XMCL Together-szolgáltatásokhoz használható"
-  billing: "Számlázás"
-  billingDescription: "Kezeld a relay-hozzáférést, a Together Home-csomagodat és a fizetéseidet."
-  billingError: "A Together számlázása nem tölthető be. Próbáld újra egy pillanat múlva."
-  buyTogether: "Together megvásárlása"
-  cancelTogether: "Csomag lemondása"
-  checkout: "Waffo fizetés megnyitása"
-  connectionTogetherWarning: "Egy szobatag egy ideje nem tud kapcsolódni hozzád. Próbáld ki az XMCL Together szolgáltatást, hogy mindenki számára javuljon a kapcsolat a szobában. Csak a szobamesternek van szüksége Togetherre."
-  masterPurchaseHint: "Csak a szobamesternek van szüksége Together Home-ra, hogy mindenki számára javuljon a kapcsolat a szobában."
-  natTogetherWarning: "Lehet, hogy az útválasztód nehezen tud kapcsolódni a szobamesterhez. Ha a kapcsolatok sikertelenek, próbáld ki az XMCL Togethert, hogy javuljon a kapcsolat közted és a barátaid között. A szobához csak a szobamesternek kell megvásárolnia a Togethert."
-  togetherName: "Minecraft Together"
-  trialDescription: "Egy 7 napos próbaidőszak 1 GB relay-forgalommal."
-  trialTitle: "Kapcsolati próbaidőszak"
-  tryTogether: "Together kipróbálása"
-  month: "hónap"
-  orderStatus: "Waffo-rendelés: {status}"
-  planDescription: "Havonta 20 GB kezelt relay-forgalom, valamint AI-alapú hibaelhárítás a modcsomagodhoz."
-  waffoHint: "A fizetések biztonságosan a Waffo Pancake-en keresztül zajlanak. Az XMCL soha nem kapja meg a kártyaszámodat."
+  addFunds: Egyenleg feltöltése
+  availableBalance: Elérhető egyenleg
+  balanceHint: XMCL Together-szolgáltatásokhoz használható
+  billing: Számlázás
+  billingDescription: Kezeld a relay-hozzáférést, a Together Home-csomagodat és a fizetéseidet.
+  billingError: A Together számlázása nem tölthető be. Próbáld újra egy pillanat múlva.
+  buyTogether: Together megvásárlása
+  cancelTogether: Csomag lemondása
+  checkout: Waffo fizetés megnyitása
+  connectionTogetherWarning: Egy szobatag egy ideje nem tud kapcsolódni hozzád. Próbáld ki az XMCL Together szolgáltatást, hogy mindenki számára javuljon a kapcsolat a szobában. Csak a szobamesternek van szüksége Togetherre.
+  masterPurchaseHint: Csak a szobamesternek van szüksége Together Home-ra, hogy mindenki számára javuljon a kapcsolat a szobában.
+  natTogetherWarning: Lehet, hogy az útválasztód nehezen tud kapcsolódni a szobamesterhez. Ha a kapcsolatok sikertelenek, próbáld ki az XMCL Togethert, hogy javuljon a kapcsolat közted és a barátaid között. A szobához csak a szobamesternek kell megvásárolnia a Togethert.
+  togetherName: Minecraft Together
+  trialDescription: Egy 7 napos próbaidőszak 1 GB relay-forgalommal.
+  trialTitle: Kapcsolati próbaidőszak
+  tryTogether: Together kipróbálása
+  month: hónap
+  orderStatus: 'Waffo-rendelés: {status}'
+  planDescription: Havonta 20 GB kezelt relay-forgalom, valamint AI-alapú hibaelhárítás a modcsomagodhoz.
+  waffoHint: A fizetések biztonságosan a Waffo Pancake-en keresztül zajlanak. Az XMCL soha nem kapja meg a kártyaszámodat.
   subscription:
-    active: "Aktív"
-    cancelled: "Lemondva"
-    payment_due: "Fizetés esedékes"
+    active: Aktív
+    cancelled: Lemondva
+    payment_due: Fizetés esedékes
   trial:
-    active: "A próbaidőszak aktív"
-    available: "Ingyenes próbaidőszak érhető el"
-    expired: "A próbaidőszak felhasználva"
-    unavailable: "A próbaidőszak nem érhető el"
+    active: A próbaidőszak aktív
+    available: Ingyenes próbaidőszak érhető el
+    expired: A próbaidőszak felhasználva
+    unavailable: A próbaidőszak nem érhető el
   loginRequiredDescription: A P2P többjátékos mód az XMCL online szolgáltatásait használja. A folytatáshoz jelentkezzen be egy XMCL-fiókba.
   loginRequiredTitle: Bejelentkezés a P2P többjátékos módhoz
   complete: Kész
@@ -1057,38 +999,32 @@ multiplayer:
   connections: Kapcsolatok
   copied: Másolva!
   copy: Másolás
-  copyGroupToFriendHint: >-
-    Engedd meg barátaidnak, hogy csatlakozzanak a csoporthoz ezzel az azonosítóval
-  copyLocalHint: >
+  copyGroupToFriendHint: Engedd meg barátaidnak, hogy csatlakozzanak a csoporthoz ezzel az azonosítóval
+  copyLocalHint: |
     "Kérjük, másolja a helyi SDP szövegét, és küldje el az objektumának, hogy az objektum ezt a szöveget adja meg a csatlakozási kapcsolatba <span>Egy token csak <span style="color: red; font-weight: bold;">egy partner</span> számára használható!   Ugyanazt a tokent nem küldheti el több peer-nek!</span> <br> <span class="hint-text" style="font-style: italic;">Ha több peerhez kell csatlakoznia, akkor a létrehozni <span style="font-weight: bold; color: rgba(245, 158, 11)"> több</span> kapcsolatot.</span>"
   createLocalToken: Helyi token létrehozása
   currentIpTitle: Nyilvános IP érzékelése
   currentNatTitle: 'Jelenlegi hálózat (NAT):'
   difficultyLevelHint: A nehézségi szint, hogy létrehozzanak egy peer kapcsolatot más
   disconnect: Lecsatlakozás
-  disconnectDescription: >-
-    Biztos, hogy a {user}({id}) felhasználóval akarod megszakítani a kapcsolatot?
+  disconnectDescription: Biztos, hogy a {user}({id}) felhasználóval akarod megszakítani a kapcsolatot?
   disconnected: lecsatlakozva
   enterRemoteToken: Távoli token megadása
-  enterRemoteTokenHint: >-
-    Miután a társad beírta a jelszavadat, neked is be kell írnod a jelszavát az alábbi szöveges területre. Kattints a megerősítésre a csatlakozáshoz.
+  enterRemoteTokenHint: Miután a társad beírta a jelszavadat, neked is be kell írnod a jelszavát az alábbi szöveges területre. Kattints a megerősítésre a csatlakozáshoz.
   exposedPortDescription: A port, amelyet a többi társnak tettél közzé
   exposedPorts: Továbbított portok
-  gatheringIce: >
+  gatheringIce: |
     "Kérjük, várjon, amíg az ICE-kiszolgáló elegendő információt gyűjt az Ön a hálózatáról. Ha türelmetlen, és van elég információ, akkor adjon az aktuális SDP-t a másik félnek előre, és kattintson a Next Please send the <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> Local Token</span> a partnerének, a partner megadja a tokenjét a <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join Kapcsolat </span> szakaszban. <br> Az ICE-kiszolgálónak időre lehet szüksége ahhoz, hogy összegyűjti az adatait, hogy létrehozza a <span class="v-chip v-chip--label v-size--small" style="text-font: bold">Lokális token</span>. <br> Nem kell várnia. amíg az ICE státusz befejeződik. Ha az alábbi token változatlanul marad, akkor a másolja le és küldje el a partnerének."
   groupId: Csoport Id
-  illegalTokenDescription: >-
-    Hibás token, kérlek győződj meg róla, hogy a partneredtől kapott token helyes-e
+  illegalTokenDescription: Hibás token, kérlek győződj meg róla, hogy a partneredtől kapott token helyes-e
   initiateConnection: Kapcsolat kezdeményezése
-  joinConnection: >-
-    Ha a társad már kezdeményezett kapcsolatot, akkor a Csatlakozáshoz csatlakozni kell.
+  joinConnection: Ha a társad már kezdeményezett kapcsolatot, akkor a Csatlakozáshoz csatlakozni kell.
   joinManual: Csatlakozás
   joinOrCreateGroup: Csatlakozás/Csoport létrehozása
   joinOrCreateGroupHint: Csoport azonosító kérése barátaidtól vagy csoport létrehozása
   kernel: P2P kernel
-  kernelDescription: >-
+  kernelDescription: |-
     Használjon natív WebRTC-t vagy node-datachannel-t.
-
     Csak akkor váltsa ezt, ha a p2p kapcsolata valamikor összeomlik az indítóablakban.
   leaveGroup: Csoport elhagyása
   localToken: Helyi token
@@ -1099,8 +1035,7 @@ multiplayer:
   otherExposedPortDescription: 'A port előszava: {user}'
   placeholder: Csatlakozz más felhasználókhoz, hogy Minecraftot játszhass LAN-on!
   previous: Előző
-  receiveHint: >-
-    Miután a másik fél megadja a jelszavát, a kapcsolat automatikusan létrejön. Most már bezárhatod a párbeszédpanelt.
+  receiveHint: Miután a másik fél megadja a jelszavát, a kapcsolat automatikusan létrejön. Most már bezárhatod a párbeszédpanelt.
   receiveRemoteTokenHint: Kérlek, add meg itt a partneredtől kapott tokent.
   remoteToken: Távoli token
   routerInfo: Router információ
@@ -1110,8 +1045,7 @@ multiplayer:
   start: Indítás
   startNewP2PConnection: Kattints az Indítás gombra egy új kapcsolat létrehozásához.
   connectionError: Kapcsolódási hiba
-  connectionFailedHint: >-
-    Nem sikerült kapcsolatot létesíteni. Ellenőrizze, hogy mindkét fél kompatibilis NAT-típussal rendelkezik-e.
+  connectionFailedHint: Nem sikerült kapcsolatot létesíteni. Ellenőrizze, hogy mindkét fél kompatibilis NAT-típussal rendelkezik-e.
 myStuff: Dolgaid
 natType:
   blocked: Blokkolva
@@ -1166,20 +1100,15 @@ quiltVersion:
   empty: Quilt nem támogatja a {version} verziót
 resourcepack:
   linkShared: Erőforráscsomagok megosztása példányok között
-  linkSharedHint: >-
-    Kösse össze ennek a példánynak a resourcepacks mappáját a globális megosztott
-    mappával, hogy minden példány ugyanazokat az erőforráscsomagokat használja. A
-    meglévő csomagok a megosztott mappába kerülnek.
+  linkSharedHint: Kösse össze ennek a példánynak a resourcepacks mappáját a globális megosztott mappával, hogy minden példány ugyanazokat az erőforráscsomagokat használja. A meglévő csomagok a megosztott mappába kerülnek.
   compatible: Kompatibilis formátum {format} a {version}-vel
   defaultDescription: A Minecraft alapértelmezett megjelenése
   delete:
-    content: >-
-      Ez eltávolítja az forráscsomag-fájlt a meghajtóról, és nem tudod visszacsinálni. Biztos vagy benne, hogy ezt akarod csinálni?
+    content: Ez eltávolítja az forráscsomag-fájlt a meghajtóról, és nem tudod visszacsinálni. Biztos vagy benne, hogy ezt akarod csinálni?
     title: Forráscsomag törlése
   dropHint: Húzd ide a forráscsomag zip-jét/mappá-ját az importáláshoz
   enable: '{count} forráscsomag engedélyezve'
-  incompatible: >-
-    Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}. Jelenlegi {actual}.
+  incompatible: Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}. Jelenlegi {actual}.
   name: Forráscsomag | Forráscsomagok
   searchHint: Keresés az erőforráscsomagokban
   selected: Kiválasztott forráscsomagok
@@ -1192,35 +1121,31 @@ save:
   resetView: Nézet visszaállítása
   mapHintPan: Húzással mozgathatod a nézetet
   map:
-    tabTitle: "Világtérkép"
+    tabTitle: Világtérkép
   progress:
     zoomIn: Nagyítás
     zoomOut: Kicsinyítés
-    loading: "Előrehaladás betöltése…"
-    noData: "Nincs előrehaladás"
-    noDataHint: "Játssz ebben a világban az előrelépések, statisztikák és küldetések állapotának rögzítéséhez."
-    quests: "Küldetések"
-    advancements: "Előrelépések"
-    done: "Kész"
-    inProgress: "Folyamatban"
-    all: "Összes"
-    treeView: "Fa nézet"
-    filterPlaceholder: "Szűrés név alapján…"
-    root: "Kezdőpont"
-    exitFullscreen: "Kilépés a teljes képernyőből"
-    locked: "Zárolva"
+    loading: Előrehaladás betöltése…
+    noData: Nincs előrehaladás
+    noDataHint: Játssz ebben a világban az előrelépések, statisztikák és küldetések állapotának rögzítéséhez.
+    quests: Küldetések
+    advancements: Előrelépések
+    done: Kész
+    inProgress: Folyamatban
+    all: Összes
+    treeView: Fa nézet
+    filterPlaceholder: Szűrés név alapján…
+    root: Kezdőpont
+    exitFullscreen: Kilépés a teljes képernyőből
+    locked: Zárolva
   linkShared: Mentések megosztása példányok között
-  linkSharedHint: >-
-    Kösse össze ennek a példánynak a saves mappáját a globális megosztott
-    mappával, hogy minden példány ugyanazokat a világokat használja. A meglévő
-    mentések a megosztott mappába kerülnek.
+  linkSharedHint: Kösse össze ennek a példánynak a saves mappáját a globális megosztott mappával, hogy minden példány ugyanazokat a világokat használja. A meglévő mentések a megosztott mappába kerülnek.
   allowCheats: Csalások engedélyezése
   copy:
     name: Mentés másolása
   createNew: Új világ létrehozása
   createdWorlds: '{count} db világod van'
-  deleteHint: >-
-    Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre elveszted. Biztos, hogy törölni szeretnéd ezt a mentést?
+  deleteHint: Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre elveszted. Biztos, hogy törölni szeretnéd ezt a mentést?
   deleteTitle: Mentés törlése
   difficulty: Nehézség
   dropHint: Húzz ide egy zipet az importáláshoz
@@ -1249,6 +1174,7 @@ save:
   openFolder: Mentések mappájának megnyitása
   searchHint: Világok keresése a CurseForge-on
   searchSaves: Mentések keresése
+  empty: No worlds found
 screenshots:
   empty: Nincsenek képernyőképeid
   playRandom: Játék véletlenszerűen
@@ -1442,14 +1368,11 @@ setting:
     loadConfirmMessage: A mentett téma betöltése lecseréli az aktuális témát. Készíts biztonsági mentést.
     loadTheme: Téma betöltése
   about: Körülbelül
-  aboutBmclDescription: >-
-    A BMCL API kényelmes letöltéseket biztosít a Kínai Kontinensen lévő felhasználók számára
+  aboutBmclDescription: A BMCL API kényelmes letöltéseket biztosít a Kínai Kontinensen lévő felhasználók számára
   aboutContributors: 🧑‍💻 Közreműködők 🧑‍💻
-  aboutDenoDescription: >-
-    Az XMCL a Deno Deploy egyszerű platformját használja kiszolgáló nélküli JavaScript alkalmazásokhoz
+  aboutDenoDescription: Az XMCL a Deno Deploy egyszerű platformját használja kiszolgáló nélküli JavaScript alkalmazásokhoz
   aboutLicense: MIT LICENSE
-  aboutLicenseInfo: >-
-    Ingyenes kódaláírás Windows alatt a SignPath.io által biztosított, SignPath Foundation által tanúsított
+  aboutLicenseInfo: Ingyenes kódaláírás Windows alatt a SignPath.io által biztosított, SignPath Foundation által tanúsított
   aboutSponsors: 😇 Szponzorok 😇
   advancedJavaOptions: Haladó Java beállítások
   advancedSettings: Speciális beállítások
@@ -1459,8 +1382,7 @@ setting:
     official: Eredeti (Mojang)
   appearance: Megjelenés
   appearanceDescription: Az indító megjelenésének testreszabása
-  appxUpdateHint: >-
-    A Launcher letölti és futtatja a telepítőt. Ha a felugró telepítő nem sikerült, kérlek futtasd manuálisan.
+  appxUpdateHint: A Launcher letölti és futtatja a telepítőt. Ha a felugró telepítő nem sikerült, kérlek futtasd manuálisan.
   authenticationSettings: Hitelesítés
   backdropBlur: Háttérkép elmosódás
   backgroundColorAbove: Háttérszín megjelenítése fedvényként
@@ -1478,8 +1400,7 @@ setting:
   backgroundMusicUrl: Zenei URL
   backgroundMusicUrlPlaceholder: Írja be a zenéhez tartozó HTTP/HTTPS URL-t
   backgroundType: Háttérkép típusa
-  backgroundTypeDescription: >-
-    Speciális hatás megjelenítése a háttérben (Ez befolyásolhatja a teljesítményt)
+  backgroundTypeDescription: Speciális hatás megjelenítése a háttérben (Ez befolyásolhatja a teljesítményt)
   backgroundTypes:
     halo: Halo
     image: Kép
@@ -1509,8 +1430,7 @@ setting:
   developerMode: Fejlesztői mód
   developerModeDescription: Fejlesztői mód a saját írt mod tesztelésére irányul
   disableTelemetry: Telemetria kikapcsolása
-  disableTelemetryDescription: >-
-    Az XMCL összegyűjti a játékindítási és a felhasználói bejelentkezési eseményeket.
+  disableTelemetryDescription: Az XMCL összegyűjti a játékindítási és a felhasználói bejelentkezési eseményeket.
   enableDedicatedGPUOptimization: Dedikált GPU hozzárendelése
   enableDedicatedGPUOptimizationDescription: Ez az opció dedikált GPU-t rendel a Minecraft folyamathoz.
   enableDiscord: Discord státusz engedélyezése
@@ -1521,7 +1441,7 @@ setting:
   general: Általános
   githubRelease: Github kiadás
   globalJava: Előnyben részesített Java
-  globalJavaHint: "Automatikus módban először ezt a Java-t próbálja meg, és csak akkor tér vissza az automatikus felismeréshez, ha az nem kompatibilis a játékverzióval."
+  globalJavaHint: Automatikus módban először ezt a Java-t próbálja meg, és csak akkor tér vissza az automatikus felismeréshez, ha az nem kompatibilis a játékverzióval.
   globalSetting: Globális példány beállítás
   globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
   importSettings: Beállítások importálása
@@ -1547,13 +1467,10 @@ setting:
   linuxTitlebar: Saját címsáv
   linuxTitlebarDescription: A natív linuxos címsor használata az launcherhez
   location: Áruház helye
-  manualUpdateHint: >-
-    A verzió nem frissíthető automatikusan. Kérjük, töltse le újra az indítóprogramot a hivatalos honlapról!
-  maunalUpdateHint: >-
-    A verzió nem frissíthető automatikusan. Kérlek, töltsd le újra az launchert a weboldalról!
+  manualUpdateHint: A verzió nem frissíthető automatikusan. Kérjük, töltse le újra az indítóprogramot a hivatalos honlapról!
+  maunalUpdateHint: A verzió nem frissíthető automatikusan. Kérlek, töltsd le újra az launchert a weboldalról!
   maxSockets: Kiszolgálónként
-  maxSocketsDescription: >-
-    Korlátozza a maximálisan engedélyezhető foglalatok számát állomásonként vagy az összes állomáson összesen. A 0 azt jelenti, hogy nincs korlátozás.
+  maxSocketsDescription: Korlátozza a maximálisan engedélyezhető foglalatok számát állomásonként vagy az összes állomáson összesen. A 0 azt jelenti, hogy nincs korlátozás.
   maxSocketsTitle: Max HTTP foglalatok
   memoryAssignment: Memória hozzárendelés
   migrateFromOther: Importálás másik indítóból
@@ -1576,8 +1493,7 @@ setting:
     all: Összes
     legacy: Csak a Legacy verzió
   resetAllSettings: Összes beállítás visszaállítása
-  resetAllSettingsConfirmMessage: >-
-    Ez véglegesen törli az összes beállítást, fiókot, példányt, csoportot és gyorsítótárazott adatot. Ez a művelet nem vonható vissza. Biztos vagy benne?
+  resetAllSettingsConfirmMessage: Ez véglegesen törli az összes beállítást, fiókot, példányt, csoportot és gyorsítótárazott adatot. Ez a művelet nem vonható vissza. Biztos vagy benne?
   resetAllSettingsConfirmTitle: Visszaállítja az összes beállítást?
   resetAllSettingsHint: Az indító visszaállítása gyári alapértelmezésre (mindent töröl)
   resetAllSettingsSuccess: Az összes beállítás vissza lett állítva. Az indító újraindul.
@@ -1585,8 +1501,7 @@ setting:
   resetToDefault: Visszaállítás alapértelmezettre
   select: kiválasztás
   settingsExported: Beállítások sikeresen exportálva
-  settingsImportError: >-
-    Nem sikerült importálni a beállításokat. Kérjük, ellenőrizze a fájlformátumot.
+  settingsImportError: Nem sikerült importálni a beállításokat. Kérjük, ellenőrizze a fájlformátumot.
   settingsImported: Beállítások sikeresen importálva
   settingsReloadHint: Az indító újraindul az összes beállítás alkalmazásához.
   showNewsHeader: Hírek kirakatának megjelenítése
@@ -1623,8 +1538,7 @@ setting:
   themeShareDescription: Megoszthatja a témát a barátjával.
   update: Frissítés
   useBmclAPI: BMCL API használata
-  useBmclAPIDescription: >-
-    Használd a BMCLAPI-t a Minecraft letöltéséhez, ha a kínai kontinensen tartózkodsz. (Ez nem befolyásolja, ha nem a kínai kontinensen tartózkodik.)
+  useBmclAPIDescription: Használd a BMCLAPI-t a Minecraft letöltéséhez, ha a kínai kontinensen tartózkodsz. (Ez nem befolyásolja, ha nem a kínai kontinensen tartózkodik.)
   useProxy: HTTP Proxy
   useProxyDescription: A http-kérés proxy-kiszolgálójának címe
   viewBackgroundMusic: Zenék megtekintése
@@ -1647,41 +1561,31 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: >-
-      Az adatgyökér nem egy közös .minecraft könyvtár. Mivel az XMCL adatok könyvtárszerkezet különbözik a vanilla könyvtárszerkezettől, nem javasoljuk, hogy a a közös .minecraft könyvtárat adatgyökérként használni.
+    description: Az adatgyökér nem egy közös .minecraft könyvtár. Mivel az XMCL adatok könyvtárszerkezet különbözik a vanilla könyvtárszerkezettől, nem javasoljuk, hogy a a közös .minecraft könyvtárat adatgyökérként használni.
     drives: Ajánlott helyek
     name: Adatmappa beállítása
-  defaultLayoutDescription: >-
-    Az alapértelmezett elrendezés a játék "példány" koncepcióját próbálja erősíteni. Úgy néz ki, mint az olyan alkalmazások, mint a Discord. Más játékindító alkalmazások, mint a Steam stb. is inspirálták.
+  defaultLayoutDescription: Az alapértelmezett elrendezés a játék "példány" koncepcióját próbálja erősíteni. Úgy néz ki, mint az olyan alkalmazások, mint a Discord. Más játékindító alkalmazások, mint a Steam stb. is inspirálták.
   defaultPath: Alapértelmezett útvonal
   error:
-    badDataRoot: >-
-      Érvénytelen könyvtár az indítóadatokhoz! Kérjük, próbálkozzon más könyvtárral!
-    exists: >-
-      A kiválasztott könyvtár nem üres. Ez rendben van, de kérjük, készítsen biztonsági mentést az adatokról.
+    badDataRoot: Érvénytelen könyvtár az indítóadatokhoz! Kérjük, próbálkozzon más könyvtárral!
+    exists: A kiválasztott könyvtár nem üres. Ez rendben van, de kérjük, készítsen biztonsági mentést az adatokról.
     invalidChar: |-
       Az elérési út érvénytelen karaktereket tartalmaz!
       Ez okozhatja, hogy a Minecraft nem kezdődik!
       A plakán csak angol karaktereket és szimbólumot használ!
-    noPermission: >-
-      Az launchernek nincs jogosultsága a kiválasztott könyvtárhoz! Kérlek, próbálj meg egy másikat.
+    noPermission: Az launchernek nincs jogosultsága a kiválasztott könyvtárhoz! Kérlek, próbálj meg egy másikat.
     nonDictionary: A kiválasztott útvonal egy fájl! Kérlek válasszon ki egy könyvtárat!
-  focusLayoutDescription: >-
-    A fókusz elrendezés a Minecraft Launcher régi elrendezése. Ezt úgy tervezték egyetlen példány vagy néhány példány használatára tervezték.
+  focusLayoutDescription: A fókusz elrendezés a Minecraft Launcher régi elrendezése. Ezt úgy tervezték egyetlen példány vagy néhány példány használatára tervezték.
   game:
     name: Létező játék beimportálása
   locale:
-    description: >-
-      Válaszd ki a kívánt nyelvet, ha van! Ha nem látod az anyanyelvedet, és segíteni szeretnél, akkor látogass el a Githubra, hogy pull requesteket küldj a fordításhoz!
+    description: Válaszd ki a kívánt nyelvet, ha van! Ha nem látod az anyanyelvedet, és segíteni szeretnél, akkor látogass el a Githubra, hogy pull requesteket küldj a fordításhoz!
     language: Nyelv
     name: Nyelv beállítása
   path: Jelenlegi útvonal
 shaderPack:
   linkShared: Árnyékolócsomagok megosztása példányok között
-  linkSharedHint: >-
-    Kösse össze ennek a példánynak a shaderpacks mappáját a globális megosztott
-    mappával, hogy minden példány ugyanazokat az árnyékolócsomagokat használja. A
-    meglévő csomagok a megosztott mappába kerülnek.
+  linkSharedHint: Kösse össze ennek a példánynak a shaderpacks mappáját a globális megosztott mappával, hogy minden példány ugyanazokat az árnyékolócsomagokat használja. A meglévő csomagok a megosztott mappába kerülnek.
   disabled: Shader pack kikapcsolása
   dropHint: Shader pack importálása
   empty: Nincs kijelölt shader csomag
@@ -1699,6 +1603,7 @@ shaderPack:
   market: Shaderpiac
   noPacks: Nincs shadercsomag telepítve
   search: Shadercsomagok keresése...
+  'off': 'Off'
 shared:
   close: Bezárás
   pressKeyCombination: Nyomjon meg egy billentyűkombinációt...
@@ -1907,10 +1812,7 @@ tutorial:
 universalDrop:
   unknownResource: Ismeretlen
 unresolvedFiles:
-  description: >-
-    Ezeket a fájlokat nem sikerült letölteni a telepítés során. Keress
-    megfelelő forrást, telepítsd a találatokat, vagy hagyj figyelmen kívül
-    fájlokat az indításhoz.
+  description: Ezeket a fájlokat nem sikerült letölteni a telepítés során. Keress megfelelő forrást, telepítsd a találatokat, vagy hagyj figyelmen kívül fájlokat az indításhoz.
   empty: Minden fájl feloldva.
   ignoreSelected: '{count} mellőzése'
   install: '{count} találat telepítése'
@@ -1945,8 +1847,7 @@ userAccount:
   removeTitle: Fiók eltávolítása
 userCape:
   changeTitle: Köpeny változtatása
-  description: >-
-    A köpenyek különleges jutalmak, amelyeket a játékosok különböző eseményeken keresztül oldhatnak fel, kampányok és más vidám események során. Itt választhatsz a köpenyek közül amelyek jelenleg a tulajdonodban vannak:
+  description: 'A köpenyek különleges jutalmak, amelyeket a játékosok különböző eseményeken keresztül oldhatnak fel, kampányok és más vidám események során. Itt választhatsz a köpenyek közül amelyek jelenleg a tulajdonodban vannak:'
   noCape: Nincs köpeny
 userService:
   add: További szolgáltatás hozzáadása
@@ -2005,7 +1906,7 @@ userSkin:
   addNewSkin: Új kinézet hozzáadása
   editSkin: Kinézet szerkesztése
   skinName: Kinézet neve
-  skinNamePlaceholder: 'pl. A kedvenc kinézetem'
+  skinNamePlaceholder: pl. A kedvenc kinézetem
   localFile: Helyi fájl
   urlOrPlayer: URL / Játékosnév
   urlOrPlayerPlaceholder: Add meg a kép URL-jét vagy a Minecraft-felhasználónevet
@@ -2057,7 +1958,6 @@ migrateMinecraft:
   name: Minecraft-fájlok migrálása
 reinstall:
   name: 'Újratelepítés: {version}'
-
 blueprint:
   name: Tervrajz | Tervrajzok
   count: '{count} tervrajz'
@@ -2105,3 +2005,156 @@ blueprint:
     action: Csere
   formats:
     structure: Vanilla struktúra
+gamepad:
+  connected: Controller Connected
+  guideTitle: Controller Controls
+  enableSwitchLabel: Gamepad Controls
+  enabledState: Enabled
+  disabledState: Disabled
+  toggle: Toggle
+  disabledNotify: Gamepad controls disabled.
+  disconnected: Controller Disconnected
+  enabledNotify: Gamepad controls enabled! Use D-pad/Left stick to navigate, {btnA} to select, {btnB} to go back.
+  guide:
+    confirm: Select
+    navigate: Navigate
+    tabs: Switch tabs
+    sections: Switch sections
+    launch: Launch game
+    instanceSettings: Instance settings
+  modSuggestTitle: Controller Mod
+  modSuggestBody: To use your gamepad inside Minecraft, a controller mod is recommended. Would you like to install the appropriate mod for your modloader?
+  modInstall: Install Mod
+  modSkip: Skip
+  modDone: Done
+  modInstalled: Controller mod installed successfully! It will be active next time you launch Minecraft.
+  modInstalledNotify: '{name} has been installed for in-game controller support.'
+  modNotFound: No compatible version found for {loader} on Minecraft {version}.
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+  settingSteamTitle: Add Launcher to Steam
+  steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
+  steamAlreadyAddedNotify: Launcher is already in your Steam Library.
+  steamDeckTitle: Steam Deck Detected
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckAddBtn: Add to Steam ({btn})
+  steamDeckCancelBtn: Cancel ({btn})
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

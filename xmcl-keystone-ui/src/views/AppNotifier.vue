@@ -1,14 +1,15 @@
 <template>
   <v-snackbar
     v-model="data.show"
-    location="top end"
-    :timeout="data.level === 'error' ? -1 : 6000"
+    :location="isBigPicture ? 'bottom end' : 'top end'"
+    :timeout="timeout"
     :color="surfaceColor"
     rounded="lg"
-    :min-width="320"
-    :max-width="480"
+    :min-width="isBigPicture ? 380 : 320"
+    :max-width="isBigPicture ? 540 : 480"
     elevation="8"
     class="select-none app-notifier"
+    :class="{ 'app-notifier--bp': isBigPicture, [`level-${data.level}`]: !!data.level }"
   >
     <div class="flex items-center gap-3 py-1">
       <div
@@ -64,6 +65,13 @@
     </div>
 
     <template #actions>
+      <div
+        v-if="isBigPicture && data.show"
+        class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-white/80 font-mono text-xs font-semibold select-none mr-1"
+      >
+        <v-icon size="13" color="primary">schedule</v-icon>
+        <span>{{ remainingSeconds }}s</span>
+      </div>
       <v-btn
         v-if="data.more"
         v-shared-tooltip="() => t('shared.next')"
@@ -79,6 +87,17 @@
         @click="close"
       />
     </template>
+
+    <!-- 10s Countdown progress bar for Big Picture -->
+    <div
+      v-if="isBigPicture && data.show"
+      class="absolute bottom-0 left-0 right-0 h-1 bg-white/10 overflow-hidden rounded-b-2xl"
+    >
+      <div
+        class="h-full bg-primary transition-all duration-200"
+        :style="{ width: `${(remainingSeconds / 10) * 100}%` }"
+      />
+    </div>
   </v-snackbar>
 </template>
 
@@ -86,6 +105,41 @@
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { Level, LocalNotification, kNotificationQueue } from '../composables/notifier'
 import { injection } from '@/util/inject'
+import { useBigPicture } from '@/composables/bigPicture'
+
+const { isBigPicture } = useBigPicture()
+
+const timeout = computed(() => {
+  if (isBigPicture.value) {
+    return 10000
+  }
+  return data.level === 'error' ? -1 : 6000
+})
+
+const remainingSeconds = ref(10)
+let timerInterval: any = null
+
+function startCountdown() {
+  clearCountdown()
+  remainingSeconds.value = 10
+  const startTime = Date.now()
+  timerInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime
+    const left = Math.max(0, Math.ceil((10000 - elapsed) / 1000))
+    remainingSeconds.value = left
+    if (elapsed >= 10000) {
+      clearCountdown()
+      close()
+    }
+  }, 250)
+}
+
+function clearCountdown() {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
 
 const data = reactive({
   show: false,
@@ -103,6 +157,7 @@ const data = reactive({
 const queue = injection(kNotificationQueue)
 const queueLength = computed(() => queue.value.length)
 const close = () => {
+  clearCountdown()
   data.show = false
   // Drop the currently-shown entry from the queue. Without this the watcher
   // below would immediately re-show the same notification.
@@ -139,6 +194,9 @@ function consume() {
     data.more = last.more
     data.body = last.body ?? ''
     data.operations = last.operations ?? []
+    if (isBigPicture.value) {
+      startCountdown()
+    }
   }
 }
 watch(queueLength, (newLength, oldLength) => {
@@ -149,15 +207,20 @@ watch(queueLength, (newLength, oldLength) => {
 
 // Pull next item from the queue when the user dismisses the current one
 watch(() => data.show, (shown) => {
-  if (!shown && queue.value.length > 0) {
-    setTimeout(consume, 200)
+  if (!shown) {
+    clearCountdown()
+    if (queue.value.length > 0) {
+      setTimeout(consume, 200)
+    }
   }
 })
 
 const { t } = useI18n()
 
 onMounted(() => { })
-onUnmounted(() => { })
+onUnmounted(() => {
+  clearCountdown()
+})
 
 const icons = {
   success: 'check_circle',
@@ -197,5 +260,49 @@ const surfaceColor = computed(() => 'surface')
 
 .count-badge {
   background: rgba(var(--v-theme-on-surface), 0.08);
+}
+
+/* Big Picture Console Notification Style */
+.app-notifier--bp :deep(.v-snackbar__wrapper) {
+  background: rgba(18, 22, 28, 0.96) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-left: 5px solid rgba(var(--v-theme-primary), 0.9) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 0, 0, 0.4) !important;
+  margin-bottom: 24px !important;
+  margin-right: 24px !important;
+}
+
+.app-notifier--bp.level-error :deep(.v-snackbar__wrapper) {
+  border-left-color: rgba(var(--v-theme-error), 0.9) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(239, 68, 68, 0.25) !important;
+}
+
+.app-notifier--bp.level-warning :deep(.v-snackbar__wrapper) {
+  border-left-color: rgba(var(--v-theme-warning), 0.9) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(245, 158, 11, 0.25) !important;
+}
+
+.app-notifier--bp.level-success :deep(.v-snackbar__wrapper) {
+  border-left-color: rgba(var(--v-theme-success), 0.9) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(34, 197, 94, 0.25) !important;
+}
+
+.app-notifier--bp :deep(.level-badge) {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 14px !important;
+}
+
+.app-notifier--bp .text-sm {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+}
+
+.app-notifier--bp .text-caption {
+  font-size: 13px !important;
+  opacity: 0.85 !important;
 }
 </style>

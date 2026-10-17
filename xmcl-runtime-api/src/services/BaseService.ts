@@ -170,6 +170,11 @@ export interface BaseService extends GenericEventEmitter<BaseServiceEventMap> {
   getMemoryStatus(): Promise<{ total: number; free: number }>
 
   getSystemInfo(diskPath?: string): Promise<SystemInfo>
+
+  /**
+   * Show the on-screen / virtual keyboard (Steam Deck virtual keyboard or Windows touch keyboard / OSK).
+   */
+  showVirtualKeyboard(preferSteam?: boolean): Promise<boolean>
 }
 
 export type MigrationExceptions = {

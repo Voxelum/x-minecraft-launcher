@@ -1036,35 +1036,35 @@ multiplayer:
   updateSharedInstanceConfirm: التحديث والتشغيل
   updateSharedInstanceDescription: تختلف التعديلات المشتركة عن {instance}. هل تريد تحديث هذه النسخة لتطابق المضيف قبل التشغيل؟ سيتم إنشاء نسخة احتياطية من الملفات المعدلة الحالية.
   updateSharedInstanceTitle: تحديث النسخة المشتركة؟
-  addFunds: "ضيف رصيد"
-  availableBalance: "الرصيد المتاح"
-  balanceHint: "متاح لخدمات XMCL Together"
-  billing: "الفوترة"
-  billingDescription: "إدارة الوصول للترحيل، وخطة Together Home، والمدفوعات."
-  billingError: "مش قادرين نحمّل فواتير Together. جرّب تاني بعد شوية."
-  buyTogether: "اشتري Together"
-  cancelTogether: "إلغاء الخطة"
-  checkout: "افتح الدفع على Waffo"
-  connectionTogetherWarning: "أحد أعضاء الغرفة مش قادر يتصل بيك بقاله فترة. جرّب XMCL Together عشان تحسّن الاتصال لكل الموجودين في الغرفة. قائد الغرفة بس هو اللي محتاج Together."
-  masterPurchaseHint: "قائد الغرفة بس هو اللي محتاج Together Home عشان يحسّن الاتصال لكل الموجودين في الغرفة."
-  natTogetherWarning: "ممكن الراوتر بتاعك يواجه مشكلة في الاتصال بقائد الغرفة. لو الاتصال فشل، جرّب XMCL Together عشان تحسّن الاتصال بينك وبين أصحابك. قائد الغرفة بس هو اللي محتاج يشتري Together للغرفة."
-  togetherName: "Minecraft Together"
-  trialDescription: "تجربة واحدة لمدة 7 أيام مع 1 GB من حركة مرور الترحيل."
-  trialTitle: "تجربة الاتصال"
-  tryTogether: "جرّب Together"
-  month: "شهر"
-  orderStatus: "طلب Waffo: {status}"
-  planDescription: "20 GB من حركة مرور الترحيل المُدارة كل شهر، بالإضافة إلى استكشاف أخطاء حزمة التعديلات وإصلاحها بالذكاء الاصطناعي."
-  waffoHint: "بتتم المدفوعات بأمان على Waffo Pancake. XMCL عمره ما بيستلم رقم بطاقتك."
+  addFunds: ضيف رصيد
+  availableBalance: الرصيد المتاح
+  balanceHint: متاح لخدمات XMCL Together
+  billing: الفوترة
+  billingDescription: إدارة الوصول للترحيل، وخطة Together Home، والمدفوعات.
+  billingError: مش قادرين نحمّل فواتير Together. جرّب تاني بعد شوية.
+  buyTogether: اشتري Together
+  cancelTogether: إلغاء الخطة
+  checkout: افتح الدفع على Waffo
+  connectionTogetherWarning: أحد أعضاء الغرفة مش قادر يتصل بيك بقاله فترة. جرّب XMCL Together عشان تحسّن الاتصال لكل الموجودين في الغرفة. قائد الغرفة بس هو اللي محتاج Together.
+  masterPurchaseHint: قائد الغرفة بس هو اللي محتاج Together Home عشان يحسّن الاتصال لكل الموجودين في الغرفة.
+  natTogetherWarning: ممكن الراوتر بتاعك يواجه مشكلة في الاتصال بقائد الغرفة. لو الاتصال فشل، جرّب XMCL Together عشان تحسّن الاتصال بينك وبين أصحابك. قائد الغرفة بس هو اللي محتاج يشتري Together للغرفة.
+  togetherName: Minecraft Together
+  trialDescription: تجربة واحدة لمدة 7 أيام مع 1 GB من حركة مرور الترحيل.
+  trialTitle: تجربة الاتصال
+  tryTogether: جرّب Together
+  month: شهر
+  orderStatus: 'طلب Waffo: {status}'
+  planDescription: 20 GB من حركة مرور الترحيل المُدارة كل شهر، بالإضافة إلى استكشاف أخطاء حزمة التعديلات وإصلاحها بالذكاء الاصطناعي.
+  waffoHint: بتتم المدفوعات بأمان على Waffo Pancake. XMCL عمره ما بيستلم رقم بطاقتك.
   subscription:
-    active: "نشطة"
-    cancelled: "ملغاة"
-    payment_due: "الدفع مستحق"
+    active: نشطة
+    cancelled: ملغاة
+    payment_due: الدفع مستحق
   trial:
-    active: "التجربة مفعّلة"
-    available: "التجربة المجانية متاحة"
-    expired: "تم استخدام التجربة"
-    unavailable: "التجربة غير متاحة"
+    active: التجربة مفعّلة
+    available: التجربة المجانية متاحة
+    expired: تم استخدام التجربة
+    unavailable: التجربة غير متاحة
   loginRequiredDescription: تستخدم لعبة P2P الجماعية خدمات XMCL عبر الإنترنت. سجّل الدخول إلى حساب XMCL للمتابعة.
   loginRequiredTitle: سجّل الدخول لاستخدام اللعب الجماعي عبر P2P
   complete: اكتمل
@@ -1215,7 +1215,7 @@ blueprint:
     loading: جاري تحميل المعاينة...
     empty: المخطط ده ملوش بلوكات لعرضها.
     hint: '{count} بلوكة · {x}×{y}×{z}'
-    controls: 'اسحب للنظر · WASD للحركة · Space/Shift للصعود/الهبوط · التمرير للتكبير'
+    controls: اسحب للنظر · WASD للحركة · Space/Shift للصعود/الهبوط · التمرير للتكبير
   convert:
     title: تحويل الصيغة
     hint: تحويل مخطط البناء ده لصيغة تانية. هيتم إنشاء ملف جديد.
@@ -1255,23 +1255,23 @@ resourcepack:
   unselected: حزم الموارد غير المحددة
 save:
   map:
-    tabTitle: "خريطة العالم"
+    tabTitle: خريطة العالم
   progress:
     zoomIn: تكبير
     zoomOut: تصغير
-    loading: "جاري تحميل التقدم…"
-    noData: "مفيش تقدم مسجّل"
-    noDataHint: "العب في العالم ده علشان تسجّل الإنجازات والإحصائيات وتقدم المهام."
-    quests: "المهام"
-    advancements: "الإنجازات"
-    done: "مكتمل"
-    inProgress: "قيد التنفيذ"
-    all: "الكل"
-    treeView: "عرض شجري"
-    filterPlaceholder: "تصفية حسب الاسم…"
-    root: "البداية"
-    exitFullscreen: "الخروج من ملء الشاشة"
-    locked: "مقفول"
+    loading: جاري تحميل التقدم…
+    noData: مفيش تقدم مسجّل
+    noDataHint: العب في العالم ده علشان تسجّل الإنجازات والإحصائيات وتقدم المهام.
+    quests: المهام
+    advancements: الإنجازات
+    done: مكتمل
+    inProgress: قيد التنفيذ
+    all: الكل
+    treeView: عرض شجري
+    filterPlaceholder: تصفية حسب الاسم…
+    root: البداية
+    exitFullscreen: الخروج من ملء الشاشة
+    locked: مقفول
   allowCheats: السماح بالغش (Cheats)
   copy:
     name: نسخ العالم
@@ -1340,6 +1340,7 @@ save:
   useMouseRotate: استخدم الماوس لتدوير المنظور
   useScrollZoom: استخدم بكرة الماوس للتكبير والتصغير
   world: العالم
+  empty: No worlds found
 screenshots:
   empty: معندكش أي لقطات شاشة
   gallery: معرض لقطات الشاشة
@@ -1609,7 +1610,7 @@ setting:
   general: عام
   githubRelease: إصدارات جيت هاب (Github Release)
   globalJava: Java المفضلة
-  globalJavaHint: "في الوضع التلقائي تتم تجربة Java هذه أولاً ولا يتم الرجوع إلى الاكتشاف التلقائي إلا عندما لا تكون متوافقة مع إصدار اللعبة."
+  globalJavaHint: في الوضع التلقائي تتم تجربة Java هذه أولاً ولا يتم الرجوع إلى الاكتشاف التلقائي إلا عندما لا تكون متوافقة مع إصدار اللعبة.
   globalSetting: إعدادات النسخ العالمية
   globalSettingHint: النسخ هتستخدم الإعدادات دي بشكل افتراضي.
   importSettings: استيراد الإعدادات
@@ -1779,6 +1780,7 @@ shaderPack:
   selectSearchHint: ابحث واختر حزمة الشيدر
   showDirectory: عرض مجلد حزم الشيدر
   showFile: عرض حزمة الشيدر دي في المجلد
+  'off': 'Off'
 shared:
   pressKeyCombination: اضغط مجموعة مفاتيح...
   add: إضافة
@@ -1843,8 +1845,8 @@ task:
   running: قيد التشغيل...
   succeed: اكتملت
   eta: متبقي ~{time}
-  remaining: 'متبقي {size}'
-  totalRemaining: 'المتبقي {size}'
+  remaining: متبقي {size}
+  totalRemaining: المتبقي {size}
   op:
     update: تحديث
     export: تصدير
@@ -2152,3 +2154,125 @@ gamepad:
   steamDeckDesc: اكتشفنا إنك بتشغل اللعبة على Steam Deck. تحب تضيف XMCL لمكتبة Steam كأداة مش من Steam عشان تستمتع بمميزات الـ Steam overlay ودعم الدراع الكامل في Gaming Mode؟
   steamDeckAddBtn: إضافة لـ Steam ({btn})
   steamDeckCancelBtn: إلغاء ({btn})
+  disconnected: Controller Disconnected
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

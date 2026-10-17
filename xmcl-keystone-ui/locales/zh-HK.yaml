@@ -1082,35 +1082,35 @@ multiplayer:
   updateSharedInstanceConfirm: 更新並啟動
   updateSharedInstanceDescription: 房主分享的模組與 {instance} 不一致。是否先將此實例更新為與房主一致再啟動？被取代的檔案會自動備份。
   updateSharedInstanceTitle: 更新分享的實例？
-  addFunds: "增值"
-  availableBalance: "可用結餘"
-  balanceHint: "可用於 XMCL Together 服務"
-  billing: "帳單"
-  billingDescription: "管理轉送連線存取權、Together Home 方案同付款。"
-  billingError: "未能載入 Together 帳單資料。請稍後再試。"
-  buyTogether: "購買 Together"
-  cancelTogether: "取消方案"
-  checkout: "開啟 Waffo 付款頁面"
-  connectionTogetherWarning: "房間入面有位成員一段時間都未能連線到你。可以試吓 XMCL Together，改善房間入面所有人嘅連線。只需要房主使用 Together。"
-  masterPurchaseHint: "只需要房主使用 Together Home，就可以改善房間入面所有人嘅連線。"
-  natTogetherWarning: "你個路由器可能難以連線到房主。如果連線失敗，可以試吓 XMCL Together，改善你同朋友之間嘅連線。房間只需要由房主購買 Together。"
-  togetherName: "Minecraft Together"
-  trialDescription: "一次 7 日試用，包含 1 GB 轉送流量。"
-  trialTitle: "連線試用"
-  tryTogether: "試用 Together"
-  month: "個月"
-  orderStatus: "Waffo 訂單：{status}"
-  planDescription: "每月 20 GB 代管轉送流量，另提供模組包 AI 疑難排解。"
-  waffoHint: "付款會喺 Waffo Pancake 上安全完成。XMCL 絕對唔會收到你嘅卡號。"
+  addFunds: 增值
+  availableBalance: 可用結餘
+  balanceHint: 可用於 XMCL Together 服務
+  billing: 帳單
+  billingDescription: 管理轉送連線存取權、Together Home 方案同付款。
+  billingError: 未能載入 Together 帳單資料。請稍後再試。
+  buyTogether: 購買 Together
+  cancelTogether: 取消方案
+  checkout: 開啟 Waffo 付款頁面
+  connectionTogetherWarning: 房間入面有位成員一段時間都未能連線到你。可以試吓 XMCL Together，改善房間入面所有人嘅連線。只需要房主使用 Together。
+  masterPurchaseHint: 只需要房主使用 Together Home，就可以改善房間入面所有人嘅連線。
+  natTogetherWarning: 你個路由器可能難以連線到房主。如果連線失敗，可以試吓 XMCL Together，改善你同朋友之間嘅連線。房間只需要由房主購買 Together。
+  togetherName: Minecraft Together
+  trialDescription: 一次 7 日試用，包含 1 GB 轉送流量。
+  trialTitle: 連線試用
+  tryTogether: 試用 Together
+  month: 個月
+  orderStatus: Waffo 訂單：{status}
+  planDescription: 每月 20 GB 代管轉送流量，另提供模組包 AI 疑難排解。
+  waffoHint: 付款會喺 Waffo Pancake 上安全完成。XMCL 絕對唔會收到你嘅卡號。
   subscription:
-    active: "使用中"
-    cancelled: "已取消"
-    payment_due: "待付款"
+    active: 使用中
+    cancelled: 已取消
+    payment_due: 待付款
   trial:
-    active: "試用方案使用中"
-    available: "有免費試用"
-    expired: "試用已用完"
-    unavailable: "未能使用試用"
+    active: 試用方案使用中
+    available: 有免費試用
+    expired: 試用已用完
+    unavailable: 未能使用試用
   loginRequiredDescription: P2P 多人遊戲使用 XMCL 線上服務。請登入 XMCL 帳戶以繼續。
   loginRequiredTitle: 登入以使用 P2P 多人遊戲
   complete: 完成
@@ -1265,7 +1265,7 @@ blueprint:
     loading: 正在載入預覽...
     empty: 此藍圖冇可顯示嘅方塊。
     hint: '{count} 個方塊 · {x}×{y}×{z}'
-    controls: 'WASD：移動 · 空白鍵/Shift：上升/下降 · 拖曳：觀察 · 滾動：縮放'
+    controls: WASD：移動 · 空白鍵/Shift：上升/下降 · 拖曳：觀察 · 滾動：縮放
   convert:
     title: 轉換格式
     hint: 將此藍圖轉換為其他格式。將建立一個新檔案。
@@ -1305,23 +1305,23 @@ resourcepack:
   unselected: 未選資源包
 save:
   map:
-    tabTitle: "世界地圖"
+    tabTitle: 世界地圖
   progress:
     zoomIn: 放大
     zoomOut: 縮小
-    loading: "正在載入進度…"
-    noData: "找不到進度"
-    noDataHint: "在此世界中遊玩後，即可查看進度、統計資料和任務完成情況。"
-    quests: "任務"
-    advancements: "進度"
-    done: "已完成"
-    inProgress: "進行中"
-    all: "全部"
-    treeView: "樹狀檢視"
-    filterPlaceholder: "按名稱篩選…"
-    root: "起點"
-    exitFullscreen: "退出全螢幕"
-    locked: "尚未解鎖"
+    loading: 正在載入進度…
+    noData: 找不到進度
+    noDataHint: 在此世界中遊玩後，即可查看進度、統計資料和任務完成情況。
+    quests: 任務
+    advancements: 進度
+    done: 已完成
+    inProgress: 進行中
+    all: 全部
+    treeView: 樹狀檢視
+    filterPlaceholder: 按名稱篩選…
+    root: 起點
+    exitFullscreen: 退出全螢幕
+    locked: 尚未解鎖
   allowCheats: 允許作弊
   copy:
     name: 複製存檔
@@ -1390,6 +1390,7 @@ save:
   useMouseRotate: 使用滑鼠旋轉視角
   useScrollZoom: 使用滾輪縮放
   world: 世界
+  empty: No worlds found
 screenshots:
   empty: 你還冇截圖
   gallery: 截圖畫廊
@@ -1421,13 +1422,9 @@ server:
   entryCount: '{count} 个伺服器'
   expectedVersions: 已支持的版本
   export: 匯出伺服器
-  exportNoFilesHint: >-
-    找不到伺服器檔案。
-    请先安裝一次伺服端以生成所需檔案。
+  exportNoFilesHint: 找不到伺服器檔案。 请先安裝一次伺服端以生成所需檔案。
   exportOption: 伺服器匯出选项
-  exportSSHAuthenticationFailed: >-
-    所有身份驗證方法都失败了。
-    请检查用户名/密碼或私鑰。
+  exportSSHAuthenticationFailed: 所有身份驗證方法都失败了。 请检查用户名/密碼或私鑰。
   exportSSHOptions: SSH选项
   exportSSHPrivateKeyPath: SSH私鑰路径
   exportSSHRemotePath: 遠端伺服器路径
@@ -1449,7 +1446,7 @@ server:
   pinAfterSave: 儲存后固定为預設啟動目标
   ping: Ping 伺服器
   pings: 延迟
-  pinnedHeader: '已固定：{name}'
+  pinnedHeader: 已固定：{name}
   players: 玩家
   port: 連接埠
   clearLog: 清空日志
@@ -1506,7 +1503,7 @@ server:
   remoteServerInstalled: 已安裝伺服端檔案
   remoteServiceName: 服务名称
   remoteServiceNameHint: systemd --user 单元名称，例如 mc-server
-  remoteSelectedFiles: '已選擇 {count} 个伺服端檔案'
+  remoteSelectedFiles: 已選擇 {count} 个伺服端檔案
   remoteSelectFiles: 選擇檔案
   remoteStartCommand: 啟動命令
   remoteStartCommandHint: 例如 java -jar server.jar nogui
@@ -1552,9 +1549,9 @@ server:
   unknownDescription: 未知伺服器，请刷新。
   unpin: 取消固定
   upload: 上传伺服器
-  upstreamUpToDate: '您的執行個體与伺服器版本一致（{version}）。'
+  upstreamUpToDate: 您的執行個體与伺服器版本一致（{version}）。
   upstreamUpToDateHint: 无需升级，点击可重新 Ping 伺服器。
-  upstreamUpdateAvailable: '伺服器现在執行 Minecraft {version}，点击套用。'
+  upstreamUpdateAvailable: 伺服器现在執行 Minecraft {version}，点击套用。
   upstreamUpdateHint: 将建议的 Minecraft 版本套用到此執行個體。
   useAsUpstreamHint: 此執行個體将跟随伺服器所报告的 Minecraft 版本。
   version: 伺服器推荐版本
@@ -1663,7 +1660,7 @@ setting:
   general: 基本設定
   githubRelease: Github
   globalJava: 首選 Java
-  globalJavaHint: "在自動模式下會優先嘗試此 Java，僅當其與遊戲版本不相容時才回退到自動偵測。"
+  globalJavaHint: 在自動模式下會優先嘗試此 Java，僅當其與遊戲版本不相容時才回退到自動偵測。
   globalSetting: 全域實例設定
   globalSettingHint: 實例預設情況下會使用呢啲全域設定
   importSettings: 匯入設定
@@ -1845,6 +1842,7 @@ shaderPack:
   selectSearchHint: 檢視已選擇嘅光影包
   showDirectory: 顯示光影資料夾
   showFile: 喺資料夾中顯示此光影包
+  'off': 'Off'
 shared:
   pressKeyCombination: 按下按鍵組合...
   add: 新增
@@ -1909,8 +1907,8 @@ task:
   running: 執行中...
   succeed: 已完成
   eta: 剩餘約 {time}
-  remaining: '剩餘 {size}'
-  totalRemaining: '剩餘 {size}'
+  remaining: 剩餘 {size}
+  totalRemaining: 剩餘 {size}
   op:
     update: 更新
     export: 匯出
@@ -2173,7 +2171,7 @@ userSkin:
   urlOrPlayerPlaceholder: 輸入皮膚圖片 URL 或 Minecraft 用戶名稱
   urlOrPlayerHint: 輸入 PNG 圖片直接連結或玩家名稱，以從 Mojang 取得皮膚
   dropFileHere: 將皮膚 PNG 檔案拖到呢度，或者撳一下瀏覽
-  supportedFormats: '支援格式：64x64 或 64x32 PNG 圖片'
+  supportedFormats: 支援格式：64x64 或 64x32 PNG 圖片
   preview: 皮膚預覽
   previewPlaceholder: 冇可用嘅皮膚預覽
   saveToLibrary: 儲存到衣櫥
@@ -2233,3 +2231,125 @@ gamepad:
   steamDeckDesc: 偵測到你正在使用 Steam Deck。你想將 XMCL 新增至 Steam 收藏庫作為非 Steam 遊戲，以便在遊戲模式中使用完整的 Steam 介面同手掣整合功能嗎？
   steamDeckAddBtn: 新增至 Steam ({btn})
   steamDeckCancelBtn: 取消 ({btn})
+  disconnected: Controller Disconnected
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

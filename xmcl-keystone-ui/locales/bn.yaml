@@ -1036,35 +1036,35 @@ multiplayer:
   updateSharedInstanceConfirm: আপডেট করে চালু করুন
   updateSharedInstanceDescription: শেয়ার করা মডগুলো {instance}-এর মডগুলোর থেকে আলাদা। চালুর আগে হোস্টের সঙ্গে মিলিয়ে এই ইনস্ট্যান্সটি আপডেট করবেন? বর্তমানে পরিবর্তিত ফাইলগুলোর ব্যাকআপ নেওয়া হবে।
   updateSharedInstanceTitle: শেয়ার করা ইনস্ট্যান্স আপডেট করবেন?
-  addFunds: "অর্থ যোগ করুন"
-  availableBalance: "উপলভ্য ব্যালেন্স"
-  balanceHint: "XMCL Together পরিষেবার জন্য উপলভ্য"
-  billing: "বিলিং"
-  billingDescription: "রিলে অ্যাক্সেস, আপনার Together Home প্ল্যান এবং পেমেন্ট পরিচালনা করুন।"
-  billingError: "Together-এর বিলিং লোড করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।"
-  buyTogether: "Together কিনুন"
-  cancelTogether: "প্ল্যান বাতিল করুন"
-  checkout: "Waffo চেকআউট খুলুন"
-  connectionTogetherWarning: "একজন রুম সদস্য কিছুক্ষণ ধরে আপনার সঙ্গে সংযোগ করতে পারছেন না। রুমের সবার সংযোগ উন্নত করতে XMCL Together ব্যবহার করে দেখুন। শুধু রুম মাস্টারের Together প্রয়োজন।"
-  masterPurchaseHint: "রুমের সবার সংযোগ উন্নত করতে শুধু রুম মাস্টারের Together Home প্রয়োজন।"
-  natTogetherWarning: "আপনার রাউটারের রুম মাস্টারের সঙ্গে সংযোগ করতে সমস্যা হতে পারে। সংযোগ ব্যর্থ হলে, আপনার বন্ধুদের সঙ্গে সংযোগ উন্নত করতে XMCL Together ব্যবহার করে দেখুন। রুমের জন্য শুধু রুম মাস্টারকেই Together কিনতে হবে।"
-  togetherName: "Minecraft Together"
-  trialDescription: "1 GB রিলে ট্র্যাফিকসহ 7 দিনের একটি ট্রায়াল।"
-  trialTitle: "সংযোগ ট্রায়াল"
-  tryTogether: "Together ব্যবহার করে দেখুন"
-  month: "মাস"
-  orderStatus: "Waffo অর্ডার: {status}"
-  planDescription: "প্রতি মাসে 20 GB পরিচালিত রিলে ট্র্যাফিক, সঙ্গে আপনার মডপ্যাকের সমস্যা সমাধানে AI সহায়তা।"
-  waffoHint: "Waffo Pancake-এ পেমেন্ট নিরাপদে সম্পন্ন হয়। XMCL কখনও আপনার কার্ড নম্বর পায় না।"
+  addFunds: অর্থ যোগ করুন
+  availableBalance: উপলভ্য ব্যালেন্স
+  balanceHint: XMCL Together পরিষেবার জন্য উপলভ্য
+  billing: বিলিং
+  billingDescription: রিলে অ্যাক্সেস, আপনার Together Home প্ল্যান এবং পেমেন্ট পরিচালনা করুন।
+  billingError: Together-এর বিলিং লোড করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।
+  buyTogether: Together কিনুন
+  cancelTogether: প্ল্যান বাতিল করুন
+  checkout: Waffo চেকআউট খুলুন
+  connectionTogetherWarning: একজন রুম সদস্য কিছুক্ষণ ধরে আপনার সঙ্গে সংযোগ করতে পারছেন না। রুমের সবার সংযোগ উন্নত করতে XMCL Together ব্যবহার করে দেখুন। শুধু রুম মাস্টারের Together প্রয়োজন।
+  masterPurchaseHint: রুমের সবার সংযোগ উন্নত করতে শুধু রুম মাস্টারের Together Home প্রয়োজন।
+  natTogetherWarning: আপনার রাউটারের রুম মাস্টারের সঙ্গে সংযোগ করতে সমস্যা হতে পারে। সংযোগ ব্যর্থ হলে, আপনার বন্ধুদের সঙ্গে সংযোগ উন্নত করতে XMCL Together ব্যবহার করে দেখুন। রুমের জন্য শুধু রুম মাস্টারকেই Together কিনতে হবে।
+  togetherName: Minecraft Together
+  trialDescription: 1 GB রিলে ট্র্যাফিকসহ 7 দিনের একটি ট্রায়াল।
+  trialTitle: সংযোগ ট্রায়াল
+  tryTogether: Together ব্যবহার করে দেখুন
+  month: মাস
+  orderStatus: 'Waffo অর্ডার: {status}'
+  planDescription: প্রতি মাসে 20 GB পরিচালিত রিলে ট্র্যাফিক, সঙ্গে আপনার মডপ্যাকের সমস্যা সমাধানে AI সহায়তা।
+  waffoHint: Waffo Pancake-এ পেমেন্ট নিরাপদে সম্পন্ন হয়। XMCL কখনও আপনার কার্ড নম্বর পায় না।
   subscription:
-    active: "সক্রিয়"
-    cancelled: "বাতিল করা হয়েছে"
-    payment_due: "পেমেন্ট বাকি"
+    active: সক্রিয়
+    cancelled: বাতিল করা হয়েছে
+    payment_due: পেমেন্ট বাকি
   trial:
-    active: "ট্রায়াল সক্রিয়"
-    available: "বিনামূল্যের ট্রায়াল উপলভ্য"
-    expired: "ট্রায়াল ব্যবহার করা হয়েছে"
-    unavailable: "ট্রায়াল উপলভ্য নয়"
+    active: ট্রায়াল সক্রিয়
+    available: বিনামূল্যের ট্রায়াল উপলভ্য
+    expired: ট্রায়াল ব্যবহার করা হয়েছে
+    unavailable: ট্রায়াল উপলভ্য নয়
   loginRequiredDescription: P2P মাল্টিপ্লেয়ার XMCL অনলাইন পরিষেবা ব্যবহার করে। চালিয়ে যেতে একটি XMCL অ্যাকাউন্টে সাইন ইন করুন।
   loginRequiredTitle: P2P মাল্টিপ্লেয়ারের জন্য সাইন ইন করুন
   complete: সম্পন্ন
@@ -1217,7 +1217,7 @@ blueprint:
     loading: পূর্বরূপ লোড হচ্ছে...
     empty: প্রদর্শনের জন্য এই ব্লুপ্রিন্টে কোনো ব্লক নেই।
     hint: '{count}টি ব্লক · {x}×{y}×{z}'
-    controls: 'টেনে দেখুন · WASD দিয়ে নড়াচড়া করুন · Space/Shift দিয়ে উপরে/নিচে যান · স্ক্রল করে জুম করুন'
+    controls: টেনে দেখুন · WASD দিয়ে নড়াচড়া করুন · Space/Shift দিয়ে উপরে/নিচে যান · স্ক্রল করে জুম করুন
   convert:
     title: বিন্যাস পরিবর্তন করুন
     hint: এই ব্লুপ্রিন্টটিকে অন্য একটি বিন্যাসে পরিবর্তন করুন। একটি নতুন ফাইল তৈরি করা হবে।
@@ -1257,23 +1257,23 @@ resourcepack:
   unselected: অনির্বাচিত রিসোর্স প্যাকসমূহ
 save:
   map:
-    tabTitle: "বিশ্বের মানচিত্র"
+    tabTitle: বিশ্বের মানচিত্র
   progress:
     zoomIn: বড় করুন
     zoomOut: ছোট করুন
-    loading: "অগ্রগতি লোড হচ্ছে…"
-    noData: "কোনো অগ্রগতি পাওয়া যায়নি"
-    noDataHint: "অর্জন, পরিসংখ্যান এবং অভিযানের অগ্রগতি রেকর্ড করতে এই বিশ্বে খেলুন।"
-    quests: "অভিযান"
-    advancements: "অর্জন"
-    done: "সম্পূর্ণ"
-    inProgress: "চলমান"
-    all: "সব"
-    treeView: "বৃক্ষ দৃশ্য"
-    filterPlaceholder: "নাম দিয়ে ছাঁকুন…"
-    root: "শুরু"
-    exitFullscreen: "পূর্ণপর্দা থেকে বের হন"
-    locked: "তালাবদ্ধ"
+    loading: অগ্রগতি লোড হচ্ছে…
+    noData: কোনো অগ্রগতি পাওয়া যায়নি
+    noDataHint: অর্জন, পরিসংখ্যান এবং অভিযানের অগ্রগতি রেকর্ড করতে এই বিশ্বে খেলুন।
+    quests: অভিযান
+    advancements: অর্জন
+    done: সম্পূর্ণ
+    inProgress: চলমান
+    all: সব
+    treeView: বৃক্ষ দৃশ্য
+    filterPlaceholder: নাম দিয়ে ছাঁকুন…
+    root: শুরু
+    exitFullscreen: পূর্ণপর্দা থেকে বের হন
+    locked: তালাবদ্ধ
   allowCheats: চিট ব্যবহারের অনুমতি দিন
   copy:
     name: সেভ কপি করুন
@@ -1342,6 +1342,7 @@ save:
   useMouseRotate: ভিউ ঘোরানোর জন্য মাউস ব্যবহার করুন
   useScrollZoom: জুম করার জন্য স্ক্রল হুইল ব্যবহার করুন
   world: জগৎ
+  empty: No worlds found
 screenshots:
   empty: আপনার কোনো স্ক্রিনশট নেই
   gallery: স্ক্রিনশট গ্যালারি
@@ -1611,7 +1612,7 @@ setting:
   general: সাধারণ
   githubRelease: গিটহাব রিলিজ
   globalJava: পছন্দের Java
-  globalJavaHint: "স্বয়ংক্রিয় মোডে প্রথমে এই Java চেষ্টা করা হয়, এবং গেম সংস্করণের সাথে অসামঞ্জস্যপূর্ণ হলেই কেবল স্বয়ংক্রিয় শনাক্তকরণে ফিরে যায়।"
+  globalJavaHint: স্বয়ংক্রিয় মোডে প্রথমে এই Java চেষ্টা করা হয়, এবং গেম সংস্করণের সাথে অসামঞ্জস্যপূর্ণ হলেই কেবল স্বয়ংক্রিয় শনাক্তকরণে ফিরে যায়।
   globalSetting: গ্লোবাল ইনস্ট্যান্স সেটিংস
   globalSettingHint: ইনস্ট্যান্স ডিফল্টরূপে এই সেটিংস ব্যবহার করবে।
   importSettings: সেটিংস ইম্পোর্ট করুন
@@ -1781,6 +1782,7 @@ shaderPack:
   selectSearchHint: শেডার প্যাক অনুসন্ধান করুন এবং নির্বাচন করুন
   showDirectory: শেডার প্যাক ডিরেক্টরি দেখান
   showFile: ফোল্ডারে এই শেডার প্যাকটি দেখান
+  'off': 'Off'
 shared:
   pressKeyCombination: কী সমন্বয় চাপুন...
   add: যোগ করুন
@@ -2153,3 +2155,125 @@ gamepad:
   steamDeckDesc: আমরা শনাক্ত করেছি যে আপনি স্টিম ডেকে চালাচ্ছেন। গেমিং মোডে সম্পূর্ণ স্টিম ওভারলে এবং কন্ট্রোলার ইন্টিগ্রেশনের জন্য আপনি কি এক্স মাইক্রাফট লঞ্চারকে একটি নন-স্টিম গেম হিসেবে আপনার স্টিম লাইব্রেরিতে যোগ করতে চান?
   steamDeckAddBtn: স্টিমে যোগ করুন ({btn})
   steamDeckCancelBtn: বাতিল করুন ({btn})
+  disconnected: Controller Disconnected
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode

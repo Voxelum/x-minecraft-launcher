@@ -6,13 +6,10 @@ AppShareInstanceDialog:
   editScopeDescription: Seleziona i file che gli altri peer potranno scaricare dopo aver rilevato questo gioco in esecuzione sulla LAN.
   editScopeTitle: Modifica ambito di condivisione
   instanceToShare: Gioco in esecuzione
-  alterDownloadDescription: >-
-    "Se non vuoi rovinare l'istanza corrente. Puoi anche creare una nuova istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto per creare un'istanza."
+  alterDownloadDescription: '"Se non vuoi rovinare l''istanza corrente. Puoi anche creare una nuova istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto per creare un''istanza."'
   baseInfo: Impostazioni di base
-  description: >-
-    Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file tramite il tuo PC.
-  downloadDescription: >-
-    Verifica i file che ti sono stati forniti dal tuo peer.  Seleziona il file che desideri scaricare.  Verrà inserito nell'istanza corrente {name}.
+  description: Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file tramite il tuo PC.
+  downloadDescription: Verifica i file che ti sono stati forniti dal tuo peer.  Seleziona il file che desideri scaricare.  Verrà inserito nell'istanza corrente {name}.
   downloadNotifyTitle: Scarica l'istanza da {user}
   downloadTitle: Scarica i file da altri peer
   filesToDownload: Scegli i file da scaricare
@@ -41,15 +38,13 @@ ago:
   second: '{duration} secondo fa | {duration} secondi fa'
 askAICrash:
   copyPrompt: Copia il prompt per chiedere AI
-  description: >-
+  description: |-
     Lascia che AI ​​ti aiuti a capire il gioco incidente!
-
     Segui le istruzioni qui sotto per chiedere all'IA di questo incidente di gioco!
-  selectPlatform: >-
-    Apri una piattaforma di intelligenza artificiale e incolla il prompt che hai appena copiato.
+  selectPlatform: Apri una piattaforma di intelligenza artificiale e incolla il prompt che hai appena copiato.
 authProfileAddedNotification: Profilo Auth {name} aggiunto
 bedrock:
-  installBedrockVersion: 'Downloading Bedrock {version}'
+  installBedrockVersion: Downloading Bedrock {version}
   versionsTitle: Version manager
   versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
   versionsError: Failed to load the version list. Check your network and try again.
@@ -64,9 +59,9 @@ bedrock:
   developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
   enableDeveloperMode: Enable Developer Mode
   enableDeveloperModeFailed: Failed to enable Developer Mode
-  downloadFailed: 'Failed to download Bedrock {version}'
+  downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
-  removeFailed: 'Failed to remove Bedrock {version}'
+  removeFailed: Failed to remove Bedrock {version}
 baseSetting:
   title: Impostazioni di base
 browseApp:
@@ -116,13 +111,11 @@ curseforgeCategory:
 dataMigration:
   apply: Applica impostazioni
   placeholder: Fare clic qui per selezionare la directory
-  setRootCause: >-
-    Si perderanno i dati (Mappe, Pacchetti di risorse, Mod) se si chiude il Launcher durante questo processo!
+  setRootCause: Si perderanno i dati (Mappe, Pacchetti di risorse, Mod) se si chiude il Launcher durante questo processo!
   setRootDescription: Questo cambierà la cartella dati radice di questo launcher e minecraft.
   setRootTitle: Imposta una nuova posizione di archiviazione
   unknownError: Errore sconosciuto! Riprova o contatta lo sviluppatore!
-  waitReload: >-
-    Migrazione dei dati in corso. Non chiudere il Launcher o si perderanno i dati.
+  waitReload: Migrazione dei dati in corso. Non chiudere il Launcher o si perderanno i dati.
 delete:
   name: Elimina {name}
   'no': 'No'
@@ -140,15 +133,13 @@ diagnosis:
     name: Cattiva installazione su {version}
   corruptedAssets:
     message: Il launcher installerà gli asset per te
-    name: >-
-      Asset danneggiato: {name} | Asset danneggiato {name} | {count} asset danneggiati
+    name: 'Asset danneggiato: {name} | Asset danneggiato {name} | {count} asset danneggiati'
   corruptedAssetsIndex:
     message: Il launcher scaricherà l'indice degli asset per te
     name: File indice degli asset danneggiati di {version}.
   corruptedLibraries:
     message: Il launcher installerà le librerie per te
-    name: >-
-      Libreria danneggiata: {name} | Libreria danneggiata: {name} | {count} librerie danneggiate
+    name: 'Libreria danneggiata: {name} | Libreria danneggiata: {name} | {count} librerie danneggiate'
   corruptedVersionJar:
     message: Fare clic per installare questa versione
     name: File jar della versione danneggiato per Minecraft %{version}.
@@ -164,15 +155,12 @@ diagnosis:
     name: Impossibile trovare Java per lanciare Minecraft!
   missingLibraries:
     message: Il launcher installerà le librerie per te
-    name: >-
-      Libreria mancante {name} | Libreria mancante {name} | {count} librerie mancanti | {count} librerie mancanti
+    name: Libreria mancante {name} | Libreria mancante {name} | {count} librerie mancanti | {count} librerie mancanti
   missingVersion:
     message: Fare clic per installare questa versione
     name: La versione {version} non è installata!
   unresolvedFiles:
-    description: >-
-      {count} file non è stato risolto durante l'installazione | {count} file
-      non sono stati risolti durante l'installazione
+    description: '{count} file non è stato risolto durante l''installazione | {count} file non sono stati risolti durante l''installazione'
     title: File non risolti
   unzipFileNotFound:
     description: Impossibile trovare {file}
@@ -194,30 +182,26 @@ env:
     fit: Seleziona Adatta
     none: Non selezionare niente
 errors:
-  BadForgeInstallerJarError: >-
-    Impossibile analizzare il file jar dell'installatore di Forge. Forse Forge ha un nuovo formato di file di installazione? Contattare gli sviluppatori se il problema persiste.
+  BadForgeInstallerJarError: Impossibile analizzare il file jar dell'installatore di Forge. Forse Forge ha un nuovo formato di file di installazione? Contattare gli sviluppatori se il problema persiste.
   BadInstanceType: 'Non è un''istanza valida: {type}'
   BodyTimeoutError: Timeout del corpo HTTP
   ChecksumNotMatchError: Checksum non corrispondente! Aspettarsi {expect}. Reale {actual}.
   ConnectTimeoutError: Timeout della connessione al server.
   DNSNotFoundError: Errore di ricerca DNS
-  DatabaseNotOpened: >-
-    Il database non è aperto! Il launcher non funzionerà correttamente! Selezionare una directory dati a cui il launcher può accedere. È possibile provare a reimpostare la directory radice dei dati nella pagina delle impostazioni.
+  DatabaseNotOpened: Il database non è aperto! Il launcher non funzionerà correttamente! Selezionare una directory dati a cui il launcher può accedere. È possibile provare a reimpostare la directory radice dei dati nella pagina delle impostazioni.
   DiskIsFull: |-
     Il tuo disco è pieno!
     Non posso scrivere nulla al disco!
     Tutte le funzionalità potrebbero non essere funzionali!
   DownloadAggregateError: Impossibile scaricare il file.
-  DownloadFileSystemError: >-
-    Errore durante l'accesso al percorso del file di download. Assicurarsi che il launcher abbia l'autorizzazione di scrittura su di esso.
+  DownloadFileSystemError: Errore durante l'accesso al percorso del file di download. Assicurarsi che il launcher abbia l'autorizzazione di scrittura su di esso.
   HeadersTimeoutError: Timeout intestazione HTTP
   NotFoundError: 404 Non trovato
   SocketError: Errore del socket del server
 eula:
-  body: >-
-    cliccando la casella di controllo, indichi la tua accettazione  con l'{eula} di Minecraft.
+  body: cliccando la casella di controllo, indichi la tua accettazione  con l'{eula} di Minecraft.
 exception:
-  http: >-
+  http: |-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}. {code}.
       Riprova o controlla la tua rete. Se il problema persiste, invia un report
       allo sviluppatore team.
@@ -272,7 +256,7 @@ feedback:
   kookDescription: Kook è un'app alternativa per Discord per gli utenti della Cina continentale
   name: Feedback
   qq: Gruppo QQ
-  qqDescription: >-
+  qqDescription: |-
     Entra nel gruppo di feedback QQ e parla direttamente con gli autori. Numero di
       gruppo: {number}
   qqEnterGroup: Unisciti
@@ -352,13 +336,11 @@ instance:
   deleteFailed: Impossibile eliminare l'istanza
   deleteFailedPermission: Un altro programma occupava il file
   deleteFile: Elimina i file dell'istanza
-  deleteHint: >-
-    I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro di volerlerlo fare?
+  deleteHint: I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro di volerlerlo fare?
   duplicate: Duplica gioco
   duplicatedName: Nome duplicato
   fileApi: L'URL API del server di sincronizzazione dei file
-  fileApiHint: >-
-    L'URL per sincronizzare i file dell'istanza da un server di configurazione remoto.
+  fileApiHint: L'URL per sincronizzare i file dell'istanza da un server di configurazione remoto.
   fullscreen: A schermo intero
   height: Altezza
   hideCard: Nascondi questa scheda
@@ -424,13 +406,10 @@ instanceInstallSkip:
   ignore: Ignorare
   skip: Saltare
   title: Potenziale origine file danneggiata
-  warning: >-
+  warning: |-
     Alcuni file vengono scaricati più volte con checksum non corrispondente.
-
     Ciò potrebbe essere dovuto al fatto che il checksum originale non è corretto.
-
     Si prega di controllare.
-
     Se confermi che i file correnti sono validi, puoi saltare il controllo di convalida.
 instanceSetting:
   disableAuthlibInjector: Disabilita l'iniezione di authlib
@@ -446,18 +425,16 @@ instanceSetting:
   hideLauncher: Nascondi il launcher dopo l'avvio
   icon: Scegli un'immagine
   showLog: Mostra il registro di Minecraft
-  showLogHint: >-
-    Verrà visualizzata una finestra per trasmettere il registro di Minecraft dopo l'avvio del gioco
+  showLogHint: Verrà visualizzata una finestra per trasmettere il registro di Minecraft dopo l'avvio del gioco
   syncGameLanguage: Sincronizza la lingua del gioco
-  syncGameLanguageDescription: "Sincronizza automaticamente la lingua di Minecraft con quella del launcher all'avvio"
+  syncGameLanguageDescription: Sincronizza automaticamente la lingua di Minecraft con quella del launcher all'avvio
 instanceTemplate:
   ftb: Questo è un modpack FTB
   preview: Anteprima modpack
 instanceUpdate:
   basic: Aggiornamento impostazioni
   files: Aggiornamento file
-  loaderChanged: >-
-    Il modloader di questa istanza è stato modificato. Il vecchio modloader è {modloader}, e il nuovo modloader è {newModloader}.
+  loaderChanged: Il modloader di questa istanza è stato modificato. Il vecchio modloader è {modloader}, e il nuovo modloader è {newModloader}.
   summary: |-
     Aggiungi {add} file.
     Rimuovi i file {remove}.
@@ -477,8 +454,7 @@ instances:
     Importa l'istanza Modrinth esistente.
     È necessario selezionare la cartella dei dati root di Modrinth.
   addVanilla: Crea da Minecraft vanilla
-  addVanillaDescription: >-
-    Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di gioco originale in XMCL.
+  addVanillaDescription: Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di gioco originale in XMCL.
   fix: Sistemati
   folderSetting: Impostazioni della cartella
   importFolderDescription: Importa Minecraft nel launcher
@@ -486,18 +462,10 @@ instances:
   edition: Edizione
   editionJava: Edizione Java
   editionBedrock: Edizione Bedrock
-  editionBedrockHint: >-
-    L'edizione Bedrock viene avviata tramite l'app Microsoft Store. Devi
-    possedere una licenza Bedrock. Mod, pacchetti risorse e altre funzionalità
-    esclusive di Java non sono disponibili.
+  editionBedrockHint: L'edizione Bedrock viene avviata tramite l'app Microsoft Store. Devi possedere una licenza Bedrock. Mod, pacchetti risorse e altre funzionalità esclusive di Java non sono disponibili.
   editionBedrockWindowsOnly: L'edizione Bedrock è supportata solo nella build per Windows.
   linkSharedFolders: Condividi le cartelle tra le istanze
-  linkSharedFoldersHint: >-
-    Crea queste cartelle come collegamenti alle cartelle condivise del launcher
-    in modo che questa istanza condivida il loro contenuto con tutte le altre
-    istanze collegate. Questa non è una copia: le modifiche fatte in un'istanza
-    compaiono in tutte. Le cartelle non selezionate restano private di questa
-    istanza.
+  linkSharedFoldersHint: 'Crea queste cartelle come collegamenti alle cartelle condivise del launcher in modo che questa istanza condivida il loro contenuto con tutte le altre istanze collegate. Questa non è una copia: le modifiche fatte in un''istanza compaiono in tutte. Le cartelle non selezionate restano private di questa istanza.'
   linkFailed: Impossibile collegare la cartella {folder} alla cartella condivisa
   addPrismDescription: Importa un'istanza PrismLauncher esistente.
 items:
@@ -545,60 +513,47 @@ launch:
   forceKill: Forza arresto
 launchBlocked:
   launchBadVersion:
-    description: >-
-      Il file json della versione {version} è danneggiato. Forse reinstallare questa versione?
+    description: Il file json della versione {version} è danneggiato. Forse reinstallare questa versione?
     title: File json non valido
   launchGeneralException:
     description: Alcuni errori hanno causato l'arresto dell'avvio.
     title: Avvio non riuscito
   launchInvalidJavaPath:
-    description: >-
-      Java selezionato mancante o non valido. Selezionare uno nuovo. <span class="highlight"> {javaPath} </span>
+    description: Java selezionato mancante o non valido. Selezionare uno nuovo. <span class="highlight"> {javaPath} </span>
     title: Percorso Java non valido
   launchJavaNoPermission:
-    description: >-
-      Il launcher non ha i permessi per eseguire Java <span class="highlight"> {javaPath} </span>. Modificare i permessi del file Java o elevare i permessi del launcher.
+    description: Il launcher non ha i permessi per eseguire Java <span class="highlight"> {javaPath} </span>. Modificare i permessi del file Java o elevare i permessi del launcher.
     title: Nessun permesso di avvio
   launchNoProperJava:
-    description: >-
-      Nessuna versione Java corretta può essere selezionata per avviare il gioco. ({javaPath} non è valido?)
+    description: Nessuna versione Java corretta può essere selezionata per avviare il gioco. ({javaPath} non è valido?)
     title: Java corretto non trovato
   launchNoVersionInstalled:
-    description: >-
-      Impossibile risolvere la versione <span class="highlight">{version}</span> per l'avvio.
+    description: Impossibile risolvere la versione <span class="highlight">{version}</span> per l'avvio.
     title: Nessuna versione selezionata
   launchSpawnProcessFailed:
-    description: >-
-      Controllare Java o concedere più permessi al launcher e riprovare. Se il problema persiste, contattare gli sviluppatori.
+    description: Controllare Java o concedere più permessi al launcher e riprovare. Se il problema persiste, contattare gli sviluppatori.
     title: Impossibile avviare il processo di gioco
-  unexpectedText: >-
-    Questo è inaspettato. È possibile riavviare il launcher per attenuare il problema. Contattare l'autore se il problema si verifica nuovamente.
+  unexpectedText: Questo è inaspettato. È possibile riavviare il launcher per attenuare il problema. Contattare l'autore se il problema si verifica nuovamente.
 launchFailed:
   crash: Gioco bloccato!!
-  description: >-
-    Non è presente alcun report di arresto anomalo. Questo è il log degli errori e l'ultimo log.
+  description: Non è presente alcun report di arresto anomalo. Questo è il log degli errori e l'ultimo log.
   elyByAuthlib:
-    description: >-
-      La sostituzione di Authlib di Ely.by è stata utilizzata per la versione di Minecraft {version}, ma questa versione potrebbe non essere completamente compatibile.
-    suggestion: >-
-      Puoi disattivare la sostituzione di Authlib di Ely.by nelle impostazioni dell'istanza per evitare questo problema.
+    description: La sostituzione di Authlib di Ely.by è stata utilizzata per la versione di Minecraft {version}, ma questa versione potrebbe non essere completamente compatibile.
+    suggestion: Puoi disattivare la sostituzione di Authlib di Ely.by nelle impostazioni dell'istanza per evitare questo problema.
     title: Problema di compatibilità di Ely.by Authlib
   failedToLaunch: Avvio non riuscito
   latestLog: Ultimo log
   title: Il gioco è uscito con un codice anomalo
 launchPreExecuteCommandFailed:
-  description: >-
-    Il comando di pre-esecuzione non è riuscito con un errore: {error}. Controllare il comando e riprovare.
+  description: 'Il comando di pre-esecuzione non è riuscito con un errore: {error}. Controllare il comando e riprovare.'
   title: Comando pre-esecuzione fallito
 launchStatus:
   assigningMemory: Assegnazione memoria
-  elyByWarning: >-
-    La sostituzione di Authlib di Ely.by è abilitata. Alcune versioni di Minecraft potrebbero non essere compatibili e potrebbero arrestarsi in modo anomalo. Puoi disattivarla nelle impostazioni dell'istanza se si verificano problemi.
+  elyByWarning: La sostituzione di Authlib di Ely.by è abilitata. Alcune versioni di Minecraft potrebbero non essere compatibili e potrebbero arrestarsi in modo anomalo. Puoi disattivarla nelle impostazioni dell'istanza se si verificano problemi.
   exit: Uscire dal gioco?
   injectingAuthLib: Configurazione AuthLib di terze parti
   launching: Avvio in corso...
-  launchingSlow: >-
-    Avvio ancora in corso... L'avvio del motore grafico potrebbe richiedere tempo...
+  launchingSlow: Avvio ancora in corso... L'avvio del motore grafico potrebbe richiedere tempo...
   refreshingUser: Aggiornamento token utente
   spawningProcess: Avvio processo
 launcherUpdate:
@@ -610,8 +565,7 @@ localVersion:
   auto: Auto calcolato
   empty: Nessuna versione installata
   hint: Avvia una versione locale specifica
-  reinstallDescription: >-
-    Se si ritiene che l'installazione di questa versione presenti dei problemi, è possibile provare a reinstallarla.
+  reinstallDescription: Se si ritiene che l'installazione di questa versione presenti dei problemi, è possibile provare a reinstallarla.
   reinstallTitle: Reinstalla {version}
   title: Versione locale | Versioni locali
 logLevel:
@@ -630,26 +584,20 @@ login:
   signupDescription: Nuovo qui?
   userRelogin: Il token di accesso utente è scaduto. Effettuare nuovamente l'accesso!
 loginError:
-  acquireMicrosoftTokenFailed: >-
-    Impossibile acquisire il token Microsoft. Potrebbe trattarsi di un problema di rete. Riprovare.
-  badNetworkOrServer: >-
-    Controllare la connessione di rete! Oppure il server di autenticazione potrebbe essere inattivo!
+  acquireMicrosoftTokenFailed: Impossibile acquisire il token Microsoft. Potrebbe trattarsi di un problema di rete. Riprovare.
+  badNetworkOrServer: Controllare la connessione di rete! Oppure il server di autenticazione potrebbe essere inattivo!
   checkOwnershipFailed: Impossibile verificare la proprietà del gioco. Riprovare.
   connectionReset: Impossibile accedere poiché la connessione è stata reimpostata dal server
   fetchMinecraftProfileFailed: 'Impossibile recuperare il profilo Minecraft: {reason}'
   illegalEmail: L'E-mail deve essere valida
   invalidCredentials: Credenziali non valide. Nome utente o password non validi.
-  loginMinecraftByXboxFailed: >-
-    Impossibile scambiare il token Minecraft con il token Xbox. Assicurarsi di disporre di Minecraft in Xbox o riprovare.
-  loginXboxAgeRestricted: >-
+  loginMinecraftByXboxFailed: Impossibile scambiare il token Minecraft con il token Xbox. Assicurarsi di disporre di Minecraft in Xbox o riprovare.
+  loginXboxAgeRestricted: |-
     Non riesce a accedere a Xbox a causa del problema dell'età.
-
     Assicurati che l'età sia impostata per il tuo account Microsoft e l'età è superiore a 18 anni.
-  loginXboxFailed: >-
-    Impossibile accedere a Xbox con il token Microsoft. Assicurarsi di disporre di un account Xbox indipendente dall'account Microsoft. Riprovare.
-  noProfileForNewUser: >-
+  loginXboxFailed: Impossibile accedere a Xbox con il token Microsoft. Assicurarsi di disporre di un account Xbox indipendente dall'account Microsoft. Riprovare.
+  noProfileForNewUser: |-
     Nessun profilo di gioco trovato!
-
     Se sei un nuovo utente di Minecraft, accedi ad almeno una volta nel lanciatore ufficiale di Minecraft.
   requestFailed: Accesso non riuscito, motivo sconosciuto. Riprovare.
   requireEmail: L'e-mail è obbligatoria
@@ -745,13 +693,11 @@ modFilter:
   incompatibleOnly: Mostra solo mod incompatibili
   unusedOnly: Mostra solo mod biblioteche inutilizzate
 modInstall:
-  archived: >-
+  archived: |-
     {name} è stato archiviato.
-
     {name} non riceverà ulteriori aggiornamenti a meno che l'autore non decida di annullare l'archiviazione del progetto.
   autoUpgrade:
-    description: >-
-      Hai cambiato la versione di Minecraft. Vuoi aggiornare automaticamente le mod compatibili alle versioni che corrispondono a Minecraft {version}?
+    description: Hai cambiato la versione di Minecraft. Vuoi aggiornare automaticamente le mod compatibili alle versioni che corrispondono a Minecraft {version}?
     'no': Salta
     title: Aggiornare le Mod?
     'yes': Aggiorna le Mod
@@ -786,11 +732,9 @@ modified:
   unsaved: La tua modifica non è stata salvata!
 modpack:
   author: Nome autore
-  authorHint: >-
-    Questo potrebbe essere utilizzato per firmare l'esportazione del modpack (Curseforge)
+  authorHint: Questo potrebbe essere utilizzato per firmare l'esportazione del modpack (Curseforge)
   description: Descrizione
-  descriptionHint: >-
-    Descrizione generale del tuo modpack. Potrebbe essere utilizzato per l'esportazione come modpack curseforge.
+  descriptionHint: Descrizione generale del tuo modpack. Potrebbe essere utilizzato per l'esportazione come modpack curseforge.
   dropHint: Rilascia lo zip del modpack qui per importare
   emitCurseforge: Emisfero Curseforge Modpack
   emitModrinth: Emisfero Modrinth Modpack
@@ -798,8 +742,7 @@ modpack:
   emitModrinthStrictDescription: Sono consentiti solo gli URL dei 4 domini elencati nel documento modrinth
   export: Esporta come Modpack
   exportDirectory: Directory di esportazione
-  exportDirectoryDescription: >-
-    Il modpack verrà esportato in cartella per il download per impostazione predefinita
+  exportDirectoryDescription: Il modpack verrà esportato in cartella per il download per impostazione predefinita
   includeAssets: Includi risorse
   includes: File da includere
   modpackVersion: Versione Modpack
@@ -813,11 +756,10 @@ modpackImportConfirm:
     Stai cercando di importare un modpack?
   title: Stai cercando di importare un modpack?
 modpackUpdateOrCreate:
-  createNew: 'Crea nuova'
-  description: >-
-    Esiste già un'istanza "{name}" per questo modpack. Vuoi aggiornarla o crearne una nuova?
-  title: 'L''istanza esiste già'
-  update: 'Aggiorna esistente'
+  createNew: Crea nuova
+  description: Esiste già un'istanza "{name}" per questo modpack. Vuoi aggiornarla o crearne una nuova?
+  title: L'istanza esiste già
+  update: Aggiorna esistente
 modrinth:
   browseUrl: Apri nel browser {url}
   categories:
@@ -988,35 +930,35 @@ multiplayer:
   updateSharedInstanceConfirm: Aggiorna e avvia
   updateSharedInstanceDescription: Le mod condivise sono diverse da quelle di {instance}. Aggiornare questa istanza in modo che corrisponda all'host prima dell'avvio? Verrà eseguito il backup dei file modificati esistenti.
   updateSharedInstanceTitle: Aggiornare l'istanza condivisa?
-  addFunds: "Aggiungi fondi"
-  availableBalance: "Saldo disponibile"
-  balanceHint: "Disponibile per i servizi XMCL Together"
-  billing: "Fatturazione"
-  billingDescription: "Gestisci l'accesso al relay, il tuo piano Together Home e i pagamenti."
-  billingError: "Impossibile caricare la fatturazione di Together. Riprova tra poco."
-  buyTogether: "Acquista Together"
-  cancelTogether: "Annulla piano"
-  checkout: "Apri il pagamento Waffo"
-  connectionTogetherWarning: "Un membro della stanza non riesce a connettersi a te da un po'. Prova XMCL Together per migliorare la connettività di tutti nella stanza. Solo il master della stanza ha bisogno di Together."
-  masterPurchaseHint: "Solo il master della stanza ha bisogno di Together Home per migliorare la connettività di tutti nella stanza."
-  natTogetherWarning: "Il tuo router potrebbe avere difficoltà a connettersi al master della stanza. Se le connessioni falliscono, prova XMCL Together per migliorare la connettività tra te e i tuoi amici. Solo il master della stanza deve acquistare Together per la stanza."
-  togetherName: "Minecraft Together"
-  trialDescription: "Una prova di 7 giorni con 1 GB di traffico relay."
-  trialTitle: "Prova di connettività"
-  tryTogether: "Prova Together"
-  month: "mese"
-  orderStatus: "Ordine Waffo: {status}"
-  planDescription: "20 GB di traffico relay gestito al mese, oltre alla risoluzione dei problemi del tuo modpack con l'IA."
-  waffoHint: "I pagamenti vengono completati in modo sicuro su Waffo Pancake. XMCL non riceve mai il numero della tua carta."
+  addFunds: Aggiungi fondi
+  availableBalance: Saldo disponibile
+  balanceHint: Disponibile per i servizi XMCL Together
+  billing: Fatturazione
+  billingDescription: Gestisci l'accesso al relay, il tuo piano Together Home e i pagamenti.
+  billingError: Impossibile caricare la fatturazione di Together. Riprova tra poco.
+  buyTogether: Acquista Together
+  cancelTogether: Annulla piano
+  checkout: Apri il pagamento Waffo
+  connectionTogetherWarning: Un membro della stanza non riesce a connettersi a te da un po'. Prova XMCL Together per migliorare la connettività di tutti nella stanza. Solo il master della stanza ha bisogno di Together.
+  masterPurchaseHint: Solo il master della stanza ha bisogno di Together Home per migliorare la connettività di tutti nella stanza.
+  natTogetherWarning: Il tuo router potrebbe avere difficoltà a connettersi al master della stanza. Se le connessioni falliscono, prova XMCL Together per migliorare la connettività tra te e i tuoi amici. Solo il master della stanza deve acquistare Together per la stanza.
+  togetherName: Minecraft Together
+  trialDescription: Una prova di 7 giorni con 1 GB di traffico relay.
+  trialTitle: Prova di connettività
+  tryTogether: Prova Together
+  month: mese
+  orderStatus: 'Ordine Waffo: {status}'
+  planDescription: 20 GB di traffico relay gestito al mese, oltre alla risoluzione dei problemi del tuo modpack con l'IA.
+  waffoHint: I pagamenti vengono completati in modo sicuro su Waffo Pancake. XMCL non riceve mai il numero della tua carta.
   subscription:
-    active: "Attivo"
-    cancelled: "Annullato"
-    payment_due: "Pagamento dovuto"
+    active: Attivo
+    cancelled: Annullato
+    payment_due: Pagamento dovuto
   trial:
-    active: "Prova attiva"
-    available: "Prova gratuita disponibile"
-    expired: "Prova utilizzata"
-    unavailable: "Prova non disponibile"
+    active: Prova attiva
+    available: Prova gratuita disponibile
+    expired: Prova utilizzata
+    unavailable: Prova non disponibile
   loginRequiredDescription: Il multiplayer P2P utilizza i servizi online di XMCL. Accedi a un account XMCL per continuare.
   loginRequiredTitle: Accedi per il multiplayer P2P
   complete: Completo
@@ -1025,7 +967,7 @@ multiplayer:
   copied: Copiato!
   copy: Copia
   copyGroupToFriendHint: Consenti ai tuoi amici di unirsi al gruppo con questo ID
-  copyLocalHint: >
+  copyLocalHint: |
     "Per favore copia il testo SDP locale e invialo al tuo amico affinché il tuo amico inserisca questo testo nella connessione di join <span>Un token può essere utilizzato solo per <span style="color: red; font-weight: bold;">un peer</span>! Non puoi inviare lo stesso token a più peer!</span> <span class="hint-text" style="font-style: italic;">Se è necessario connettere più peer, è necessario creare <span style="font-weight: bold; color: rgba(245, 158, 11)">più</span> connessioni.</span>"
   createLocalToken: Crea token locale
   currentIpTitle: Rileva IP pubblico
@@ -1035,23 +977,20 @@ multiplayer:
   disconnectDescription: Sei sicuro di voler disconnettere l'utente {user}({id})?
   disconnected: Disconnesso
   enterRemoteToken: Inserisci il token remoto
-  enterRemoteTokenHint: >-
-    Una volta che il tuo peer ha inserito il tuo token, devi inserire il suo token nell'area di testo qui sotto. Fai clic su Conferma per connetterti.
+  enterRemoteTokenHint: Una volta che il tuo peer ha inserito il tuo token, devi inserire il suo token nell'area di testo qui sotto. Fai clic su Conferma per connetterti.
   exposedPortDescription: La porta che hai esposto ad altri peer
   exposedPorts: Porte inoltrate
-  gatheringIce: >
+  gatheringIce: |
     "Attendere che il server ICE raccolga informazioni sufficienti sulla rete. Se si è impazienti e ci sono informazioni sufficienti, è possibile fornire l'SDP corrente all'altra parte in anticipo e fare clic su Avanti Invia il <span class="v-chip v-chip--label v-size--small" style="text-font: bold">Local Token </span> al tuo peer, il tuo peer inserisce il tuo token in <span class="v-chip v-chip--label v-size--small" style="text-font"> Join Connection </span> section. Il server ICE potrebbe aver bisogno di tempo per raccogliere le tue informazioni per creare <span class="v-chip v-chip--label v-size--small" style="text-font: bold">Local token</span>. Non è necessario attendere fino a quando lo stato ICE non è completo. Se il token riportato di seguito rimane invariato, è possibile copiarlo e inviarlo al proprio peer."
   groupId: ID gruppo
   illegalTokenDescription: Token non valido, assicurarsi che il token del proprio peer sia corretto
   initiateConnection: Inizia la connessione
-  joinConnection: >-
-    Se il tuo peer ha già avviato una connessione, è necessario Unirsi alla connessione.
+  joinConnection: Se il tuo peer ha già avviato una connessione, è necessario Unirsi alla connessione.
   joinManual: Unisciti
   joinOrCreateGroup: Unisciti/Crea gruppo
   joinOrCreateGroupHint: Ottieni l'ID gruppo dai tuoi amici o crea un gruppo
   kernel: Kernel P2P
-  kernelDescription: >-
-    Utilizzare WebRTC nativo o node-datachannel. Cambiare questa impostazione solo se la connessione peer-to-peer si blocca occasionalmente la finestra del launcher.
+  kernelDescription: Utilizzare WebRTC nativo o node-datachannel. Cambiare questa impostazione solo se la connessione peer-to-peer si blocca occasionalmente la finestra del launcher.
   leaveGroup: Abbandona il gruppo
   localToken: Token locale
   manualConnect: Connetti manualmente
@@ -1061,8 +1000,7 @@ multiplayer:
   otherExposedPortDescription: Il port forwarding di {user}
   placeholder: Connettiti con altri utenti per giocare a Minecraft su LAN!
   previous: Precedente
-  receiveHint: >-
-    Dopo che l'altra parte ha inserito il proprio token, la connessione verrà creata automaticamente. Ora è possibile chiudere la finestra di dialogo.
+  receiveHint: Dopo che l'altra parte ha inserito il proprio token, la connessione verrà creata automaticamente. Ora è possibile chiudere la finestra di dialogo.
   receiveRemoteTokenHint: Inserisci qui il token del tuo peer.
   remoteToken: Token remoto
   routerInfo: Informazioni sul router
@@ -1072,8 +1010,7 @@ multiplayer:
   start: Inizia
   startNewP2PConnection: Fare clic sul pulsante Start per creare una nuova connessione peer
   connectionError: Errore di connessione
-  connectionFailedHint: >-
-    Impossibile stabilire la connessione. Verifica che entrambi i peer abbiano tipi di NAT compatibili.
+  connectionFailedHint: Impossibile stabilire la connessione. Verifica che entrambi i peer abbiano tipi di NAT compatibili.
 myStuff: Le mie cose
 natType:
   blocked: Bloccato
@@ -1128,20 +1065,15 @@ quiltVersion:
   empty: Quilt non supporta Minecraft {version}
 resourcepack:
   linkShared: Condividi i resource pack tra le istanze
-  linkSharedHint: >-
-    Collega la cartella resourcepacks di questa istanza alla cartella condivisa
-    globale in modo che tutte le istanze usino gli stessi resource pack. I
-    pacchetti esistenti vengono uniti nella cartella condivisa.
+  linkSharedHint: Collega la cartella resourcepacks di questa istanza alla cartella condivisa globale in modo che tutte le istanze usino gli stessi resource pack. I pacchetti esistenti vengono uniti nella cartella condivisa.
   compatible: Formato compatibile {format} con {version}
   defaultDescription: Aspetto e funzionalità predefiniti di Minecraft
   delete:
-    content: >-
-      Questa operazione rimuoverà il file del pacchetto risorse dal disco e non potrà essere annullata. Sei sicuro di volerlo fare?
+    content: Questa operazione rimuoverà il file del pacchetto risorse dal disco e non potrà essere annullata. Sei sicuro di volerlo fare?
     title: Elimina il pacchetto risorse
   dropHint: Trascina la cartella/zip del pacchetto risorse qui per importare.
   enable: '{count} Resource Pack sono/è abilitati/o'
-  incompatible: >-
-    Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente {actual}.
+  incompatible: Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente {actual}.
   name: Pacchetto risorse | Pacchetti risorse
   searchHint: Cerca pacchetti di risorse
   selected: Pacchetti risorse selezionati
@@ -1154,34 +1086,30 @@ save:
   resetView: Ripristina vista
   mapHintPan: Trascina per spostare la vista
   map:
-    tabTitle: "Mappa del mondo"
+    tabTitle: Mappa del mondo
   progress:
     zoomIn: Ingrandisci
     zoomOut: Riduci
-    loading: "Caricamento dei progressi…"
-    noData: "Nessun progresso trovato"
-    noDataHint: "Gioca in questo mondo per generare progressi, statistiche e avanzamenti nelle missioni."
-    quests: "Missioni"
-    advancements: "Progressi"
-    done: "Completato"
-    inProgress: "In corso"
-    all: "Tutti"
-    treeView: "Vista ad albero"
-    filterPlaceholder: "Filtra per nome…"
-    root: "Radice"
-    exitFullscreen: "Esci da schermo intero"
-    locked: "Bloccato"
+    loading: Caricamento dei progressi…
+    noData: Nessun progresso trovato
+    noDataHint: Gioca in questo mondo per generare progressi, statistiche e avanzamenti nelle missioni.
+    quests: Missioni
+    advancements: Progressi
+    done: Completato
+    inProgress: In corso
+    all: Tutti
+    treeView: Vista ad albero
+    filterPlaceholder: Filtra per nome…
+    root: Radice
+    exitFullscreen: Esci da schermo intero
+    locked: Bloccato
   linkShared: Condividi i salvataggi tra le istanze
-  linkSharedHint: >-
-    Collega la cartella saves di questa istanza alla cartella condivisa globale
-    in modo che tutte le istanze condividano gli stessi mondi. I salvataggi
-    esistenti vengono uniti nella cartella condivisa.
+  linkSharedHint: Collega la cartella saves di questa istanza alla cartella condivisa globale in modo che tutte le istanze condividano gli stessi mondi. I salvataggi esistenti vengono uniti nella cartella condivisa.
   copy:
     name: Copia salvataggio
   createNew: Crea un nuovo mondo
   createdWorlds: Hai {count} mondi
-  deleteHint: >-
-    Questa operazione non può essere annullata. Si perderanno definitivamente questi dati di salvataggio. Sei sicuro di voler eliminare questo salvataggio?
+  deleteHint: Questa operazione non può essere annullata. Si perderanno definitivamente questi dati di salvataggio. Sei sicuro di voler eliminare questo salvataggio?
   deleteTitle: Elimina il salvataggio
   dropHint: Trascina il salvataggio zip qui per importare
   export: Esporta salvataggio
@@ -1201,6 +1129,7 @@ save:
   openFolder: Apri cartella salvataggi
   searchHint: Cerca mondi su CurseForge
   searchSaves: Cerca salvataggi
+  empty: No worlds found
 screenshots:
   empty: Non hai screenshot
   playRandom: Riproduci a caso
@@ -1394,14 +1323,11 @@ setting:
     loadConfirmMessage: Caricare un tema salvato sostituirà il tema attuale. Fai un backup se necessario.
     loadTheme: Carica tema
   about: Di
-  aboutBmclDescription: >-
-    L'API BMCL fornisce download convenienti per gli utenti nella Cina continentale
+  aboutBmclDescription: L'API BMCL fornisce download convenienti per gli utenti nella Cina continentale
   aboutContributors: 🧑‍💻 Collaboratori 🧑‍💻
-  aboutDenoDescription: >-
-    XMCL sfrutta la piattaforma semplice di Deno Deploy per applicazioni JavaScript senza server
+  aboutDenoDescription: XMCL sfrutta la piattaforma semplice di Deno Deploy per applicazioni JavaScript senza server
   aboutLicense: MIT LICENSE
-  aboutLicenseInfo: >-
-    Firma del codice gratuita su Windows fornita da SignPath.io, certificato dalla SignPath Foundation
+  aboutLicenseInfo: Firma del codice gratuita su Windows fornita da SignPath.io, certificato dalla SignPath Foundation
   aboutSponsors: 😇 Sponsor 😇
   advancedJavaOptions: Opzioni Java avanzate
   advancedSettings: Impostazioni avanzate
@@ -1411,13 +1337,11 @@ setting:
     official: Ufficiale (Mojang)
   appearance: Aspetto
   appearanceDescription: Personalizza l'aspetto del launcher
-  appxUpdateHint: >-
-    Il launcher scaricherà ed eseguirà l'installer. Se l'installer popup non funziona, eseguilo manualmente.
+  appxUpdateHint: Il launcher scaricherà ed eseguirà l'installer. Se l'installer popup non funziona, eseguilo manualmente.
   authenticationSettings: Autenticazione
   backdropBlur: Sfocatura
   backgroundColorAbove: Mostra il colore di sfondo come overlay
-  backgroundColorAboveDescription: >-
-    Questa opzione farà sì che il colore di sfondo venga visualizzato sopra l'immagine o il video di sfondo.
+  backgroundColorAboveDescription: Questa opzione farà sì che il colore di sfondo venga visualizzato sopra l'immagine o il video di sfondo.
   backgroundImage: Immagine di sfondo
   backgroundImageClear: Cancella
   backgroundImageDescription: Seleziona un'immagine come sfondo o cancella
@@ -1472,7 +1396,7 @@ setting:
   general: Generale
   githubRelease: Rilascio Github
   globalJava: Java preferito
-  globalJavaHint: "In modalità automatica viene provato prima questo Java e si ricorre al rilevamento automatico solo quando non è compatibile con la versione del gioco."
+  globalJavaHint: In modalità automatica viene provato prima questo Java e si ricorre al rilevamento automatico solo quando non è compatibile con la versione del gioco.
   globalSetting: Impostazioni globali
   globalSettingHint: L'istanza utilizzerà queste impostazioni per impostazione predefinita.
   importSettings: Importa impostazioni
@@ -1498,13 +1422,10 @@ setting:
   linuxTitlebar: Barra del titolo nativa Linux
   linuxTitlebarDescription: Usa la barra del titolo nativa di Linux per il launcher
   location: Posizione di archiviazione
-  manualUpdateHint: >-
-    La versione non può essere aggiornata automaticamente. Scaricate nuovamente il launcher dal sito ufficiale!
-  maunalUpdateHint: >-
-    La versione non può essere aggiornata automaticamente. Per favore, riscarica il launcher dal sito web!
+  manualUpdateHint: La versione non può essere aggiornata automaticamente. Scaricate nuovamente il launcher dal sito ufficiale!
+  maunalUpdateHint: La versione non può essere aggiornata automaticamente. Per favore, riscarica il launcher dal sito web!
   maxSockets: Per host
-  maxSocketsDescription: >-
-    Limita il numero massimo di socket consentiti per host o per tutti gli host in totale. 0 significa senza limiti.
+  maxSocketsDescription: Limita il numero massimo di socket consentiti per host o per tutti gli host in totale. 0 significa senza limiti.
   maxSocketsTitle: Max socket HTTP
   memoryAssignment: Assegnazione memoria
   migrateFromOther: Importa da un altro launcher
@@ -1527,8 +1448,7 @@ setting:
     all: Tutti
     legacy: Solo versione legacy
   resetAllSettings: Ripristina tutte le impostazioni
-  resetAllSettingsConfirmMessage: >-
-    Questo eliminerà permanentemente tutte le impostazioni, gli account, le istanze, i gruppi e i dati memorizzati nella cache. Questa azione non può essere annullata. Sei sicuro?
+  resetAllSettingsConfirmMessage: Questo eliminerà permanentemente tutte le impostazioni, gli account, le istanze, i gruppi e i dati memorizzati nella cache. Questa azione non può essere annullata. Sei sicuro?
   resetAllSettingsConfirmTitle: Ripristinare tutte le impostazioni?
   resetAllSettingsHint: Ripristina il launcher alle impostazioni di fabbrica (cancella tutto)
   resetAllSettingsSuccess: Tutte le impostazioni sono state ripristinate. Il launcher si riavvierà.
@@ -1553,8 +1473,7 @@ setting:
   sidebarStyle: Stile barra laterale
   sidebarStyleHint: Scegli lo stile di aspetto della barra laterale
   streamerMode: Modalità streaming
-  streamerModeDescription: >-
-    "Questa opzione nasconde le tue informazioni private, come l'email, nel launcher."
+  streamerModeDescription: '"Questa opzione nasconde le tue informazioni private, come l''email, nel launcher."'
   theme:
     dark: Tema scuro
     light: Tema chiaro
@@ -1574,8 +1493,7 @@ setting:
   themeShareDescription: Puoi condividere il tema con i tuoi amici.
   update: Aggiorna
   useBmclAPI: Usa BMCL API
-  useBmclAPIDescription: >-
-    Usa BMCLAPI per scaricare Minecraft quando ti trovi nella Cina continentale. (Questo non influenzerà se non ti trovi in Cina)
+  useBmclAPIDescription: Usa BMCLAPI per scaricare Minecraft quando ti trovi nella Cina continentale. (Questo non influenzerà se non ti trovi in Cina)
   useProxy: Proxy HTTP
   useProxyDescription: L'indirizzo del server proxy per la richiesta http
   viewBackgroundMusic: Visualizza musiche
@@ -1592,48 +1510,37 @@ settingLabel:
   localHint: Questa impostazione è modificata dall'istanza corrente
 setup:
   account:
-    description: >-
-      Accedi al tuo account di gioco. Se non ne hai uno, puoi saltare questo passaggio per ora.
+    description: Accedi al tuo account di gioco. Se non ne hai uno, puoi saltare questo passaggio per ora.
     name: Aggiungi account di gioco
     skip: Salta per ora
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: >-
-      La directory dei dati non è una directory ".minecraft" standard. perché la struttura dei dati di XMCL è diversa da quella standard, non consigliamo di utilizzare la directory ".minecraft" standard come directory dei dati.
+    description: La directory dei dati non è una directory ".minecraft" standard. perché la struttura dei dati di XMCL è diversa da quella standard, non consigliamo di utilizzare la directory ".minecraft" standard come directory dei dati.
     drives: Posizioni consigliate
     name: Imposta directory dati
-  defaultLayoutDescription: >-
-    Il layout predefinito è progettato per migliorare il concetto di "istanza" del gioco. Assomiglia ad app come Discord. È anche ispirato ad altri launcher di giochi come Steam, ecc.
+  defaultLayoutDescription: Il layout predefinito è progettato per migliorare il concetto di "istanza" del gioco. Assomiglia ad app come Discord. È anche ispirato ad altri launcher di giochi come Steam, ecc.
   defaultPath: Percorso predefinito
   error:
-    badDataRoot: >-
-      Directory non valida per i dati del launcher! Per favore, prova un'altra directory!
-    exists: >-
-      La directory selezionata non è vuota. Va bene, ma assicurati di eseguire il backup dei tuoi dati.
+    badDataRoot: Directory non valida per i dati del launcher! Per favore, prova un'altra directory!
+    exists: La directory selezionata non è vuota. Va bene, ma assicurati di eseguire il backup dei tuoi dati.
     invalidChar: |-
       Il percorso contiene caratteri non validi!
       Potrebbe causare inizio a Minecraft!
       Plaese usa solo personaggi inglesi e simbolo!
-    noPermission: >-
-      Il launcher non ha i permessi per accedere alla directory selezionata! Per favore, prova un'altra.
+    noPermission: Il launcher non ha i permessi per accedere alla directory selezionata! Per favore, prova un'altra.
     nonDictionary: Il percorso selezionato è un file! Per favore seleziona una directory!
-  focusLayoutDescription: >-
-    Il layout a fuoco è il layout legacy di Minecraft Launcher. È progettato per essere utilizzato con una singola istanza o poche istanze.
+  focusLayoutDescription: Il layout a fuoco è il layout legacy di Minecraft Launcher. È progettato per essere utilizzato con una singola istanza o poche istanze.
   game:
     name: Importa gioco esistente
   locale:
-    description: >-
-      Seleziona la tua lingua preferita, se disponibile. Se non vedi la tua lingua nativa e vuoi aiutare, puoi visitare il nostro Github per inviare richieste pull per tradurre!
+    description: Seleziona la tua lingua preferita, se disponibile. Se non vedi la tua lingua nativa e vuoi aiutare, puoi visitare il nostro Github per inviare richieste pull per tradurre!
     language: Lingua
     name: Imposta lingua
   path: Percorso corrente
 shaderPack:
   linkShared: Condividi gli shader pack tra le istanze
-  linkSharedHint: >-
-    Collega la cartella shaderpacks di questa istanza alla cartella condivisa
-    globale in modo che tutte le istanze usino gli stessi shader pack. I
-    pacchetti esistenti vengono uniti nella cartella condivisa.
+  linkSharedHint: Collega la cartella shaderpacks di questa istanza alla cartella condivisa globale in modo che tutte le istanze usino gli stessi shader pack. I pacchetti esistenti vengono uniti nella cartella condivisa.
   disabled: Shader Pack disabilitato
   dropHint: Importa Shader Pack
   empty: Nessun shader pack allocato
@@ -1651,6 +1558,7 @@ shaderPack:
   market: Mercato shader
   noPacks: Nessun pacchetto shader installato
   search: Cerca pacchetti shader...
+  'off': 'Off'
 shared:
   close: Chiudi
   pressKeyCombination: Premi una combinazione di tasti...
@@ -1853,13 +1761,10 @@ tutorial:
 universalDrop:
   unknownResource: Sconosciuto
 unresolvedFiles:
-  description: >-
-    Non è stato possibile scaricare questi file durante l'installazione. Cerca
-    una fonte corrispondente, installa le corrispondenze oppure ignora i file
-    per avviare comunque.
+  description: Non è stato possibile scaricare questi file durante l'installazione. Cerca una fonte corrispondente, installa le corrispondenze oppure ignora i file per avviare comunque.
   empty: Tutti i file sono stati risolti.
-  ignoreSelected: 'Ignora {count}'
-  install: 'Installa {count} corrispondenti'
+  ignoreSelected: Ignora {count}
+  install: Installa {count} corrispondenti
   matched: Corrispondente
   noMatch: Non trovato
   search: Cerca fonti
@@ -1869,7 +1774,7 @@ unresolvedFiles:
     modrinth-hash: Hash Modrinth
     modrinth-name: Modrinth
   title: File non risolti
-  via: 'tramite {source}'
+  via: tramite {source}
 upstream:
   downgrade: Downgrade
   onlyShowCurrentVersion: Mostra solo la versione corrente di Minecraft
@@ -1887,13 +1792,11 @@ user:
   tokenValidUntil: Token valido fino a
 userAccount:
   add: Aggiungi account
-  removeDescription: >-
-    Questa operazione eliminerà tutte le informazioni di questo account. Sei sicuro?
+  removeDescription: Questa operazione eliminerà tutte le informazioni di questo account. Sei sicuro?
   removeTitle: Rimuovi account
 userCape:
   changeTitle: Cambia il tuo mantello
-  description: >-
-    I mantelli sono ricompense speciali che i giocatori possono sbloccare attraverso diversi eventi, campagne e altri eventi fortunati. Qui puoi scegliere tra i mantelli che possiedi attualmente:
+  description: 'I mantelli sono ricompense speciali che i giocatori possono sbloccare attraverso diversi eventi, campagne e altri eventi fortunati. Qui puoi scegliere tra i mantelli che possiedi attualmente:'
   noCape: Nessun mantello
 userService:
   add: Aggiungi più servizi
@@ -1952,7 +1855,7 @@ userSkin:
   addNewSkin: Aggiungi nuova skin
   editSkin: Modifica skin
   skinName: Nome della skin
-  skinNamePlaceholder: 'es. La mia skin preferita'
+  skinNamePlaceholder: es. La mia skin preferita
   localFile: File locale
   urlOrPlayer: URL / Nome giocatore
   urlOrPlayerPlaceholder: Inserisci l'URL dell'immagine o il nome utente Minecraft
@@ -2004,7 +1907,6 @@ migrateMinecraft:
   name: Migra i file di Minecraft
 reinstall:
   name: Reinstalla {version}
-
 blueprint:
   name: Progetto | Progetti
   count: '{count} progetti'
@@ -2052,3 +1954,156 @@ blueprint:
     action: Sostituisci
   formats:
     structure: Struttura Vanilla
+gamepad:
+  connected: Controller Connected
+  guideTitle: Controller Controls
+  enableSwitchLabel: Gamepad Controls
+  enabledState: Enabled
+  disabledState: Disabled
+  toggle: Toggle
+  disabledNotify: Gamepad controls disabled.
+  disconnected: Controller Disconnected
+  enabledNotify: Gamepad controls enabled! Use D-pad/Left stick to navigate, {btnA} to select, {btnB} to go back.
+  guide:
+    confirm: Select
+    navigate: Navigate
+    tabs: Switch tabs
+    sections: Switch sections
+    launch: Launch game
+    instanceSettings: Instance settings
+  modSuggestTitle: Controller Mod
+  modSuggestBody: To use your gamepad inside Minecraft, a controller mod is recommended. Would you like to install the appropriate mod for your modloader?
+  modInstall: Install Mod
+  modSkip: Skip
+  modDone: Done
+  modInstalled: Controller mod installed successfully! It will be active next time you launch Minecraft.
+  modInstalledNotify: '{name} has been installed for in-game controller support.'
+  modNotFound: No compatible version found for {loader} on Minecraft {version}.
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+  settingSteamTitle: Add Launcher to Steam
+  steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
+  steamAlreadyAddedNotify: Launcher is already in your Steam Library.
+  steamDeckTitle: Steam Deck Detected
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckAddBtn: Add to Steam ({btn})
+  steamDeckCancelBtn: Cancel ({btn})
+bigPicture:
+  title: Big Picture Mode
+  description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
+  enter: Enter Big Picture
+  exit: Exit Big Picture
+  launchByDefault: Launch in Big Picture by default
+  launchByDefaultHint: Automatically open the launcher in Big Picture mode on startup.
+  autoOnGamepad: Auto-enter on Controller Connected
+  autoOnGamepadHint: Switch to Big Picture mode when a gamepad is detected.
+  library: Library
+  discover: Discover
+  multiplayer: Multiplayer
+  settings: Settings
+  play: Play
+  launching: Launching...
+  running: Running
+  stop: Stop
+  manage: Manage
+  instanceSettings: Options
+  openFolder: Open Folder
+  addInstance: Add Instance
+  noInstances: No instances found
+  createFirstInstance: Create or import an instance to get started
+  recentInstances: Instances
+  controllerConnected: Controller Connected
+  noController: Keyboard & Mouse
+  virtualKeyboard: Virtual Keyboard
+  switchTab: Switch Tabs
+  quickMenu: Quick Menu
+  quickMenuDesc: Quick access to games, settings and launcher actions
+  quickActions: Quick Actions
+  mods: Mods & Plugins
+  noRunningTasksHint: All downloads, installations, and background tasks have finished.
+  tasks: Tasks
+  battery: Battery
+  charging: Charging
+  desktopMode: Desktop Mode
+  testRumble: Test Vibration
+  testRumbleSuccess: Controller vibration sent!
+  filterCompatibleOnly: Compatible with {version}
+  showAllVersions: All versions
+  installedSuccess: '{title} installed successfully!'
+  noVersionsFound: No compatible versions found for this item.
+  joinRoom: Join Room
+  shareGame: Host & Share Game
+  changeBackground: Change Background
+  backgroundDialogTitle: Game Background Settings
+  bgModeAuto: Default (Auto)
+  bgModeTheme: Instance Theme Background
+  bgModeThemeSubtitle: Use wallpaper configured in instance theme
+  bgModeScreenshots: In-Game Screenshots
+  bgModeScreenshotsSubtitle: Slideshow or specific screenshot from game
+  bgModeIcon: Instance Icon
+  bgModeIconSubtitle: Use game icon as a subtle backdrop
+  bgModeCustom: Custom Image
+  bgModeCustomSubtitle: Choose custom image from your computer
+  selectImageFile: Choose File...
+  slideshowAll: Slideshow of all screenshots
+  noScreenshotsAvailable: No screenshots found in this instance
+  noThemeBgAvailable: No theme background configured for this instance
+  resetDefaultBg: Reset to Default
+  newInstanceTitle: Create Game Instance
+  newInstanceDesc: Choose a modloader and version for your new game
+  editionToggle: Game Edition
+  loaderTitle: Mod Loader
+  mcVersion: Minecraft Version
+  createGame: Create Game
+  creatingGame: Creating…
+  accountSwitcherTitle: Accounts
+  accountSwitcherHint: Select an active account or add a new one
+  currentAccount: Current
+  tokenExpired: Session Expired
+  addAccount: Add New Account
+  connectedRoom: P2P Room
+  roomMembers: Room Members
+  copyRoomCode: Copy Room Code
+  roomCodeCopied: Room code copied to clipboard!
+  tagMap: MAP
+  tagDatapack: DATAPACK
+  tagModpack: MODPACK
+  tagResourcepack: RESOURCE PACK
+  tagShader: SHADER
+  tagMod: MOD
+  allInstances: All Instances
+  folder: Folder
+  ungrouped: Ungrouped
+  stopGame: Stop Game
+  forceKill: Force Close
+  forceKillHint: Force terminate the game process immediately (Emergency Stop)
+  gameStopped: Game Stopped
+  gameKilled: Game Terminated
+  gameKilledBody: The game process was forcibly closed.
+  clickToViewGame: 'Running: {name} (Click to view)'
+  createFolder: Create Folder
+  folderName: Folder Name
+  folderColor: Folder Color
+  folderNone: Ungrouped
+  removeFromFolder: Remove from Folder
+  editFolder: Edit Folder Style
+  folderSettingTitle: Instance Folder
+  qaLaunchDesc: Launch game
+  qaLaunchInstance: Launch {name}
+  qaAddInstanceDesc: Create new Minecraft instance
+  qaTasksDesc: View downloads and connections
+  qaModsDesc: Manage installed mods
+  qaInstanceSettingsDesc: Memory, resolution, versions
+  qaFolderDesc: Open folder in file explorer
+  qaBackgroundDesc: Customize background wallpaper
+  qaAccountDesc: Switch or add user profile
+  qaDiscoverDesc: Browse mods, resource packs and maps
+  qaHelpDesc: Controller controls and guide
+  qaFeedbackDesc: Report an issue or give feedback
+  qaExitDesc: Return to desktop mode
