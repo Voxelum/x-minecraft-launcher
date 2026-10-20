@@ -18,7 +18,7 @@ export async function getJavaArch(serv: JavaService, javaPath: string) {
       await writeFile(dest, javaProxy)
     }
     const stdout = await new Promise<string>((resolve, reject) => {
-      execFile(javaPath, ['JavaProxy', '-jvm_info'], { cwd: serv.app.appDataPath }, (err, stdout) => {
+      execFile(javaPath, ['JavaProxy', '-jvm_info'], { cwd: serv.app.appDataPath, windowsHide: true }, (err, stdout) => {
         if (err) reject(err)
         else resolve(stdout)
       })
