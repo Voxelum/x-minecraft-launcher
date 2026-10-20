@@ -4,6 +4,7 @@ import {
   PartialRuntimeVersions,
   getCurseforgeModpackFromInstance,
   getModrinthModpackFromInstance,
+  getPackwizModpackFromInstance,
   type CurseforgeModpackManifest,
   type Instance,
   type InstanceData,
@@ -11,7 +12,12 @@ import {
   type MMCModpackManifest,
   type ModpackInstallProfile,
   type ModrinthModpackManifest,
+  type PackwizModpackManifest,
+  type PackwizIndexManifest,
+  type PackwizFileMeta,
 } from '@xmcl/instance'
+import { stringify as stringifyToml } from 'smol-toml'
+import { createHash } from 'crypto'
 import { ModerinthApiError, ModrinthV2Client, type ModrinthUploadFile } from '@xmcl/modrinth'
 import {
   isValidCurseforgeRef,
@@ -47,6 +53,7 @@ import { readEntry } from '@xmcl/unzip'
 import { AnyError } from '@xmcl/utils'
 import filenamify from 'filenamify'
 import { ensureDir, readFile, readJson, stat, unlink } from 'fs-extra'
+import { open as openFile } from 'node:fs/promises'
 import { basename, dirname, extname, join, relative } from 'path'
 import { Entry, ZipFile as YauzlZipFile } from '@xmcl/yauzl'
 import { ZipFile } from 'yazl'
@@ -137,6 +144,7 @@ function createDefaultModpackMetadata() {
     emitModrinth: true,
     emitModrinthStrict: true,
     emitOffline: false,
+    emitPackwiz: false,
     emittedFiles: [],
     emittedServerFiles: [],
     filesEnvironments: {},
@@ -388,15 +396,19 @@ export class ModpackService extends AbstractService implements IModpackService {
       }
     }
 
-    const sha1: string =
-      lockedFile?.hashes?.sha1 ??
-      (await this.resourceManager
-        .getSnapshotByIno(fStat.ino)
-        .then(async (s) => s?.sha1 ?? (await this.worker.checksum(filePath, 'sha1'))))
-    const metadata = await this.resourceManager.getMetadataByHash(sha1)
+    let sha1: string | undefined = lockedFile?.hashes?.sha1
+    if (!sha1) {
+      const snap = await this.resourceManager.getSnapshotByIno(fStat.ino).catch(() => null)
+      sha1 = snap?.sha1 ?? (await this.worker.checksum(filePath, 'sha1').catch(() => ''))
+    }
+    if (!sha1) {
+      return undefined
+    }
+    const metadata = await this.resourceManager.getMetadataByHash(sha1).catch(() => undefined)
     const downloads = await this.resourceManager
       .getUriByHash(sha1)
       .then((uris) => uris.filter((u) => u.startsWith('http')))
+      .catch(() => [])
     return {
       ...lockedFile,
       path: relativePath,
@@ -464,8 +476,12 @@ export class ModpackService extends AbstractService implements IModpackService {
       if (availableDownloads.length > 0) {
         entries.push({ path: file.path, linked: true })
       } else {
-        const sha1 = fileLike.hashes?.sha1 || (await this.worker.checksum(filePath, 'sha1'))
-        pending.push({ path: file.path, filePath, sha1 })
+        const sha1 = fileLike.hashes?.sha1 || (await this.worker.checksum(filePath, 'sha1').catch(() => ''))
+        if (sha1) {
+          pending.push({ path: file.path, filePath, sha1 })
+        } else {
+          entries.push({ path: file.path, linked: false, reason: 'missing-file' })
+        }
       }
     }
 
@@ -576,6 +592,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       emitCurseforge,
       emitModrinth,
       emitOffline,
+      emitPackwiz,
     } = options
 
     const instance = this.instanceService.state.all[instancePath]
@@ -584,12 +601,14 @@ export class ModpackService extends AbstractService implements IModpackService {
       return {}
     }
 
-    if (!emitCurseforge && !emitModrinth && !emitOffline) {
+    if (!emitCurseforge && !emitModrinth && !emitOffline && !emitPackwiz) {
       return {}
     }
 
     let curseforgeConfig: CurseforgeModpackManifest | undefined
     let modrinthManifest: ModrinthModpackManifest | undefined
+    let packwizManifest: PackwizModpackManifest | undefined
+    const packwizIndexFiles: PackwizIndexManifest['files'] = []
     let xmclManifestExtension: SelectedXMCLFields = {
       disableElybyAuthlib: instance.disableElybyAuthlib,
       disableAuthlibInjector: instance.disableAuthlibInjector,
@@ -610,6 +629,13 @@ export class ModpackService extends AbstractService implements IModpackService {
     if (emitModrinth) {
       modrinthManifest = getModrinthModpackFromInstance(instance)
       modrinthManifest.versionId = version ?? modrinthManifest.versionId
+    }
+
+    if (emitPackwiz) {
+      packwizManifest = getPackwizModpackFromInstance(instance)
+      packwizManifest.name = name ?? packwizManifest.name
+      packwizManifest.author = author ?? packwizManifest.author
+      packwizManifest.version = version ?? packwizManifest.version
     }
 
     const parentDir = destinationDirectory || this.app.host.getPath('downloads')
@@ -633,6 +659,10 @@ export class ModpackService extends AbstractService implements IModpackService {
     const offlineZipPath = emitOffline
       ? join(parentDir, `${sanitizedName}-${sanitizedVersion}-offline.zip`)
       : ''
+    const packwizZip = emitPackwiz ? new ZipFile() : undefined
+    const packwizZipPath = emitPackwiz
+      ? join(parentDir, `${sanitizedName}-${sanitizedVersion}-packwiz.zip`)
+      : ''
 
     curseforgeZip?.addEmptyDirectory('overrides')
     modrinthZip?.addEmptyDirectory('overrides')
@@ -644,10 +674,11 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const backfillModrinth: [ModrinthModpackManifest['files'][number], UpdateResourcePayload][] = []
     const backfillCurseforge: { filePath: string; relativePath: string; sha1: string }[] = []
+    const packwizMetaFiles: { path: string; meta: PackwizFileMeta }[] = []
     const lockHashLookup = await this.getInstanceLockLookup(instancePath)
 
     const lookupFile = (filePath: string) =>
-      this.lookupExportFile(instancePath, filePath, lockHashLookup, emitModrinth, emitCurseforge)
+      this.lookupExportFile(instancePath, filePath, lockHashLookup, emitModrinth || emitPackwiz, emitCurseforge || emitPackwiz)
 
     if (offlineZip) {
       const versionService = await this.app.registry.get(VersionService)
@@ -667,8 +698,31 @@ export class ModpackService extends AbstractService implements IModpackService {
       )
     }
 
+    const skippedFiles: Array<{ path: string; reason: string }> = []
+    const unreadablePaths = new Set<string>()
+
+    const checkFileReadable = async (filePath: string): Promise<string | null> => {
+      try {
+        const fStat = await stat(filePath).catch(() => null)
+        if (!fStat) return 'File does not exist'
+        if (!fStat.isFile()) return 'Not a regular file'
+        const handle = await openFile(filePath, 'r')
+        await handle.close()
+        return null
+      } catch (err: any) {
+        return err?.code || err?.message || 'Access denied'
+      }
+    }
+
     for (const file of files) {
       const filePath = join(instancePath, file.source || file.path)
+      const readError = await checkFileReadable(filePath)
+      if (readError) {
+        this.warn(`Skipping unreadable file ${filePath} (${readError}) during modpack export`)
+        skippedFiles.push({ path: file.path, reason: readError })
+        unreadablePaths.add(file.path)
+        continue
+      }
       // Add offline anyway
       offlineZip?.addFile(filePath, file.path)
       if (isServerOnlyExportFile(file)) {
@@ -863,6 +917,139 @@ export class ModpackService extends AbstractService implements IModpackService {
       )
     }
 
+    if (packwizManifest && packwizZip) {
+      for (const item of files) {
+        if (unreadablePaths.has(item.path)) continue
+        const filePath = join(instancePath, item.source || item.path)
+        try {
+          if (isServerOnlyExportFile(item)) {
+            // Server-only file: add raw file to packwiz zip directly
+            const fileBuf = await readFile(filePath)
+            const fileSha256 = createHash('sha256').update(fileBuf).digest('hex')
+            packwizZip.addBuffer(fileBuf, item.path)
+            packwizIndexFiles.push({
+              file: item.path,
+              hash: fileSha256,
+            })
+            continue
+          }
+
+          if (
+            item.path.startsWith('mods/') ||
+            item.path.startsWith('resourcepacks/') ||
+            item.path.startsWith('shaderpacks/')
+          ) {
+            if (item.override) {
+              const fileBuf = await readFile(filePath)
+              const fileSha256 = createHash('sha256').update(fileBuf).digest('hex')
+              packwizZip.addBuffer(fileBuf, item.path)
+              packwizIndexFiles.push({
+                file: item.path,
+                hash: fileSha256,
+              })
+            } else {
+              const fileLike = await lookupFile(filePath)
+              const side: 'client' | 'server' | 'both' = item.env?.client === 'unsupported' ? 'server' : (item.env?.server === 'unsupported' ? 'client' : 'both')
+              const fileName = basename(item.path)
+              const metaRelativePath = `${item.path}.pw.toml`
+
+              // Try to find download URL from modrinth or curseforge
+              let downloadUrl = ''
+              let hashFormat = 'sha256'
+              let hashValue = ''
+              let updateBlock: PackwizFileMeta['update'] | undefined
+
+              if (fileLike?.modrinth && fileLike.downloads && fileLike.downloads.length > 0) {
+                downloadUrl = fileLike.downloads[0]
+                hashFormat = 'sha512'
+                hashValue = await this.worker.checksum(filePath, 'sha512').catch(() => '')
+                updateBlock = {
+                  modrinth: {
+                    'mod-id': fileLike.modrinth.projectId,
+                    version: fileLike.modrinth.versionId,
+                  },
+                }
+              } else if (fileLike?.curseforge) {
+                const cfDownloads = fileLike.downloads || []
+                if (cfDownloads.length > 0) {
+                  downloadUrl = cfDownloads[0]
+                }
+                hashFormat = 'sha1'
+                hashValue = fileLike.hashes?.sha1 || (await this.worker.checksum(filePath, 'sha1').catch(() => ''))
+                updateBlock = {
+                  curseforge: {
+                    'project-id': fileLike.curseforge.projectId,
+                    'file-id': fileLike.curseforge.fileId,
+                  },
+                }
+              }
+
+              if (downloadUrl && hashValue) {
+                const pwMeta: PackwizFileMeta = {
+                  name: fileName.replace(/\.(jar|zip)$/i, ''),
+                  filename: item.path,
+                  side,
+                  download: {
+                    url: downloadUrl,
+                    'hash-format': hashFormat,
+                    hash: hashValue,
+                  },
+                  update: updateBlock,
+                }
+                const pwTomlStr = stringifyToml(pwMeta as any)
+                const pwTomlBuf = Buffer.from(pwTomlStr)
+                const pwSha256 = createHash('sha256').update(pwTomlBuf).digest('hex')
+
+                packwizZip.addBuffer(pwTomlBuf, metaRelativePath)
+                packwizIndexFiles.push({
+                  file: metaRelativePath,
+                  hash: pwSha256,
+                  metafile: true,
+                })
+              } else {
+                // Direct override in packwiz
+                const fileBuf = await readFile(filePath)
+                const fileSha256 = createHash('sha256').update(fileBuf).digest('hex')
+                packwizZip.addBuffer(fileBuf, item.path)
+                packwizIndexFiles.push({
+                  file: item.path,
+                  hash: fileSha256,
+                })
+              }
+            }
+          } else {
+            // Regular config / script / extra file
+            const fileBuf = await readFile(filePath)
+            const fileSha256 = createHash('sha256').update(fileBuf).digest('hex')
+            packwizZip.addBuffer(fileBuf, item.path)
+            packwizIndexFiles.push({
+              file: item.path,
+              hash: fileSha256,
+            })
+          }
+        } catch (e: any) {
+          this.warn(`Failed to process file ${filePath} for packwiz: ${e.message}`)
+          skippedFiles.push({ path: item.path, reason: e.message || 'Packwiz file error' })
+        }
+      }
+
+      // Generate index.toml
+      const indexObj: PackwizIndexManifest = {
+        'hash-format': 'sha256',
+        files: packwizIndexFiles,
+      }
+      const indexTomlStr = stringifyToml(indexObj as any)
+      const indexTomlBuf = Buffer.from(indexTomlStr)
+      const indexSha256 = createHash('sha256').update(indexTomlBuf).digest('hex')
+
+      packwizZip.addBuffer(indexTomlBuf, 'index.toml')
+
+      // Update packwizManifest index hash
+      packwizManifest.index.hash = indexSha256
+      const packTomlStr = stringifyToml(packwizManifest as any)
+      packwizZip.addBuffer(Buffer.from(packTomlStr), 'pack.toml')
+    }
+
     const task = this.tasks.create<ExportModpackTask>({
       type: 'exportModpack',
       key: `export-modpack-${instancePath}`,
@@ -890,13 +1077,16 @@ export class ModpackService extends AbstractService implements IModpackService {
       if (offlineZip) {
         await writeZipFile(offlineZip, offlineZipPath, task.controller.signal, tracker)
       }
+      if (packwizZip) {
+        await writeZipFile(packwizZip, packwizZipPath, task.controller.signal, tracker)
+      }
       task.complete()
     } catch (error) {
       task.fail(error)
       throw error
     }
 
-    const destinationPath = modrinthZipPath || curseforgeZipPath || offlineZipPath
+    const destinationPath = modrinthZipPath || curseforgeZipPath || packwizZipPath || offlineZipPath
     if (destinationPath && options.showInFolder !== false) {
       this.app.shell.showItemInFolder(destinationPath)
     }
@@ -905,6 +1095,8 @@ export class ModpackService extends AbstractService implements IModpackService {
       curseforgeServer: curseforgeServerZipPath || undefined,
       modrinth: modrinthZipPath || undefined,
       offline: offlineZipPath || undefined,
+      packwiz: packwizZipPath || undefined,
+      skippedFiles: skippedFiles.length > 0 ? skippedFiles : undefined,
     }
   }
 
@@ -1148,6 +1340,7 @@ export class ModpackService extends AbstractService implements IModpackService {
           emitModrinth: true,
           emitModrinthStrict: true,
           emitOffline: false,
+          emitPackwiz: false,
           emittedFiles: options.files.map((file) => file.path),
           emittedServerFiles: [],
           filesEnvironments: {},
