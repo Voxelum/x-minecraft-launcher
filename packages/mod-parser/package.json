@@ -19,7 +19,7 @@
   "dependencies": {
     "@xmcl/asm": "workspace:^",
     "@xmcl/system": "workspace:^",
-    "smol-toml": "^1.7.1"
+    "smol-toml": "^1.9.0"
   },
   "repository": {
     "type": "git",
