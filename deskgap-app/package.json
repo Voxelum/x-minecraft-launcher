@@ -6,7 +6,7 @@
   "type": "module",
   "main": "./dist/main.cjs",
   "config": {
-    "deskgapVersion": "0.3.0-beta3"
+    "deskgapVersion": "0.3.0-beta4"
   },
   "scripts": {
     "build": "tsx build.ts",
