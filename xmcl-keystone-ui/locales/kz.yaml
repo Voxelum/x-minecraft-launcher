@@ -637,6 +637,7 @@ minecraftVersion:
   showAlpha: Snapshot-ты көрсету
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Барлық топтарды жию
   acceptVersion: '{version} нұсқасын қабылдау'
   applyGroupRules: Сақталған топтастыру ережелерін қолдану
   compatible: Үйлесімді мод.

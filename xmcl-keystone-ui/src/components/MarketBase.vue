@@ -39,6 +39,7 @@
             key="market-left"
             id="left-pane"
             role="listbox"
+            :aria-multiselectable="!!selectionMode"
             :bench="16"
             class="visible-scroll h-full max-h-full w-full overflow-auto pl-1 pt-2"
             :items="items"

@@ -796,6 +796,7 @@ minecraftVersion:
   showAlpha: 显示快照版
   snapshot: 快照版
 mod:
+  collapseAllGroups: 折叠所有分组
   acceptVersion: 推荐 {version}
   applyGroupRules: 应用已保存的分组规则
   compatible: 可用于当前版本。

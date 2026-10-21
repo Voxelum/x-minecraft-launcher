@@ -46,7 +46,7 @@ export async function resolveJavaWithDiagnostic(path: string): Promise<JavaResol
 
   return new Promise((resolve) => {
     try {
-      execFile(path, ['-version'], (error, stdout, stderr) => {
+      execFile(path, ['-version'], { windowsHide: true }, (error, stdout, stderr) => {
         // Most JVMs write version output to stderr, but some wrappers and
         // distributions use stdout. Accept either so a functional JRE is not
         // misclassified as invalid solely because of its output stream.
@@ -86,13 +86,14 @@ export class ParseJavaVersionError extends Error {
 function execFileOutput(command: string, args: string[]) {
   return new Promise<string>((resolve) => {
     try {
-      execFile(command, args, (error, stdout) => resolve(error ? '' : stdout))
+      execFile(command, args, { windowsHide: true }, (error, stdout) => resolve(error ? '' : stdout))
         .once('error', () => resolve(''))
     } catch {
       resolve('')
     }
   })
 }
+
 
 /**
  * Parse version string and major version number from `java -version` output.

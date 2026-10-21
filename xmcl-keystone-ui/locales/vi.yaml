@@ -751,6 +751,7 @@ minecraftVersion:
   showAlpha: Hiển thị Snapshot
   snapshot: Bản thử nghiệm
 mod:
+  collapseAllGroups: Thu gọn tất cả các nhóm
   acceptVersion: Chấp nhận {version}
   applyGroupRules: Áp dụng các quy tắc nhóm đã lưu
   compatible: Mod tương thích.

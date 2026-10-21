@@ -1,3 +1,4 @@
+import { parseOAuthRedirect } from '@xmcl/runtime/user/accountSystems/oauthRedirect'
 import type { InstalledAppManifest } from '@xmcl/runtime-api'
 import type { Client, LauncherAppController } from '@xmcl/runtime/app'
 import type { Logger } from '@xmcl/runtime/infra'
@@ -379,8 +380,8 @@ export class DeskGapController implements LauncherAppController {
       }
       const onAbort = () => finish(new DOMException('Microsoft authorization was cancelled.', 'AbortError'))
       const onNavigate = (event: { preventDefault(): void }, url: string) => {
-        const target = new URL(url)
-        if (target.origin !== redirect.origin || target.pathname !== redirect.pathname) return
+        const target = parseOAuthRedirect(url, redirect)
+        if (!target) return
         event.preventDefault()
         const error = target.searchParams.get('error')
         const code = target.searchParams.get('code')
@@ -390,6 +391,12 @@ export class DeskGapController implements LauncherAppController {
       }
       window.webView.on('will-navigate', onNavigate)
       window.webView.on('will-redirect', onNavigate)
+      window.webView.on('did-start-navigation', (_event: unknown, url: string) => {
+        onNavigate({ preventDefault() {} }, url)
+      })
+      window.webView.on('did-redirect-navigation', (_event: unknown, url: string) => {
+        onNavigate({ preventDefault() {} }, url)
+      })
       window.webView.setWindowOpenHandler(({ url }) => {
         window.loadURL(url)
         return { action: 'deny' }
