@@ -643,6 +643,7 @@ minecraftVersion:
   showAlpha: Mostrar Snapshot
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Recolher todos os grupos
   acceptVersion: Aceitar {version}
   applyGroupRules: Aplicar regras de agrupamento salvo
   compatible: Mod Compatível

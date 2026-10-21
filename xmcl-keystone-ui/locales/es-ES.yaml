@@ -727,6 +727,7 @@ minecraftVersion:
   showAlpha: Mostrar Versiones Snapshot
   snapshot: Versión Snapshot
 mod:
+  collapseAllGroups: Contraer todos los grupos
   acceptVersion: Aceptar {version}
   applyGroupRules: Aplicar reglas de agrupación guardadas
   compatible: Mod Compatible.

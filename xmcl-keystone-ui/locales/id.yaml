@@ -751,6 +751,7 @@ minecraftVersion:
   showAlpha: Tampilkan Snapshot
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Ciutkan semua grup
   acceptVersion: Terima {version}
   applyGroupRules: Terapkan aturan pengelompokan tersimpan
   compatible: Mod Kompatibel.

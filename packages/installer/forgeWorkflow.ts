@@ -1,4 +1,4 @@
-import { LibraryInfo, MinecraftFolder, Version } from '@xmcl/core'
+import { MinecraftFolder, Version } from '@xmcl/core'
 import { open, readEntry } from '@xmcl/unzip'
 import {
   isForgeInstallerEntries,
@@ -22,6 +22,7 @@ import {
   type InstallProfile,
   type PostProcessor,
 } from './profile'
+import { resolveForgeServerProfileTasks } from './serverProfile'
 
 export interface ForgeProcessorResolution {
   handled: boolean
@@ -78,7 +79,7 @@ export function createProfileInstallWorkflow(
         const resolved = resolveProcessors(options.side ?? 'client', options.profile, options.minecraft)
         processors = []
         const files = resolveLibraryInstallFiles(
-          Version.resolveLibraries(options.profile.libraries),
+          Version.resolveLibraries(options.profile.libraries ?? []),
           options.minecraft,
           options.installOptions,
         )
@@ -133,12 +134,17 @@ export function createProfileInstallWorkflow(
 
       if (stage === 2) {
         stage += 1
-        const parsed = await Version.parse(options.minecraft, options.profile.version)
-        const tasks: InstallTask[] = [{
-          id: `${options.id}:final-files`,
-          type: 'files',
-          files: resolveLibraryInstallFiles(parsed.libraries, options.minecraft, options.installOptions),
-        }]
+        const tasks: InstallTask[] = options.side === 'server'
+          ? await resolveForgeServerProfileTasks(options)
+          : [{
+              id: `${options.id}:final-files`,
+              type: 'files',
+              files: resolveLibraryInstallFiles(
+                (await Version.parse(options.minecraft, options.profile.version)).libraries,
+                options.minecraft,
+                options.installOptions,
+              ),
+            }]
         if (options.batchLauncher) {
           tasks.push({
             id: `${options.id}:cleanup`,
@@ -211,8 +217,19 @@ export function createModernForgeInstallWorkflow(
             )
           }
           if (!materialization) throw new Error(`Unsupported Forge installer layout: ${options.installer.path}`)
-          profile = materialization.profile
           version = materialization.version
+          profile = {
+            ...materialization.profile,
+            version,
+            minecraft: materialization.profile.minecraft || options.minecraftVersion,
+          }
+          // Persist the overridden id as well, so a later profile repair writes
+          // server.json into the same version directory as this installation.
+          for (const operation of materialization.task.operations) {
+            if (operation.type === 'write' && /[\\/]install_profile\.json$/.test(operation.path)) {
+              operation.content = JSON.stringify(profile)
+            }
+          }
           stage += 1
           return {
             done: false,
@@ -224,7 +241,7 @@ export function createModernForgeInstallWorkflow(
       }
 
       if (!profile) throw new Error('Forge install workflow profile is unavailable')
-  if (legacyInstaller && stage < 4) stage = 4
+      if (legacyInstaller && stage < 4) stage = 4
       if (stage === 2) {
         const resolved = resolveProcessors(options.side ?? 'client', profile, options.minecraft)
         processors = []
@@ -287,13 +304,17 @@ export function createModernForgeInstallWorkflow(
 
       if (stage === 4) {
         stage += 1
-        const parsed = await Version.parse(options.minecraft, version)
-        const files = resolveLibraryInstallFiles(
-          parsed.libraries,
-          options.minecraft,
-          options.installOptions,
-        )
-        const tasks: InstallTask[] = [{ id: `${options.id}:final-files`, type: 'files', files }]
+        const tasks: InstallTask[] = options.side === 'server'
+          ? await resolveForgeServerProfileTasks({ ...options, profile, version })
+          : [{
+              id: `${options.id}:final-files`,
+              type: 'files',
+              files: resolveLibraryInstallFiles(
+                (await Version.parse(options.minecraft, version)).libraries,
+                options.minecraft,
+                options.installOptions,
+              ),
+            }]
         if (batchLauncherMaterialized && options.batchLauncher) {
           tasks.push({
             id: `${options.id}:cleanup`,

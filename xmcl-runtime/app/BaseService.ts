@@ -103,7 +103,13 @@ export class BaseService extends AbstractService implements IBaseService {
       steamDeck:
         process.env.STEAM_DECK === '1' ||
         process.env.USER === 'deck' ||
-        (process.platform === 'linux' && os.release().toLowerCase().includes('steamdeck')),
+        process.env.SteamGamepadUI === '1' ||
+        process.env.SteamTenfoot === '1' ||
+        Boolean(process.env.GAMESCOPE_WAYLAND_DISPLAY) ||
+        Boolean(process.env.XDG_CURRENT_DESKTOP?.toLowerCase().includes('gamescope')) ||
+        (process.platform === 'linux' && os.release().toLowerCase().includes('steamdeck')) ||
+        process.argv.includes('--big-picture') ||
+        process.argv.includes('--gamepad'),
     }
   }
 

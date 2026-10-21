@@ -7,6 +7,7 @@ import monitorPreload from '@preload/monitor'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
 import migrateWinUrl from '@renderer/migration.html'
+import { parseOAuthRedirect } from '@xmcl/runtime/user/accountSystems/oauthRedirect'
 import { InstalledAppManifest, Settings } from '@xmcl/runtime-api'
 import { Client, LauncherAppController, MicrosoftAuthTelemetryEvent } from '@xmcl/runtime/app'
 import { Logger } from '@xmcl/runtime/infra'
@@ -579,8 +580,8 @@ export class ElectronController implements LauncherAppController {
         finish('aborted', error)
       }
       const onNavigate = (event: Event, url: string) => {
-        const target = new URL(url)
-        if (target.origin !== redirect.origin || target.pathname !== redirect.pathname) return
+        const target = parseOAuthRedirect(url, redirect)
+        if (!target) return
         event.preventDefault()
         lastStage = 'oauth_callback'
         const error = target.searchParams.get('error')

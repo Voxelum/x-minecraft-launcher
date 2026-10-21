@@ -751,6 +751,7 @@ minecraftVersion:
   showAlpha: पूर्वावलोकनं दर्शयतु
   snapshot: पूर्वावलोकनम् (Snapshot)
 mod:
+  collapseAllGroups: सर्वान् समूहान् सङ्कोचयतु
   acceptVersion: '{version} स्वीकरोतु'
   applyGroupRules: रक्षितान् समूहनिर्देशान् प्रयुङ्क्त
   compatible: सुसङ्गतः मोडः।
