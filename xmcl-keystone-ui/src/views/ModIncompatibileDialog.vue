@@ -68,10 +68,13 @@ const { t } = useI18n()
               v-else
               small
             >
-              <template #prepend><v-avatar>
-                <!-- <img :src="modsIconsMap[item.modId]"> -->
-                {{ getCompatibleIcon(item) }}
-              </v-avatar></template>
+              <template #prepend>
+                <v-avatar size="24" :color="item.compatible === true ? 'success' : item.compatible === false ? 'error' : 'warning'" variant="tonal">
+                  <v-icon size="14">
+                    {{ item.compatible === true ? 'check' : item.compatible === false ? 'close' : 'help_outline' }}
+                  </v-icon>
+                </v-avatar>
+              </template>
               <v-list-item-title class="flex gap-2 items-center">
                   {{ item.modId }}
                   <v-chip

@@ -859,10 +859,25 @@ mod:
   collapseAllGroups: Collapse all groups
   acceptVersion: Accept {version}
   applyGroupRules: Apply saved grouping rules
+  autoCategorize: Auto-sort into folders
+  autoCategorizeHint: Automatically group mods into category folders (Optimization, Libraries, World, Gameplay, etc.)
+  autoCategorizeSuccess: Mods automatically sorted into {count} folders
   compatible: Compatible Mod.
   createGroup: Create Group
   currentVersion: Current {current}
   denseView: Dense View
+  collapseAll: Collapse All Folders
+  expandAll: Expand All Folders
+  folderSetting: Folder Settings
+  folderColor: Folder Color
+  folderIcon: Folder Icon
+  pinGroup: Pin to Top
+  pinToTop: Pin to Top
+  pinToTopHint: Folder will appear at the top of the list
+  pinned: Pinned
+  unpinGroup: Unpin Folder
+  customColor: Custom Color
+  preview: Preview
   description: Description
   disableAll: Disable All
   dropHint: Drop mod's .jar/.litemod here to import.
@@ -902,6 +917,16 @@ mod:
   syncGroupRules: Save grouping rules
   toUpdate: '{count} updates'
   ungroup: Ungroup
+  ungroupAll: Ungroup all
+  organization: Folder Organization
+modCategory:
+  optimization: Optimization & Performance
+  libraries: Libraries & APIs
+  utilities: UI & Utilities
+  world: World & Biomes
+  visual: Visual & Audio
+  gameplay: Gameplay & Content
+  miscellaneous: Miscellaneous
 modFilter:
   clear: Clear Filter
   dependenciesInstallOnly: Only show missed dependencies mods
@@ -1575,6 +1600,28 @@ localCollection:
   installAll: Install all
   incompatibleAlert: '1 project is not compatible with the current instance and was skipped: | {count} projects are not compatible with the current instance and were skipped:'
   projects: No projects | {count} project | {count} projects
+  saveCurrentMods: Save installed mods as collection
+  saveCurrentModsSuccess: Saved {count} mods to collection "{name}"
+  viewMods: View mods
+  editCollection: Edit collection
+  collectionDescription: Collection description
+  noModsInCollection: No mods in this collection yet
+  exportCollection: Export collection
+  importCollection: Import collection
+  removeEntryConfirm: Remove from collection
+  addMods: Add mods
+  addModsTo: Add mods to "{name}"
+  addModsHint: Add installed mods from your instance or click the bookmark button in the Market to add mods.
+  addModsDialogDesc: Select which installed mods from this instance to include in this collection.
+  addAllCurrent: Add all current mods
+  addedModsSuccess: Added {count} mods to collection
+  searchMods: Search mods...
+  selectAll: Select all
+  deselectAll: Deselect all
+  selected: selected
+  alreadyInCollection: Added
+  noMatchingMods: No mods match your search
+  addSelectedMods: Add {count} mods
 server:
   launch: Launch server
   stop: Stop server
@@ -2011,6 +2058,10 @@ shaderPack:
   showFile: Show this shader pack in folder
   'off': 'Off'
 shared:
+  reset: Reset
+  missing: missing
+  healthy: OK
+  unused: unused
   pressKeyCombination: Press key combination...
   add: Add
   author: Author
@@ -2049,6 +2100,7 @@ shared:
   upgrade: Upgrade
   'yes': 'Yes'
   delete: Delete
+  view: View
 sidebar:
   pin: Pin
   unpin: Unpin

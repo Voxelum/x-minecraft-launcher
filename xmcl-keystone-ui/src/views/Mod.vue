@@ -19,6 +19,38 @@
         :label="t('mod.mods', { count: items.length })"
         :total="!isLocalView ? totalAvailable : undefined"
       >
+        <template v-if="isLocalView" #badges>
+          <div class="flex items-center gap-1.5 ml-2">
+            <v-chip
+              size="x-small"
+              color="primary"
+              variant="tonal"
+              class="font-medium"
+            >
+              {{ t('mod.enabled', { count: enabledCount }) }}
+            </v-chip>
+            <v-chip
+              v-if="disabledCount > 0"
+              size="x-small"
+              color="surface-variant"
+              variant="tonal"
+              class="font-medium cursor-pointer"
+              @click="onUpdateLocalFilter(localFilter === 'disabledOnly' ? undefined : 'disabledOnly')"
+            >
+              {{ disabledCount }} {{ t('shared.disable') }}
+            </v-chip>
+            <v-chip
+              v-if="updateCount > 0"
+              size="x-small"
+              color="warning"
+              variant="tonal"
+              class="font-medium cursor-pointer"
+              @click="onUpdateLocalFilter(localFilter === 'hasUpdateOnly' ? undefined : 'hasUpdateOnly')"
+            >
+              {{ updateCount }} {{ t('shared.checkUpgrade') }}
+            </v-chip>
+          </div>
+        </template>
         <v-btn
           v-if="isLocalView"
           :class="{ 'v-btn--active': selectionMode }"
@@ -31,17 +63,58 @@
           <v-icon> checklist </v-icon>
         </v-btn>
         <v-btn
-          v-if="isLocalView"
-          v-shared-tooltip="() => t('mod.collapseAllGroups')"
-          :aria-label="t('mod.collapseAllGroups')"
-          :disabled="groups.length === 0"
+          v-if="isLocalView && groups.length > 0"
+          v-shared-tooltip="() => isAllCollapsed ? t('mod.expandAll') : t('mod.collapseAll')"
+          :aria-label="isAllCollapsed ? t('mod.expandAll') : t('mod.collapseAll')"
           icon
           variant="text"
           density="comfortable"
-          @click="onCollapseAllGroups"
+          data-testid="market-toggle-collapse-all"
+          @click="toggleCollapseAll"
         >
-          <v-icon> unfold_less </v-icon>
+          <v-icon>{{ isAllCollapsed ? 'unfold_more' : 'unfold_less' }}</v-icon>
         </v-btn>
+        <v-menu v-if="isLocalView">
+          <template #activator="{ props: menuProps }">
+            <v-btn
+              v-bind="menuProps"
+              v-shared-tooltip="() => t('mod.autoCategorize')"
+              icon
+              variant="text"
+              density="comfortable"
+              data-testid="market-auto-categorize"
+            >
+              <v-icon> auto_awesome </v-icon>
+            </v-btn>
+          </template>
+          <v-list density="compact" rounded="xl" elevation="8" class="p-1">
+            <v-list-item
+              v-if="groups.length > 0"
+              prepend-icon="unfold_more"
+              :title="t('mod.expandAll')"
+              @click="expandAll"
+            />
+            <v-list-item
+              v-if="groups.length > 0"
+              prepend-icon="unfold_less"
+              :title="t('mod.collapseAll')"
+              @click="collapseAll"
+            />
+            <v-divider v-if="groups.length > 0" class="my-1" />
+            <v-list-item
+              prepend-icon="auto_awesome"
+              :title="t('mod.autoCategorize')"
+              :subtitle="t('mod.autoCategorizeHint')"
+              @click="onAutoCategorize"
+            />
+            <v-list-item
+              v-if="groups.length > 0"
+              prepend-icon="folder_off"
+              :title="t('mod.ungroupAll')"
+              @click="ungroupAll"
+            />
+          </v-list>
+        </v-menu>
         <v-btn
           v-if="!isLocalView"
           v-shared-tooltip="() => groupInstalled === 'off' ? t('mod.installedFilterOff') : groupInstalled === 'group' ? t('mod.groupInstalled') : t('mod.hideInstalled')"
@@ -63,15 +136,32 @@
       <v-alert v-if="upgradeError" dense type="error">
         {{ updateErrorMessage }}
       </v-alert>
-      <v-alert
+      <v-card
         v-if="Object.keys(conflicted).length > 0"
-        dense
-        class="cursor-pointer error"
-        type="error"
+        class="mx-3 my-2 border border-red-500/30 bg-red-950/40 rounded-xl cursor-pointer hover:bg-red-950/60 transition-all"
+        elevation="0"
         @click="showDuplicatedDialog"
       >
-        {{ localizedTexts.mod.duplicatedDetected }}
-      </v-alert>
+        <div class="flex items-center px-4 py-3 gap-3">
+          <div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+            <v-icon color="red-lighten-2" size="20">warning</v-icon>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-semibold text-red-100">
+              {{ localizedTexts.mod.duplicatedDetected }}
+            </div>
+          </div>
+          <v-btn
+            size="small"
+            variant="tonal"
+            color="error"
+            class="flex-shrink-0 font-semibold"
+            @click.stop="showDuplicatedDialog"
+          >
+            {{ t('shared.manage') || 'Manage' }}
+          </v-btn>
+        </div>
+      </v-card>
     </template>
     <template #placeholder>
       <MarketEmptyPlaceholder />
@@ -104,62 +194,83 @@
         @update:modrinth-environment="modrinthEnvironment = $event"
       >
         <template #local>
-          <div class="filter-subheader flex">
-            <v-icon size="16" class="mr-1">filter_alt</v-icon>
-            {{ t('mod.filter') }}
-          </div>
-          <v-btn-toggle
-            v-roving-tabindex
-            :aria-label="t('mod.filter')"
-            density="compact"
-            :model-value="getFilterButtonValue()"
-            class="bg-transparent px-1"
-            @update:model-value="onUpdateLocalFilter($event != null ? filterItems[$event]?.value : undefined)"
+          <!-- Quick Filter & Loaders Card -->
+          <v-card
+            class="mod-filter-card rounded-xl border border-white/10 bg-white/[0.02] p-4 mb-4"
+            elevation="0"
           >
-            <v-btn
-              v-for="tag in filterItems"
-              :key="tag.value"
-              v-shared-tooltip="() => tag.text"
-              :disabled="tag.disabled"
-              size="small"
-              variant="text"
-              border
-            >
-              <v-icon
-                class="material-icons-outlined"
+            <!-- Mod Loaders Section -->
+            <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis flex items-center gap-1.5 mb-2.5">
+              <v-icon size="16" color="primary">extension</v-icon>
+              <span>{{ t('modrinth.modLoaders.name') }}</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <v-chip
                 size="small"
+                variant="tonal"
+                :color="!MODLOADER_FILTERS.includes(localFilter) ? 'primary' : undefined"
+                class="font-medium cursor-pointer"
+                @click="onUpdateLocalFilter(undefined)"
               >
-                {{ tag.icon }}
-              </v-icon>
-            </v-btn>
-          </v-btn-toggle>
-          <div class="filter-subheader flex">
-            <v-icon size="16" class="mr-1">extension</v-icon>
-            {{ t('modrinth.modLoaders.name') }}
-          </div>
-          <v-btn-toggle
-            v-roving-tabindex
-            :aria-label="t('modrinth.modLoaders.name')"
-            density="compact"
-            :model-value="getModLoaderFilterValue()"
-            class="bg-transparent px-1"
-            @update:model-value="onUpdateLocalFilter($event != null ? modLoaderFilterItems[$event]?.value : undefined)"
-          >
-            <v-btn
-              v-for="tag in modLoaderFilterItems"
-              :key="tag.value"
-              v-shared-tooltip="() => tag.text"
-              size="small"
-              variant="text"
-              border
-            >
-              <v-icon size="small">
-                {{ tag.icon }}
-              </v-icon>
-            </v-btn>
-          </v-btn-toggle>
+                {{ t('modrinth.environments.all') }}
+              </v-chip>
+              <v-chip
+                v-for="tag in modLoaderFilterItems"
+                :key="tag.value"
+                size="small"
+                variant="tonal"
+                :color="localFilter === tag.value ? 'primary' : undefined"
+                class="font-medium cursor-pointer"
+                @click="onUpdateLocalFilter(localFilter === tag.value ? undefined : tag.value)"
+              >
+                <template #prepend>
+                  <v-icon size="14" class="mr-1">{{ tag.icon }}</v-icon>
+                </template>
+                {{ tag.text }}
+              </v-chip>
+            </div>
+
+            <!-- Mod Status Filter Section -->
+            <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis flex items-center gap-1.5 mb-2.5">
+              <v-icon size="16" color="primary">filter_alt</v-icon>
+              <span>{{ t('mod.filter') }}</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <v-chip
+                size="small"
+                variant="tonal"
+                :color="!localFilter ? 'primary' : undefined"
+                class="font-medium cursor-pointer"
+                @click="onUpdateLocalFilter(undefined)"
+              >
+                {{ t('modrinth.environments.all') }}
+              </v-chip>
+              <v-chip
+                v-for="tag in filterItems"
+                :key="tag.value"
+                :disabled="tag.disabled"
+                size="small"
+                variant="tonal"
+                :color="localFilter === tag.value ? 'primary' : undefined"
+                class="font-medium cursor-pointer"
+                v-shared-tooltip="tag.text"
+                @click="onUpdateLocalFilter(localFilter === tag.value ? undefined : tag.value)"
+              >
+                <template #prepend>
+                  <v-icon size="14" class="mr-1">{{ tag.icon }}</v-icon>
+                </template>
+                {{ tag.label || tag.text }}
+              </v-chip>
+            </div>
+          </v-card>
+
           <ModOptionsPage
             v-model:denseView="denseView"
+            :groups-count="groups.length"
+            :is-all-collapsed="isAllCollapsed"
+            @auto-categorize="onAutoCategorize"
+            @ungroup-all="ungroupAll"
+            @toggle-collapse-all="toggleCollapseAll"
           />
         </template>
       </MarketFilterPanel>
@@ -178,25 +289,32 @@
         :selected="selected"
         :install="onInstallProject"
         :dense="denseView"
+        :draggable="isLocalView"
         :get-context-menu-items="getContextMenuItems"
         @click="on.click"
         @click-dependency="onClickDependency"
+        @drop-on-mod="handleModDropOnMod"
       />
       <ModGroupEntryItem
         v-else-if="typeof item === 'object'"
-        :key="`folder-${item.name}-${item.projects.length}`"
+        :key="`folder-${item.name}-${item.projects.length}-${item.color}-${item.icon}-${item.pinned}`"
         :items="(item.projects as ProjectEntry<ModFile>[])"
         :height="itemHeight"
         :name="item.name"
+        :color="item.color"
+        :icon="item.icon"
+        :pinned="item.pinned"
         :expanded="!groupCollapsedState[item.name]"
         :dense="denseView"
         @ungroup="ungroup(item.name)"
         @expand="onGroupCollapse(item as ProjectGroup<ModFile>, $event)"
-        @setting="renameGroup(item.name, $event.name)"
+        @setting="updateGroupSetting(item.name, $event)"
+        @toggle-pin="toggleGroupPin(item.name)"
         @enable-all="enableAll(item)"
         @disable-all="disableAll(item)"
         @apply-group-rules="applySharedGroupRules()"
         @save-group-rules="syncGroupRules()"
+        @drop-mod="handleModDropOnFolder"
       />
       <v-list-subheader
         v-else-if="item === 'search'"
@@ -343,6 +461,7 @@ import { useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { ArtifactLoader, resolveArtifactModrinthDependencies } from '@/composables/modArtifactDependencies'
 import { useModWizard } from '@/composables/modWizard'
+import { useNotifier } from '@/composables/notifier'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -356,7 +475,7 @@ import { clientModrinthV2 } from '@/util/clients'
 import { ModFile, getModDependents, isModFile } from '@/util/mod'
 import { flattenVisibleModGroups, isProjectInModGroup } from '@/util/modGroupFilter'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { InstanceModsServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, normalizeModFileName } from '@xmcl/runtime-api'
 import { useDebounceFn } from '@vueuse/core'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
@@ -473,29 +592,34 @@ const filterItems = computed(() => {
   const result = [{
     icon: 'flash_off',
     text: t('modFilter.disabledOnly'),
+    label: t('shared.disable'),
     disabled: false,
     value: 'disabledOnly',
   }, {
     icon: 'info',
     text: t('modFilter.incompatibleOnly'),
+    label: t('dependencies.incompatible'),
     value: 'incompatibleOnly',
   }]
   result.push({
     icon: 'recycling',
     disabled: !hasUnusedMods,
     text: t('modFilter.unusedOnly'),
+    label: t('instanceFileOperation.remove'),
     value: 'unusedOnly',
   })
   result.push({
     icon: 'merge',
     disabled: !hasDependenciesInstall,
     text: t('modFilter.dependenciesInstallOnly'),
+    label: t('dependencies.name'),
     value: 'dependenciesInstallOnly',
   })
   result.push({
     icon: 'update',
     disabled: !hasUpdate,
     text: t('modFilter.hasUpdateOnly'),
+    label: t('shared.checkUpgrade'),
     value: 'hasUpdateOnly',
   })
   return result
@@ -544,7 +668,11 @@ const {
   groupCollapsedState,
   collapseAllGroups,
   renameGroup,
+  updateGroupSetting,
+  toggleGroupPin,
   ungroup,
+  ungroupAll,
+  autoCategorizeMods,
   group,
   addToGroup,
   isInGroup,
@@ -555,7 +683,17 @@ const {
   groupModCounts,
   syncGroupRules,
   applySharedGroupRules,
+  isAllCollapsed,
+  toggleCollapseAll,
+  expandAll,
+  collapseAll,
 } = useModGroups(isLocalView, path, items, sortBy)
+
+const { notify } = useNotifier()
+
+function onAutoCategorize() {
+  autoCategorizeMods()
+}
 
 function enableAll(group: ProjectGroup) {
   const files = group.projects
@@ -573,13 +711,15 @@ function disableAll(group: ProjectGroup) {
   disable({ path: path.value, files })
 }
 
+const loaderIncompatSet = computed(() => new Set(loaderIncompatibilities.value.map(issue => issue.file)))
+
 function isIncompatible(p: ProjectEntry<ModFile>) {
   const installed = p.installed?.[0]
   const modId = installed?.modId
   if (!modId) {
     return false
   }
-  if (loaderIncompatibilities.value.some(issue => issue.file === installed.fileName)) return true
+  if (loaderIncompatSet.value.has(installed.fileName)) return true
   const items = compatibility.value[modId]
   if (!items) {
     return false
@@ -591,6 +731,56 @@ function isIncompatible(p: ProjectEntry<ModFile>) {
   }
 
   return false
+}
+
+function handleModDropOnFolder({ fileName, groupName }: { fileName: string; groupName: string }) {
+  if (!fileName || !groupName) return
+  addToGroup([fileName], groupName)
+}
+
+function handleModDropOnMod({
+  sourceFileName,
+  targetFileName,
+  targetTitle,
+}: {
+  sourceFileName: string
+  targetFileName: string
+  targetTitle: string
+}) {
+  if (!sourceFileName || !targetFileName || sourceFileName === targetFileName) return
+
+  const normSource = normalizeModFileName(sourceFileName)
+  const normTarget = normalizeModFileName(targetFileName)
+
+  const currentGroups = groupsRaw.value ?? {}
+
+  // Find if target is in a group
+  const targetGroupName = Object.entries(currentGroups).find(([_, g]) =>
+    g.files.some(f => normalizeModFileName(f) === normTarget)
+  )?.[0]
+
+  // Find if source is in a group
+  const sourceGroupName = Object.entries(currentGroups).find(([_, g]) =>
+    g.files.some(f => normalizeModFileName(f) === normSource)
+  )?.[0]
+
+  if (targetGroupName) {
+    // If target is in a group, add source to target's group
+    addToGroup([sourceFileName], targetGroupName)
+  } else if (sourceGroupName) {
+    // If source is in a group but target is not, add target to source's group
+    addToGroup([targetFileName], sourceGroupName)
+  } else {
+    // Neither is in a group: create a new folder!
+    const cleanTitle = (targetTitle || 'Mods').trim()
+    const baseName = `Folder (${cleanTitle})`
+    let folderName = baseName
+    let counter = 2
+    while (groups.value.includes(folderName)) {
+      folderName = `${baseName} ${counter++}`
+    }
+    group([sourceFileName, targetFileName], folderName)
+  }
 }
 
 // Mapping of modloader filter values to modloader names
@@ -707,6 +897,10 @@ const updateErrorMessage = computed(() => {
   if (upgradeError) return (upgradeError.value as any).message
   return ''
 })
+
+const enabledCount = computed(() => mods.value.filter(m => m.enabled).length)
+const disabledCount = computed(() => mods.value.filter(m => !m.enabled).length)
+const updateCount = computed(() => Object.keys(plans.value).length)
 
 const defaultSource = injection(kInstanceDefaultSource)
 const shouldShowModrinth = (
