@@ -1167,12 +1167,99 @@ save:
   searchSaves: Пошук збережень
   empty: Світів не знайдено
 screenshots:
+  title: Скріншоти та фото
+  gallery: Галерея скріншотів
+  manage: Менеджер скріншотів
   empty: У вас немає знімків екрана
+  emptyTitle: Скріншотів поки немає
+  emptyDescription: Натисніть F2 у грі, щоб зробити знімок екрана, або імпортуйте фотографії вручну.
+  hint: У грі натисніть F2 для скріншоту
+  dropHint: Перетягніть сюди фото або скріншоти для збереження
+  openFolder: Відкрити теку скріншотів
   playRandom: Перемішати
   playSequence: Відтворити по порядку
-  gallery: Галерея скріншотів
-  hint: У грі натисніть F2 для скріншоту
-  openFolder: Відкрити теку скріншотів
+  backToHome: На головну
+  import: Додати фото
+  images: Зображення
+  importSuccess: Успішно імпортовано {count} фото
+  copy: Копіювати зображення
+  copied: Скопійовано в буфер обміну!
+  setWallpaper: Встановити як фон
+  setWallpaperSuccess: Встановлено як фонове зображення збірки!
+  setIcon: Встановити як іконку
+  setIconSuccess: Встановлено як іконку збірки!
+  export: Зберегти файл
+  exportSuccess: Скріншот успішно збережено!
+  exportSelected: Експортувати обрані
+  exportSelectedTitle: Обрати теку для експорту
+  exportSelectedSuccess: Успішно експортовано {count} скріншотів
+  deleteConfirmTitle: Видалити скріншоти?
+  deleteConfirmMessage: Ви дійсно бажаєте видалити {count} скріншотів? Цю дію неможливо скасувати.
+  deleteSuccess: Скріншоти успішно видалено
+  selectedCount: "Обрано: {count}"
+  selectAll: Обрати всі
+  clearSelection: Зняти вибір
+  countLabel: "{count} скріншотів"
+  searchPlaceholder: Пошук за назвою або датою...
+  noSearchResults: Нічого не знайдено
+  noSearchResultsHint: Спробуйте змінити пошуковий запит
+  sort: Сортування
+  sortDateDesc: Спочатку нові
+  sortDateAsc: Спочатку старі
+  sortSizeDesc: Спочатку великі
+  sortSizeAsc: Спочатку малі
+  sortNameAsc: За назвою (А-Я)
+  sortNameDesc: За назвою (Я-А)
+  viewGrid: Велика сітка
+  viewGridCompact: Компактна сітка
+  viewList: Список
+  edit: Редагувати
+  editorTitle: Редактор скріншота
+  saveCopy: Зберегти копію
+  saveOverwrite: Перезаписати
+  saveSuccess: Скріншот збережено!
+  saveCopySuccess: Збережено як новий скріншот!
+  toolSelect: Переміщення
+  toolMove: Пересування та трансформація (Ctrl+T / V)
+  toolPan: Панорамування (Space+Drag)
+  layers: Шари
+  layerAdd: Додати шар
+  layerDuplicate: Дублювати шар
+  layerDelete: Видалити шар
+  layerOpacity: Непрозорість
+  transformLayer: Вільна трансформація
+  applyTransform: Застосувати (Enter)
+  cancelTransform: Скасувати (Esc)
+  layerBackground: Фон
+  layerPaint: Малюнок
+  layerText: Текст
+  layerBlur: Розмиття
+  toolPen: Олівець
+  toolArrow: Стрілка
+  toolRect: Прямокутник
+  toolCircle: Коло
+  toolLine: Лінія
+  toolText: Текст
+  toolHighlighter: Маркер
+  toolBlur: "Пікселізація / Розмиття"
+  toolCrop: Обрізати
+  applyCrop: Застосувати обрізку
+  cancelCrop: Скасувати обрізку
+  strokeWidth: Товщина лінії
+  fontSize: Розмір шрифту
+  color: Колір
+  undo: Скасувати
+  redo: Повторити
+  clear: Очистити все
+  textPlaceholder: Введіть текст...
+  fontFamily: Шрифт
+  fontBold: Жирний
+  fontItalic: Курсив
+  textApply: Залишити текст
+  textBg: Фон
+  zoomIn: Наблизити
+  zoomOut: Віддалити
+  resetZoom: Скинути масштаб
 search:
   favorate: Колекція
   local: Встановлені
@@ -1600,7 +1687,10 @@ shaderPack:
   search: Пошук шейдерпаків...
   'off': Вимкнено
 shared:
+  openFolder: Відкрити папку
   close: Закрити
+  copyFailed: Не вдалося скопіювати
+  copyFailedHint: Не вдалося скопіювати в буфер обміну
   pressKeyCombination: Натисніть комбінацію клавіш...
   add: Додати
   author: Автор
