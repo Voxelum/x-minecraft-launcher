@@ -59,3 +59,11 @@ export interface ReleaseInfo {
    */
   operation: string
 }
+
+/** Explicit host limitation, independent of release discovery and update status.
+ * Omitted by existing adapters to preserve their current behavior.
+ */
+export interface UpdateCapability {
+  automatic: false
+  reason: 'not-implemented' | 'not-configured'
+}

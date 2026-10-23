@@ -7,10 +7,13 @@ import { DeskGapUpdater, deskGapPublisherNames, LocalDevelopmentUpdater } from '
 
 let directory: string
 beforeEach(async () => {
+  // Exercise the Windows x64 adapter deterministically on ARM developer hosts.
+  vi.spyOn(process, 'arch', 'get').mockReturnValue('x64')
   directory = join(import.meta.dirname, '..', 'build', 'output', 'tests', randomUUID())
   await mkdir(directory, { recursive: true })
 })
 afterEach(async () => {
+  vi.restoreAllMocks()
   await rm(directory, { recursive: true, force: true })
 })
 

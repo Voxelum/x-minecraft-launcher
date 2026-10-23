@@ -5,6 +5,7 @@ import { InjectionKey, Ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { kEnvironment } from './environment'
 import { useState } from './syncableState'
+import { useUpdateCapability } from './updateCapability'
 
 export const kUpdateSettings: InjectionKey<ReturnType<typeof useUpdateSettings>> = Symbol('UpdateSettings')
 
@@ -35,24 +36,15 @@ export function useUpdateSettings() {
     }
   }
 
-  const checkingUpdate = ref(false)
-  async function check() {
-    checkingUpdate.value = true
-    try {
-      await checkUpdate()
-    } finally {
-      checkingUpdate.value = false
-    }
-  }
+  const capability = useUpdateCapability(state, checkUpdate)
 
   return {
     version,
     quitAndInstall: install,
     downloadUpdate: download,
-    checkUpdate: check,
+    ...capability,
     installing,
     updateStatus,
-    checkingUpdate,
     downloadingUpdate,
     updateInfo,
   }
