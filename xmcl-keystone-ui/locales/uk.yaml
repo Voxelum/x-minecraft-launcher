@@ -90,6 +90,101 @@ bedrock:
   downloadFailed: Не вдалося завантажити Bedrock {version}
   launchFailed: Не вдалося запустити цю версію Bedrock
   removeFailed: Не вдалося видалити Bedrock {version}
+backup:
+  title: Резервне копіювання
+  description: Створення та відновлення резервних копій налаштувань, колекцій, тем та інстанцій
+  launcherData: Дані лаунчера
+  includeSettingsTitle: Налаштування лаунчера
+  includeSettingsHint: Загальні параметри, мова, режим розробника та зовнішній вигляд
+  includeCollectionsTitle: Збережені колекції
+  includeCollectionsHint: Колекції модів та ресурсів лаунчера
+  includeThemesTitle: Власні теми та медіа
+  includeThemesHint: Кольори тем, власні CSS-стилі та фонові медіафайли
+  instances: Інстанції
+  selectAll: Вибрати всі
+  deselectAll: Зняти вибір
+  instanceDataOptions: Параметри даних інстанцій
+  includeConfigs: Конфігурації та параметри
+  includeSaves: Збереження (Світи)
+  includeResourcePacks: Пакунки ресурсів
+  includeShaderPacks: Шейдери
+  modsMode: Моди
+  modsFull: Повні файли (.jar)
+  modsListOnly: Тільки список модів (полегшений)
+  modsNone: Без модів
+  noInstancesFound: У лаунчері немає інстанцій.
+  excludeLibrariesNotice: Бібліотеки (залежності ваніли та завантажувачів), ресурси та кеші виключаються автоматично, щоб зберегти місце на диску. Вони завантажуються автоматично під час запуску гри.
+  create: Створити резервну копію
+  creating: Створення резервної копії...
+  createTitle: Створити архів резервної копії
+  saveDialogTitle: Зберегти резервну копію XMCL
+  fileFilterName: Резервна копія XMCL (*.xmclbackup, *.zip)
+  createSuccess: Резервну копію успішно створено
+  createError: Не вдалося створити резервну копію
+  loadManifestError: Не вдалося прочитати архів резервної копії
+  restore: Відновити
+  restoring: Відновлення даних...
+  restoreTitle: Відновлення з резервної копії
+  preparing: Підготовка...
+  workingTitle: Створення резервної копії...
+  restoringTitle: Відновлення з резервної копії...
+  elapsedTime: Минуло часу
+  remainingTime: Залишилось приблизно
+  calculatingRemaining: Розрахунок...
+  lessThanMinute: '< 1 хв'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Світи (Карти)
+  modsCategory: Моди
+  resourcePacksCategory: Ресурс-паки
+  shaderPacksCategory: Шейдери
+  configsCategory: Конфігурації
+  activityLog: Журнал процесу
+  copyLog: Скопіювати журнал
+  copiedLog: Журнал скопійовано в буфер
+  openFolder: Показати в папці
+  done: Готово
+  backupDone: Резервне копіювання завершено!
+  backupDoneHint: Вашу резервну копію успішно створено та перевірено.
+  restoreDone: Відновлення завершено!
+  restoreDoneHint: Усі обрані дані та інстанції успішно відновлено.
+  timeTaken: 'Витрачено часу: {time}'
+  destinationFile: 'Збережено у: {path}'
+  stagePreparing: Підготовка
+  stageSettings: Налаштування лаунчера
+  stageCollections: Збережені колекції
+  stageThemes: Теми та медіа
+  stageInstances: Інстанції гри
+  stageCompressing: Стиснення архіву
+  stageComplete: Завершено
+  stageLabel: 'Етап: {stage}'
+  searchInstancesPlaceholder: Пошук інстанцій за назвою або версією...
+  selectBackupFilePrompt: Виберіть архів резервної копії для відновлення
+  selectBackupFileDescription: Виберіть файл .xmclbackup або .zip зі збереженими даними та інстанціями XMCL.
+  selectFile: Вибрати файл
+  selectBackupFileTitle: Відкрити резервну копію XMCL
+  createdOn: 'Створено {date}'
+  changeFile: Змінити файл
+  dataToRestore: Дані для відновлення
+  restoreSettings: Відновити налаштування
+  restoreSettingsHint: Перезаписати поточні налаштування копією з архіву
+  restoreCollections: Відновити колекції
+  restoreCollectionsHint: Імпортувати та об'єднати збережені колекції
+  restoreThemes: Відновити теми та медіа
+  restoreThemesHint: Перевстановити теми, власний CSS та фонові файли
+  noLauncherDataInBackup: У цьому архіві немає налаштувань чи тем лаунчера.
+  conflictStrategyTitle: Конфлікти імен інстанцій
+  conflictRename: 'Зберегти наявну та перейменувати відновлену (наприклад: name-restored)'
+  conflictOverwrite: Перезаписати наявні файли інстанції
+  conflictSkip: Пропустити вже наявні інстанції
+  restoreSuccess: Відновлення успішно завершено
+  restoreSuccessDetails: 'Відновлено {count} інстанцій та дані лаунчера.'
+  restoreError: Не вдалося відновити дані з резервної копії
+  createBackupTitle: Створити резервну копію
+  createBackupDescription: Збережіть налаштування лаунчера, колекції, власні теми та інстанції в єдиний портативний архів.
+  restoreBackupTitle: Відновити резервну копію
+  restoreBackupDescription: Відновіть налаштування, теми, колекції або інстанції зі збереженого архіву.
+  portableArchiveNoticeTitle: Портативні локальні архіви
+  portableArchiveNoticeDescription: Резервні копії зберігаються одним файлом .xmclbackup. Ви можете безпечно зберігати їх, копіювати на флешку чи синхронізувати через хмарні сховища (Google Диск, OneDrive тощо).
 baseSetting:
   title: Основні налаштування
 browseApp:

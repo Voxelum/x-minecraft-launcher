@@ -85,6 +85,14 @@
           />
           <SettingNetwork />
         </section>
+        <section id="backup" class="mb-8 scroll-target" role="region" :aria-label="t('backup.title')">
+          <SettingHeader
+            :title="t('backup.title')"
+            :subtitle="t('backup.description')"
+            icon="archive"
+          />
+          <SettingBackup />
+        </section>
         <section id="about" class="mb-12 scroll-target" role="region" :aria-label="t('setting.about')">
           <SettingHeader
             :title="t('setting.about')"
@@ -97,6 +105,8 @@
 
       <SettingUpdateInfoDialog />
       <SettingMigrationDialog />
+      <BackupCreateDialog />
+      <BackupRestoreDialog />
     </div>
   </div>
 </template>
@@ -111,6 +121,9 @@ import SettingMigrationDialog from './SettingMigrationDialog.vue'
 import SettingGlobal from './SettingGlobal.vue'
 import SettingAbout from './SettingAbout.vue'
 import SettingNetwork from './SettingNetwork.vue'
+import SettingBackup from './SettingBackup.vue'
+import BackupCreateDialog from './BackupCreateDialog.vue'
+import BackupRestoreDialog from './BackupRestoreDialog.vue'
 import { usePresence } from '@/composables/presence'
 import { useTutorial } from '@/composables/tutorial'
 import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
@@ -153,6 +166,7 @@ const sections = [
   { id: 'appearance', title: 'setting.appearance', icon: 'palette' },
   { id: 'global', title: 'setting.globalSetting', icon: 'videogame_asset' },
   { id: 'network', title: 'setting.network', icon: 'wifi' },
+  { id: 'backup', title: 'backup.title', icon: 'archive' },
   { id: 'about', title: 'setting.about', icon: 'info' },
 ]
 
