@@ -28,6 +28,9 @@ describe('AppSideBarAccountMenu', () => {
     const addButton = allNodes.find(node => node.tag === 'v-btn' && node.props.some(p => p.type === NodeTypes.ATTRIBUTE && p.name === 'data-testid' && p.value?.content === 'accounts-add'))
     expect(addButton).toBeDefined()
 
+    const closeButton = allNodes.find(node => node.tag === 'v-btn' && node.props.some(p => p.type === NodeTypes.ATTRIBUTE && p.name === 'icon' && p.value?.content === 'close'))
+    expect(closeButton?.props.some(p => p.type === NodeTypes.DIRECTIVE && p.name === 'bind' && p.arg?.type === NodeTypes.SIMPLE_EXPRESSION && p.arg.content === 'aria-label' && p.exp?.type === NodeTypes.SIMPLE_EXPRESSION && p.exp.content === "t('shared.close')")).toBe(true)
+
     const avatar = allNodes.find(node => node.tag === 'PlayerAvatar')
     expect(avatar).toBeDefined()
   })

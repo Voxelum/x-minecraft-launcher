@@ -27,6 +27,7 @@
           variant="text"
           size="x-small"
           class="opacity-60 hover:opacity-100"
+          :aria-label="t('shared.close')"
           @click="shown = false"
         />
       </div>
@@ -142,6 +143,7 @@ const { show: showUserProfileDialog } = useUserMenuControl()
 
 const shown = ref(false)
 const target = ref<HTMLElement | [number, number] | undefined>()
+const isSelectingAccount = ref(false)
 
 interface AccountEntry {
   key: string
@@ -179,12 +181,18 @@ const getAuthorityName = (auth: string) => authorityMap[auth] ? t(authorityMap[a
 const isUserExpired = (u: UserProfile) => u.invalidated || u.expiredAt < Date.now()
 
 async function onSelectAccount(entry: AccountEntry) {
+  if (isSelectingAccount.value) return
   if (entry.isCurrent) return void (shown.value = false)
-  if (entry.profile && entry.user.selectedProfile !== entry.profile.id) {
-    await selectUserGameProfile(entry.user, entry.profile.id)
+  isSelectingAccount.value = true
+  try {
+    if (entry.profile && entry.user.selectedProfile !== entry.profile.id) {
+      await selectUserGameProfile(entry.user, entry.profile.id)
+    }
+    select(entry.user.id)
+    shown.value = false
+  } finally {
+    isSelectingAccount.value = false
   }
-  select(entry.user.id)
-  shown.value = false
 }
 
 function onAddAccount() {
