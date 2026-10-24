@@ -1,7 +1,20 @@
 <template>
-  <div
-    class="instance-screenshots flex flex-col flex-1 relative overflow-y-auto visible-scroll px-6 py-4 select-none"
+  <v-dialog
+    :model-value="true"
+    max-width="1080"
+    @update:model-value="onDialogUpdate"
   >
+    <v-card class="flex max-h-[85vh] flex-col overflow-hidden">
+      <v-card-title class="flex items-center gap-2 px-4 py-2">
+        <v-icon color="primary">photo_library</v-icon>
+        <span>{{ t('screenshots.title') }}</span>
+        <v-spacer />
+        <InstanceScreenshotsActions />
+      </v-card-title>
+      <InstanceScreenshotsExtension />
+      <div
+        class="instance-screenshots min-h-0 flex flex-1 flex-col relative overflow-y-auto visible-scroll px-6 py-4 select-none"
+      >
     <!-- Drag & Drop overlay -->
     <transition name="fade-transition">
       <div
@@ -364,7 +377,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+      </div>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -382,9 +397,12 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import ScreenshotLightbox from '@/components/ScreenshotLightbox.vue'
 import ScreenshotEditorModal from '@/components/ScreenshotEditorModal.vue'
+import InstanceScreenshotsActions from './InstanceScreenshotsActions.vue'
+import InstanceScreenshotsExtension from './InstanceScreenshotsExtension.vue'
 import { inject, ref } from 'vue'
 
 const { path: instancePath } = injection(kInstance)
+const router = useRouter()
 const { t } = useI18n()
 const { getDateString } = useDateString()
 const { openDirectory } = useService(BaseServiceKey)
@@ -419,6 +437,12 @@ const {
   openPreview,
   closePreview,
 } = useScreenshotManagerContext()
+
+function onDialogUpdate(open: boolean) {
+  if (!open) {
+    void router.push('/')
+  }
+}
 
 // Drop handler
 const { dragover } = useGlobalDrop({
