@@ -1,9 +1,10 @@
 <template>
-  <v-dialog
-    :model-value="true"
-    max-width="1080"
-    @update:model-value="onDialogUpdate"
-  >
+  <div>
+    <v-dialog
+      :model-value="true"
+      max-width="1080"
+      @update:model-value="onDialogUpdate"
+    >
     <v-card class="flex max-h-[85vh] flex-col overflow-hidden">
       <v-card-title class="flex items-center gap-2 px-4 py-2">
         <v-icon color="primary">photo_library</v-icon>
@@ -379,7 +380,8 @@
     </v-dialog>
       </div>
     </v-card>
-  </v-dialog>
+    </v-dialog>
+  </div>
 </template>
 
 <script lang="ts" setup>
