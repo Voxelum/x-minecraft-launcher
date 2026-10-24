@@ -94,6 +94,16 @@ export default defineComponent({
     const onNavigate = (route: string) => { void router.push(route) }
     windowController.on('navigate', onNavigate)
     onUnmounted(() => windowController.removeListener('navigate', onNavigate))
+    const onInstanceSelect = (path: string) => {
+      if (path) {
+        instances.selectedInstance.value = path
+        if (router.currentRoute.value.path !== '/') {
+          void router.push('/')
+        }
+      }
+    }
+    windowController.on('instance-select', onInstanceSelect)
+    onUnmounted(() => windowController.removeListener('instance-select', onInstanceSelect))
     watch([instances.ready, instances.allInstances], ([ready, current], [wasReady, previous]) => {
       if (ready && current.length === 0 && (!wasReady || previous.length > 0) && router.currentRoute.value.path !== '/me') {
         router.replace('/me')
@@ -155,6 +165,22 @@ export default defineComponent({
       settings,
       instanceMods.mods,
     )
+
+    const onInstanceLaunch = async (path: string) => {
+      if (path) {
+        instances.selectedInstance.value = path
+        if (router.currentRoute.value.path !== '/') {
+          void router.push('/')
+        }
+        await nextTick()
+        await nextTick()
+        instanceLaunch.launch().catch((e) => {
+          console.error('Failed to launch instance from tray:', e)
+        })
+      }
+    }
+    windowController.on('instance-launch', onInstanceLaunch)
+    onUnmounted(() => windowController.removeListener('instance-launch', onInstanceLaunch))
 
     const modrinthAPI = useModrinthAuthenticatedAPI()
     provide(kModrinthAuthenticatedAPI, modrinthAPI)
