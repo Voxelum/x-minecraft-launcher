@@ -767,23 +767,45 @@ modified:
   save: Зберегти
   unsaved: Ваші зміни не збережено!
 modpack:
-  author: Ім'я автора
-  authorHint: Може використовуватися для підпису експортованого модпаку (Curseforge)
-  description: Опис
-  descriptionHint: Загальний опис вашого модпаку. Може використовуватися для експорту як модпак Curseforge.
+  author: Автор збірки
+  authorHint: Ім'я автора або назва команди розробників
+  description: Опис модпаку
+  descriptionHint: Короткий опис або анотація вашого модпаку
   dropHint: Перетягніть сюди zip-файл модпаку для імпорту
-  emitCurseforge: Експортувати модпак Curseforge
-  emitModrinth: Експортувати модпак Modrinth
-  emitModrinthStrict: Суворий формат Modrinth
-  emitModrinthStrictDescription: Дозволені лише URL-адреси з 4 доменів, перелічених у документації Modrinth
+  emitCurseforge: Експортувати CurseForge (.zip)
+  emitCurseforgeDescription: Стандартний архів збірки для CurseForge
+  emitModrinth: Експортувати Modrinth (.mrpack)
+  emitModrinthDescription: Офіційний швидкий та легкий формат Modrinth
+  emitModrinthStrict: Сувора політика доменів Modrinth
+  emitModrinthStrictDescription: Дозволяти завантаження лише з перевірених джерел (Modrinth, GitHub, GitLab)
+  emitPackwiz: Експортувати Packwiz (.zip)
+  emitPackwizDescription: Зручний формат для Git (pack.toml, index.toml та посилання на моди)
   export: Експортувати як модпак
-  exportDirectory: Експортний каталог
-  exportDirectoryDescription: Modpack буде експортований на завантаження папки за замовчуванням
+  exportSuccess: Модпак успішно експортовано!
+  exportSuccessWithWarnings: Модпак експортовано з попередженнями
+  exportSkippedFiles: "{count} недоступних або заблокованих файлів було пропущено"
+  exportFailed: Не вдалося експортувати модпак
+  skippedFilesDialogTitle: Деякі файли не вдалося експортувати
+  skippedFilesDialogDescription: Модпак створено, але {count} файлів було пропущено
+  skippedReasonEperm: Доступ заборонено (заблоковано системою або іншим процесом)
+  skippedReasonEbusy: Файл зайнятий іншою програмою
+  skippedReasonEnoent: Файл не знайдено або пошкоджено
+  skippedFilesNotice: Решта файлів успішно збережена до вашого модпаку. Зазначені файли не вдалося додати через системні обмеження Windows або відсутність прав доступу.
+  openExportFolder: Відкрити папку з модпаком
+  closeDialog: Зрозуміло
+  exportDirectory: Каталог для збереження
+  exportDirectoryDescription: Папка, в яку буде збережено готовий файл збірки
   includeAssets: Включити ресурси
   includes: Файли для включення
+  expandAll: Розгорнути всі папки
+  collapseAll: Згорнути всі папки
   modpackVersion: Версія модпаку
+  modpackVersionHint: Версія збірки (наприклад, 1.0.0). Кнопки + збільшують патч або мінорну версію
   name: Модпак | Модпаки
   overrides: Перевизначення
+  selectDefaultFiles: Обрати файли за замовчуванням
+  selectAllFiles: Обрати всі файли
+  deselectAllFiles: Зняти вибір з усіх файлів
   url: URL
   urlHint: URL-адреса домашньої сторінки вашого модпаку
 modpackImportConfirm:
