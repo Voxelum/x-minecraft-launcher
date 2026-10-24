@@ -1555,12 +1555,99 @@ save:
   world: World
   empty: No worlds found
 screenshots:
-  empty: You don't have any screenshots
+  title: Screenshots & Photos
   gallery: Screenshot Gallery
+  manage: Screenshot Manager
+  empty: You don't have any screenshots
+  emptyTitle: No screenshots yet
+  emptyDescription: Press F2 in game to capture screenshots, or import your photos manually.
   hint: Take screenshots in game by pressing F2
+  dropHint: Drop photos or screenshots here to add to gallery
   openFolder: Open Screenshots Folder
   playRandom: Shuffle
   playSequence: Play in order
+  backToHome: Back to Home
+  import: Add Photos
+  images: Images
+  importSuccess: Successfully imported {count} photos
+  copy: Copy Image
+  copied: Copied to clipboard!
+  setWallpaper: Set as Background
+  setWallpaperSuccess: Set as instance background image!
+  setIcon: Set as Icon
+  setIconSuccess: Set as instance icon!
+  export: Save File
+  exportSuccess: Screenshot saved successfully!
+  exportSelected: Export Selected
+  exportSelectedTitle: Select Export Folder
+  exportSelectedSuccess: Successfully exported {count} screenshots
+  deleteConfirmTitle: Delete screenshots?
+  deleteConfirmMessage: Are you sure you want to delete {count} screenshots? This cannot be undone.
+  deleteSuccess: Screenshots deleted successfully
+  selectedCount: "Selected: {count}"
+  selectAll: Select all
+  clearSelection: Deselect all
+  countLabel: "{count} screenshots"
+  searchPlaceholder: Search by name or date...
+  noSearchResults: No matching screenshots
+  noSearchResultsHint: Try adjusting your search query
+  sort: Sort
+  sortDateDesc: Newest first
+  sortDateAsc: Oldest first
+  sortSizeDesc: Largest first
+  sortSizeAsc: Smallest first
+  sortNameAsc: Name (A-Z)
+  sortNameDesc: Name (Z-A)
+  viewGrid: Large grid
+  viewGridCompact: Compact grid
+  viewList: List view
+  edit: Edit
+  editorTitle: Edit Screenshot
+  saveCopy: Save Copy
+  saveOverwrite: Overwrite
+  saveSuccess: Screenshot saved!
+  saveCopySuccess: Saved as new screenshot!
+  toolSelect: Select / Pan
+  toolMove: Move & Transform (Ctrl+T / V)
+  toolPan: Pan (Space+Drag)
+  layers: Layers
+  layerAdd: Add Layer
+  layerDuplicate: Duplicate Layer
+  layerDelete: Delete Layer
+  layerOpacity: Opacity
+  transformLayer: Free Transform
+  applyTransform: Apply Transform (Enter)
+  cancelTransform: Cancel (Esc)
+  layerBackground: Background
+  layerPaint: Drawing
+  layerText: Text
+  layerBlur: Blur
+  toolPen: Pen
+  toolArrow: Arrow
+  toolRect: Rectangle
+  toolCircle: Circle
+  toolLine: Line
+  toolText: Text
+  toolHighlighter: Highlighter
+  toolBlur: Pixelate / Blur
+  toolCrop: Crop
+  applyCrop: Apply Crop
+  cancelCrop: Cancel Crop
+  strokeWidth: Stroke width
+  fontSize: Font size
+  color: Color
+  undo: Undo
+  redo: Redo
+  clear: Clear all
+  textPlaceholder: Click to type text...
+  fontFamily: Font
+  fontBold: Bold
+  fontItalic: Italic
+  textApply: Place Text
+  textBg: Background
+  zoomIn: Zoom in
+  zoomOut: Zoom out
+  resetZoom: Reset zoom
 search:
   favorate: Collection
   local: Installed
@@ -2016,6 +2103,7 @@ shaderPack:
   showFile: Show this shader pack in folder
   'off': 'Off'
 shared:
+  openFolder: Open Folder
   pressKeyCombination: Press key combination...
   add: Add
   author: Author
