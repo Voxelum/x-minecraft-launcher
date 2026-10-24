@@ -4,10 +4,14 @@ import { download, getDownloadBaseOptions } from '@xmcl/file-transfer'
 import { onDownloadSingle } from '@xmcl/installer'
 import { app, session, windowsExecutable } from 'deskgap'
 import { join } from 'node:path'
-import { DeskGapUpdater, LocalDevelopmentUpdater } from './updater'
+import { DeskGapUpdater, LocalDevelopmentUpdater, ManualDeskGapUpdater } from './updater'
+import { getDeskGapUpdateCapability } from './updateCapability'
 
 export function createDeskGapUpdater(launcher: LauncherApp) {
   if (process.env.NODE_ENV !== 'production') return new LocalDevelopmentUpdater(launcher.version)
+  if (getDeskGapUpdateCapability(process.platform, process.arch) === 'manual') {
+    return new ManualDeskGapUpdater(launcher.version, process.platform, process.arch)
+  }
   const network = session.fromName('xmcl-network')
   return new DeskGapUpdater({
     version: launcher.version,

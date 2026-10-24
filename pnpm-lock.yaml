@@ -531,7 +531,7 @@ importers:
         version: link:../system
       smol-toml:
         specifier: ^1.7.0
-        version: 1.7.1
+        version: 1.9.0
     devDependencies:
       '@types/node':
         specifier: ^24.13.3
@@ -3724,6 +3724,9 @@ packages:
   '@vue/shared@3.5.44':
     resolution: {integrity: sha512-H82XLH0DjmSOdbEwO15x3QTo1f5PWEtv237eLpYKc0mqLu+B8hnq16lFWmuBmNurkeiG3wr+oM1FhOll/YVFRg==}
 
+  '@vue/shared@3.5.44':
+    resolution: {integrity: sha512-H82XLH0DjmSOdbEwO15x3QTo1f5PWEtv237eLpYKc0mqLu+B8hnq16lFWmuBmNurkeiG3wr+oM1FhOll/YVFRg==}
+
   '@vuetify/loader-shared@2.1.2':
     resolution: {integrity: sha512-X+1jBLmXHkpQEnC0vyOb4rtX2QSkBiFhaFXz8yhQqN2A4vQ6k2nChxN4Ol7VAY5KoqMdFoRMnmNdp/1qYXDQig==}
     peerDependencies:
@@ -5930,8 +5933,8 @@ packages:
   skinview3d@3.0.1:
     resolution: {integrity: sha512-2LUSkzGxlZrTQelGT10jcW4TLiFTg5aZqXMEuqAFoWtk3qtaNu0qRFtwK5dN8zEXyKUJ3xlxah5eGtKY/NifQg==}
 
-  smol-toml@1.7.1:
-    resolution: {integrity: sha512-PPlsspAZ4jbMBu5DMFhfUGDQLu/vrL4SyBROVS37x8ynnVmFIs1VPBz1Co8Xks3TvpIaZXmU85y4DrQ+UyVFoQ==}
+  smol-toml@1.9.0:
+    resolution: {integrity: sha512-hpd+HLON7HdZXqYchMM/+LaTTbdK0AU3NngIJ4KVyWbY9bfQqdL9cD+4yf6dUoU2Ap4VsU0JkQi6FxAI1B2mXQ==}
     engines: {node: '>= 18'}
 
   source-map-js@1.2.1:
@@ -8621,7 +8624,7 @@ snapshots:
     dependencies:
       '@volar/language-core': 2.4.28
       '@vue/compiler-dom': 3.5.33
-      '@vue/shared': 3.5.41
+      '@vue/shared': 3.5.42
       alien-signals: 3.1.2
       muggle-string: 0.4.1
       path-browserify: 1.0.1
@@ -8668,6 +8671,8 @@ snapshots:
   '@vue/shared@3.5.33': {}
 
   '@vue/shared@3.5.41': {}
+
+  '@vue/shared@3.5.44': {}
 
   '@vue/shared@3.5.44': {}
 
@@ -11043,7 +11048,7 @@ snapshots:
       skinview-utils: 0.7.1
       three: 0.156.1
 
-  smol-toml@1.7.1: {}
+  smol-toml@1.9.0: {}
 
   source-map-js@1.2.1: {}
 

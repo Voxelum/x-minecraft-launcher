@@ -1,4 +1,4 @@
-import type { ReleaseInfo } from '@xmcl/runtime-api'
+import type { ReleaseInfo, UpdateCapability } from '@xmcl/runtime-api'
 import type { DownloadUpdateOptions, LauncherAppUpdater } from '@xmcl/runtime/app'
 import { checksum } from '@xmcl/runtime/util/fs'
 import type { windowsExecutable } from 'deskgap'
@@ -143,5 +143,32 @@ export class LocalDevelopmentUpdater implements LauncherAppUpdater {
 
   async installUpdateAndQuit(): Promise<void> {
     throw new Error('Launcher updates are disabled in the local DeskGap development host.')
+  }
+}
+
+/** Explicit unsupported capability; never manufacture release metadata. */
+export class UnsupportedUpdateError extends Error {
+  constructor(version: string, platform: string, arch: string) {
+    super(`Automatic updates are not implemented for this DeskGap host (${platform}/${arch}). Current version: ${version}. No release check was performed. Check the official website or GitHub Releases for a compatible package and install it manually.`)
+    this.name = 'UnsupportedUpdateError'
+  }
+}
+
+/** Future macOS Sparkle support belongs in a separate native adapter. */
+export class ManualDeskGapUpdater implements LauncherAppUpdater {
+  readonly capability: UpdateCapability = Object.freeze({ automatic: false, reason: 'not-implemented' })
+
+  constructor(private readonly version: string, private readonly platform: string, private readonly arch: string) {}
+
+  async checkUpdateTask(): Promise<ReleaseInfo> {
+    throw new UnsupportedUpdateError(this.version, this.platform, this.arch)
+  }
+
+  async downloadUpdate(): Promise<void> {
+    throw new UnsupportedUpdateError(this.version, this.platform, this.arch)
+  }
+
+  async installUpdateAndQuit(): Promise<void> {
+    throw new UnsupportedUpdateError(this.version, this.platform, this.arch)
   }
 }

@@ -1,7 +1,7 @@
 import { type InvalidDirectoryErrorCode } from '../services/BaseService'
 import { DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '../services/AgentService'
 import { type SettingSchema } from './setting.schema'
-import { type ReleaseInfo } from './update'
+import { type ReleaseInfo, type UpdateCapability } from './update'
 
 /**
  * The basic setting of the launcher.
@@ -52,6 +52,8 @@ export class Settings implements SettingSchema {
     name: string
   }[] = []
 
+  /** Runtime-only capability: deliberately excluded from SettingSchema persistence. */
+  updateCapability: UpdateCapability | undefined = undefined
   updateInfo: ReleaseInfo | null = null
   updateStatus: 'ready' | 'none' | 'pending' = 'none'
   allowPrerelease = false
@@ -180,6 +182,10 @@ export class Settings implements SettingSchema {
 
   autoInstallOnAppQuitSet(autoInstallOnAppQuit: boolean) {
     if (typeof autoInstallOnAppQuit === 'boolean') this.autoInstallOnAppQuit = autoInstallOnAppQuit
+  }
+
+  updateCapabilitySet(capability: UpdateCapability | undefined) {
+    this.updateCapability = capability
   }
 
   updateStatusSet(updateStatus: 'ready' | 'none' | 'pending') {

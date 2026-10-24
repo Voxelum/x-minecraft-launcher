@@ -705,6 +705,11 @@ launchStatus:
   refreshingUser: Refreshing User Token
   spawningProcess: Spawning Process
 launcherUpdate:
+  automaticUnavailable: Automatic updates unavailable
+  automaticNotImplemented: Automatic updating is not implemented for this launcher host.
+  automaticNotConfigured: Automatic updating is not configured for this launcher host.
+  manualCheckHint: No release check has been performed. Check GitHub Releases for a compatible package and install it manually.
+  manualCheckRequired: This host cannot check or install updates automatically. Use the GitHub Releases button to check manually.
   alreadyLatest: Up To Date
   installAndQuit: Restart to Install
   noUpdateAvailable: No Update Available

@@ -10,7 +10,11 @@ import type {
 import { LaunchServiceKey } from '@xmcl/runtime-api'
 import type { Monitor } from '@xmcl/runtime-api/monitor'
 import { TransportFrameDecoder } from './framing'
+import { installIdleCallbackShim } from './idleCallback'
 import { createRendererTelemetry, createServiceCalls } from './serviceBridge'
+
+// This blocking bridge script runs before the shared renderer entry point.
+installIdleCallbackShim(window)
 
 const nativeFileHandlePrefix = 'deskgap-file-handle:'
 const pendingMigrationKey = 'xmcl-deskgap-pending-migration'
