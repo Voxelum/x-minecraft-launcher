@@ -3,6 +3,9 @@ import { effectScope, nextTick, ref } from 'vue'
 import { useModGroups } from './modGroup'
 
 // These tests exercise collapse persistence, not the mounted legacy-group migration.
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({ t: (key: string) => key, locale: ref('en') }),
+}))
 vi.mock('vue', async (importOriginal) => ({
   ...await importOriginal<typeof import('vue')>(),
   onMounted: vi.fn(),

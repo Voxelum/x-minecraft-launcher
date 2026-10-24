@@ -804,6 +804,23 @@ mod:
   collapseAllGroups: 折叠所有分组
   acceptVersion: 推荐 {version}
   applyGroupRules: 应用已保存的分组规则
+  autoCategorize: 自动整理到文件夹
+  autoCategorizeHint: 自动根据分类（优化、库、世界生成、玩法等）将模组整理到文件夹中
+  autoCategorizeSuccess: 成功整理到 {count} 个文件夹
+  ungroupAll: 解散所有文件夹
+  organization: 文件夹整理
+  collapseAll: 折叠所有文件夹
+  expandAll: 展开所有文件夹
+  folderSetting: 文件夹设置
+  folderColor: 文件夹颜色
+  folderIcon: 文件夹图标
+  pinGroup: 置顶文件夹
+  pinToTop: 置顶显示
+  pinToTopHint: 文件夹将始终显示在列表顶部
+  pinned: 已置顶
+  unpinGroup: 取消置顶
+  customColor: 自定义颜色
+  preview: 预览
   compatible: 可用于当前版本。
   createGroup: 创建分组
   currentVersion: 当前是 {current}
@@ -854,6 +871,14 @@ mod:
   syncGroupRules: 将分组规则保存
   toUpdate: '{count} 个有新版本'
   ungroup: 取消分组
+modCategory:
+  optimization: 优化与性能
+  libraries: 库与 API
+  utilities: 界面与实用工具
+  world: 世界与生物群系
+  visual: 视觉与音效
+  gameplay: 玩法与内容
+  miscellaneous: 杂项
 modFilter:
   clear: 清除过滤器
   dependenciesInstallOnly: 仅显示遗漏的依赖项mods
@@ -1977,6 +2002,10 @@ shaderPack:
   showFile: 在文件夹中显示此光影包
   'off': 'Off'
 shared:
+  reset: 重置
+  missing: 缺失
+  healthy: 正常
+  unused: 未使用
   close: 关闭
   pressKeyCombination: 按下组合键...
   add: 添加
@@ -2014,6 +2043,7 @@ shared:
   upgrade: 更新
   'yes': 是
   delete: 删除
+  view: 查看
 sidebar:
   pin: 固定
   unpin: 取消固定

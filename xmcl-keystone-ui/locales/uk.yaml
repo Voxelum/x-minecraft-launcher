@@ -680,6 +680,23 @@ mod:
   collapseAllGroups: Згорнути всі групи
   acceptVersion: Прийняти {version}
   applyGroupRules: Застосувати збережені правила групування
+  autoCategorize: Авто-сортування по папках
+  autoCategorizeHint: Автоматично групувати моди за папками категорій (Оптимізація, Бібліотеки, Світ, Геймплей тощо)
+  autoCategorizeSuccess: Моди успішно відсортовано у {count} папок
+  ungroupAll: Розгрупувати все
+  organization: Організація папок
+  collapseAll: Згорнути всі папки
+  expandAll: Розкрити всі папки
+  folderSetting: Налаштування папки
+  folderColor: Колір папки
+  folderIcon: Іконка папки
+  pinGroup: Закріпити нагорі
+  pinToTop: Закріпити нагорі
+  pinToTopHint: Папка відображатиметься першою у списку
+  pinned: Закріплено
+  unpinGroup: Відкріпити папку
+  customColor: Власний колір
+  preview: Попередній перегляд
   compatible: Сумісний мод.
   createGroup: Створити групу
   currentVersion: Поточна {current}
@@ -723,6 +740,14 @@ mod:
   toUpdate: '{count} оновлень'
   ungroup: Розгрупувати
   description: Опис
+modCategory:
+  optimization: Оптимізація та продуктивність
+  libraries: Бібліотеки та API
+  utilities: Інтерфейс та утиліти
+  world: Світ та біоми
+  visual: Візуал та аудіо
+  gameplay: Геймплей та контент
+  miscellaneous: Різне
 modFilter:
   clear: Очистити фільтр
   dependenciesInstallOnly: Показувати лише відсутні залежності модів
@@ -1601,6 +1626,10 @@ shaderPack:
   search: Пошук шейдерпаків...
   'off': Вимкнено
 shared:
+  reset: Скинути
+  missing: відсутні
+  healthy: Все гаразд
+  unused: невикористані
   close: Закрити
   pressKeyCombination: Натисніть комбінацію клавіш...
   add: Додати
@@ -1633,6 +1662,7 @@ shared:
   upgrade: Оновити
   'yes': Так
   delete: Видалити
+  view: Переглянути
 sidebar:
   pin: Закріпити
   unpin: Відкріпити
@@ -2182,3 +2212,37 @@ bigPicture:
   qaHelpDesc: Керування геймпадом та довідка
   qaFeedbackDesc: Повідомити про помилку або пропозицію
   qaExitDesc: Повернутися у стандартний режим
+localCollection:
+  title: Колекції лаунчера
+  newCollection: Нова колекція
+  namePlaceholder: Назва колекції
+  addToCollection: Додати до колекції
+  empty: Немає збережених колекцій
+  corrupted: Не вдалося прочитати колекції, їх скинуто. Резервну копію збережено поруч.
+  modrinthSection: Профіль Modrinth
+  installAll: Встановити все
+  incompatibleAlert: '1 проект несумісний з поточною версією та пропущений: | {count} проектів несумісні та пропущені:'
+  projects: Немає проектів | {count} проект | {count} проектів
+  saveCurrentMods: Зберегти моди як колекцію
+  saveCurrentModsSuccess: Збережено {count} модів у колекцію "{name}"
+  viewMods: Переглянути моди
+  editCollection: Редагувати колекцію
+  collectionDescription: Опис колекції
+  noModsInCollection: У цій колекції ще немає модів
+  exportCollection: Експортувати колекцію
+  importCollection: Імпортувати колекцію
+  removeEntryConfirm: Видалити з колекції
+  addMods: Додати моди
+  addModsTo: Додати моди до "{name}"
+  addModsHint: Додайте встановлені моди з поточної збірки або натисніть значок закладки в каталозі.
+  addModsDialogDesc: Оберіть моди з поточного екземпляра для додавання до цієї колекції.
+  addAllCurrent: Додати всі поточні
+  addedModsSuccess: Додано {count} модів до колекції
+  searchMods: Пошук модів...
+  selectAll: Обрати всі
+  deselectAll: Зняти вибір
+  selected: обрано
+  alreadyInCollection: Вже додано
+  noMatchingMods: Не знайдено модів за запитом
+  addSelectedMods: Додати {count} модів
+

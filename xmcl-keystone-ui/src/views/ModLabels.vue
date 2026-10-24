@@ -6,13 +6,12 @@
   >
     <v-chip
       v-if="modid"
-      size="small"
-      class="mod-tag"
-      :variant="isDark ? 'outlined' : undefined"
-      color="orange-lighten-1"
+      size="x-small"
+      class="mod-tag font-mono text-[11px]"
+      variant="tonal"
+      color="secondary"
       :disabled="disabled"
-      label
-      style="margin-left: 1px;"
+      rounded="md"
       @mousedown.stop
     >
       {{ modid }}
@@ -21,47 +20,67 @@
       v-for="(com, i) in sortedCompatibility"
       :key="com.modId + ' ' + i"
       v-shared-tooltip="getTooltip(com)"
-      class="mod-tag cursor-pointer"
+      class="mod-tag cursor-pointer font-medium text-[11px]"
       :disabled="disabled"
-      size="small"
-      label
-      variant="outlined"
+      size="x-small"
+      rounded="md"
+      variant="tonal"
+      :color="com.compatible === false ? 'error' : undefined"
       @click.stop="emit('click-dependency', com.modId)"
       @mousedown.stop
     >
       <template #prepend v-if="com.compatible === true">
-        <v-avatar start>
+        <v-avatar start size="14">
           <v-img
             v-if="getDepIcon(com.modId, icons[com.modId])"
             :src="getDepIcon(com.modId, icons[com.modId])"
           />
-          <v-icon v-else>
+          <v-icon v-else size="12">
             xmcl:package
           </v-icon>
         </v-avatar>
       </template>
-      <span class="color-orange mr-1" v-if="com.optional">
+      <span class="text-secondary mr-1 text-[10px]" v-if="com.optional">
         {{ t('optional') }}
       </span>
-      {{ com.modId }}
-      <!-- {{ com.requirements || '⭕' }} -->
+      <span>{{ com.modId }}</span>
       <template #append>
-        <v-avatar end>
-          {{ getCompatibleIcon(com) }}
-        </v-avatar>
+        <v-icon
+          v-if="com.compatible === true"
+          size="13"
+          color="success"
+          class="ml-0.5 opacity-80"
+        >
+          check
+        </v-icon>
+        <v-icon
+          v-else-if="com.compatible === false"
+          size="13"
+          color="error"
+          class="ml-0.5"
+        >
+          close
+        </v-icon>
+        <v-icon
+          v-else
+          size="13"
+          color="warning"
+          class="ml-0.5"
+        >
+          help_outline
+        </v-icon>
       </template>
     </v-chip>
 
     <v-chip
       v-for="(tag, index) in tags"
       :key="`${tag}-${index}`"
-      :variant="isDark ? 'outlined' : undefined"
-      class="mod-tag"
-      size="small"
-      label
+      variant="tonal"
+      class="mod-tag font-medium"
+      size="x-small"
+      rounded="md"
       :disabled="disabled"
       :color="getColor(tag)"
-      style="margin-left: 1px;"
       closable
       @click.stop
       @mousedown.stop
@@ -79,7 +98,6 @@
 </template>
 
 <script lang=ts setup>
-import { getCompatibleIcon } from '@/composables/compatibleIcon'
 import { useModCompatibleTooltip } from '@/composables/modCompatibleTooltip'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
