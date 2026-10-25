@@ -642,18 +642,39 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
   });
 
   function autoCategorizeMods(): number {
-    const result: Record<string, ModGroupData> = {};
-    let count = 0;
+    const processedFiles = new Set(
+      items.value
+        .map(i => i.installed?.[0]?.fileName)
+        .filter((f): f is string => typeof f === 'string' && f.length > 0)
+        .map(normalizeModFileName)
+    );
 
+    // Preserve existing group assignments and metadata for files outside the processed subset
+    const result: Record<string, ModGroupData> = {};
+    for (const [groupName, groupData] of Object.entries(instanceModGroupping.value)) {
+      const remainingFiles = (groupData.files || []).filter(f => !processedFiles.has(f));
+      if (remainingFiles.length > 0 || groupData.pinned) {
+        result[groupName] = {
+          ...groupData,
+          files: remainingFiles,
+        };
+      }
+    }
+
+    let count = 0;
     for (const i of items.value) {
       const fileName = i.installed?.[0]?.fileName;
       if (!fileName) continue;
-      const cat = detectModCategory(i as any, t, locale.value);
-      const groupName = cat.name;
+      const cat = detectModCategory(i as any, t, locale?.value || 'en');
+      // Use stable rawKey identity rather than localized name so translations don't get hardcoded
+      const groupName = cat.rawKey || cat.name;
       if (!result[groupName]) {
         result[groupName] = { files: [], color: cat.color, icon: cat.icon };
       }
-      result[groupName].files.push(normalizeModFileName(fileName));
+      const normalized = normalizeModFileName(fileName);
+      if (!result[groupName].files.includes(normalized)) {
+        result[groupName].files.push(normalized);
+      }
       count++;
     }
 

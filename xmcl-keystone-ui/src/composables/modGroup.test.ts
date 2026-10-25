@@ -18,17 +18,20 @@ vi.mock('./syncableState', () => ({ useState: () => ({ state: mocks.state }) }))
 const scopes: ReturnType<typeof effectScope>[] = []
 let storage: Map<string, string>
 
-function setup(path = ref('/instance-a'), contentType: 'mods' | 'resourcepacks' | 'shaderpacks' = 'mods') {
+function setup(path = ref('/instance-a'), contentType: 'mods' | 'resourcepacks' | 'shaderpacks' = 'mods', items = ref([] as any[])) {
   const scope = effectScope()
   scopes.push(scope)
-  return scope.run(() => useModGroups(ref(true), path, ref([]), ref('name'), contentType))!
+  return scope.run(() => useModGroups(ref(true), path, items, ref('name'), contentType))!
 }
 
 beforeEach(() => {
   storage = new Map()
   mocks.state = ref({ groups: { Performance: { files: ['sodium.jar'], color: '' }, Visuals: { files: ['iris.jar'], color: '' } } })
+  mocks.updateModsGroups.mockImplementation((path: string, groups: any) => {
+    if (mocks.state.value) mocks.state.value.groups = groups
+  })
   mocks.updateModsGroups.mockClear()
-  vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
+  vi.stubGlobal('useI18n', () => ({ t: (key: string) => key, locale: ref('en') }))
   vi.stubGlobal('localStorage', {
     getItem: (key: string) => storage.get(key) ?? null,
     setItem: (key: string, value: string) => storage.set(key, value),
@@ -94,5 +97,47 @@ describe('collapse all mod groups', () => {
     path.value = '/instance-a'
     await nextTick()
     expect(groups.groupCollapsedState.value).toEqual({ Performance: true, Visuals: true })
+  })
+})
+
+describe('autoCategorizeMods', () => {
+  it('preserves existing assignments for mods outside the filtered search subset', () => {
+    mocks.state.value.groups = {
+      'modCategory.optimization': { files: ['sodium.jar'], color: '' },
+      CustomFolder: { files: ['unrelated-hidden.jar'], color: '#123456' },
+    }
+    const filteredItems = ref([
+      {
+        id: 'lithium',
+        title: 'Lithium',
+        installed: [{ fileName: 'lithium.jar' }],
+      },
+    ])
+    const groups = setup(ref('/instance-a'), 'mods', filteredItems as any)
+    const count = groups.autoCategorizeMods()
+
+    expect(count).toBe(1)
+    // CustomFolder should still have unrelated-hidden.jar
+    expect(groups.groupsRaw.value.CustomFolder).toEqual({
+      files: ['unrelated-hidden.jar'],
+      color: '#123456',
+    })
+    // modCategory.optimization should still have sodium.jar and now also lithium.jar
+    expect(groups.groupsRaw.value['modCategory.optimization'].files).toContain('sodium.jar')
+    expect(groups.groupsRaw.value['modCategory.optimization'].files).toContain('lithium.jar')
+  })
+
+  it('does not wipe out groups when filtered items list is empty', () => {
+    mocks.state.value.groups = {
+      'modCategory.optimization': { files: ['sodium.jar'], color: '' },
+      PinnedGroup: { files: [], pinned: true, color: '' },
+    }
+    const emptyItems = ref([] as any[])
+    const groups = setup(ref('/instance-a'), 'mods', emptyItems)
+    const count = groups.autoCategorizeMods()
+
+    expect(count).toBe(0)
+    expect(groups.groupsRaw.value['modCategory.optimization'].files).toEqual(['sodium.jar'])
+    expect(groups.groupsRaw.value.PinnedGroup.pinned).toBe(true)
   })
 })

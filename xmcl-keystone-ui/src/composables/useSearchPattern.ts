@@ -1,5 +1,5 @@
 import { get, useDebounceFn } from '@vueuse/core'
-import type { MaybeRef } from 'vue'
+import { type MaybeRef, computed, ref } from 'vue'
 
 export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal) => Promise<{
   data: T[]
@@ -67,8 +67,11 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
     if (!result.value) return
     if (!hasMore.value) return
     if (loading.value) return
-    page.value += 1
-    await executeSearch(page.value * get(pageSize), true)
+    const nextPage = page.value + 1
+    await executeSearch(nextPage * get(pageSize), true)
+    if (!error.value) {
+      page.value = nextPage
+    }
   }
 
   const onSearch = async () => {
@@ -79,7 +82,7 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
   }
 
   const hasMore = computed(() => {
-    return !!result.value && result.value.data.length < result.value.total
+    return !!result.value && result.value.total > (result.value.offset + result.value.limit)
   })
 
   return {

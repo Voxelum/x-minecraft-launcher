@@ -632,31 +632,44 @@ async function onFileSelected(e: Event) {
   try {
     const text = await file.text()
     const parsed = JSON.parse(text)
-    if (parsed && typeof parsed.name === 'string') {
-      const created = await createCollection({
-        name: parsed.name,
-        description: parsed.description,
-      })
-      for (const type of ['mods', 'resourcepacks', 'shaderpacks'] as const) {
-        if (Array.isArray(parsed[type])) {
-          for (const entry of parsed[type]) {
-            if (entry.provider && entry.projectId) {
-              await addEntry({
-                collectionId: created.id,
-                contentType: type,
-                entry,
-              })
-            }
+    if (!parsed || typeof parsed.name !== 'string' || !parsed.name.trim() || (parsed.description !== undefined && typeof parsed.description !== 'string')) {
+      throw new Error('Invalid collection metadata')
+    }
+    for (const contentType of ['mods', 'resourcepacks', 'shaderpacks'] as const) {
+      const entries = parsed[contentType]
+      if (entries !== undefined && (!Array.isArray(entries) || entries.some((entry: any) =>
+        !entry || (entry.provider !== 'modrinth' && entry.provider !== 'curseforge') ||
+        typeof entry.projectId !== 'string' || entry.projectId.length === 0
+      ))) {
+        throw new Error('Invalid collection entries')
+      }
+    }
+    const created = await createCollection({
+      name: parsed.name.trim(),
+      description: typeof parsed.description === 'string' ? parsed.description : undefined,
+    })
+    for (const type of ['mods', 'resourcepacks', 'shaderpacks'] as const) {
+      if (Array.isArray(parsed[type])) {
+        for (const entry of parsed[type]) {
+          if (entry.provider && entry.projectId) {
+            await addEntry({
+              collectionId: created.id,
+              contentType: type,
+              entry: {
+                provider: entry.provider,
+                projectId: String(entry.projectId),
+              },
+            })
           }
         }
       }
-      emit('update:select', toLocalSelectionId(created.id))
-      notify({
-        level: 'info',
-        title: t('localCollection.importCollection'),
-        body: `Imported "${parsed.name}"`,
-      })
     }
+    emit('update:select', toLocalSelectionId(created.id))
+    notify({
+      level: 'info',
+      title: t('localCollection.importCollection'),
+      body: `Imported "${parsed.name}"`,
+    })
   } catch (err: any) {
     notify({
       level: 'error',

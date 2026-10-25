@@ -101,6 +101,7 @@ const { t } = useI18n()
     width="480"
   >
     <v-card
+      theme="dark"
       class="flex flex-col rounded-2xl border border-white/10 bg-[#141416]/95 backdrop-blur-xl shadow-2xl overflow-hidden"
       elevation="0"
     >
@@ -118,6 +119,8 @@ const { t } = useI18n()
           icon
           size="small"
           variant="text"
+          :aria-label="t('shared.close')"
+          :title="t('shared.close')"
           class="text-medium-emphasis hover:text-white"
           @click="isShown = false"
         >
@@ -225,21 +228,27 @@ const { t } = useI18n()
             <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis mb-2">
               {{ t('mod.folderIcon') }}
             </div>
-            <div class="grid grid-cols-7 gap-2">
-              <div
+            <div class="grid grid-cols-7 gap-2" role="radiogroup" :aria-label="t('mod.folderIcon')">
+              <button
                 v-for="item in presetIcons"
                 :key="item.icon"
+                type="button"
                 v-shared-tooltip="item.label"
-                class="h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all border"
+                role="radio"
+                :aria-checked="icon === item.icon"
+                :aria-label="item.label"
+                class="h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                 :class="icon === item.icon
                   ? 'bg-primary/20 border-primary shadow-sm shadow-primary/20 scale-105'
                   : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.08] hover:border-white/20'"
                 @click="icon = item.icon"
+                @keydown.space.prevent="icon = item.icon"
+                @keydown.enter.prevent="icon = item.icon"
               >
                 <v-icon size="20" :color="icon === item.icon ? 'primary' : 'medium-emphasis'">
                   {{ item.icon || 'folder' }}
                 </v-icon>
-              </div>
+              </button>
             </div>
           </div>
         </template>
@@ -272,12 +281,16 @@ const { t } = useI18n()
               </div>
             </div>
             <!-- Preset Color Circles -->
-            <div class="flex flex-wrap gap-2.5 items-center">
-              <div
+            <div class="flex flex-wrap gap-2.5 items-center" role="radiogroup" :aria-label="t('mod.folderColor')">
+              <button
                 v-for="swatch in presetColors"
                 :key="swatch.value"
+                type="button"
                 v-shared-tooltip="swatch.label"
-                class="w-7 h-7 rounded-full cursor-pointer flex items-center justify-center transition-all hover:scale-110 border"
+                role="radio"
+                :aria-checked="color === swatch.value || (!color && !swatch.value)"
+                :aria-label="swatch.label"
+                class="w-7 h-7 rounded-full cursor-pointer flex items-center justify-center transition-all hover:scale-110 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                 :style="{
                   background: swatch.value || 'rgba(255,255,255,0.08)',
                   borderColor: color === swatch.value ? '#ffffff' : 'rgba(255,255,255,0.15)',
@@ -285,6 +298,8 @@ const { t } = useI18n()
                   transform: color === swatch.value ? 'scale(1.15)' : undefined,
                 }"
                 @click="color = swatch.value"
+                @keydown.space.prevent="color = swatch.value"
+                @keydown.enter.prevent="color = swatch.value"
               >
                 <v-icon
                   v-if="color === swatch.value || (!color && !swatch.value)"
@@ -293,7 +308,7 @@ const { t } = useI18n()
                 >
                   check
                 </v-icon>
-              </div>
+              </button>
             </div>
             <!-- Expandable custom color picker -->
             <v-expand-transition>

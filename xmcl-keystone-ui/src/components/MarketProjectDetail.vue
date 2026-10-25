@@ -330,7 +330,11 @@
                     <div
                       v-for="dep of dependencies"
                       :key="dep.id + dep.parent"
-                      class="flex items-center justify-between p-2.5 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.07] transition-all cursor-pointer group"
+                      class="flex items-center justify-between p-2.5 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.07] transition-all cursor-pointer group focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                      role="link"
+                      tabindex="0"
+                      @keydown.enter.self.prevent="emit('open-dependency', dep)"
+                      @keydown.space.self.prevent="emit('open-dependency', dep)"
                       @click="emit('open-dependency', dep)"
                     >
                       <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -414,7 +418,11 @@
                   <div
                     v-for="dependent of dependents"
                     :key="dependent.id"
-                    class="flex items-center justify-between p-2.5 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.07] transition-all cursor-pointer group"
+                    class="flex items-center justify-between p-2.5 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.07] transition-all cursor-pointer group focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                    role="link"
+                    tabindex="0"
+                    @keydown.enter.self.prevent="emit('open-dependent', dependent)"
+                    @keydown.space.self.prevent="emit('open-dependent', dependent)"
                     @click="emit('open-dependent', dependent)"
                   >
                     <div class="flex items-center gap-3 min-w-0 flex-1">
