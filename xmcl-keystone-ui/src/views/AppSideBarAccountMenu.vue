@@ -24,10 +24,11 @@
         </div>
         <v-btn
           icon="close"
+          :aria-label="t('shared.close')"
+          :title="t('shared.close')"
           variant="text"
           size="x-small"
           class="opacity-60 hover:opacity-100"
-          :aria-label="t('shared.close')"
           @click="shown = false"
         />
       </div>

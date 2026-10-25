@@ -11,7 +11,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | Test ID | Defined in |
 |---|---|
 | `account-item` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77)<br>[`xmcl-keystone-ui/src/views/AppSideBarAccountMenu.vue#L46`](../xmcl-keystone-ui/src/views/AppSideBarAccountMenu.vue#L46) |
-| `accounts-add` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105)<br>[`xmcl-keystone-ui/src/views/AppSideBarAccountMenu.vue#L91`](../xmcl-keystone-ui/src/views/AppSideBarAccountMenu.vue#L91) |
+| `accounts-add` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105)<br>[`xmcl-keystone-ui/src/views/AppSideBarAccountMenu.vue#L89`](../xmcl-keystone-ui/src/views/AppSideBarAccountMenu.vue#L89) |
 | `accounts-delete` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53) |
 | `add-instance-advanced` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L10`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L10) |
 | `add-instance-cancel` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L4`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L4) |
@@ -242,7 +242,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `server-target-selector` | [`xmcl-keystone-ui/src/views/BaseSetting.vue#L346`](../xmcl-keystone-ui/src/views/BaseSetting.vue#L346)<br>[`xmcl-keystone-ui/src/views/BaseSettingServerManage.vue#L5`](../xmcl-keystone-ui/src/views/BaseSettingServerManage.vue#L5) |
 | `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L92`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L92) |
 | `server-worlds` | [`xmcl-keystone-ui/src/views/BaseSettingServerRun.vue#L107`](../xmcl-keystone-ui/src/views/BaseSettingServerRun.vue#L107) |
-| `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L10`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L10) |
+| `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L27`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L27) |
 | `settings-page` | [`xmcl-keystone-ui/src/views/Setting.vue#L3`](../xmcl-keystone-ui/src/views/Setting.vue#L3) |
 | `settings-proxy-host` | [`xmcl-keystone-ui/src/views/SettingNetwork.vue#L37`](../xmcl-keystone-ui/src/views/SettingNetwork.vue#L37) |
 | `setup-account` | [`xmcl-keystone-ui/src/views/SetupAccount.vue#L3`](../xmcl-keystone-ui/src/views/SetupAccount.vue#L3) |
