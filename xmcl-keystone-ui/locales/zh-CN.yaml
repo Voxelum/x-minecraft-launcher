@@ -705,6 +705,11 @@ launchStatus:
   refreshingUser: 刷新用户令牌
   spawningProcess: 正在启动游戏
 launcherUpdate:
+  automaticUnavailable: 自动更新不可用
+  automaticNotImplemented: 此启动器宿主尚未实现自动更新。
+  automaticNotConfigured: 此启动器宿主尚未配置自动更新。
+  manualCheckHint: 尚未检查新版本。请前往 GitHub Releases 查找兼容安装包并手动安装。
+  manualCheckRequired: 此宿主无法自动检查或安装更新。请点击 GitHub Releases 按钮手动检查。
   alreadyLatest: 已是最新
   installAndQuit: 重启并安装更新
   noUpdateAvailable: 目前没有可用更新

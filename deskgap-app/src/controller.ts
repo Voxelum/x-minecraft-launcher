@@ -339,6 +339,8 @@ export class DeskGapController implements LauncherAppController {
   }
 
   updateWindowIcon(manifest: InstalledAppManifest) {
+    // macOS uses the application bundle icon; DeskGap has no per-window setIcon binding.
+    if (process.platform === 'darwin') return
     const window = this.mainWindow
     if (!window || window.isDestroyed()) return
     window.setIcon(this.launcher.getWindowIcon(manifest))
