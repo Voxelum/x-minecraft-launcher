@@ -142,6 +142,26 @@ export class InstallCoordinator {
       .runExclusive(() => this.applyJavaInstall(target, forceZulu))
   }
 
+  /**
+   * Use an already compatible Java, or download the runtime this instance still
+   * needs. A pinned instance Java wins when it resolves.
+   */
+  private async ensureSelectedInstanceJava(
+    resolved: ResolvedVersion,
+    minecraft: string,
+    forge: string | undefined,
+    preferredPath?: string,
+  ) {
+    if (preferredPath) {
+      const preferred = await this.javaService.resolveJava(preferredPath)
+      if (preferred) return preferred.path
+    }
+    // Forge 1.18–1.20.4 needs Java 17 exactly; without `forge`, Java 21/25
+    // looks compatible and java-runtime-gamma is never installed.
+    const selected = getAutoSelectedJava(this.javaService.state.all, minecraft, forge, resolved)
+    return selected.java?.path ?? (await this.ensureJava(selected.javaVersion)).path
+  }
+
   private async applyJavaInstall(target: JavaVersion, forceZulu = false) {
     const manifest = await resolveLauncherJavaInstallManifest(
       this.app,
@@ -605,6 +625,17 @@ export class InstallCoordinator {
         const resolved = await this.versionService.resolveLocalVersion(local.id)
         const issue = await this.diagnoseClientVersion(resolved)
         if (!issue) {
+          // The files are already in place, so this used to return before any
+          // Java download. Forge 1.18–1.20.4 still requires Java 17 exactly;
+          // a newer JDK does not satisfy that, and the Install button then
+          // appears to do nothing (issues #1799 and #1782).
+          const instance = this.instanceService.state.all[request.instancePath]
+          await this.ensureSelectedInstanceJava(
+            resolved,
+            instance?.runtime.minecraft || request.runtime.minecraft || resolved.minecraftVersion,
+            instance?.runtime.forge || request.runtime.forge,
+            instance?.java,
+          )
           return {
             version: local.id,
             timestamp: Date.now(),
@@ -1278,13 +1309,11 @@ export class InstallCoordinator {
         return this.ensureJava(recipe.java.fallback).then((java) => java.path)
       }
       const resolved = await this.versionService.resolveLocalVersion(version)
-      const selected = getAutoSelectedJava(
-        this.javaService.state.all,
-        resolved.minecraftVersion,
-        undefined,
+      return this.ensureSelectedInstanceJava(
         resolved,
+        resolved.minecraftVersion,
+        recipe.runtime.forge,
       )
-      return selected.java?.path ?? this.ensureJava(selected.javaVersion).then((java) => java.path)
     }
     const settle = async <T>(primary: Promise<T>, work: Promise<unknown>[]) => {
       const results = await Promise.allSettled([primary, ...work])
