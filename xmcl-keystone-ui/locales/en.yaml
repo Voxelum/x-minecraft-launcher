@@ -2014,6 +2014,29 @@ shaderPack:
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
+  aiTranslate: AI Translate
+  aiTranslateTitle: AI translate shader language file
+  sourceLanguage: Source language file
+  targetLanguage: Target language
+  translationConfig: Translation settings
+  parallelHint: Splits the file into batches and translates them in parallel independent conversations; best for large files.
+  parallelCount: Parallel jobs
+  batchSize: Entries per batch
+  batchSizeHint: Maximum entries per request. Character limits still apply to protect the model output limit.
+  translatingProgressWithSkipped: 'Translating {done}/{total} entries ({all} total, {skipped} do not need translation)'
+  langEntries: '{count} entries'
+  noLangFiles: No .lang files were found in this shader pack
+  overwriteLang: The target language file {path} already exists. Existing keys with the same name will be overwritten.
+  sameLanguageHint: The source language is already {language}.
+  targetLanguageHint: Defaults to the launcher language; other languages can be selected.
+  startTranslate: Start translation
+  translatingProgress: Translating {done}/{total} entries
+  preparing: Preparing language file…
+  writingBack: Writing back to the shader pack…
+  aiTranslateSuccess: 'Written back to shader pack: {path}'
+  aiNotConfigured: AI Provider is not configured. Set up the AI endpoint in settings first.
+  openAiSettings: Open settings
+  finish: Done
   'off': 'Off'
 shared:
   pressKeyCombination: Press key combination...

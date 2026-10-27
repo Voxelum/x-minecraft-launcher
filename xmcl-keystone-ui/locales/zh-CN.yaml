@@ -1975,6 +1975,29 @@ shaderPack:
   selectSearchHint: 查看已选择的光影包
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此光影包
+  aiTranslate: AI 翻译
+  aiTranslateTitle: AI 翻译光影语言文件
+  sourceLanguage: 源语言文件
+  targetLanguage: 目标语言
+  translationConfig: 翻译配置
+  parallelHint: 自动拆成多批并同时向多个独立会话发起翻译，适合大型语言文件。
+  parallelCount: 并行数
+  batchSize: 每批条数
+  batchSizeHint: 每批最多发送的条目数；为保护模型输出上限，单批仍会受字符量限制。
+  translatingProgressWithSkipped: 正在翻译 {done}/{total} 条（共 {all} 条，{skipped} 条无需翻译）
+  langEntries: '{count} 条'
+  noLangFiles: 此光影包中没有找到 lang 语言文件
+  overwriteLang: 目标语言文件 {path} 已存在，开始翻译会覆盖其中的同名条目。
+  sameLanguageHint: 源语言已经是 {language}，无需再次翻译。
+  targetLanguageHint: 默认跟随启动器语言，可切换其他语言。
+  startTranslate: 开始翻译
+  translatingProgress: 正在翻译第 {done}/{total} 条
+  preparing: 正在准备语言文件…
+  writingBack: 正在写回光影包…
+  aiTranslateSuccess: 已写回光影包：{path}
+  aiNotConfigured: AI Provider 尚未配置，请先在设置中填写 AI 接口。
+  openAiSettings: 打开设置
+  finish: 完成
   'off': 'Off'
 shared:
   close: 关闭

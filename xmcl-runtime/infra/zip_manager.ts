@@ -25,6 +25,21 @@ export class ZipManager {
   }
 
   /**
+   * 让某个 zip 的缓存失效。
+   *
+   * 原地替换 zip 文件后必须调用，否则后续读取仍会命中旧句柄，读到替换前的内容。
+   * 这里只关闭句柄并丢弃路径缓存，不会等待可能正在进行的扫描。
+   */
+  invalidate(filePath: string) {
+    const pathKey = `path:${filePath}`
+    const cached = this.#files.get(pathKey)
+    this.#files.delete(pathKey)
+    if (cached) {
+      cached.then(f => f.file.close()).catch(() => undefined)
+    }
+  }
+
+  /**
    * Open or get a managed zip file.
    * @param filePath The file path.
    * @returns The managed zip file.

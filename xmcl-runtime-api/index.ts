@@ -101,5 +101,6 @@ export { default as protocolToMinecraft } from './src/util/protocolToMinecraft'
 export * from './src/util/sdp'
 export * from './src/util/LockKey'
 export * from './src/util/versionRange'
+export * from './src/util/shaderPackLang'
 
 export * from './src/commands'

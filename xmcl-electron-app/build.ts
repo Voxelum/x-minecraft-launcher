@@ -5,7 +5,7 @@ import { Configuration, Platform, build as electronBuilder } from 'electron-buil
 import { BuildOptions, build as esbuild } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
 import { copy, emptyDir, ensureFile } from 'fs-extra'
-import { copyFile, readdir, stat, unlink, writeFile } from 'fs/promises'
+import { copyFile, readdir, rm, stat, unlink, writeFile } from 'fs/promises'
 import path, { join, resolve } from 'path'
 import createPrintPlugin from 'plugins/esbuild.print.plugin'
 import { createGzip } from 'zlib'
@@ -26,6 +26,33 @@ async function writeHash(algorithm: string, path: string) {
 }
 
 /**
+ * 是否已经拷贝过前端产物。
+ *
+ * electron-builder 会为每个架构各跑一次 `beforeBuild`，而前端产物与架构无关。
+ * 之前每次都会删除并重新拷贝 700 多个前端文件，多架构打包时既慢，
+ * 在限制批量删除的环境里还会直接失败，所以这里改为只拷贝一次。
+ */
+let rendererCopied = false
+
+/**
+ * 清理 dist 目录。
+ *
+ * 首次构建整目录清空，保证从干净状态开始；后续架构只清理主进程相关产物，
+ * 复用上一次已经拷贝好的 renderer。
+ */
+async function prepareDist() {
+  const distDir = path.join(__dirname, './dist')
+  if (!rendererCopied) {
+    await emptyDir(distDir)
+    return
+  }
+  const entries = await readdir(distDir)
+  await Promise.all(entries
+    .filter(name => name !== 'renderer')
+    .map(name => rm(path.join(distDir, name), { recursive: true, force: true })))
+}
+
+/**
  * Use esbuild to build main process
  *
  * @param target Platform and architecture whose native binaries are copied.
@@ -36,7 +63,7 @@ async function buildMain(
   slient = false,
   target: { platform: NodeJS.Platform; arch: string | number } = { platform: process.platform, arch: process.arch },
 ) {
-  await emptyDir(path.join(__dirname, './dist'))
+  await prepareDist()
   if (!slient) console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
   if (!slient) options.plugins?.push(createPrintPlugin())
@@ -71,7 +98,11 @@ async function buildMain(
   await copyFile(await resolveKoffiBinary(koffiPlatform, targetArch), join(__dirname, 'dist', 'koffi.node'))
   const time = ((Date.now() - startTime) / 1000).toFixed(2)
   if (!slient) console.log(`Build completed in ${time}s.`)
-  await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
+  // 前端产物与架构无关，整个构建过程只需拷贝一次
+  if (!rendererCopied) {
+    await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
+    rendererCopied = true
+  }
   if (!slient) console.log('\n')
   return time
 }

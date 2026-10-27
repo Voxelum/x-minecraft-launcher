@@ -61,7 +61,7 @@ export function resolveAgentSecretAccount(endpoint: string) {
   return host ? `${id}@${host}` : id
 }
 
-export type AgentId = 'launcher' | 'css' | 'modpack-changelog'
+export type AgentId = 'launcher' | 'css' | 'modpack-changelog' | 'shader-lang-translate'
 
 export interface AgentConversationKey {
   agentId: AgentId

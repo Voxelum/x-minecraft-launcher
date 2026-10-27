@@ -113,6 +113,8 @@ const lazyDialogComponents = {
   'modrinth-project-create': defineAsyncComponent(() => import('@/views/AppModrinthProjectCreateDialog.vue')),
   'modrinth-project-bind': defineAsyncComponent(() => import('@/views/AppModrinthProjectBindDialog.vue')),
   'modrinth-version-publish': defineAsyncComponent(() => import('@/views/AppModrinthVersionPublishDialog.vue')),
+  // 光影包 AI 翻译语言文件弹窗（懒加载）
+  'shaderpack-lang-translate': defineAsyncComponent(() => import('@/views/ShaderPackLangTranslateDialog.vue')),
 }
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)

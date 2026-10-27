@@ -1,20 +1,15 @@
+import { toShaderPackMcLang } from '@xmcl/runtime-api'
 import { FileSystem } from '@xmcl/system'
 import { pathExists, readFile, readJson } from 'fs-extra'
 import { join } from 'path'
 
+/**
+ * 语言代码规范化。
+ *
+ * 具体映射表放在 `@xmcl/runtime-api`，便于渲染进程（光影语言翻译弹窗）复用同一份规则。
+ */
 export function toMcLang(locale: string): string {
-  const lower = (locale || 'en').toLowerCase().replace(/-/g, '_')
-  if (lower === 'en_in') return 'en_us'
-  if (lower === 'ar_eg') return 'ar_sa'
-  if (lower.includes('_')) return lower
-  const defaults: Record<string, string> = {
-    en: 'en_us', zh: 'zh_cn', ru: 'ru_ru', ja: 'ja_jp', ko: 'ko_kr', fr: 'fr_fr',
-    de: 'de_de', es: 'es_es', pt: 'pt_br', it: 'it_it', uk: 'uk_ua', pl: 'pl_pl',
-    nl: 'nl_nl', tr: 'tr_tr', cs: 'cs_cz', vi: 'vi_vn', th: 'th_th', gl: 'gl_es',
-    kz: 'kk_kz', lolcat: 'lol_us', ar: 'ar_sa', bn: 'bn_bd', hi: 'hi_in',
-    hu: 'hu_hu', id: 'id_id', sa: 'sa_in', ta: 'ta_in',
-  }
-  return defaults[lower] ?? `${lower}_${lower}`
+  return toShaderPackMcLang(locale)
 }
 
 export async function assignJarLang(

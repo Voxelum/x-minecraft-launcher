@@ -19,6 +19,7 @@
 import MarketItem from '@/components/MarketItem.vue'
 import { useService } from '@/composables'
 import { ContextMenuItem } from '@/composables/contextMenu'
+import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
 import { ShaderPackProject } from '@/composables/shaderPackSearch'
 import { injection } from '@/util/inject'
@@ -49,16 +50,35 @@ const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { uninstall } = useService(InstanceShaderPacksServiceKey)
 const { path } = injection(kInstance)
+// 光影包 AI 翻译语言文件弹窗
+const { show: showLangTranslate } = useDialog<{
+  instancePath: string
+  fileName: string
+  packName: string
+}>('shaderpack-lang-translate')
 const getContextMenuItems = () => {
   const all = [] as ContextMenuItem[]
   // const id = props.pack.modrinth?.project_id || props.pack.modrinthProjectId
   if (props.pack.installed.length > 0) {
+    const installed = props.pack.installed[0]
     all.push({
-      text: t('shaderPack.showFile', { file: props.pack.installed[0].path }),
+      text: t('shaderPack.showFile', { file: installed.path }),
       onClick: () => {
-        showItemInDirectory(props.pack.installed[0].path)
+        showItemInDirectory(installed.path)
       },
       icon: 'folder',
+      section: 'action',
+    }, {
+      // 右键菜单入口：对已安装的光影包 zip 发起 AI 翻译
+      text: t('shaderPack.aiTranslate'),
+      onClick: () => {
+        showLangTranslate({
+          instancePath: path.value,
+          fileName: installed.fileName,
+          packName: props.pack.title,
+        })
+      },
+      icon: 'translate',
       section: 'action',
     }, {
       text: t('delete.name', { name: props.pack.title }),
