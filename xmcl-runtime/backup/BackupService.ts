@@ -1,4 +1,6 @@
 import {
+  AutoBackupConfig,
+  AutoBackupFileEntry,
   BackupManifest,
   BackupManifestInstanceItem,
   BackupOptions,
@@ -24,6 +26,7 @@ import {
   readFile,
   readJson,
   stat,
+  unlink,
   writeFile,
   writeJson,
 } from 'fs-extra'
@@ -124,6 +127,10 @@ async function readZipEntryAsBuffer(zipFile: any, entry: ZipEntry): Promise<Buff
 
 @ExposeServiceKey(BackupServiceKey)
 export class BackupService extends AbstractService implements IBackupService {
+  private autoBackupConfig: AutoBackupConfig | null = null
+  private autoBackupTimer: ReturnType<typeof setInterval> | null = null
+  private isAutoBackupRunning = false
+
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
@@ -131,15 +138,20 @@ export class BackupService extends AbstractService implements IBackupService {
     @Inject(ThemeService) private themeService: ThemeService,
     @Inject(CollectionService) private collectionService: CollectionService,
   ) {
-    super(app)
+    super(app, async () => {
+      await this.loadAutoBackupConfig()
+      this.scheduleAutoBackupTimer()
+    })
   }
 
   async createBackup(options: BackupOptions): Promise<string> {
-    this.emit('backup-progress', {
-      phase: 'preparing',
-      percent: 2,
-      message: 'Preparing backup archive...',
-    })
+    if (!options.silent) {
+      this.emit('backup-progress', {
+        phase: 'preparing',
+        percent: 2,
+        message: 'Preparing backup archive...',
+      })
+    }
 
     const zipFile = new ZipFile()
     const manifestInstances: BackupManifestInstanceItem[] = []
@@ -219,6 +231,7 @@ export class BackupService extends AbstractService implements IBackupService {
       currentInstanceIndex?: number
       totalInstances?: number
     }) => {
+      if (options.silent) return
       this.emit('backup-progress', {
         ...payload,
         counts: {
@@ -860,5 +873,280 @@ export class BackupService extends AbstractService implements IBackupService {
     })
 
     return result
+  }
+
+  private getDefaultAutoBackupConfig(): AutoBackupConfig {
+    return {
+      enabled: false,
+      instancePaths: [],
+      intervalMinutes: 60,
+      maxBackups: 5,
+      destinationDir: this.getAppDataPath('backups'),
+      includeSaves: true,
+      includeConfigs: true,
+      includeMods: true,
+      modListOnly: true,
+      includeResourcePacks: false,
+      includeShaderPacks: false,
+      includeSettings: false,
+    }
+  }
+
+  private async loadAutoBackupConfig(): Promise<AutoBackupConfig> {
+    if (this.autoBackupConfig) return this.autoBackupConfig
+    const defaults = this.getDefaultAutoBackupConfig()
+    const filePath = this.getAppDataPath('auto-backup.json')
+    if (existsSync(filePath)) {
+      try {
+        const raw = await readJson(filePath)
+        if (raw && typeof raw === 'object') {
+          this.autoBackupConfig = {
+            enabled: Boolean(raw.enabled),
+            instancePaths: Array.isArray(raw.instancePaths)
+              ? raw.instancePaths.filter((p: any): p is string => typeof p === 'string' && p.length > 0)
+              : [],
+            intervalMinutes: Math.max(5, Number(raw.intervalMinutes) || defaults.intervalMinutes),
+            maxBackups: Math.max(1, Number(raw.maxBackups) || defaults.maxBackups),
+            destinationDir: typeof raw.destinationDir === 'string' && raw.destinationDir.trim()
+              ? raw.destinationDir.trim()
+              : defaults.destinationDir,
+            includeSaves: raw.includeSaves !== undefined ? Boolean(raw.includeSaves) : defaults.includeSaves,
+            includeConfigs: raw.includeConfigs !== undefined ? Boolean(raw.includeConfigs) : defaults.includeConfigs,
+            includeMods: raw.includeMods !== undefined ? Boolean(raw.includeMods) : defaults.includeMods,
+            modListOnly: raw.modListOnly !== undefined ? Boolean(raw.modListOnly) : defaults.modListOnly,
+            includeResourcePacks: raw.includeResourcePacks !== undefined ? Boolean(raw.includeResourcePacks) : defaults.includeResourcePacks,
+            includeShaderPacks: raw.includeShaderPacks !== undefined ? Boolean(raw.includeShaderPacks) : defaults.includeShaderPacks,
+            includeSettings: raw.includeSettings !== undefined ? Boolean(raw.includeSettings) : defaults.includeSettings,
+            lastBackupAt: typeof raw.lastBackupAt === 'number' ? raw.lastBackupAt : undefined,
+            lastBackupPath: typeof raw.lastBackupPath === 'string' ? raw.lastBackupPath : undefined,
+            lastError: typeof raw.lastError === 'string' ? raw.lastError : undefined,
+          }
+          return this.autoBackupConfig
+        }
+      } catch (e) {
+        this.warn(`Failed to load auto-backup.json: ${e}`)
+      }
+    }
+    this.autoBackupConfig = defaults
+    return this.autoBackupConfig
+  }
+
+  private async saveAutoBackupConfig(): Promise<void> {
+    if (!this.autoBackupConfig) return
+    const filePath = this.getAppDataPath('auto-backup.json')
+    await ensureDir(dirname(filePath))
+    await writeJson(filePath, this.autoBackupConfig, { spaces: 2 })
+  }
+
+  private scheduleAutoBackupTimer(): void {
+    if (this.autoBackupTimer) {
+      clearInterval(this.autoBackupTimer)
+      this.autoBackupTimer = null
+    }
+    const cfg = this.autoBackupConfig
+    if (!cfg || !cfg.enabled) return
+
+    this.autoBackupTimer = setInterval(() => {
+      const current = this.autoBackupConfig
+      if (!current || !current.enabled || this.isAutoBackupRunning) return
+      if (current.instancePaths.length === 0 && !current.includeSettings) return
+      const last = current.lastBackupAt || 0
+      const intervalMs = Math.max(5, current.intervalMinutes) * 60 * 1000
+      if (Date.now() - last >= intervalMs) {
+        this.runAutoBackupNow().catch((e) => {
+          this.warn(`Background auto-backup failed: ${e}`)
+        })
+      }
+    }, 30_000)
+
+    if (typeof (this.autoBackupTimer as any)?.unref === 'function') {
+      (this.autoBackupTimer as any).unref()
+    }
+  }
+
+  async getAutoBackupConfig(): Promise<AutoBackupConfig> {
+    const cfg = await this.loadAutoBackupConfig()
+    if (cfg.destinationDir) {
+      await ensureDir(cfg.destinationDir).catch(() => {})
+    }
+    return {
+      ...cfg,
+      instancePaths: [...cfg.instancePaths],
+    }
+  }
+
+  async setAutoBackupConfig(patch: Partial<AutoBackupConfig>): Promise<AutoBackupConfig> {
+    const current = await this.loadAutoBackupConfig()
+    const defaults = this.getDefaultAutoBackupConfig()
+
+    this.autoBackupConfig = {
+      ...current,
+      enabled: patch.enabled !== undefined ? Boolean(patch.enabled) : current.enabled,
+      instancePaths: Array.isArray(patch.instancePaths)
+        ? patch.instancePaths.filter((p): p is string => typeof p === 'string' && p.length > 0)
+        : current.instancePaths,
+      intervalMinutes: patch.intervalMinutes !== undefined
+        ? Math.max(5, Number(patch.intervalMinutes) || defaults.intervalMinutes)
+        : current.intervalMinutes,
+      maxBackups: patch.maxBackups !== undefined
+        ? Math.max(1, Number(patch.maxBackups) || defaults.maxBackups)
+        : current.maxBackups,
+      destinationDir: typeof patch.destinationDir === 'string' && patch.destinationDir.trim()
+        ? patch.destinationDir.trim()
+        : current.destinationDir,
+      includeSaves: patch.includeSaves !== undefined ? Boolean(patch.includeSaves) : current.includeSaves,
+      includeConfigs: patch.includeConfigs !== undefined ? Boolean(patch.includeConfigs) : current.includeConfigs,
+      includeMods: patch.includeMods !== undefined ? Boolean(patch.includeMods) : current.includeMods,
+      modListOnly: patch.modListOnly !== undefined ? Boolean(patch.modListOnly) : current.modListOnly,
+      includeResourcePacks: patch.includeResourcePacks !== undefined ? Boolean(patch.includeResourcePacks) : current.includeResourcePacks,
+      includeShaderPacks: patch.includeShaderPacks !== undefined ? Boolean(patch.includeShaderPacks) : current.includeShaderPacks,
+      includeSettings: patch.includeSettings !== undefined ? Boolean(patch.includeSettings) : current.includeSettings,
+    }
+
+    await this.saveAutoBackupConfig()
+    this.scheduleAutoBackupTimer()
+    const snapshot = await this.getAutoBackupConfig()
+    this.emit('auto-backup-status', {
+      running: this.isAutoBackupRunning,
+      config: snapshot,
+    })
+    return snapshot
+  }
+
+  async runAutoBackupNow(): Promise<string | undefined> {
+    if (this.isAutoBackupRunning) return undefined
+    const cfg = await this.loadAutoBackupConfig()
+
+    const validInstancePaths: string[] = []
+    for (const p of cfg.instancePaths) {
+      if (!existsSync(p)) continue
+      const instJsonPath = join(p, 'instance.json')
+      if (existsSync(instJsonPath)) {
+        const instData = await readJson(instJsonPath).catch(() => undefined)
+        if (instData?.edition === 'bedrock') continue
+      }
+      validInstancePaths.push(p)
+    }
+
+    if (validInstancePaths.length === 0 && !cfg.includeSettings) {
+      return undefined
+    }
+
+    this.isAutoBackupRunning = true
+    this.emit('auto-backup-status', {
+      running: true,
+      config: await this.getAutoBackupConfig(),
+    })
+
+    try {
+      const destDir = cfg.destinationDir || this.getAppDataPath('backups')
+      await ensureDir(destDir)
+
+      const now = new Date()
+      const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}-${String(now.getMilliseconds()).padStart(3, '0')}`
+      const destFile = join(destDir, `xmcl-auto-backup-${stamp}.xmclbackup`)
+
+      const createdPath = await this.createBackup({
+        destinationPath: destFile,
+        includeSettings: cfg.includeSettings,
+        includeCollections: false,
+        includeThemes: false,
+        silent: true,
+        instances: validInstancePaths.map((instancePath) => ({
+          instancePath,
+          includeSaves: cfg.includeSaves,
+          includeConfigs: cfg.includeConfigs,
+          includeMods: cfg.includeMods,
+          modListOnly: cfg.modListOnly,
+          includeResourcePacks: cfg.includeResourcePacks,
+          includeShaderPacks: cfg.includeShaderPacks,
+        })),
+      })
+
+      await this.rotateAutoBackups(destDir, cfg.maxBackups)
+
+      cfg.lastBackupAt = Date.now()
+      cfg.lastBackupPath = createdPath
+      cfg.lastError = undefined
+      await this.saveAutoBackupConfig()
+
+      this.log(`Background auto-backup completed: ${createdPath}`)
+      return createdPath
+    } catch (e: any) {
+      cfg.lastError = e?.message || String(e)
+      await this.saveAutoBackupConfig().catch(() => {})
+      throw e
+    } finally {
+      this.isAutoBackupRunning = false
+      const updated = await this.getAutoBackupConfig()
+      this.emit('auto-backup-status', {
+        running: false,
+        config: updated,
+      })
+    }
+  }
+
+  private async rotateAutoBackups(destDir: string, maxBackups: number): Promise<void> {
+    const limit = Math.max(1, maxBackups)
+    const files = await readdir(destDir).catch(() => [])
+    const autoBackups: Array<{ filePath: string; mtimeMs: number }> = []
+
+    for (const f of files) {
+      if (f.startsWith('xmcl-auto-backup-') && (f.endsWith('.xmclbackup') || f.endsWith('.zip'))) {
+        const full = join(destDir, f)
+        const s = await stat(full).catch(() => undefined)
+        if (s && s.isFile()) {
+          autoBackups.push({ filePath: full, mtimeMs: s.mtimeMs })
+        }
+      }
+    }
+
+    autoBackups.sort((a, b) => b.mtimeMs - a.mtimeMs)
+
+    for (let i = limit; i < autoBackups.length; i++) {
+      await unlink(autoBackups[i].filePath).catch(() => {})
+    }
+  }
+
+  async listAutoBackups(): Promise<AutoBackupFileEntry[]> {
+    const cfg = await this.loadAutoBackupConfig()
+    const destDir = cfg.destinationDir || this.getAppDataPath('backups')
+    if (!existsSync(destDir)) return []
+
+    const files = await readdir(destDir).catch(() => [])
+    const entries: AutoBackupFileEntry[] = []
+
+    for (const f of files) {
+      if (f.endsWith('.xmclbackup') || f.endsWith('.zip')) {
+        const full = join(destDir, f)
+        const s = await stat(full).catch(() => undefined)
+        if (s && s.isFile()) {
+          entries.push({
+            fileName: f,
+            filePath: full,
+            createdAt: Math.round(s.mtimeMs),
+            sizeBytes: s.size,
+          })
+        }
+      }
+    }
+
+    entries.sort((a, b) => b.createdAt - a.createdAt)
+    return entries
+  }
+
+  async deleteAutoBackup(filePath: string): Promise<void> {
+    const cfg = await this.loadAutoBackupConfig()
+    const destDir = normalize(cfg.destinationDir || this.getAppDataPath('backups'))
+    const target = normalize(filePath)
+    if (!target.startsWith(destDir)) {
+      throw new Error('Cannot delete file outside auto-backup directory')
+    }
+    if (!target.endsWith('.xmclbackup') && !target.endsWith('.zip')) {
+      throw new Error('Invalid backup archive extension')
+    }
+    if (existsSync(target)) {
+      await unlink(target)
+    }
   }
 }

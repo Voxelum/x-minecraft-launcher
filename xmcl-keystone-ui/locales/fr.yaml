@@ -76,6 +76,128 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: 'Sauvegarde & Restauration'
+  description: Sauvegardez et restaurez vos paramètres, collections, thèmes et instances de jeu
+  launcherData: Données du lanceur
+  includeSettingsTitle: Paramètres du lanceur
+  includeSettingsHint: Préférences générales, langue, mode développeur et apparence
+  includeCollectionsTitle: Collections enregistrées
+  includeCollectionsHint: Collections de mods et ressources gérées par le lanceur
+  includeThemesTitle: 'Thèmes & médias personnalisés'
+  includeThemesHint: Couleurs du thème, styles CSS personnalisés et médias de fond
+  instances: Instances
+  selectAll: Tout sélectionner
+  deselectAll: Tout désélectionner
+  instanceDataOptions: 'Options des données d''instance'
+  includeConfigs: 'Configurations & options'
+  includeSaves: Sauvegardes (Mondes)
+  includeResourcePacks: Packs de ressources
+  includeShaderPacks: Packs de shaders
+  modsMode: Mods
+  modsFull: Fichiers complets (.jar)
+  modsListOnly: Liste des mods uniquement (léger)
+  modsNone: Exclure les mods
+  noInstancesFound: Aucune instance trouvée dans le lanceur.
+  excludeLibrariesNotice: 'Les bibliothèques principales, les ressources Minecraft et les caches temporaires sont automatiquement exclus pour garder l''archive compacte. Ils seront retéléchargés au lancement.'
+  create: Créer une sauvegarde
+  createTitle: Créer une archive de sauvegarde XMCL
+  saveDialogTitle: 'Enregistrer l''archive de sauvegarde XMCL'
+  fileFilterName: 'Archive de sauvegarde XMCL (*.xmclbackup, *.zip)'
+  createError: Échec de la création de la sauvegarde
+  loadManifestError: 'Échec de la lecture de l''archive de sauvegarde'
+  restore: Restaurer
+  restoreTitle: Restaurer depuis une sauvegarde
+  preparing: Préparation...
+  workingTitle: 'Création de l''archive de sauvegarde...'
+  restoringTitle: Restauration depuis la sauvegarde...
+  elapsedTime: Temps écoulé
+  remainingTime: Temps restant estimé
+  calculatingRemaining: Calcul...
+  lessThanMinute: '< 1 min'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Mondes
+  modsCategory: Mods
+  resourcePacksCategory: Packs de ressources
+  shaderPacksCategory: Shaders
+  configsCategory: Configurations
+  activityLog: 'Journal d''activité'
+  copyLog: Copier le journal
+  copiedLog: Journal copié dans le presse-papiers
+  openFolder: Afficher dans le dossier
+  done: Terminé
+  backupDone: 'Sauvegarde terminée !'
+  backupDoneHint: Votre archive de sauvegarde a été créée et vérifiée.
+  restoreDone: 'Restauration terminée !'
+  restoreDoneHint: Toutes les données et instances sélectionnées ont été restaurées avec succès.
+  timeTaken: 'Temps écoulé : {time}'
+  destinationFile: 'Enregistré dans : {path}'
+  stagePreparing: Préparation
+  stageSettings: Paramètres du lanceur
+  stageCollections: Collections enregistrées
+  stageThemes: 'Thèmes & médias'
+  stageInstances: Instances de jeu
+  stageCompressing: 'Compression de l''archive'
+  stageComplete: Terminé
+  stageLabel: 'Étape : {stage}'
+  searchInstancesPlaceholder: Rechercher des instances par nom ou version...
+  selectBackupFilePrompt: Sélectionnez une archive de sauvegarde à restaurer
+  selectBackupFileDescription: Choisissez un fichier .xmclbackup ou .zip contenant vos données et instances XMCL.
+  selectFile: Choisir un fichier
+  selectBackupFileTitle: Ouvrir une archive de sauvegarde XMCL
+  createdOn: 'Créé le {date}'
+  changeFile: Changer de fichier
+  dataToRestore: Données à restaurer
+  restoreSettings: Restaurer les paramètres
+  restoreSettingsHint: Écraser les préférences actuelles avec la sauvegarde
+  restoreCollections: Restaurer les collections
+  restoreCollectionsHint: Importer et fusionner les collections enregistrées
+  restoreThemes: 'Restaurer les thèmes & médias'
+  restoreThemesHint: Réinstaller les thèmes, le CSS personnalisé et les médias de fond
+  noLauncherDataInBackup: Aucun paramètre ou thème du lanceur trouvé dans cette archive.
+  conflictStrategyTitle: 'Gestion des conflits de noms d''instance'
+  conflictRename: 'Conserver l''existante et renommer l''instance restaurée (ex. name-restored)'
+  conflictOverwrite: 'Écraser les fichiers de l''instance existante'
+  conflictSkip: Ignorer les instances déjà présentes sur le disque
+  restoreError: Échec de la restauration de la sauvegarde
+  createBackupTitle: Créer une sauvegarde
+  createBackupDescription: Enregistrez vos paramètres, collections, thèmes personnalisés et instances dans une seule archive portable.
+  restoreBackupTitle: Restaurer une sauvegarde
+  restoreBackupDescription: Restaurez vos paramètres, thèmes, collections ou instances depuis une archive de sauvegarde.
+  portableArchiveNoticeTitle: Sauvegardes portables en fichier unique
+  portableArchiveNoticeDescription: Les sauvegardes sont enregistrées sous forme de fichiers .xmclbackup uniques, faciles à copier sur clé USB ou à synchroniser dans le cloud.
+  autoBackupTitle: Sauvegarde automatique en arrière-plan
+  autoBackupDescription: Sauvegarder automatiquement une ou plusieurs instances sélectionnées en arrière-plan selon un planning
+  autoBackupStatusRunning: Sauvegarde...
+  autoBackupStatusEnabled: Actif
+  autoBackupStatusDisabled: Désactivé
+  autoBackupRunNow: Exécuter maintenant
+  autoBackupLastRun: Dernière sauvegarde auto
+  autoBackupNeverRun: Jamais
+  selectedCount: '{selected} / {total} sélectionnées'
+  autoBackupSelectInstances: Instances à sauvegarder automatiquement (une ou plusieurs)
+  searchInstances: Rechercher des instances...
+  autoBackupInterval: Fréquence de sauvegarde
+  autoBackupRetention: Conservation des sauvegardes
+  autoBackupDestination: Dossier de sauvegarde automatique
+  browse: Parcourir
+  autoBackupContentLabel: Contenu à inclure dans les sauvegardes en arrière-plan
+  instanceSaves: 'Mondes & sauvegardes'
+  instanceConfigs: 'Configurations & options'
+  instanceMods: Mods
+  instanceResourcePacks: Packs de ressources
+  instanceShaderPacks: Packs de shaders
+  launcherSettings: Paramètres du lanceur
+  autoBackupHistoryTitle: Sauvegardes automatiques récentes
+  autoBackupError: Échec de la sauvegarde automatique
+  interval30m: Toutes les 30 minutes
+  interval1h: Toutes les heures
+  interval2h: Toutes les 2 heures
+  interval4h: Toutes les 4 heures
+  interval6h: Toutes les 6 heures
+  interval12h: Toutes les 12 heures
+  interval24h: Toutes les 24 heures
+  keepCount: 'Conserver les {count} dernières sauvegardes'
 baseSetting:
   title: Paramètres de base
 browseApp:

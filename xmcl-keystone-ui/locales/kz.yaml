@@ -60,6 +60,128 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: Сақтық көшірме және қалпына келтіру
+  description: Баптауларды, жинақтарды, тақырыптарды және ойын нұсқаларын сақтық көшіріңіз және қалпына келтіріңіз
+  launcherData: Лаунчер деректері
+  includeSettingsTitle: Лаунчер баптаулары
+  includeSettingsHint: Жалпы параметрлер, тіл, әзірлеуші режимі және сыртқы көрініс
+  includeCollectionsTitle: Сақталған жинақтар
+  includeCollectionsHint: Лаунчер басқаратын модтар мен ресурстар жинағы
+  includeThemesTitle: Арнайы тақырыптар мен медиа
+  includeThemesHint: Тақырып түстері, арнайы CSS стильдері және фондық медиа
+  instances: Инстанциялар
+  selectAll: Барлығын таңдау
+  deselectAll: Таңдауды алып тастау
+  instanceDataOptions: Инстанция деректерінің параметрлері
+  includeConfigs: Конфигурациялар мен параметрлер
+  includeSaves: Сақтаулар (Әлемдер)
+  includeResourcePacks: Ресурс-пактар
+  includeShaderPacks: Шейдер-пактар
+  modsMode: Модтар
+  modsFull: Толық файлдар (.jar)
+  modsListOnly: Тек модтар тізімі (жеңіл)
+  modsNone: Модтарсыз
+  noInstancesFound: Лаунчерде инстанциялар табылмады.
+  excludeLibrariesNotice: Негізгі кітапханалар, Minecraft ресурстары және уақытша кэштер мұрағат көлемін азайту үшін автоматты түрде қосылмайды.
+  create: Сақтық көшірме жасау
+  createTitle: XMCL сақтық көшірме мұрағатын жасау
+  saveDialogTitle: XMCL сақтық көшірмесін сақтау
+  fileFilterName: 'XMCL сақтық көшірмесі (*.xmclbackup, *.zip)'
+  createError: Сақтық көшірме жасау сәтсіз аяқталды
+  loadManifestError: Сақтық көшірме мұрағатын оқу мүмкін болмады
+  restore: Қалпына келтіру
+  restoreTitle: Сақтық көшірмеден қалпына келтіру
+  preparing: Дайындалуда...
+  workingTitle: Сақтық көшірме жасалуда...
+  restoringTitle: Сақтық көшірмеден қалпына келтірілуде...
+  elapsedTime: Өткен уақыт
+  remainingTime: Болжалды қалған уақыт
+  calculatingRemaining: Есептелуде...
+  lessThanMinute: '< 1 мин'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Әлемдер
+  modsCategory: Модтар
+  resourcePacksCategory: Ресурс-пактар
+  shaderPacksCategory: Шейдерлер
+  configsCategory: Конфигурациялар
+  activityLog: Әрекет журналы
+  copyLog: Журналды көшіру
+  copiedLog: Журнал алмасу буферіне көшірілді
+  openFolder: Қалтадан көрсету
+  done: Дайын
+  backupDone: 'Сақтық көшірме аяқталды!'
+  backupDoneHint: Сақтық көшірме мұрағаты жасалды және тексерілді.
+  restoreDone: 'Қалпына келтіру аяқталды!'
+  restoreDoneHint: Барлық таңдалған деректер мен инстанциялар сәтті қалпына келтірілді.
+  timeTaken: 'Кеткен уақыт: {time}'
+  destinationFile: 'Сақталған жері: {path}'
+  stagePreparing: Дайындық
+  stageSettings: Лаунчер баптаулары
+  stageCollections: Сақталған жинақтар
+  stageThemes: Тақырыптар мен медиа
+  stageInstances: Ойын инстанциялары
+  stageCompressing: Мұрағатты сығу
+  stageComplete: Аяқталды
+  stageLabel: 'Кезең: {stage}'
+  searchInstancesPlaceholder: Инстанцияларды атауы немесе нұсқасы бойынша іздеу...
+  selectBackupFilePrompt: Қалпына келтіру үшін сақтық көшірме мұрағатын таңдаңыз
+  selectBackupFileDescription: Сақталған XMCL деректері бар .xmclbackup немесе .zip файлын таңдаңыз.
+  selectFile: Файлды таңдау
+  selectBackupFileTitle: XMCL сақтық көшірмесін ашу
+  createdOn: 'Жасалған күні: {date}'
+  changeFile: Файлды өзгерту
+  dataToRestore: Қалпына келтірілетін деректер
+  restoreSettings: Баптауларды қалпына келтіру
+  restoreSettingsHint: Ағымдағы баптауларды сақтық көшірмемен ауыстыру
+  restoreCollections: Жинақтарды қалпына келтіру
+  restoreCollectionsHint: Сақталған жинақтарды импорттау және біріктіру
+  restoreThemes: Тақырыптар мен медианы қалпына келтіру
+  restoreThemesHint: Тақырыптарды, арнайы CSS пен фондық файлдарды қайта орнату
+  noLauncherDataInBackup: Бұл мұрағатта лаунчер баптаулары немесе тақырыптары жоқ.
+  conflictStrategyTitle: Инстанция атауларының сәйкестігін шешу
+  conflictRename: 'Бар нұсқаны сақтап, қалпына келтірілгенін қайта атау (мысалы: name-restored)'
+  conflictOverwrite: Бар инстанция файлдарын үстінен жазу
+  conflictSkip: Дискіде бар инстанцияларды өткізіп жіберу
+  restoreError: Сақтық көшірмені қалпына келтіру мүмкін болмады
+  createBackupTitle: Сақтық көшірме жасау
+  createBackupDescription: Лаунчер баптауларын, жинақтарды, тақырыптарды және инстанцияларды бір портативті файлға сақтаңыз.
+  restoreBackupTitle: Сақтық көшірмені қалпына келтіру
+  restoreBackupDescription: Бұрын сақталған мұрағаттан баптауларды, тақырыптарды, жинақтарды немесе инстанцияларды қалпына келтіріңіз.
+  portableArchiveNoticeTitle: Портативті бір файлдық көшірмелер
+  portableArchiveNoticeDescription: Сақтық көшірмелер бір .xmclbackup файлы ретінде сақталады. Оларды флешкаға көшіруге немесе бұлттық қызметтермен синхрондауға болады.
+  autoBackupTitle: Фондық авто-сақтық көшірме
+  autoBackupDescription: Бір немесе бірнеше таңдалған инстанцияны кесте бойынша фонда автоматты түрде көшіру
+  autoBackupStatusRunning: Көшірілуде...
+  autoBackupStatusEnabled: Белсенді
+  autoBackupStatusDisabled: Өшірулі
+  autoBackupRunNow: Қазір іске қосу
+  autoBackupLastRun: Соңғы авто-көшірме
+  autoBackupNeverRun: Ешқашан
+  selectedCount: '{selected} / {total} таңдалды'
+  autoBackupSelectInstances: Авто-көшірмеге арналған инстанциялар (біреуін немесе бірнешеуін таңдаңыз)
+  searchInstances: Инстанцияларды іздеу...
+  autoBackupInterval: Көшіру жиілігі
+  autoBackupRetention: Көшірмелерді сақтау саны
+  autoBackupDestination: Авто-көшірме қалтасы
+  browse: Шолу
+  autoBackupContentLabel: Фондық көшірмеге қосылатын деректер
+  instanceSaves: Әлемдер мен сақтаулар
+  instanceConfigs: Конфигурациялар мен параметрлер
+  instanceMods: Модтар
+  instanceResourcePacks: Ресурс-пактар
+  instanceShaderPacks: Шейдер-пактар
+  launcherSettings: Лаунчер баптаулары
+  autoBackupHistoryTitle: Соңғы авто-көшірмелер
+  autoBackupError: Авто-сақтық көшірме қатесі
+  interval30m: Әр 30 минут сайын
+  interval1h: Әр 1 сағат сайын
+  interval2h: Әр 2 сағат сайын
+  interval4h: Әр 4 сағат сайын
+  interval6h: Әр 6 сағат сайын
+  interval12h: Әр 12 сағат сайын
+  interval24h: Әр 24 сағат сайын
+  keepCount: 'Соңғы {count} көшірмені сақтау'
 baseSetting:
   title: Жеке жағдай баптаулары
 browseApp:

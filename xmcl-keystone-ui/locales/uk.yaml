@@ -115,15 +115,12 @@ backup:
   noInstancesFound: У лаунчері немає інстанцій.
   excludeLibrariesNotice: Бібліотеки (залежності ваніли та завантажувачів), ресурси та кеші виключаються автоматично, щоб зберегти місце на диску. Вони завантажуються автоматично під час запуску гри.
   create: Створити резервну копію
-  creating: Створення резервної копії...
   createTitle: Створити архів резервної копії
   saveDialogTitle: Зберегти резервну копію XMCL
   fileFilterName: Резервна копія XMCL (*.xmclbackup, *.zip)
-  createSuccess: Резервну копію успішно створено
   createError: Не вдалося створити резервну копію
   loadManifestError: Не вдалося прочитати архів резервної копії
   restore: Відновити
-  restoring: Відновлення даних...
   restoreTitle: Відновлення з резервної копії
   preparing: Підготовка...
   workingTitle: Створення резервної копії...
@@ -176,8 +173,6 @@ backup:
   conflictRename: 'Зберегти наявну та перейменувати відновлену (наприклад: name-restored)'
   conflictOverwrite: Перезаписати наявні файли інстанції
   conflictSkip: Пропустити вже наявні інстанції
-  restoreSuccess: Відновлення успішно завершено
-  restoreSuccessDetails: 'Відновлено {count} інстанцій та дані лаунчера.'
   restoreError: Не вдалося відновити дані з резервної копії
   createBackupTitle: Створити резервну копію
   createBackupDescription: Збережіть налаштування лаунчера, колекції, власні теми та інстанції в єдиний портативний архів.
@@ -185,6 +180,38 @@ backup:
   restoreBackupDescription: Відновіть налаштування, теми, колекції або інстанції зі збереженого архіву.
   portableArchiveNoticeTitle: Портативні локальні архіви
   portableArchiveNoticeDescription: Резервні копії зберігаються одним файлом .xmclbackup. Ви можете безпечно зберігати їх, копіювати на флешку чи синхронізувати через хмарні сховища (Google Диск, OneDrive тощо).
+  autoBackupTitle: Фонове авто-резервне копіювання
+  autoBackupDescription: Автоматичне створення резервних копій однієї або декількох обраних інстанцій у фоновому режимі за розкладом
+  autoBackupStatusRunning: Копіювання...
+  autoBackupStatusEnabled: Активно
+  autoBackupStatusDisabled: Вимкнено
+  autoBackupRunNow: Зробити зараз
+  autoBackupLastRun: Останній авто-бекап
+  autoBackupNeverRun: Ніколи
+  selectedCount: 'Обрано {selected} з {total}'
+  autoBackupSelectInstances: Інстанції для авто-бекапу (одна або декілька)
+  searchInstances: Пошук інстанцій...
+  autoBackupInterval: Частота створення копій
+  autoBackupRetention: Збереження старих копій
+  autoBackupDestination: Папка для авто-бекапів
+  browse: Огляд
+  autoBackupContentLabel: Дані для включення у фоновий бекап
+  instanceSaves: Світи та збереження
+  instanceConfigs: Конфігурації та параметри
+  instanceMods: Моди
+  instanceResourcePacks: Пакунки ресурсів
+  instanceShaderPacks: Шейдери
+  launcherSettings: Налаштування лаунчера
+  autoBackupHistoryTitle: Збережені авто-бекапи
+  autoBackupError: Помилка авто-резервного копіювання
+  interval30m: Кожні 30 хвилин
+  interval1h: Кожну 1 годину
+  interval2h: Кожні 2 години
+  interval4h: Кожні 4 години
+  interval6h: Кожні 6 годин
+  interval12h: Кожні 12 годин
+  interval24h: Кожні 24 години
+  keepCount: Зберігати останні {count} копій
 baseSetting:
   title: Основні налаштування
 browseApp:

@@ -71,6 +71,128 @@ bedrock:
   launchHint: Bedrock Sürümünü başlatmak için Başlat düğmesini kullanın.
   licenseRequired: Bedrock Sürümünü yüklemek ve oynamak için Minecraft sahibi olan bir Microsoft hesabıyla oturum açın.
   refresh: Yenile
+backup:
+  title: Yedekleme ve Geri Yükleme
+  description: Ayarlarınızı, koleksiyonlarınızı, temalarınızı ve oyun örneklerinizi yedekleyin ve geri yükleyin
+  launcherData: Başlatıcı Verileri
+  includeSettingsTitle: Başlatıcı Ayarları
+  includeSettingsHint: Genel tercihler, dil, geliştirici modu ve görünüm ayarları
+  includeCollectionsTitle: Kaydedilen Koleksiyonlar
+  includeCollectionsHint: Başlatıcı tarafından yönetilen mod ve kaynak koleksiyonları
+  includeThemesTitle: Özel Temalar ve Medya
+  includeThemesHint: Tema renkleri, özel CSS stilleri ve arka plan medyası
+  instances: Örnekler (Instances)
+  selectAll: Tümünü Seç
+  deselectAll: Seçimi Kaldır
+  instanceDataOptions: Örnek Veri Seçenekleri
+  includeConfigs: Yapılandırmalar ve Seçenekler
+  includeSaves: Kayıtlar (Dünyalar)
+  includeResourcePacks: Kaynak Paketleri
+  includeShaderPacks: Shader Paketleri
+  modsMode: Modlar
+  modsFull: Tam dosyalar (.jar)
+  modsListOnly: Yalnızca mod listesi (hafif)
+  modsNone: Modları hariç tut
+  noInstancesFound: Başlatıcıda örnek bulunamadı.
+  excludeLibrariesNotice: Temel kütüphaneler, Minecraft varlıkları ve geçici önbellekler arşivi küçük tutmak için otomatik olarak hariç tutulur. Oyun başlatıldığında otomatik indirilirler.
+  create: Yedek Oluştur
+  createTitle: XMCL Yedek Arşivi Oluştur
+  saveDialogTitle: XMCL Yedek Arşivini Kaydet
+  fileFilterName: 'XMCL Yedek Arşivi (*.xmclbackup, *.zip)'
+  createError: Yedek oluşturulamadı
+  loadManifestError: Yedek arşivi okunamadı
+  restore: Geri Yükle
+  restoreTitle: Yedekten Geri Yükle
+  preparing: Hazırlanıyor...
+  workingTitle: Yedek Arşivi Oluşturuluyor...
+  restoringTitle: Yedekten Geri Yükleniyor...
+  elapsedTime: Geçen süre
+  remainingTime: Tahmini kalan süre
+  calculatingRemaining: Hesaplanıyor...
+  lessThanMinute: '< 1 dk'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Dünyalar
+  modsCategory: Modlar
+  resourcePacksCategory: Kaynak Paketleri
+  shaderPacksCategory: Shader Paketleri
+  configsCategory: Yapılandırmalar
+  activityLog: Etkinlik Günlüğü
+  copyLog: Günlüğü Kopyala
+  copiedLog: Günlük panoya kopyalandı
+  openFolder: Klasörde Göster
+  done: Tamam
+  backupDone: 'Yedekleme Tamamlandı!'
+  backupDoneHint: Yedek arşiviniz oluşturuldu ve doğrulandı.
+  restoreDone: 'Geri Yükleme Tamamlandı!'
+  restoreDoneHint: Seçilen tüm veriler ve örnekler başarıyla geri yüklendi.
+  timeTaken: 'Geçen süre: {time}'
+  destinationFile: 'Kaydedilen yer: {path}'
+  stagePreparing: Hazırlanıyor
+  stageSettings: Başlatıcı Ayarları
+  stageCollections: Kaydedilen Koleksiyonlar
+  stageThemes: Temalar ve Medya
+  stageInstances: Oyun Örnekleri
+  stageCompressing: Arşiv Sıkıştırılıyor
+  stageComplete: Tamamlandı
+  stageLabel: 'Aşama: {stage}'
+  searchInstancesPlaceholder: Ada veya sürüme göre örnek ara...
+  selectBackupFilePrompt: Geri yüklenecek yedek arşivini seçin
+  selectBackupFileDescription: Kaydedilmiş XMCL verilerinizi içeren .xmclbackup veya .zip dosyasını seçin.
+  selectFile: Dosya Seç
+  selectBackupFileTitle: XMCL Yedek Arşivini Aç
+  createdOn: '{date} tarihinde oluşturuldu'
+  changeFile: Dosyayı Değiştir
+  dataToRestore: Geri Yüklenecek Veriler
+  restoreSettings: Ayarları Geri Yükle
+  restoreSettingsHint: Mevcut başlatıcı tercihlerini yedek kopyayla değiştir
+  restoreCollections: Koleksiyonları Geri Yükle
+  restoreCollectionsHint: Kaydedilen koleksiyonları içe aktar ve birleştir
+  restoreThemes: Temaları ve Medyayı Geri Yükle
+  restoreThemesHint: Temaları, özel CSS ve arka plan medyasını yeniden yükle
+  noLauncherDataInBackup: Bu yedek arşivinde başlatıcı ayarı veya tema bulunamadı.
+  conflictStrategyTitle: Örnek Adı Çakışması Yönetimi
+  conflictRename: Mevcut olanı koru ve geri yükleneni yeniden adlandır (örn. name-restored)
+  conflictOverwrite: Mevcut örnek dosyalarının üzerine yaz
+  conflictSkip: Diskte zaten var olan örnekleri atla
+  restoreError: Yedek geri yüklenemedi
+  createBackupTitle: Yedek Oluştur
+  createBackupDescription: Başlatıcı ayarlarını, koleksiyonları, özel temaları ve örnekleri tek bir taşınabilir arşiv dosyasına kaydedin.
+  restoreBackupTitle: Yedeği Geri Yükle
+  restoreBackupDescription: Önceden kaydedilmiş bir yedek arşivinden ayarları, temaları, koleksiyonları veya örnekleri geri yükleyin.
+  portableArchiveNoticeTitle: Taşınabilir Tek Dosyalı Yedekler
+  portableArchiveNoticeDescription: Yedekler tek bir .xmclbackup arşivi olarak kaydedilir. USB belleğe kopyalayabilir veya bulut hizmetleriyle eşitleyebilirsiniz.
+  autoBackupTitle: Arka Planda Otomatik Yedekleme
+  autoBackupDescription: Seçilen bir veya daha fazla örneği zamanlamaya göre arka planda otomatik olarak yedekleyin
+  autoBackupStatusRunning: Yedekleniyor...
+  autoBackupStatusEnabled: Aktif
+  autoBackupStatusDisabled: Devre Dışı
+  autoBackupRunNow: Şimdi Çalıştır
+  autoBackupLastRun: Son otomatik yedekleme
+  autoBackupNeverRun: Hiçbir zaman
+  selectedCount: '{selected} / {total} seçildi'
+  autoBackupSelectInstances: Otomatik Yedeklenecek Örnekler (Bir veya daha fazla seçin)
+  searchInstances: Örnek ara...
+  autoBackupInterval: Yedekleme Sıklığı
+  autoBackupRetention: Yedek Saklama Sayısı
+  autoBackupDestination: Otomatik Yedekleme Klasörü
+  browse: Gözat
+  autoBackupContentLabel: Arka Plan Yedeklerine Dahil Edilecek İçerik
+  instanceSaves: Dünyalar ve Kayıtlar
+  instanceConfigs: Yapılandırmalar ve Seçenekler
+  instanceMods: Modlar
+  instanceResourcePacks: Kaynak Paketleri
+  instanceShaderPacks: Shader Paketleri
+  launcherSettings: Başlatıcı Ayarları
+  autoBackupHistoryTitle: Son Otomatik Yedeklemeler
+  autoBackupError: Otomatik yedekleme başarısız oldu
+  interval30m: Her 30 dakikada bir
+  interval1h: Her 1 saatte bir
+  interval2h: Her 2 saatte bir
+  interval4h: Her 4 saatte bir
+  interval6h: Her 6 saatte bir
+  interval12h: Her 12 saatte bir
+  interval24h: Her 24 saatte bir
+  keepCount: 'Son {count} yedeği sakla'
 baseSetting:
   title: Instance Ayarları
 browseApp:

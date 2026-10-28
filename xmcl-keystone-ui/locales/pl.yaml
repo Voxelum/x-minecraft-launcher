@@ -68,6 +68,128 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: Kopia zapasowa i przywracanie
+  description: Twórz kopie zapasowe i przywracaj ustawienia, kolekcje, motywy oraz instancje gry
+  launcherData: Dane launchera
+  includeSettingsTitle: Ustawienia launchera
+  includeSettingsHint: Ogólne preferencje, język, tryb deweloperski i wygląd
+  includeCollectionsTitle: Zapisane kolekcje
+  includeCollectionsHint: Kolekcje modów i zasobów zarządzane przez launcher
+  includeThemesTitle: Własne motywy i multimedia
+  includeThemesHint: Kolory motywu, własne style CSS i tła
+  instances: Instancje
+  selectAll: Zaznacz wszystko
+  deselectAll: Odznacz wszystko
+  instanceDataOptions: Opcje danych instancji
+  includeConfigs: Konfiguracje i opcje
+  includeSaves: Zapisy (Światy)
+  includeResourcePacks: Paczki zasobów
+  includeShaderPacks: Paczki shaderów
+  modsMode: Mody
+  modsFull: Pełne pliki (.jar)
+  modsListOnly: Tylko lista modów (lekka)
+  modsNone: Pomiń mody
+  noInstancesFound: Nie znaleziono instancji w launcherze.
+  excludeLibrariesNotice: Główne biblioteki, zasoby Minecrafta i tymczasowa pamięć podręczna są automatycznie pomijane, aby zmniejszyć rozmiar archiwum. Zostaną pobrane przy uruchomieniu gry.
+  create: Utwórz kopię
+  createTitle: Utwórz archiwum kopii zapasowej XMCL
+  saveDialogTitle: Zapisz archiwum kopii zapasowej XMCL
+  fileFilterName: 'Archiwum kopii zapasowej XMCL (*.xmclbackup, *.zip)'
+  createError: Nie udało się utworzyć kopii zapasowej
+  loadManifestError: Nie udało się odczytać archiwum kopii zapasowej
+  restore: Przywróć
+  restoreTitle: Przywróć z kopii zapasowej
+  preparing: Przygotowywanie...
+  workingTitle: Tworzenie archiwum kopii zapasowej...
+  restoringTitle: Przywracanie z kopii zapasowej...
+  elapsedTime: Upłynęło
+  remainingTime: Szacowany pozostały czas
+  calculatingRemaining: Obliczanie...
+  lessThanMinute: '< 1 min'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Światy
+  modsCategory: Mody
+  resourcePacksCategory: Paczki zasobów
+  shaderPacksCategory: Shadery
+  configsCategory: Konfiguracje
+  activityLog: Dziennik aktywności
+  copyLog: Kopiuj dziennik
+  copiedLog: Skopiowano dziennik do schowka
+  openFolder: Pokaż w folderze
+  done: Gotowe
+  backupDone: 'Kopia zapasowa ukończona!'
+  backupDoneHint: Twoje archiwum kopii zapasowej zostało utworzone i zweryfikowane.
+  restoreDone: 'Przywracanie ukończone!'
+  restoreDoneHint: Wszystkie wybrane dane i instancje zostały pomyślnie przywrócone.
+  timeTaken: 'Czas trwania: {time}'
+  destinationFile: 'Zapisano w: {path}'
+  stagePreparing: Przygotowywanie
+  stageSettings: Ustawienia launchera
+  stageCollections: Zapisane kolekcje
+  stageThemes: Motywy i multimedia
+  stageInstances: Instancje gry
+  stageCompressing: Kompresowanie archiwum
+  stageComplete: Ukończono
+  stageLabel: 'Etap: {stage}'
+  searchInstancesPlaceholder: Szukaj instancji według nazwy lub wersji...
+  selectBackupFilePrompt: Wybierz archiwum kopii zapasowej do przywrócenia
+  selectBackupFileDescription: Wybierz plik .xmclbackup lub .zip zawierający zapisane dane i instancje XMCL.
+  selectFile: Wybierz plik
+  selectBackupFileTitle: Otwórz archiwum kopii zapasowej XMCL
+  createdOn: 'Utworzono {date}'
+  changeFile: Zmień plik
+  dataToRestore: Dane do przywrócenia
+  restoreSettings: Przywróć ustawienia
+  restoreSettingsHint: Nadpisz obecne preferencje launchera kopią zapasową
+  restoreCollections: Przywróć kolekcje
+  restoreCollectionsHint: Zaimportuj i połącz zapisane kolekcje w launcherze
+  restoreThemes: Przywróć motywy i multimedia
+  restoreThemesHint: Zainstaluj ponownie motywy, własny CSS i multimedia tła
+  noLauncherDataInBackup: Brak ustawień lub motywów launchera w tym archiwum.
+  conflictStrategyTitle: Rozwiązywanie konfliktów nazw instancji
+  conflictRename: Zachowaj istniejącą i zmień nazwę przywracanej (np. name-restored)
+  conflictOverwrite: Nadpisz pliki istniejącej instancji
+  conflictSkip: Pomiń instancje, które już istnieją na dysku
+  restoreError: Nie udało się przywrócić kopii zapasowej
+  createBackupTitle: Utwórz kopię zapasową
+  createBackupDescription: Zapisz ustawienia launchera, kolekcje, własne motywy i instancje w jednym przenośnym pliku archiwum.
+  restoreBackupTitle: Przywróć kopię zapasową
+  restoreBackupDescription: Przywróć ustawienia, motywy, kolekcje lub instancje z wcześniej zapisanego archiwum.
+  portableArchiveNoticeTitle: Przenośne kopie w jednym pliku
+  portableArchiveNoticeDescription: Kopie zapasowe są zapisywane jako pojedyncze archiwa .xmclbackup. Możesz je skopiować na pendrive lub zsynchronizować z chmurą.
+  autoBackupTitle: Automatyczna kopia zapasowa w tle
+  autoBackupDescription: Automatycznie twórz kopie zapasowe jednej lub wielu wybranych instancji w tle według harmonogramu
+  autoBackupStatusRunning: Tworzenie kopii...
+  autoBackupStatusEnabled: Aktywne
+  autoBackupStatusDisabled: Wyłączone
+  autoBackupRunNow: Uruchom teraz
+  autoBackupLastRun: Ostatnia auto-kopia
+  autoBackupNeverRun: Nigdy
+  selectedCount: 'Wybrano {selected} / {total}'
+  autoBackupSelectInstances: Instancje do automatycznej kopii (wybierz jedną lub więcej)
+  searchInstances: Szukaj instancji...
+  autoBackupInterval: Częstotliwość kopii
+  autoBackupRetention: Przechowywanie kopii
+  autoBackupDestination: Folder automatycznych kopii
+  browse: Przeglądaj
+  autoBackupContentLabel: Zawartość uwzględniana w kopiach w tle
+  instanceSaves: Światy i zapisy
+  instanceConfigs: Konfiguracje i opcje
+  instanceMods: Mody
+  instanceResourcePacks: Paczki zasobów
+  instanceShaderPacks: Paczki shaderów
+  launcherSettings: Ustawienia launchera
+  autoBackupHistoryTitle: Ostatnie automatyczne kopie
+  autoBackupError: Błąd automatycznej kopii zapasowej
+  interval30m: Co 30 minut
+  interval1h: Co 1 godzinę
+  interval2h: Co 2 godziny
+  interval4h: Co 4 godziny
+  interval6h: Co 6 godzin
+  interval12h: Co 12 godzin
+  interval24h: Co 24 godziny
+  keepCount: 'Zachowaj ostatnie {count} kopii'
 baseSetting:
   title: Ustawienia podstawowe
 browseApp:

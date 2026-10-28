@@ -68,6 +68,128 @@ ago:
   minute: hace {duration} minuto | hace {duration} minutos
   second: hace {duration} segundo | hace {duration} segundos
 authProfileAddedNotification: Perfil de Autenticación {name} Añadido
+backup:
+  title: Copia de seguridad y restauración
+  description: Haz copias de seguridad y restaura tus ajustes, colecciones, temas e instancias
+  launcherData: Datos del lanzador
+  includeSettingsTitle: Ajustes del lanzador
+  includeSettingsHint: Preferencias generales, idioma, modo desarrollador y apariencia
+  includeCollectionsTitle: Colecciones guardadas
+  includeCollectionsHint: Colecciones de mods y recursos gestionadas por el lanzador
+  includeThemesTitle: Temas y multimedia personalizados
+  includeThemesHint: Colores de tema, estilos CSS personalizados y fondos
+  instances: Instancias
+  selectAll: Seleccionar todo
+  deselectAll: Deseleccionar todo
+  instanceDataOptions: Opciones de datos de instancia
+  includeConfigs: Configuraciones y opciones
+  includeSaves: Partidas (Mundos)
+  includeResourcePacks: Paquetes de recursos
+  includeShaderPacks: Paquetes de shaders
+  modsMode: Mods
+  modsFull: Archivos completos (.jar)
+  modsListOnly: Solo lista de mods (ligero)
+  modsNone: Excluir mods
+  noInstancesFound: No se encontraron instancias en el lanzador.
+  excludeLibrariesNotice: Las librerías principales, recursos de Minecraft y cachés temporales se excluyen automáticamente para mantener el archivo compacto. Se descargarán al iniciar el juego.
+  create: Crear copia de seguridad
+  createTitle: Crear archivo de copia de seguridad XMCL
+  saveDialogTitle: Guardar copia de seguridad XMCL
+  fileFilterName: 'Archivo de copia de seguridad XMCL (*.xmclbackup, *.zip)'
+  createError: Error al crear la copia de seguridad
+  loadManifestError: Error al leer el archivo de copia de seguridad
+  restore: Restaurar
+  restoreTitle: Restaurar desde copia de seguridad
+  preparing: Preparando...
+  workingTitle: Creando copia de seguridad...
+  restoringTitle: Restaurando desde copia de seguridad...
+  elapsedTime: Tiempo transcurrido
+  remainingTime: Tiempo restante estimado
+  calculatingRemaining: Calculando...
+  lessThanMinute: '< 1 min'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Mundos
+  modsCategory: Mods
+  resourcePacksCategory: Paquetes de recursos
+  shaderPacksCategory: Shaders
+  configsCategory: Configuraciones
+  activityLog: Registro de actividad
+  copyLog: Copiar registro
+  copiedLog: Registro copiado al portapapeles
+  openFolder: Mostrar en carpeta
+  done: Hecho
+  backupDone: '¡Copia de seguridad completada!'
+  backupDoneHint: Tu archivo de copia de seguridad ha sido creado y verificado.
+  restoreDone: '¡Restauración completada!'
+  restoreDoneHint: Todos los datos e instancias seleccionados se han restaurado correctamente.
+  timeTaken: 'Tiempo empleado: {time}'
+  destinationFile: 'Guardado en: {path}'
+  stagePreparing: Preparando
+  stageSettings: Ajustes del lanzador
+  stageCollections: Colecciones guardadas
+  stageThemes: Temas y multimedia
+  stageInstances: Instancias del juego
+  stageCompressing: Comprimiendo archivo
+  stageComplete: Completado
+  stageLabel: 'Etapa: {stage}'
+  searchInstancesPlaceholder: Buscar instancias por nombre o versión...
+  selectBackupFilePrompt: Selecciona un archivo de copia de seguridad para restaurar
+  selectBackupFileDescription: Elige un archivo .xmclbackup o .zip con tus datos e instancias de XMCL.
+  selectFile: Elegir archivo
+  selectBackupFileTitle: Abrir copia de seguridad XMCL
+  createdOn: 'Creado el {date}'
+  changeFile: Cambiar archivo
+  dataToRestore: Datos a restaurar
+  restoreSettings: Restaurar ajustes
+  restoreSettingsHint: Sobrescribir las preferencias actuales con la copia de seguridad
+  restoreCollections: Restaurar colecciones
+  restoreCollectionsHint: Importar y fusionar colecciones guardadas en el lanzador
+  restoreThemes: Restaurar temas y multimedia
+  restoreThemesHint: Reinstalar temas, CSS personalizado y fondos
+  noLauncherDataInBackup: No se encontraron ajustes ni temas en esta copia de seguridad.
+  conflictStrategyTitle: Manejo de conflictos de nombres de instancia
+  conflictRename: Mantener existente y renombrar la restaurada (ej. name-restored)
+  conflictOverwrite: Sobrescribir archivos de la instancia existente
+  conflictSkip: Omitir instancias que ya existen en el disco
+  restoreError: Error al restaurar la copia de seguridad
+  createBackupTitle: Crear copia de seguridad
+  createBackupDescription: Guarda los ajustes del lanzador, colecciones, temas personalizados e instancias en un único archivo portátil.
+  restoreBackupTitle: Restaurar copia de seguridad
+  restoreBackupDescription: Restaura ajustes, temas, colecciones o instancias desde un archivo de copia de seguridad previo.
+  portableArchiveNoticeTitle: Copias de seguridad portátiles en un solo archivo
+  portableArchiveNoticeDescription: Las copias se guardan como archivos .xmclbackup individuales. Puedes guardarlos en una memoria USB o sincronizarlos con Google Drive o OneDrive.
+  autoBackupTitle: Copia de seguridad automática en segundo plano
+  autoBackupDescription: Haz copias de seguridad automáticas de una o varias instancias seleccionadas en segundo plano según un horario
+  autoBackupStatusRunning: Copiando...
+  autoBackupStatusEnabled: Activo
+  autoBackupStatusDisabled: Desactivado
+  autoBackupRunNow: Ejecutar ahora
+  autoBackupLastRun: Última copia automática
+  autoBackupNeverRun: Nunca
+  selectedCount: '{selected} / {total} seleccionadas'
+  autoBackupSelectInstances: Instancias para copia automática (selecciona una o más)
+  searchInstances: Buscar instancias...
+  autoBackupInterval: Frecuencia de copia
+  autoBackupRetention: Retención de copias
+  autoBackupDestination: Carpeta de copias automáticas
+  browse: Examinar
+  autoBackupContentLabel: Contenido a incluir en copias en segundo plano
+  instanceSaves: Mundos y partidas
+  instanceConfigs: Configuraciones y opciones
+  instanceMods: Mods
+  instanceResourcePacks: Paquetes de recursos
+  instanceShaderPacks: Paquetes de shaders
+  launcherSettings: Ajustes del lanzador
+  autoBackupHistoryTitle: Copias automáticas recientes
+  autoBackupError: Error en copia automática
+  interval30m: Cada 30 minutos
+  interval1h: Cada 1 hora
+  interval2h: Cada 2 horas
+  interval4h: Cada 4 horas
+  interval6h: Cada 6 horas
+  interval12h: Cada 12 horas
+  interval24h: Cada 24 horas
+  keepCount: 'Conservar las últimas {count} copias'
 baseSetting:
   title: Configuración de la Instancia
 browseApp:

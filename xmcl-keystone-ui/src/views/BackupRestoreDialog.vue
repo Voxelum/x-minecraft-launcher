@@ -493,7 +493,7 @@ interface LogEntry {
 }
 
 const { t } = useI18n()
-const { isShown, hide } = useDialog('backup-restore')
+const { isShown, hide, parameter } = useDialog<string>('backup-restore')
 const { restoreBackup, loadBackupManifest, isRestoring, isLoadingManifest, restoreProgress } = useBackup()
 const { notify } = useNotifier()
 
@@ -584,11 +584,29 @@ const formattedDate = computed(() => {
   return new Date(manifest.value.createdAt).toLocaleString()
 })
 
-watch(isShown, (shown) => {
+async function loadFileFromPath(path: string) {
+  try {
+    const loadedManifest = await loadBackupManifest(path)
+    backupFilePath.value = path
+    manifest.value = loadedManifest
+
+    restoreSettings.value = !!loadedManifest.includes.settings
+    restoreCollections.value = !!loadedManifest.includes.collections
+    restoreThemes.value = !!loadedManifest.includes.themes
+    selectedInstances.value = loadedManifest.includes.instances.map((i) => i.folderName)
+  } catch {
+    // Error is toasted by composable
+  }
+}
+
+watch(isShown, async (shown) => {
   if (shown) {
     dialogMode.value = 'config'
     logEntries.value = []
     elapsedSeconds.value = 0
+    if (typeof parameter.value === 'string' && parameter.value.trim()) {
+      await loadFileFromPath(parameter.value.trim())
+    }
   } else {
     stopTimer()
   }
@@ -632,20 +650,7 @@ async function browseBackupFile() {
 
   if (canceled || !filePaths || filePaths.length === 0) return
 
-  const path = filePaths[0]
-  try {
-    const loadedManifest = await loadBackupManifest(path)
-    backupFilePath.value = path
-    manifest.value = loadedManifest
-
-    // Set initial toggles
-    restoreSettings.value = !!loadedManifest.includes.settings
-    restoreCollections.value = !!loadedManifest.includes.collections
-    restoreThemes.value = !!loadedManifest.includes.themes
-    selectedInstances.value = loadedManifest.includes.instances.map((i) => i.folderName)
-  } catch {
-    // Error is toasted by composable
-  }
+  await loadFileFromPath(filePaths[0])
 }
 
 function selectAllInstances() {

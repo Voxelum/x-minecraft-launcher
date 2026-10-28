@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 274 (in 322 Vue files)
+**Total anchors:** 276 (in 322 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -52,6 +52,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `agent-tool-call` | [`xmcl-keystone-ui/src/components/AgentToolCall.vue#L2`](../xmcl-keystone-ui/src/components/AgentToolCall.vue#L2) |
 | `agent-transcript` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L31`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L31) |
 | `app-sidebar` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4) |
+| `auto-backup-enable-switch` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L134`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L134) |
+| `auto-backup-run-now-btn` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L121`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L121) |
 | `base-setting-bedrock-available` | [`xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L100`](../xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L100) |
 | `base-setting-bedrock-devmode` | [`xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L22`](../xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L22) |
 | `base-setting-bedrock-installed` | [`xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L42`](../xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L42) |
@@ -86,7 +88,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `command-palette-instance-duplicate` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L191`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L191) |
 | `command-palette-instance-launch` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L176`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L176) |
 | `command-palette-instance-select` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L161`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L161) |
-| `create-backup-btn` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L16`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L16) |
+| `create-backup-btn` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L18`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L18) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
 | `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L320`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L320) |
@@ -224,7 +226,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `remote-server-test` | [`xmcl-keystone-ui/src/views/BaseSettingServerRemote.vue#L126`](../xmcl-keystone-ui/src/views/BaseSettingServerRemote.vue#L126) |
 | `resource-pack-drag-handle` | [`xmcl-keystone-ui/src/views/ResourcePackItem.vue#L24`](../xmcl-keystone-ui/src/views/ResourcePackItem.vue#L24) |
 | `resource-pack-item` | [`xmcl-keystone-ui/src/views/ResourcePackItem.vue#L3`](../xmcl-keystone-ui/src/views/ResourcePackItem.vue#L3) |
-| `restore-backup-btn` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L41`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L41) |
+| `restore-backup-btn` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L43`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L43) |
 | `save-world-map-canvas` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L10`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L10) |
 | `save-world-map-copy` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L103`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L103) |
 | `save-world-map-delete` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L128`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L128) |

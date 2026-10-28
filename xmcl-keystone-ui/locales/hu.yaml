@@ -68,6 +68,128 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: Biztonsági mentés és visszaállítás
+  description: Beállítások, gyűjtemények, témák és játékpéldányok biztonsági mentése és visszaállítása
+  launcherData: Indító adatai
+  includeSettingsTitle: Indító beállításai
+  includeSettingsHint: Általános beállítások, nyelv, fejlesztői mód és megjelenés
+  includeCollectionsTitle: Mentett gyűjtemények
+  includeCollectionsHint: Az indító által kezelt mod- és erőforrás-gyűjtemények
+  includeThemesTitle: Egyéni témák és média
+  includeThemesHint: Témaszínek, egyéni CSS-stílusok és háttérmédia
+  instances: Példányok
+  selectAll: Összes kijelölése
+  deselectAll: Kijelölés megszüntetése
+  instanceDataOptions: Példányadatok beállításai
+  includeConfigs: Konfigurációk és beállítások
+  includeSaves: Mentések (Világok)
+  includeResourcePacks: Erőforráscsomagok
+  includeShaderPacks: Shader csomagok
+  modsMode: Modok
+  modsFull: Teljes fájlok (.jar)
+  modsListOnly: Csak modlista (könnyített)
+  modsNone: Modok kihagyása
+  noInstancesFound: Nem található példány az indítóban.
+  excludeLibrariesNotice: Az alapvető könyvtárak, Minecraft-elemek és ideiglenes gyorsítótárak automatikusan kimaradnak a tömörség érdekében.
+  create: Mentés létrehozása
+  createTitle: XMCL biztonsági mentés létrehozása
+  saveDialogTitle: XMCL biztonsági mentés mentése
+  fileFilterName: 'XMCL biztonsági mentés (*.xmclbackup, *.zip)'
+  createError: Nem sikerült létrehozni a biztonsági mentést
+  loadManifestError: Nem sikerült beolvasni a biztonsági mentést
+  restore: Visszaállítás
+  restoreTitle: Visszaállítás biztonsági mentésből
+  preparing: Előkészítés...
+  workingTitle: Biztonsági mentés létrehozása...
+  restoringTitle: Visszaállítás biztonsági mentésből...
+  elapsedTime: Eltelt idő
+  remainingTime: Becsült hátralévő idő
+  calculatingRemaining: Számítás...
+  lessThanMinute: '< 1 perc'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Világok
+  modsCategory: Modok
+  resourcePacksCategory: Erőforráscsomagok
+  shaderPacksCategory: Shaderek
+  configsCategory: Konfigurációk
+  activityLog: Tevékenységnapló
+  copyLog: Napló másolása
+  copiedLog: Napló a vágólapra másolva
+  openFolder: Megjelenítés mappában
+  done: Kész
+  backupDone: 'Biztonsági mentés kész!'
+  backupDoneHint: A biztonsági mentés elkészült és ellenőrizve lett.
+  restoreDone: 'Visszaállítás kész!'
+  restoreDoneHint: Minden kiválasztott adat és példány sikeresen visszaállítva.
+  timeTaken: 'Időtartam: {time}'
+  destinationFile: 'Mentve ide: {path}'
+  stagePreparing: Előkészítés
+  stageSettings: Indító beállításai
+  stageCollections: Mentett gyűjtemények
+  stageThemes: Témák és média
+  stageInstances: Játékpéldányok
+  stageCompressing: Archívum tömörítése
+  stageComplete: Befejezve
+  stageLabel: 'Szakasz: {stage}'
+  searchInstancesPlaceholder: Példányok keresése név vagy verzió alapján...
+  selectBackupFilePrompt: Válasszon biztonsági mentést a visszaállításhoz
+  selectBackupFileDescription: Válasszon egy .xmclbackup vagy .zip fájlt az XMCL adataival.
+  selectFile: Fájl kiválasztása
+  selectBackupFileTitle: XMCL biztonsági mentés megnyitása
+  createdOn: 'Létrehozva: {date}'
+  changeFile: Fájl módosítása
+  dataToRestore: Visszaállítandó adatok
+  restoreSettings: Beállítások visszaállítása
+  restoreSettingsHint: Jelenlegi beállítások felülírása a biztonsági mentéssel
+  restoreCollections: Gyűjtemények visszaállítása
+  restoreCollectionsHint: Mentett gyűjtemények importálása és összefésülése
+  restoreThemes: Témák és média visszaállítása
+  restoreThemesHint: Témák, egyéni CSS és háttérmédia újratelepítése
+  noLauncherDataInBackup: Nem találhatók beállítások vagy témák ebben a mentésben.
+  conflictStrategyTitle: Példánynév-ütközések kezelése
+  conflictRename: Meglévő megtartása és a visszaállított átnevezése (pl. name-restored)
+  conflictOverwrite: Meglévő példányfájlok felülírása
+  conflictSkip: Már létező példányok kihagyása
+  restoreError: Nem sikerült visszaállítani a biztonsági mentést
+  createBackupTitle: Biztonsági mentés létrehozása
+  createBackupDescription: Mentse el az indító beállításait, gyűjteményeit, témáit és példányait egyetlen hordozható fájlba.
+  restoreBackupTitle: Biztonsági mentés visszaállítása
+  restoreBackupDescription: Állítsa vissza a beállításokat, témákat, gyűjteményeket vagy példányokat egy korábbi mentésből.
+  portableArchiveNoticeTitle: Hordozható egyfájlos mentések
+  portableArchiveNoticeDescription: A mentések egyetlen .xmclbackup fájlként kerülnek mentésre, így könnyen másolhatók USB-re vagy felhőbe.
+  autoBackupTitle: Háttérbeli automatikus mentés
+  autoBackupDescription: Egy vagy több kiválasztott példány automatikus biztonsági mentése a háttérben ütemezés szerint
+  autoBackupStatusRunning: Mentés folyamatban...
+  autoBackupStatusEnabled: Aktív
+  autoBackupStatusDisabled: Kikapcsolva
+  autoBackupRunNow: Futtatás most
+  autoBackupLastRun: Utolsó automatikus mentés
+  autoBackupNeverRun: Soha
+  selectedCount: '{selected} / {total} kiválasztva'
+  autoBackupSelectInstances: Automatikusan mentendő példányok (válasszon egyet vagy többet)
+  searchInstances: Példányok keresése...
+  autoBackupInterval: Mentési gyakoriság
+  autoBackupRetention: Mentések megtartása
+  autoBackupDestination: Automatikus mentések mappája
+  browse: Tallózás
+  autoBackupContentLabel: Háttérmentésbe foglalandó tartalom
+  instanceSaves: Világok és mentések
+  instanceConfigs: Konfigurációk és beállítások
+  instanceMods: Modok
+  instanceResourcePacks: Erőforráscsomagok
+  instanceShaderPacks: Shader csomagok
+  launcherSettings: Indító beállításai
+  autoBackupHistoryTitle: Legutóbbi automatikus mentések
+  autoBackupError: Az automatikus mentés sikertelen
+  interval30m: 30 percenként
+  interval1h: Óránként
+  interval2h: 2 óránként
+  interval4h: 4 óránként
+  interval6h: 6 óránként
+  interval12h: 12 óránként
+  interval24h: 24 óránként
+  keepCount: 'Utolsó {count} mentés megtartása'
 baseSetting:
   title: Alapbeállítások
 browseApp:

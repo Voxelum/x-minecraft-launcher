@@ -60,6 +60,128 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: 'Back-up & Herstel'
+  description: Maak back-ups en herstel je instellingen, collecties, thema’s en game-instanties
+  launcherData: Launcher-gegevens
+  includeSettingsTitle: Launcher-instellingen
+  includeSettingsHint: Algemene voorkeuren, taal, ontwikkelaarsmodus en uiterlijk
+  includeCollectionsTitle: Opgeslagen collecties
+  includeCollectionsHint: Door de launcher beheerde mod- en broncollecties
+  includeThemesTitle: 'Aangepaste thema’s & media'
+  includeThemesHint: Themakleuren, aangepaste CSS-stijlen en achtergrondmedia
+  instances: Instanties
+  selectAll: Alles selecteren
+  deselectAll: Alles deselecteren
+  instanceDataOptions: Instantiegegevens-opties
+  includeConfigs: 'Configuraties & opties'
+  includeSaves: Werelden (Saves)
+  includeResourcePacks: Resourcepacks
+  includeShaderPacks: Shaderpacks
+  modsMode: Mods
+  modsFull: Volledige bestanden (.jar)
+  modsListOnly: Alleen modlijst (lichtgewicht)
+  modsNone: Mods uitsluiten
+  noInstancesFound: Geen instanties gevonden in de launcher.
+  excludeLibrariesNotice: Kernbibliotheken, Minecraft-assets en tijdelijke caches worden automatisch uitgesloten om het archief compact te houden.
+  create: Back-up maken
+  createTitle: XMCL Back-uparchief maken
+  saveDialogTitle: XMCL Back-uparchief opslaan
+  fileFilterName: 'XMCL Back-uparchief (*.xmclbackup, *.zip)'
+  createError: Back-up maken mislukt
+  loadManifestError: Back-uparchief lezen mislukt
+  restore: Herstellen
+  restoreTitle: Herstellen vanuit back-up
+  preparing: Voorbereiden...
+  workingTitle: Back-uparchief maken...
+  restoringTitle: Herstellen vanuit back-up...
+  elapsedTime: Verstreken tijd
+  remainingTime: Geschatte resterende tijd
+  calculatingRemaining: Berekenen...
+  lessThanMinute: '< 1 min'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Werelden
+  modsCategory: Mods
+  resourcePacksCategory: Resourcepacks
+  shaderPacksCategory: Shaders
+  configsCategory: Configuraties
+  activityLog: Activiteitenlogboek
+  copyLog: Logboek kopiëren
+  copiedLog: Logboek gekopieerd naar klembord
+  openFolder: Tonen in map
+  done: Klaar
+  backupDone: 'Back-up voltooid!'
+  backupDoneHint: Je back-uparchief is aangemaakt en gecontroleerd.
+  restoreDone: 'Herstel voltooid!'
+  restoreDoneHint: Alle geselecteerde gegevens en instanties zijn succesvol hersteld.
+  timeTaken: 'Verstreken tijd: {time}'
+  destinationFile: 'Opgeslagen in: {path}'
+  stagePreparing: Voorbereiden
+  stageSettings: Launcher-instellingen
+  stageCollections: Opgeslagen collecties
+  stageThemes: 'Thema’s & media'
+  stageInstances: Game-instanties
+  stageCompressing: Archief comprimeren
+  stageComplete: Voltooid
+  stageLabel: 'Fase: {stage}'
+  searchInstancesPlaceholder: Zoek instanties op naam of versie...
+  selectBackupFilePrompt: Selecteer een back-uparchief om te herstellen
+  selectBackupFileDescription: Kies een .xmclbackup- of .zip-bestand met je opgeslagen XMCL-gegevens en instanties.
+  selectFile: Bestand kiezen
+  selectBackupFileTitle: XMCL Back-uparchief openen
+  createdOn: 'Gemaakt op {date}'
+  changeFile: Bestand wijzigen
+  dataToRestore: Te herstellen gegevens
+  restoreSettings: Instellingen herstellen
+  restoreSettingsHint: Huidige launcher-voorkeuren overschrijven met de back-up
+  restoreCollections: Collecties herstellen
+  restoreCollectionsHint: Opgeslagen collecties importeren en samenvoegen
+  restoreThemes: 'Thema’s & media herstellen'
+  restoreThemesHint: Thema’s, aangepaste CSS en achtergrondmedia opnieuw installeren
+  noLauncherDataInBackup: Geen launcher-instellingen of thema’s gevonden in dit back-uparchief.
+  conflictStrategyTitle: Afhandeling van naamconflicten
+  conflictRename: Bestaande behouden en herstelde instantie hernoemen (bijv. name-restored)
+  conflictOverwrite: Bestaande instantiebestanden overschrijven
+  conflictSkip: Instanties overslaan die al op schijf staan
+  restoreError: Back-up herstellen mislukt
+  createBackupTitle: Back-up maken
+  createBackupDescription: Sla je launcher-instellingen, collecties, aangepaste thema’s en instanties op in één draagbaar archiefbestand.
+  restoreBackupTitle: Back-up herstellen
+  restoreBackupDescription: Herstel instellingen, thema’s, collecties of instanties vanuit een eerder opgeslagen back-uparchief.
+  portableArchiveNoticeTitle: Draagbare back-ups in één bestand
+  portableArchiveNoticeDescription: Back-ups worden opgeslagen als enkele .xmclbackup-archieven die je eenvoudig kunt bewaren of synchroniseren met de cloud.
+  autoBackupTitle: Automatische back-up op de achtergrond
+  autoBackupDescription: Maak volgens schema automatisch op de achtergrond een back-up van een of meer geselecteerde instanties
+  autoBackupStatusRunning: Back-up maken...
+  autoBackupStatusEnabled: Actief
+  autoBackupStatusDisabled: Uitgeschakeld
+  autoBackupRunNow: Nu uitvoeren
+  autoBackupLastRun: Laatste auto-back-up
+  autoBackupNeverRun: Nooit
+  selectedCount: '{selected} / {total} geselecteerd'
+  autoBackupSelectInstances: Instanties voor auto-back-up (selecteer één of meer)
+  searchInstances: Instanties zoeken...
+  autoBackupInterval: Back-upfrequentie
+  autoBackupRetention: Back-upbehoud
+  autoBackupDestination: Map voor automatische back-ups
+  browse: Bladeren
+  autoBackupContentLabel: Inhoud voor achtergrondback-ups
+  instanceSaves: 'Werelden & saves'
+  instanceConfigs: 'Configuraties & opties'
+  instanceMods: Mods
+  instanceResourcePacks: Resourcepacks
+  instanceShaderPacks: Shaderpacks
+  launcherSettings: Launcher-instellingen
+  autoBackupHistoryTitle: Recente automatische back-ups
+  autoBackupError: Automatische back-up mislukt
+  interval30m: Elke 30 minuten
+  interval1h: Elk uur
+  interval2h: Elke 2 uur
+  interval4h: Elke 4 uur
+  interval6h: Elke 6 uur
+  interval12h: Elke 12 uur
+  interval24h: Elke 24 uur
+  keepCount: 'Laatste {count} back-ups bewaren'
 baseSetting:
   title: Instance-instellingen
 browseApp:

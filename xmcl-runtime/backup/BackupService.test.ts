@@ -414,4 +414,77 @@ describe('BackupService', () => {
     const hasBedrock = entries.some((e) => e.fileName.includes('BedrockInst'))
     expect(hasBedrock).toBe(false)
   })
+
+  test('auto-backup is disabled by default and backs up one or multiple Java instances with retention rotation', async () => {
+    const defaultCfg = await backupService.getAutoBackupConfig()
+    expect(defaultCfg.enabled).toBe(false)
+    expect(defaultCfg.instancePaths).toEqual([])
+    expect(defaultCfg.intervalMinutes).toBe(60)
+    expect(defaultCfg.maxBackups).toBe(5)
+
+    // Create two Java instances and one Bedrock instance
+    const inst1 = join(gameDataDir, 'instances', 'AutoInst1')
+    const inst2 = join(gameDataDir, 'instances', 'AutoInst2')
+    const bedrockInst = join(gameDataDir, 'instances', 'BedrockAuto')
+    await ensureDir(join(inst1, 'saves', 'WorldA'))
+    await ensureDir(join(inst2, 'saves', 'WorldB'))
+    await ensureDir(bedrockInst)
+
+    await writeJson(join(inst1, 'instance.json'), {
+      name: 'AutoInst1',
+      runtime: { minecraft: '1.20.1' },
+    })
+    await writeFile(join(inst1, 'saves', 'WorldA', 'level.dat'), 'world-a-data')
+
+    await writeJson(join(inst2, 'instance.json'), {
+      name: 'AutoInst2',
+      runtime: { minecraft: '1.20.4' },
+    })
+    await writeFile(join(inst2, 'saves', 'WorldB', 'level.dat'), 'world-b-data')
+
+    await writeJson(join(bedrockInst, 'instance.json'), {
+      name: 'BedrockAuto',
+      edition: 'bedrock',
+      runtime: { minecraft: '1.20.0' },
+    })
+
+    const autoDest = join(tempDir, 'auto-backups')
+    const updatedCfg = await backupService.setAutoBackupConfig({
+      enabled: false, // keep timer off during unit test, trigger manually via runAutoBackupNow
+      destinationDir: autoDest,
+      maxBackups: 2,
+      instancePaths: [inst1, inst2, bedrockInst],
+      includeSaves: true,
+      includeConfigs: true,
+      includeMods: false,
+    })
+
+    expect(updatedCfg.destinationDir).toBe(autoDest)
+    expect(updatedCfg.maxBackups).toBe(2)
+
+    // Run first auto-backup
+    const firstPath = await backupService.runAutoBackupNow()
+    expect(firstPath).toBeTruthy()
+
+    const manifest = await backupService.loadBackupManifest(firstPath!)
+    expect(manifest.includes.instances.map((i) => i.name).sort()).toEqual(['AutoInst1', 'AutoInst2'])
+
+    // Wait a couple milliseconds so filenames/mtimes differ, then create 2 more to test rotation (maxBackups = 2)
+    await new Promise((resolve) => setTimeout(resolve, 15))
+    const secondPath = await backupService.runAutoBackupNow()
+    expect(secondPath).toBeTruthy()
+
+    await new Promise((resolve) => setTimeout(resolve, 15))
+    const thirdPath = await backupService.runAutoBackupNow()
+    expect(thirdPath).toBeTruthy()
+
+    const list = await backupService.listAutoBackups()
+    expect(list).toHaveLength(2)
+
+    // Delete one auto-backup
+    await backupService.deleteAutoBackup(list[0].filePath)
+
+    const listAfterDelete = await backupService.listAutoBackups()
+    expect(listAfterDelete).toHaveLength(1)
+  })
 })

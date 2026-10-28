@@ -1,4 +1,7 @@
 import {
+  AutoBackupConfig,
+  AutoBackupFileEntry,
+  AutoBackupStatusEvent,
   BackupManifest,
   BackupOptions,
   BackupProgress,
@@ -14,7 +17,17 @@ import { useService } from './service'
 
 export function useBackup() {
   const service = useService(BackupServiceKey)
-  const { createBackup: createBackupApi, loadBackupManifest: loadManifestApi, restoreBackup: restoreBackupApi, on } = service
+  const {
+    createBackup: createBackupApi,
+    loadBackupManifest: loadManifestApi,
+    restoreBackup: restoreBackupApi,
+    getAutoBackupConfig: getAutoBackupConfigApi,
+    setAutoBackupConfig: setAutoBackupConfigApi,
+    runAutoBackupNow: runAutoBackupNowApi,
+    listAutoBackups: listAutoBackupsApi,
+    deleteAutoBackup: deleteAutoBackupApi,
+    on,
+  } = service
   const { notify } = useNotifier()
   const { t } = useI18n()
 
@@ -24,6 +37,10 @@ export function useBackup() {
   const backupProgress = ref<BackupProgress | null>(null)
   const restoreProgress = ref<RestoreProgress | null>(null)
 
+  const autoBackupConfig = ref<AutoBackupConfig | null>(null)
+  const isAutoBackupRunning = ref(false)
+  const autoBackupFiles = ref<AutoBackupFileEntry[]>([])
+
   on('backup-progress', (progress: BackupProgress) => {
     backupProgress.value = progress
   })
@@ -31,6 +48,82 @@ export function useBackup() {
   on('restore-progress', (progress: RestoreProgress) => {
     restoreProgress.value = progress
   })
+
+  on('auto-backup-status', async (status: AutoBackupStatusEvent) => {
+    isAutoBackupRunning.value = status.running
+    autoBackupConfig.value = status.config
+    if (!status.running) {
+      await refreshAutoBackupFiles()
+    }
+  })
+
+  async function refreshAutoBackupFiles() {
+    try {
+      autoBackupFiles.value = await listAutoBackupsApi()
+    } catch {
+      // Ignore error loading file list
+    }
+  }
+
+  async function loadAutoBackupState() {
+    try {
+      autoBackupConfig.value = await getAutoBackupConfigApi()
+      await refreshAutoBackupFiles()
+    } catch (e: any) {
+      notify({
+        level: 'error',
+        title: t('backup.autoBackupError'),
+        body: e?.message || String(e),
+      })
+    }
+  }
+
+  async function updateAutoBackupConfig(patch: Partial<AutoBackupConfig>) {
+    try {
+      const updated = await setAutoBackupConfigApi(patch)
+      autoBackupConfig.value = updated
+      await refreshAutoBackupFiles()
+      return updated
+    } catch (e: any) {
+      notify({
+        level: 'error',
+        title: t('backup.autoBackupError'),
+        body: e?.message || String(e),
+      })
+      throw e
+    }
+  }
+
+  async function triggerAutoBackupNow() {
+    isAutoBackupRunning.value = true
+    try {
+      const created = await runAutoBackupNowApi()
+      await loadAutoBackupState()
+      return created
+    } catch (e: any) {
+      notify({
+        level: 'error',
+        title: t('backup.autoBackupError'),
+        body: e?.message || String(e),
+      })
+      throw e
+    } finally {
+      isAutoBackupRunning.value = false
+    }
+  }
+
+  async function removeAutoBackupFile(filePath: string) {
+    try {
+      await deleteAutoBackupApi(filePath)
+      await refreshAutoBackupFiles()
+    } catch (e: any) {
+      notify({
+        level: 'error',
+        title: t('backup.autoBackupError'),
+        body: e?.message || String(e),
+      })
+    }
+  }
 
   async function createBackup(options: BackupOptions): Promise<string | undefined> {
     isCreating.value = true
@@ -79,11 +172,6 @@ export function useBackup() {
     }
     try {
       const result = await restoreBackupApi(options)
-      notify({
-        level: 'success',
-        title: t('backup.restoreSuccess'),
-        body: t('backup.restoreSuccessDetails', { count: result.restoredInstances.length }),
-      })
       return result
     } catch (e: any) {
       notify({
@@ -103,9 +191,16 @@ export function useBackup() {
     isLoadingManifest,
     backupProgress,
     restoreProgress,
+    autoBackupConfig,
+    isAutoBackupRunning,
+    autoBackupFiles,
     createBackup,
     loadBackupManifest,
     restoreBackup,
+    loadAutoBackupState,
+    updateAutoBackupConfig,
+    triggerAutoBackupNow,
+    removeAutoBackupFile,
   }
 }
 

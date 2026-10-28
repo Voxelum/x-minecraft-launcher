@@ -17,6 +17,37 @@ export interface BackupOptions {
   includeCollections?: boolean
   includeThemes?: boolean
   instances?: BackupInstanceOptions[]
+  silent?: boolean
+}
+
+export interface AutoBackupConfig {
+  enabled: boolean
+  instancePaths: string[]
+  intervalMinutes: number
+  maxBackups: number
+  destinationDir: string
+  includeSaves: boolean
+  includeConfigs: boolean
+  includeMods: boolean
+  modListOnly: boolean
+  includeResourcePacks: boolean
+  includeShaderPacks: boolean
+  includeSettings: boolean
+  lastBackupAt?: number
+  lastBackupPath?: string
+  lastError?: string
+}
+
+export interface AutoBackupFileEntry {
+  fileName: string
+  filePath: string
+  createdAt: number
+  sizeBytes: number
+}
+
+export interface AutoBackupStatusEvent {
+  running: boolean
+  config: AutoBackupConfig
 }
 
 export interface BackupManifestInstanceItem {
@@ -99,12 +130,18 @@ export interface RestoreProgress {
 export interface BackupServiceEventMap {
   'backup-progress': BackupProgress
   'restore-progress': RestoreProgress
+  'auto-backup-status': AutoBackupStatusEvent
 }
 
 export interface BackupService extends GenericEventEmitter<BackupServiceEventMap> {
   createBackup(options: BackupOptions): Promise<string>
   loadBackupManifest(backupPath: string): Promise<BackupManifest>
   restoreBackup(options: RestoreBackupOptions): Promise<RestoreBackupResult>
+  getAutoBackupConfig(): Promise<AutoBackupConfig>
+  setAutoBackupConfig(config: Partial<AutoBackupConfig>): Promise<AutoBackupConfig>
+  runAutoBackupNow(): Promise<string | undefined>
+  listAutoBackups(): Promise<AutoBackupFileEntry[]>
+  deleteAutoBackup(filePath: string): Promise<void>
 }
 
 export const BackupServiceKey: ServiceKey<BackupService> = 'BackupService'

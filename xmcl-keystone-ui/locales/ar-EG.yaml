@@ -92,6 +92,128 @@ bedrock:
   downloadFailed: فشل تنزيل نسخة بيدروك {version}
   launchFailed: فشل تشغيل نسخة بيدروك دي
   removeFailed: فشل إزالة نسخة بيدروك {version}
+backup:
+  title: النسخ الاحتياطي والاستعادة
+  description: قم بنسخ إعداداتك ومجموعاتك وسماتك ونسخ اللعبة احتياطيًا واستعادتها
+  launcherData: بيانات المشغل
+  includeSettingsTitle: إعدادات المشغل
+  includeSettingsHint: التفضيلات العامة واللغة ووضع المطور وإعدادات المظهر
+  includeCollectionsTitle: المجموعات المحفوظة
+  includeCollectionsHint: مجموعات المودات والموارد التي يديرها المشغل
+  includeThemesTitle: السمات والوسائط المخصصة
+  includeThemesHint: ألوان السمات وأنماط CSS المخصصة ووسائط الخلفية
+  instances: النسخ (Instances)
+  selectAll: تحديد الكل
+  deselectAll: إلغاء تحديد الكل
+  instanceDataOptions: خيارات بيانات النسخة
+  includeConfigs: التكوينات والخيارات
+  includeSaves: العوالم المحفوظة (Saves)
+  includeResourcePacks: حزم الموارد
+  includeShaderPacks: حزم الشيدر
+  modsMode: المودات
+  modsFull: ملفات كاملة (.jar)
+  modsListOnly: قائمة المودات فقط (خفيف)
+  modsNone: استبعاد المودات
+  noInstancesFound: لم يتم العثور على نسخ في المشغل.
+  excludeLibrariesNotice: يتم استبعاد ملفات المكتبات الأساسية وأصول ماينكرافت وذاكرة التخزين المؤقت تلقائيًا للحفاظ على صغر حجم الأرشيف.
+  create: إنشاء نسخة احتياطية
+  createTitle: إنشاء أرشيف نسخ احتياطي XMCL
+  saveDialogTitle: حفظ أرشيف النسخ الاحتياطي XMCL
+  fileFilterName: 'أرشيف النسخ الاحتياطي XMCL (*.xmclbackup, *.zip)'
+  createError: فشل إنشاء النسخة الاحتياطية
+  loadManifestError: فشل قراءة أرشيف النسخة الاحتياطية
+  restore: استعادة
+  restoreTitle: الاستعادة من نسخة احتياطية
+  preparing: جاري التحضير...
+  workingTitle: جاري إنشاء أرشيف النسخة الاحتياطية...
+  restoringTitle: جاري الاستعادة من النسخة الاحتياطية...
+  elapsedTime: الوقت المنقضي
+  remainingTime: الوقت المتبقي المقدر
+  calculatingRemaining: جاري الحساب...
+  lessThanMinute: '< 1 دقيقة'
+  itemsProgress: '{current}/{total}'
+  savesCategory: العوالم
+  modsCategory: المودات
+  resourcePacksCategory: حزم الموارد
+  shaderPacksCategory: حزم الشيدر
+  configsCategory: الإعدادات
+  activityLog: سجل النشاط
+  copyLog: نسخ السجل
+  copiedLog: تم نسخ السجل إلى الحافظة
+  openFolder: إظهار في المجلد
+  done: تم
+  backupDone: 'اكتمل النسخ الاحتياطي!'
+  backupDoneHint: تم إنشاء أرشيف النسخة الاحتياطية والتحقق منه.
+  restoreDone: 'اكتملت الاستعادة!'
+  restoreDoneHint: تمت استعادة جميع البيانات والنسخ المحددة بنجاح.
+  timeTaken: 'الوقت المستغرق: {time}'
+  destinationFile: 'تم الحفظ في: {path}'
+  stagePreparing: التحضير
+  stageSettings: إعدادات المشغل
+  stageCollections: المجموعات المحفوظة
+  stageThemes: السمات والوسائط
+  stageInstances: نسخ اللعبة
+  stageCompressing: ضغط الأرشيف
+  stageComplete: مكتمل
+  stageLabel: 'المرحلة: {stage}'
+  searchInstancesPlaceholder: البحث عن النسخ بالاسم أو الإصدار...
+  selectBackupFilePrompt: حدد أرشيف نسخة احتياطية لاستعادته
+  selectBackupFileDescription: اختر ملف .xmclbackup أو .zip يحتوي على بيانات ونسخ XMCL المحفوظة.
+  selectFile: اختر ملفًا
+  selectBackupFileTitle: فتح أرشيف النسخ الاحتياطي XMCL
+  createdOn: 'تم الإنشاء في {date}'
+  changeFile: تغيير الملف
+  dataToRestore: البيانات المراد استعادتها
+  restoreSettings: استعادة الإعدادات
+  restoreSettingsHint: الكتابة فوق تفضيلات المشغل الحالية بنسخة الاحتياط
+  restoreCollections: استعادة المجموعات
+  restoreCollectionsHint: استيراد ودمج المجموعات المحفوظة في المشغل
+  restoreThemes: استعادة السمات والوسائط
+  restoreThemesHint: إعادة تثبيت السمات وملفات CSS المخصصة ووسائط الخلفية
+  noLauncherDataInBackup: لم يتم العثور على إعدادات أو سمات في هذا الأرشيف.
+  conflictStrategyTitle: التعامل مع تعارض أسماء النسخ
+  conflictRename: الاحتفاظ بالموجودة وإعادة تسمية المستعادة (مثل name-restored)
+  conflictOverwrite: الكتابة فوق ملفات النسخة الموجودة
+  conflictSkip: تخطي النسخ الموجودة بالفعل على القرص
+  restoreError: فشلت استعادة النسخة الاحتياطية
+  createBackupTitle: إنشاء نسخة احتياطية
+  createBackupDescription: احفظ إعدادات المشغل والمجموعات والسمات المخصصة والنسخ في ملف أرشيف محمول واحد.
+  restoreBackupTitle: استعادة نسخة احتياطية
+  restoreBackupDescription: استعد الإعدادات أو السمات أو المجموعات أو النسخ من أرشيف محفوظ مسبقًا.
+  portableArchiveNoticeTitle: نسخ احتياطية محمولة في ملف واحد
+  portableArchiveNoticeDescription: يتم حفظ النسخ الاحتياطية كملفات .xmclbackup مفردة يسهل نسخها إلى USB أو مزامنتها سحابيًا.
+  autoBackupTitle: النسخ الاحتياطي التلقائي في الخلفية
+  autoBackupDescription: نسخ نسخة واحدة أو أكثر من النسخ المحددة احتياطيًا في الخلفية تلقائيًا وفق جدول زمني
+  autoBackupStatusRunning: جاري النسخ الاحتياطي...
+  autoBackupStatusEnabled: نشط
+  autoBackupStatusDisabled: معطل
+  autoBackupRunNow: تشغيل الآن
+  autoBackupLastRun: آخر نسخ تلقائي
+  autoBackupNeverRun: أبدًا
+  selectedCount: 'تم تحديد {selected} / {total}'
+  autoBackupSelectInstances: النسخ المراد نسخها تلقائيًا (حدد واحدة أو أكثر)
+  searchInstances: البحث عن النسخ...
+  autoBackupInterval: تكرار النسخ الاحتياطي
+  autoBackupRetention: الاحتفاظ بالنسخ الاحتياطية
+  autoBackupDestination: مجلد النسخ الاحتياطي التلقائي
+  browse: استعراض
+  autoBackupContentLabel: المحتوى المضمن في النسخ الاحتياطي بالخلفية
+  instanceSaves: العوالم والمحفوظات
+  instanceConfigs: التكوينات والخيارات
+  instanceMods: المودات
+  instanceResourcePacks: حزم الموارد
+  instanceShaderPacks: حزم الشيدر
+  launcherSettings: إعدادات المشغل
+  autoBackupHistoryTitle: النسخ الاحتياطية التلقائية الأخيرة
+  autoBackupError: فشل النسخ الاحتياطي التلقائي
+  interval30m: كل 30 دقيقة
+  interval1h: كل ساعة
+  interval2h: كل ساعتين
+  interval4h: كل 4 ساعات
+  interval6h: كل 6 ساعات
+  interval12h: كل 12 ساعة
+  interval24h: كل 24 ساعة
+  keepCount: 'الاحتفاظ بآخر {count} نسخ احتياطية'
 baseSetting:
   title: إعدادات النسخة
 browseApp:

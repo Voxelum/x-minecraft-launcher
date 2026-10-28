@@ -70,6 +70,128 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: 'Sicherung & Wiederherstellung'
+  description: Sichere und stelle Einstellungen, Sammlungen, Designs und Spielinstanzen wieder her
+  launcherData: Launcher-Daten
+  includeSettingsTitle: Launcher-Einstellungen
+  includeSettingsHint: Allgemeine Einstellungen, Sprache, Entwicklermodus und Darstellung
+  includeCollectionsTitle: Gespeicherte Sammlungen
+  includeCollectionsHint: Vom Launcher verwaltete Mod- und Ressourcensammlungen
+  includeThemesTitle: 'Eigene Designs & Medien'
+  includeThemesHint: Designfarben, eigenes CSS und Hintergrundmedien
+  instances: Instanzen
+  selectAll: Alle auswählen
+  deselectAll: Auswahl aufheben
+  instanceDataOptions: Instanzdaten-Optionen
+  includeConfigs: 'Konfigurationen & Optionen'
+  includeSaves: Spielstände (Welten)
+  includeResourcePacks: Ressourcenpakete
+  includeShaderPacks: Shader-Pakete
+  modsMode: Mods
+  modsFull: Vollständige Dateien (.jar)
+  modsListOnly: Nur Mod-Liste (leichtgewichtig)
+  modsNone: Mods ausschließen
+  noInstancesFound: Keine Instanzen im Launcher gefunden.
+  excludeLibrariesNotice: Kernbibliotheken, Minecraft-Assets und temporäre Caches werden automatisch ausgeschlossen, um das Archiv kompakt zu halten. Sie werden beim Start automatisch heruntergeladen.
+  create: Sicherung erstellen
+  createTitle: XMCL-Sicherungsarchiv erstellen
+  saveDialogTitle: XMCL-Sicherungsarchiv speichern
+  fileFilterName: 'XMCL-Sicherungsarchiv (*.xmclbackup, *.zip)'
+  createError: Sicherung fehlgeschlagen
+  loadManifestError: Sicherungsarchiv konnte nicht gelesen werden
+  restore: Wiederherstellen
+  restoreTitle: Aus Sicherung wiederherstellen
+  preparing: Vorbereiten...
+  workingTitle: Sicherungsarchiv wird erstellt...
+  restoringTitle: Wiederherstellung läuft...
+  elapsedTime: Verstrichene Zeit
+  remainingTime: Verbleibend (ca.)
+  calculatingRemaining: Berechne...
+  lessThanMinute: '< 1 Min.'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Spielstände
+  modsCategory: Mods
+  resourcePacksCategory: Ressourcenpakete
+  shaderPacksCategory: Shader-Pakete
+  configsCategory: Konfigurationen
+  activityLog: Aktivitätsprotokoll
+  copyLog: Protokoll kopieren
+  copiedLog: Protokoll in die Zwischenablage kopiert
+  openFolder: Im Ordner anzeigen
+  done: Fertig
+  backupDone: 'Sicherung abgeschlossen!'
+  backupDoneHint: Dein Sicherungsarchiv wurde erstellt und überprüft.
+  restoreDone: 'Wiederherstellung abgeschlossen!'
+  restoreDoneHint: Alle ausgewählten Daten und Instanzen wurden erfolgreich wiederhergestellt.
+  timeTaken: 'Benötigte Zeit: {time}'
+  destinationFile: 'Gespeichert unter: {path}'
+  stagePreparing: Vorbereiten
+  stageSettings: Launcher-Einstellungen
+  stageCollections: Gespeicherte Sammlungen
+  stageThemes: 'Designs & Medien'
+  stageInstances: Spielinstanzen
+  stageCompressing: Archiv komprimieren
+  stageComplete: Abgeschlossen
+  stageLabel: 'Phase: {stage}'
+  searchInstancesPlaceholder: Instanzen nach Name oder Version suchen...
+  selectBackupFilePrompt: Sicherungsarchiv zur Wiederherstellung auswählen
+  selectBackupFileDescription: Wähle eine .xmclbackup- oder .zip-Datei mit deinen gespeicherten XMCL-Daten und Instanzen.
+  selectFile: Datei wählen
+  selectBackupFileTitle: XMCL-Sicherungsarchiv öffnen
+  createdOn: 'Erstellt am {date}'
+  changeFile: Datei ändern
+  dataToRestore: Wiederherzustellende Daten
+  restoreSettings: Einstellungen wiederherstellen
+  restoreSettingsHint: Aktuelle Launcher-Einstellungen mit der Sicherung überschreiben
+  restoreCollections: Sammlungen wiederherstellen
+  restoreCollectionsHint: Gespeicherte Sammlungen importieren und zusammenführen
+  restoreThemes: 'Designs & Medien wiederherstellen'
+  restoreThemesHint: Designs, eigenes CSS und Hintergrundmedien neu installieren
+  noLauncherDataInBackup: Keine Launcher-Einstellungen oder Designs in diesem Archiv gefunden.
+  conflictStrategyTitle: Konfliktbehandlung bei Instanznamen
+  conflictRename: Bestehende behalten und wiederhergestellte Instanz umbenennen (z. B. name-restored)
+  conflictOverwrite: Bestehende Instanzdateien überschreiben
+  conflictSkip: Bereits vorhandene Instanzen überspringen
+  restoreError: Wiederherstellung fehlgeschlagen
+  createBackupTitle: Sicherung erstellen
+  createBackupDescription: Speichere Launcher-Einstellungen, Sammlungen, Designs und Instanzen in einer einzigen portablen Archivdatei.
+  restoreBackupTitle: Sicherung wiederherstellen
+  restoreBackupDescription: Stelle Einstellungen, Designs, Sammlungen oder Instanzen aus einem Sicherungsarchiv wieder her.
+  portableArchiveNoticeTitle: Portable Einzeldatei-Sicherungen
+  portableArchiveNoticeDescription: Sicherungen werden als einzelne .xmclbackup-Archive gespeichert. Du kannst sie sicher aufbewahren, auf einen USB-Stick kopieren oder mit Cloud-Diensten synchronisieren.
+  autoBackupTitle: Automatische Hintergrundsicherung
+  autoBackupDescription: Sichere eine oder mehrere ausgewählte Instanzen automatisch im Hintergrund nach Zeitplan
+  autoBackupStatusRunning: Sichere...
+  autoBackupStatusEnabled: Aktiv
+  autoBackupStatusDisabled: Deaktiviert
+  autoBackupRunNow: Jetzt ausführen
+  autoBackupLastRun: Letzte Autosicherung
+  autoBackupNeverRun: Nie
+  selectedCount: '{selected} / {total} ausgewählt'
+  autoBackupSelectInstances: Instanzen für Autosicherung (eine oder mehrere auswählen)
+  searchInstances: Instanzen suchen...
+  autoBackupInterval: Sicherungshäufigkeit
+  autoBackupRetention: Aufbewahrung
+  autoBackupDestination: Ordner für Autosicherungen
+  browse: Durchsuchen
+  autoBackupContentLabel: Inhalte für Hintergrundsicherungen
+  instanceSaves: 'Welten & Spielstände'
+  instanceConfigs: 'Konfigurationen & Optionen'
+  instanceMods: Mods
+  instanceResourcePacks: Ressourcenpakete
+  instanceShaderPacks: Shader-Pakete
+  launcherSettings: Launcher-Einstellungen
+  autoBackupHistoryTitle: Letzte Autosicherungen
+  autoBackupError: Autosicherung fehlgeschlagen
+  interval30m: Alle 30 Minuten
+  interval1h: Jede Stunde
+  interval2h: Alle 2 Stunden
+  interval4h: Alle 4 Stunden
+  interval6h: Alle 6 Stunden
+  interval12h: Alle 12 Stunden
+  interval24h: Alle 24 Stunden
+  keepCount: 'Letzte {count} Sicherungen behalten'
 baseSetting:
   title: Grundeinstellungen
 browseApp:

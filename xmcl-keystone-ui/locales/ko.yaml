@@ -71,6 +71,128 @@ bedrock:
   launchHint: 베드락 에디션을 시작하려면 실행 버튼을 누르세요.
   licenseRequired: 베드락 에디션을 설치하고 플레이하려면 마인크래프트를 소유한 Microsoft 계정으로 로그인하세요.
   refresh: 새로고침
+backup:
+  title: 백업 및 복원
+  description: 설정, 컬렉션, 테마 및 게임 인스턴스를 백업하고 복원합니다
+  launcherData: 런처 데이터
+  includeSettingsTitle: 런처 설정
+  includeSettingsHint: 일반 환경설정, 언어, 개발자 모드 및 외관 설정
+  includeCollectionsTitle: 저장된 컬렉션
+  includeCollectionsHint: 런처에서 관리하는 모드 및 리소스 컬렉션
+  includeThemesTitle: 사용자 지정 테마 및 미디어
+  includeThemesHint: 테마 색상, 사용자 지정 CSS 및 배경 미디어
+  instances: 인스턴스
+  selectAll: 모두 선택
+  deselectAll: 선택 해제
+  instanceDataOptions: 인스턴스 데이터 옵션
+  includeConfigs: 구성 및 옵션
+  includeSaves: 세이브 (월드)
+  includeResourcePacks: 리소스 팩
+  includeShaderPacks: 셰이더 팩
+  modsMode: 모드
+  modsFull: 전체 파일 (.jar)
+  modsListOnly: 모드 목록만 (경량)
+  modsNone: 모드 제외
+  noInstancesFound: 런처에서 인스턴스를 찾을 수 없습니다.
+  excludeLibrariesNotice: 코어 라이브러리, 마인크래프트 에셋 및 임시 캐시는 용량 절약을 위해 자동 제외되며 게임 실행 시 자동으로 다운로드됩니다.
+  create: 백업 생성
+  createTitle: XMCL 백업 아카이브 생성
+  saveDialogTitle: XMCL 백업 아카이브 저장
+  fileFilterName: 'XMCL 백업 아카이브 (*.xmclbackup, *.zip)'
+  createError: 백업 생성 실패
+  loadManifestError: 백업 아카이브 읽기 실패
+  restore: 복원
+  restoreTitle: 백업에서 복원
+  preparing: 준비 중...
+  workingTitle: 백업 아카이브 생성 중...
+  restoringTitle: 백업에서 복원 중...
+  elapsedTime: 경과 시간
+  remainingTime: 예상 남은 시간
+  calculatingRemaining: 계산 중...
+  lessThanMinute: '< 1분'
+  itemsProgress: '{current}/{total}'
+  savesCategory: 세이브
+  modsCategory: 모드
+  resourcePacksCategory: 리소스 팩
+  shaderPacksCategory: 셰이더 팩
+  configsCategory: 구성
+  activityLog: 활동 로그
+  copyLog: 로그 복사
+  copiedLog: 로그가 클립보드에 복사되었습니다
+  openFolder: 폴더에서 보기
+  done: 완료
+  backupDone: '백업 완료!'
+  backupDoneHint: 백업 아카이브가 생성되고 검증되었습니다.
+  restoreDone: '복원 완료!'
+  restoreDoneHint: 선택한 모든 데이터와 인스턴스가 성공적으로 복원되었습니다.
+  timeTaken: '소요 시간: {time}'
+  destinationFile: '저장 위치: {path}'
+  stagePreparing: 준비 중
+  stageSettings: 런처 설정
+  stageCollections: 저장된 컬렉션
+  stageThemes: 테마 및 미디어
+  stageInstances: 게임 인스턴스
+  stageCompressing: 아카이브 압축 중
+  stageComplete: 완료
+  stageLabel: '단계: {stage}'
+  searchInstancesPlaceholder: 이름 또는 버전으로 인스턴스 검색...
+  selectBackupFilePrompt: 복원할 백업 아카이브 선택
+  selectBackupFileDescription: 저장된 XMCL 데이터 및 인스턴스가 포함된 .xmclbackup 또는 .zip 파일을 선택하세요.
+  selectFile: 파일 선택
+  selectBackupFileTitle: XMCL 백업 아카이브 열기
+  createdOn: '{date} 생성됨'
+  changeFile: 파일 변경
+  dataToRestore: 복원할 데이터
+  restoreSettings: 설정 복원
+  restoreSettingsHint: 백업 사본으로 현재 런처 환경설정 덮어쓰기
+  restoreCollections: 컬렉션 복원
+  restoreCollectionsHint: 저장된 컬렉션을 런처로 가져오기 및 병합
+  restoreThemes: 테마 및 미디어 복원
+  restoreThemesHint: 테마, 사용자 지정 CSS 및 배경 미디어 재설치
+  noLauncherDataInBackup: 이 백업 아카이브에 런처 설정이나 테마가 없습니다.
+  conflictStrategyTitle: 인스턴스 이름 충돌 처리
+  conflictRename: '기존 유지 후 복원된 인스턴스 이름 변경 (예: name-restored)'
+  conflictOverwrite: 기존 인스턴스 파일 덮어쓰기
+  conflictSkip: 디스크에 이미 존재하는 인스턴스 건너뛰기
+  restoreError: 백업 복원 실패
+  createBackupTitle: 백업 생성
+  createBackupDescription: 런처 설정, 컬렉션, 테마 및 인스턴스를 단일 휴대용 아카이브 파일로 저장합니다.
+  restoreBackupTitle: 백업 복원
+  restoreBackupDescription: 이전에 저장한 백업 아카이브에서 설정, 테마, 컬렉션 또는 게임 인스턴스를 복원합니다.
+  portableArchiveNoticeTitle: 휴대용 단일 파일 백업
+  portableArchiveNoticeDescription: 백업은 단일 .xmclbackup 파일로 저장됩니다. USB 드라이브에 복사하거나 클라우드 서비스와 쉽게 동기화할 수 있습니다.
+  autoBackupTitle: 백그라운드 자동 백업
+  autoBackupDescription: 선택한 하나 이상의 인스턴스를 일정에 따라 백그라운드에서 자동으로 백업합니다
+  autoBackupStatusRunning: 백업 중...
+  autoBackupStatusEnabled: 활성화됨
+  autoBackupStatusDisabled: 비활성화됨
+  autoBackupRunNow: 지금 실행
+  autoBackupLastRun: 마지막 자동 백업
+  autoBackupNeverRun: 없음
+  selectedCount: '{selected} / {total} 선택됨'
+  autoBackupSelectInstances: 자동 백업할 인스턴스 (하나 이상 선택)
+  searchInstances: 인스턴스 검색...
+  autoBackupInterval: 백업 주기
+  autoBackupRetention: 백업 보관 개수
+  autoBackupDestination: 자동 백업 폴더
+  browse: 찾아보기
+  autoBackupContentLabel: 백그라운드 백업에 포함할 항목
+  instanceSaves: 월드 및 세이브
+  instanceConfigs: 구성 및 옵션
+  instanceMods: 모드
+  instanceResourcePacks: 리소스 팩
+  instanceShaderPacks: 셰이더 팩
+  launcherSettings: 런처 설정
+  autoBackupHistoryTitle: 최근 자동 백업
+  autoBackupError: 자동 백업 실패
+  interval30m: 30분마다
+  interval1h: 1시간마다
+  interval2h: 2시간마다
+  interval4h: 4시간마다
+  interval6h: 6시간마다
+  interval12h: 12시간마다
+  interval24h: 24시간마다
+  keepCount: '최근 {count}개 백업 유지'
 baseSetting:
   title: 인스턴스 설정
 browseApp:

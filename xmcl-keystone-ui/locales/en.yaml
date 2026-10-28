@@ -154,15 +154,12 @@ backup:
   noInstancesFound: No instances found in launcher.
   excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
   create: Create Backup
-  creating: Creating Backup...
   createTitle: Create XMCL Backup Archive
   saveDialogTitle: Save XMCL Backup Archive
   fileFilterName: XMCL Backup Archive (*.xmclbackup, *.zip)
-  createSuccess: Backup created successfully
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
   restore: Restore
-  restoring: Restoring Backup...
   restoreTitle: Restore from Backup
   preparing: Preparing...
   workingTitle: Creating Backup Archive...
@@ -215,8 +212,6 @@ backup:
   conflictRename: Keep existing and rename restored instance (e.g. name-restored)
   conflictOverwrite: Overwrite existing instance files
   conflictSkip: Skip instances that already exist on disk
-  restoreSuccess: Restore completed successfully
-  restoreSuccessDetails: 'Restored {count} instance(s) and launcher data.'
   restoreError: Failed to restore backup
   createBackupTitle: Create Backup
   createBackupDescription: Save your launcher settings, collections, custom themes, and instances to a single portable archive file.
@@ -224,6 +219,38 @@ backup:
   restoreBackupDescription: Restore settings, themes, collections, or game instances from a previously saved backup archive.
   portableArchiveNoticeTitle: Portable Single-File Backups
   portableArchiveNoticeDescription: Backups are saved as single .xmclbackup archives. You can easily keep them safe, copy them to a USB drive, or sync them with cloud services like Google Drive or OneDrive.
+  autoBackupTitle: Background Auto-Backup
+  autoBackupDescription: Automatically back up one or more selected instances in the background on a schedule
+  autoBackupStatusRunning: Backing up...
+  autoBackupStatusEnabled: Active
+  autoBackupStatusDisabled: Disabled
+  autoBackupRunNow: Run Now
+  autoBackupLastRun: Last auto-backup
+  autoBackupNeverRun: Never
+  selectedCount: '{selected} / {total} selected'
+  autoBackupSelectInstances: Instances to Auto-Backup (Select one or more)
+  searchInstances: Search instances...
+  autoBackupInterval: Backup Frequency
+  autoBackupRetention: Backup Retention
+  autoBackupDestination: Auto-Backup Folder
+  browse: Browse
+  autoBackupContentLabel: Content to Include in Background Backups
+  instanceSaves: Worlds & Saves
+  instanceConfigs: Configs & Options
+  instanceMods: Mods
+  instanceResourcePacks: Resource Packs
+  instanceShaderPacks: Shader Packs
+  launcherSettings: Launcher Settings
+  autoBackupHistoryTitle: Recent Auto-Backups
+  autoBackupError: Auto-backup failed
+  interval30m: Every 30 minutes
+  interval1h: Every 1 hour
+  interval2h: Every 2 hours
+  interval4h: Every 4 hours
+  interval6h: Every 6 hours
+  interval12h: Every 12 hours
+  interval24h: Every 24 hours
+  keepCount: Keep last {count} backups
 baseSetting:
   info:
     address: Address

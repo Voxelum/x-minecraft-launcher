@@ -92,6 +92,128 @@ bedrock:
   downloadFailed: बेडरोक {version} डाउनलोड करने में विफल
   launchFailed: इस बेडरोक संस्करण को लॉन्च करने में विफल
   removeFailed: बेडरोक {version} को हटाने में विफल
+backup:
+  title: बैकअप और रीस्टोर
+  description: अपनी सेटिंग्स, कलेक्शन, थीम और गेम इंस्टेंस का बैकअप लें और रीस्टोर करें
+  launcherData: लॉन्चर डेटा
+  includeSettingsTitle: लॉन्चर सेटिंग्स
+  includeSettingsHint: सामान्य प्राथमिकताएं, भाषा, डेवलपर मोड और दिखावट सेटिंग्स
+  includeCollectionsTitle: सहेजे गए कलेक्शन
+  includeCollectionsHint: लॉन्चर द्वारा प्रबंधित मॉड और रिसोर्स कलेक्शन
+  includeThemesTitle: कस्टम थीम और मीडिया
+  includeThemesHint: थीम रंग, कस्टम CSS और बैकग्राउंड मीडिया
+  instances: इंस्टेंस
+  selectAll: सभी चुनें
+  deselectAll: चयन हटाएं
+  instanceDataOptions: इंस्टेंस डेटा विकल्प
+  includeConfigs: कॉन्फ़िग और विकल्प
+  includeSaves: सेव्स (वर्ल्ड)
+  includeResourcePacks: रिसोर्स पैक
+  includeShaderPacks: शेडर पैक
+  modsMode: मॉड्स
+  modsFull: पूरी फ़ाइलें (.jar)
+  modsListOnly: केवल मॉड सूची (हल्का)
+  modsNone: मॉड शामिल न करें
+  noInstancesFound: लॉन्चर में कोई इंस्टेंस नहीं मिला।
+  excludeLibrariesNotice: आर्काइव को छोटा रखने के लिए कोर लाइब्रेरी, माइनक्राफ्ट एसेट्स और अस्थायी कैश अपने आप छोड़ दिए जाते हैं।
+  create: बैकअप बनाएं
+  createTitle: XMCL बैकअप आर्काइव बनाएं
+  saveDialogTitle: XMCL बैकअप आर्काइव सहेजें
+  fileFilterName: 'XMCL बैकअप आर्काइव (*.xmclbackup, *.zip)'
+  createError: बैकअप बनाने में विफल
+  loadManifestError: बैकअप आर्काइव पढ़ने में विफल
+  restore: रीस्टोर करें
+  restoreTitle: बैकअप से रीस्टोर करें
+  preparing: तैयारी हो रही है...
+  workingTitle: बैकअप आर्काइव बनाया जा रहा है...
+  restoringTitle: बैकअप से रीस्टोर किया जा रहा है...
+  elapsedTime: बीता समय
+  remainingTime: अनुमानित शेष समय
+  calculatingRemaining: गणना हो रही है...
+  lessThanMinute: '< 1 मिनट'
+  itemsProgress: '{current}/{total}'
+  savesCategory: वर्ल्ड
+  modsCategory: मॉड्स
+  resourcePacksCategory: रिसोर्स पैक
+  shaderPacksCategory: शेडर पैक
+  configsCategory: कॉन्फ़िग
+  activityLog: गतिविधि लॉग
+  copyLog: लॉग कॉपी करें
+  copiedLog: लॉग क्लिपबोर्ड पर कॉपी हो गया
+  openFolder: फ़ोल्डर में दिखाएं
+  done: पूर्ण
+  backupDone: 'बैकअप पूर्ण!'
+  backupDoneHint: आपका बैकअप आर्काइव बना और सत्यापित कर दिया गया है।
+  restoreDone: 'रीस्टोर पूर्ण!'
+  restoreDoneHint: सभी चयनित डेटा और इंस्टेंस सफलतापूर्वक रीस्टोर हो गए हैं।
+  timeTaken: 'लगा समय: {time}'
+  destinationFile: 'यहाँ सहेजा गया: {path}'
+  stagePreparing: तैयारी
+  stageSettings: लॉन्चर सेटिंग्स
+  stageCollections: सहेजे गए कलेक्शन
+  stageThemes: थीम और मीडिया
+  stageInstances: गेम इंस्टेंस
+  stageCompressing: आर्काइव कंप्रेस हो रहा है
+  stageComplete: पूर्ण
+  stageLabel: 'चरण: {stage}'
+  searchInstancesPlaceholder: नाम या संस्करण से इंस्टेंस खोजें...
+  selectBackupFilePrompt: रीस्टोर करने के लिए बैकअप आर्काइव चुनें
+  selectBackupFileDescription: अपना XMCL डेटा और इंस्टेंस वाली .xmclbackup या .zip फ़ाइल चुनें।
+  selectFile: फ़ाइल चुनें
+  selectBackupFileTitle: XMCL बैकअप आर्काइव खोलें
+  createdOn: '{date} को बनाया गया'
+  changeFile: फ़ाइल बदलें
+  dataToRestore: रीस्टोर करने के लिए डेटा
+  restoreSettings: सेटिंग्स रीस्टोर करें
+  restoreSettingsHint: वर्तमान लॉन्चर सेटिंग्स को बैकअप कॉपी से बदलें
+  restoreCollections: कलेक्शन रीस्टोर करें
+  restoreCollectionsHint: सहेजे गए कलेक्शन आयात और मर्ज करें
+  restoreThemes: थीम और मीडिया रीस्टोर करें
+  restoreThemesHint: थीम, कस्टम CSS और बैकग्राउंड मीडिया पुनः इंस्टॉल करें
+  noLauncherDataInBackup: इस बैकअप आर्काइव में कोई लॉन्चर सेटिंग या थीम नहीं मिली।
+  conflictStrategyTitle: इंस्टेंस नाम टकराव प्रबंधन
+  conflictRename: मौजूदा रखें और रीस्टोर किए गए इंस्टेंस का नाम बदलें (जैसे name-restored)
+  conflictOverwrite: मौजूदा इंस्टेंस फ़ाइलों को ओवरराइट करें
+  conflictSkip: डिस्क पर पहले से मौजूद इंस्टेंस छोड़ें
+  restoreError: बैकअप रीस्टोर करने में विफल
+  createBackupTitle: बैकअप बनाएं
+  createBackupDescription: अपनी लॉन्चर सेटिंग्स, कलेक्शन, कस्टम थीम और इंस्टेंस को एक पोर्टेबल आर्काइव फ़ाइल में सहेजें।
+  restoreBackupTitle: बैकअप रीस्टोर करें
+  restoreBackupDescription: पहले से सहेजे गए बैकअप आर्काइव से सेटिंग्स, थीम, कलेक्शन या इंस्टेंस रीस्टोर करें।
+  portableArchiveNoticeTitle: पोर्टेबल सिंगल-फ़ाइल बैकअप
+  portableArchiveNoticeDescription: बैकअप एकल .xmclbackup आर्काइव के रूप में सहेजे जाते हैं जिन्हें आप USB या क्लाउड पर सुरक्षित रख सकते हैं।
+  autoBackupTitle: बैकग्राउंड ऑटो-बैकअप
+  autoBackupDescription: शेड्यूल के अनुसार बैकग्राउंड में एक या अधिक चयनित इंस्टेंस का स्वचालित रूप से बैकअप लें
+  autoBackupStatusRunning: बैकअप हो रहा है...
+  autoBackupStatusEnabled: सक्रिय
+  autoBackupStatusDisabled: निष्क्रिय
+  autoBackupRunNow: अभी चलाएं
+  autoBackupLastRun: पिछला ऑटो-बैकअप
+  autoBackupNeverRun: कभी नहीं
+  selectedCount: '{selected} / {total} चयनित'
+  autoBackupSelectInstances: ऑटो-बैकअप के लिए इंस्टेंस (एक या अधिक चुनें)
+  searchInstances: इंस्टेंस खोजें...
+  autoBackupInterval: बैकअप आवृत्ति
+  autoBackupRetention: बैकअप प्रतिधारण
+  autoBackupDestination: ऑटो-बैकअप फ़ोल्डर
+  browse: ब्राउज़ करें
+  autoBackupContentLabel: बैकग्राउंड बैकअप में शामिल करने योग्य सामग्री
+  instanceSaves: वर्ल्ड और सेव्स
+  instanceConfigs: कॉन्फ़िग और विकल्प
+  instanceMods: मॉड्स
+  instanceResourcePacks: रिसोर्स पैक
+  instanceShaderPacks: शेडर पैक
+  launcherSettings: लॉन्चर सेटिंग्स
+  autoBackupHistoryTitle: हाल के ऑटो-बैकअप
+  autoBackupError: ऑटो-बैकअप विफल रहा
+  interval30m: हर 30 मिनट
+  interval1h: हर 1 घंटे
+  interval2h: हर 2 घंटे
+  interval4h: हर 4 घंटे
+  interval6h: हर 6 घंटे
+  interval12h: हर 12 घंटे
+  interval24h: हर 24 घंटे
+  keepCount: 'अंतिम {count} बैकअप रखें'
 baseSetting:
   title: इंस्टेंस सेटिंग्स
 browseApp:
