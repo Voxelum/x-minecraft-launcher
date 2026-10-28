@@ -16,8 +16,7 @@ export async function stubOpenDialog(
   filePath: string,
 ): Promise<void> {
   await launcher.app.evaluate(({ dialog }, paths) => {
-    // @ts-expect-error — overwriting for tests
-    dialog.showOpenDialog = async () => ({ canceled: false, filePaths: paths })
+    (dialog as any).showOpenDialog = async () => ({ canceled: false, filePaths: paths })
   }, [filePath])
 }
 
