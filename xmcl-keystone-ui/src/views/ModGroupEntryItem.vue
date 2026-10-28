@@ -176,7 +176,7 @@ const countLabel = (count: number) => props.countLabel?.(count) ?? t('mod.mods',
 
 const { show } = useDialog('folder-setting')
 const mutableState = reactive({
-  name: props.name,
+  name: displayName.value,
   color: props.color || '',
   noColor: false,
   icon: props.icon || '',
@@ -184,7 +184,7 @@ const mutableState = reactive({
   pinned: !!props.pinned,
   hasPinned: true,
 })
-watch([() => props.name, () => props.color, () => props.icon, () => props.pinned], ([name, color, icon, pinned]) => {
+watch([displayName, () => props.color, () => props.icon, () => props.pinned], ([name, color, icon, pinned]) => {
   mutableState.name = name
   mutableState.color = color || ''
   mutableState.icon = icon || ''
@@ -193,7 +193,7 @@ watch([() => props.name, () => props.color, () => props.icon, () => props.pinned
 watch(
   mutableState,
   (state) => {
-    emit('setting', state)
+    emit('setting', { ...state, name: state.name === displayName.value ? props.name : state.name })
   },
   { deep: true },
 )

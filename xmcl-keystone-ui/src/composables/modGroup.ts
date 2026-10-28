@@ -430,7 +430,7 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
           group([normalizeModFileName(fileName)]);
         },
         children: groupNames.value.map((g) => ({
-          text: g,
+          text: getGroupDisplayName(g, t, locale.value),
           icon: "",
           onClick: () => {
             const newVal = { ...instanceModGroupping.value };
@@ -648,12 +648,13 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
         .filter((f): f is string => typeof f === 'string' && f.length > 0)
         .map(normalizeModFileName)
     );
+    if (processedFiles.size === 0) return 0;
 
     // Preserve existing group assignments and metadata for files outside the processed subset
     const result: Record<string, ModGroupData> = {};
     for (const [groupName, groupData] of Object.entries(instanceModGroupping.value)) {
-      const remainingFiles = (groupData.files || []).filter(f => !processedFiles.has(f));
-      if (remainingFiles.length > 0 || groupData.pinned) {
+      const remainingFiles = groupData.files.filter(f => !processedFiles.has(normalizeModFileName(f)));
+      if (remainingFiles.length > 0 || groupData.files.length === 0 || groupData.pinned) {
         result[groupName] = {
           ...groupData,
           files: remainingFiles,
@@ -669,7 +670,12 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
       // Use stable rawKey identity rather than localized name so translations don't get hardcoded
       const groupName = cat.rawKey || cat.name;
       if (!result[groupName]) {
-        result[groupName] = { files: [], color: cat.color, icon: cat.icon };
+        result[groupName] = {
+          ...instanceModGroupping.value[groupName],
+          color: instanceModGroupping.value[groupName]?.color ?? cat.color,
+          icon: instanceModGroupping.value[groupName]?.icon ?? cat.icon,
+          files: [],
+        };
       }
       const normalized = normalizeModFileName(fileName);
       if (!result[groupName].files.includes(normalized)) {
@@ -889,7 +895,9 @@ export const standardCategoryMap: Record<string, string> = {
 };
 
 export function getGroupDisplayName(name: string, t: (key: string) => string, currentLocale?: string): string {
-  const key = standardCategoryMap[name];
+  const key = standardCategoryMap[name] || Object.keys(categoryTranslations).find(
+    key => Object.values(categoryTranslations[key]).includes(name)
+  );
   if (!key) return name;
 
   const lang = currentLocale || '';
@@ -1036,4 +1044,3 @@ export function detectModCategory<T extends GroupableProjectFile = ModFile>(
     icon: 'folder'
   };
 }
-

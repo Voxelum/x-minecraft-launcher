@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { effectScope, nextTick, ref } from 'vue'
-import { useModGroups } from './modGroup'
+import { getGroupDisplayName, useModGroups } from './modGroup'
 
-// These tests exercise collapse persistence, not the mounted legacy-group migration.
+// The mounted legacy-group migration is outside these tests.
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({ t: (key: string) => key, locale: ref('en') }),
 }))
@@ -131,7 +131,9 @@ describe('autoCategorizeMods', () => {
     mocks.state.value.groups = {
       'modCategory.optimization': { files: ['sodium.jar'], color: '' },
       PinnedGroup: { files: [], pinned: true, color: '' },
+      EmptyFolder: { files: [], color: '#123456', icon: 'star' },
     }
+    const original = JSON.parse(JSON.stringify(mocks.state.value.groups))
     const emptyItems = ref([] as any[])
     const groups = setup(ref('/instance-a'), 'mods', emptyItems)
     const count = groups.autoCategorizeMods()
@@ -139,5 +141,50 @@ describe('autoCategorizeMods', () => {
     expect(count).toBe(0)
     expect(groups.groupsRaw.value['modCategory.optimization'].files).toEqual(['sodium.jar'])
     expect(groups.groupsRaw.value.PinnedGroup.pinned).toBe(true)
+    expect(groups.groupsRaw.value).toEqual(original)
+    expect(mocks.updateModsGroups).not.toHaveBeenCalled()
+  })
+
+  it('preserves empty folders and category metadata while normalizing disabled assignments', () => {
+    mocks.state.value.groups = {
+      OldFolder: { files: ['sodium.jar.disabled', 'hidden.jar'], color: '' },
+      EmptyFolder: { files: [], color: '#123456', icon: 'star' },
+      'modCategory.optimization': { files: ['lithium.jar'], color: '#ABCDEF', icon: 'favorite' },
+    }
+    const groups = setup(ref('/instance-a'), 'mods', ref([
+      { id: 'sodium', title: 'Sodium', installed: [{ fileName: 'sodium.jar.disabled' }] },
+      { id: 'lithium', title: 'Lithium', installed: [{ fileName: 'lithium.jar' }] },
+    ]))
+    expect(groups.autoCategorizeMods()).toBe(2)
+    expect(groups.groupsRaw.value.OldFolder.files).toEqual(['hidden.jar'])
+    expect(groups.groupsRaw.value.EmptyFolder).toEqual({ files: [], color: '#123456', icon: 'star' })
+    expect(groups.groupsRaw.value['modCategory.optimization']).toEqual({
+      files: ['sodium.jar', 'lithium.jar'], color: '#ABCDEF', icon: 'favorite',
+    })
+  })
+
+  it('persists stable category IDs and localizes group menu labels after a locale switch', () => {
+    const locale = ref('de')
+    vi.stubGlobal('useI18n', () => ({ t: (key: string) => key, locale }))
+    mocks.state.value.groups = {}
+    const project = { id: 'sodium', title: 'Sodium', installed: [{ fileName: 'sodium.jar' }] }
+    const groups = setup(ref('/instance-a'), 'mods', ref([project]))
+    groups.autoCategorizeMods()
+    expect(groups.groups.value).toEqual(['modCategory.optimization'])
+
+    const menuLabel = () => groups.getContextMenuItemsForGroup(project as any).find(item => item.children)?.children?.[0].text
+    expect(menuLabel()).toBe('Optimierung & Leistung')
+    locale.value = 'en'
+    expect(menuLabel()).toBe('Optimization & Performance')
+    expect(groups.groups.value).toEqual(['modCategory.optimization'])
+  })
+})
+
+describe('getGroupDisplayName', () => {
+  it('translates previously persisted localized category names as well as stable IDs', () => {
+    const t = (key: string) => key
+    expect(getGroupDisplayName('Optimierung & Leistung', t, 'en')).toBe('Optimization & Performance')
+    expect(getGroupDisplayName('modCategory.optimization', t, 'de')).toBe('Optimierung & Leistung')
+    expect(getGroupDisplayName('My custom folder', t, 'de')).toBe('My custom folder')
   })
 })

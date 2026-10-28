@@ -1353,12 +1353,12 @@ span {
 }
 
 .detail-tabs {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--v-theme-on-surface), 0.05);
   backdrop-filter: blur(8px);
   border-radius: 12px;
   padding: 3px;
   width: fit-content;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 .detail-tabs :deep(.v-btn__overlay),
 .detail-tabs :deep(.v-btn__underlay),
@@ -1377,20 +1377,20 @@ span {
   min-height: 32px;
   height: 32px;
   opacity: 0.65;
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(var(--v-theme-on-surface), 0.7) !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .detail-tab:hover {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff !important;
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  color: rgb(var(--v-theme-on-surface)) !important;
 }
 .detail-tab.v-tab--selected {
-  background: rgba(255, 255, 255, 0.12) !important;
-  color: #ffffff !important;
+  background: rgba(var(--v-theme-on-surface), 0.12) !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
   opacity: 1 !important;
   font-weight: 600 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1) !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
 }
 .modern-expansion-panel :deep(.v-expansion-panel__shadow) {
