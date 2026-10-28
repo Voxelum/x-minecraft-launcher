@@ -129,6 +129,101 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: Backup & Restore
+  description: Back up and restore your settings, collections, themes, and game instances
+  launcherData: Launcher Data
+  includeSettingsTitle: Launcher Settings
+  includeSettingsHint: General preferences, language, developer mode, and appearance settings
+  includeCollectionsTitle: Saved Collections
+  includeCollectionsHint: Launcher-managed mod and resource collections
+  includeThemesTitle: Custom Themes & Media
+  includeThemesHint: Theme colors, custom CSS styles, and background media
+  instances: Instances
+  selectAll: Select All
+  deselectAll: Deselect All
+  instanceDataOptions: Instance Data Options
+  includeConfigs: Configs & Options
+  includeSaves: Saves (Worlds)
+  includeResourcePacks: Resource Packs
+  includeShaderPacks: Shader Packs
+  modsMode: Mods
+  modsFull: Full files (.jar)
+  modsListOnly: Mod list only (lightweight)
+  modsNone: Exclude mods
+  noInstancesFound: No instances found in launcher.
+  excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
+  create: Create Backup
+  creating: Creating Backup...
+  createTitle: Create XMCL Backup Archive
+  saveDialogTitle: Save XMCL Backup Archive
+  fileFilterName: XMCL Backup Archive (*.xmclbackup, *.zip)
+  createSuccess: Backup created successfully
+  createError: Failed to create backup
+  loadManifestError: Failed to read backup archive
+  restore: Restore
+  restoring: Restoring Backup...
+  restoreTitle: Restore from Backup
+  preparing: Preparing...
+  workingTitle: Creating Backup Archive...
+  restoringTitle: Restoring from Backup...
+  elapsedTime: Elapsed
+  remainingTime: Estimated remaining
+  calculatingRemaining: Calculating...
+  lessThanMinute: '< 1 min'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Saves
+  modsCategory: Mods
+  resourcePacksCategory: Resource Packs
+  shaderPacksCategory: Shader Packs
+  configsCategory: Configs
+  activityLog: Activity Log
+  copyLog: Copy Log
+  copiedLog: Log copied to clipboard
+  openFolder: Show in Folder
+  done: Done
+  backupDone: Backup Complete!
+  backupDoneHint: Your backup archive has been created and verified.
+  restoreDone: Restore Complete!
+  restoreDoneHint: All selected data and instances have been restored successfully.
+  timeTaken: 'Time taken: {time}'
+  destinationFile: 'Saved to: {path}'
+  stagePreparing: Preparing
+  stageSettings: Launcher Settings
+  stageCollections: Saved Collections
+  stageThemes: Themes & Media
+  stageInstances: Game Instances
+  stageCompressing: Compressing Archive
+  stageComplete: Complete
+  stageLabel: 'Stage: {stage}'
+  searchInstancesPlaceholder: Search instances by name or version...
+  selectBackupFilePrompt: Select a backup archive to restore
+  selectBackupFileDescription: Choose a .xmclbackup or .zip file containing your saved XMCL data and instances.
+  selectFile: Choose File
+  selectBackupFileTitle: Open XMCL Backup Archive
+  createdOn: 'Created on {date}'
+  changeFile: Change File
+  dataToRestore: Data to Restore
+  restoreSettings: Restore Settings
+  restoreSettingsHint: Overwrite current launcher preferences with the backup copy
+  restoreCollections: Restore Collections
+  restoreCollectionsHint: Import and merge saved collections into the launcher
+  restoreThemes: Restore Themes & Media
+  restoreThemesHint: Reinstall themes, custom CSS, and background media
+  noLauncherDataInBackup: No launcher settings or themes found in this backup archive.
+  conflictStrategyTitle: Instance Name Conflict Handling
+  conflictRename: Keep existing and rename restored instance (e.g. name-restored)
+  conflictOverwrite: Overwrite existing instance files
+  conflictSkip: Skip instances that already exist on disk
+  restoreSuccess: Restore completed successfully
+  restoreSuccessDetails: 'Restored {count} instance(s) and launcher data.'
+  restoreError: Failed to restore backup
+  createBackupTitle: Create Backup
+  createBackupDescription: Save your launcher settings, collections, custom themes, and instances to a single portable archive file.
+  restoreBackupTitle: Restore Backup
+  restoreBackupDescription: Restore settings, themes, collections, or game instances from a previously saved backup archive.
+  portableArchiveNoticeTitle: Portable Single-File Backups
+  portableArchiveNoticeDescription: Backups are saved as single .xmclbackup archives. You can easily keep them safe, copy them to a USB drive, or sync them with cloud services like Google Drive or OneDrive.
 baseSetting:
   info:
     address: Address
