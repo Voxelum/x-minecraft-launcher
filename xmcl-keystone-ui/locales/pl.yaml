@@ -152,6 +152,11 @@ backup:
   conflictOverwrite: Nadpisz pliki istniejącej instancji
   conflictSkip: Pomiń instancje, które już istnieją na dysku
   restoreError: Nie udało się przywrócić kopii zapasowej
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Utwórz kopię zapasową
   createBackupDescription: Zapisz ustawienia launchera, kolekcje, własne motywy i instancje w jednym przenośnym pliku archiwum.
   restoreBackupTitle: Przywróć kopię zapasową

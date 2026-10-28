@@ -368,14 +368,21 @@
       <!-- MODE 3: COMPLETION / SUMMARY SCREEN -->
       <v-card-text v-else-if="dialogMode === 'done'" class="pa-6 overflow-y-auto">
         <div class="d-flex flex-column align-center justify-center py-4 mb-4">
-          <v-avatar size="72" color="success" variant="tonal" class="mb-3">
-            <v-icon size="42">check_circle</v-icon>
+          <v-avatar
+            size="72"
+            :color="isRestoreSuccessful ? 'success' : isRestorePartial ? 'warning' : 'error'"
+            variant="tonal"
+            class="mb-3"
+          >
+            <v-icon size="42">
+              {{ isRestoreSuccessful ? 'check_circle' : isRestorePartial ? 'warning_amber' : 'error_outline' }}
+            </v-icon>
           </v-avatar>
           <div class="text-h6 font-weight-bold text-center mb-1">
-            {{ t('backup.restoreDone') }}
+            {{ isRestoreSuccessful ? t('backup.restoreDone') : isRestorePartial ? t('backup.restorePartialTitle') : t('backup.restoreError') }}
           </div>
           <div class="text-body-2 text-medium-emphasis text-center" style="max-width: 480px;">
-            {{ t('backup.restoreDoneHint') }}
+            {{ isRestoreSuccessful ? t('backup.restoreDoneHint') : t('backup.restorePartialHint') }}
           </div>
         </div>
 
@@ -385,9 +392,15 @@
             <span class="text-caption text-medium-emphasis">{{ t('backup.timeTaken', { time: '' }) }}</span>
             <span class="text-caption font-weight-bold">{{ elapsedFormatted }}</span>
           </div>
-          <div class="d-flex align-center justify-space-between py-1">
+          <div class="d-flex align-center justify-space-between py-1" :class="{ 'border-b': (lastRestoreResult?.skippedInstances?.length ?? 0) > 0 }">
             <span class="text-caption text-medium-emphasis">{{ t('backup.instances') }}</span>
-            <span class="text-caption font-weight-bold">{{ selectedInstances.length }}</span>
+            <span class="text-caption font-weight-bold">
+              {{ lastRestoreResult?.restoredInstances.length ?? 0 }} / {{ selectedInstances.length }}
+            </span>
+          </div>
+          <div v-if="(lastRestoreResult?.skippedInstances?.length ?? 0) > 0" class="d-flex align-center justify-space-between py-1">
+            <span class="text-caption text-medium-emphasis">{{ t('backup.conflictSkip') }}</span>
+            <span class="text-caption font-weight-bold">{{ lastRestoreResult?.skippedInstances?.length }}</span>
           </div>
         </v-card>
 
@@ -483,7 +496,7 @@ import { useBackup } from '@/composables/backup'
 import { useDialog } from '@/composables/dialog'
 import { BuiltinImages } from '@/constant'
 import { useNotifier } from '@/composables/notifier'
-import type { BackupManifest, RestoreBackupOptions } from '@xmcl/runtime-api'
+import type { BackupManifest, RestoreBackupOptions, RestoreBackupResult } from '@xmcl/runtime-api'
 
 interface LogEntry {
   id: number
@@ -501,6 +514,7 @@ const dialogMode = ref<'config' | 'working' | 'done'>('config')
 
 const backupFilePath = ref('')
 const manifest = ref<BackupManifest | null>(null)
+const lastRestoreResult = ref<RestoreBackupResult | null>(null)
 
 const restoreSettings = ref(true)
 const restoreCollections = ref(true)
@@ -585,6 +599,7 @@ const formattedDate = computed(() => {
 })
 
 async function loadFileFromPath(path: string) {
+  resetSelection()
   try {
     const loadedManifest = await loadBackupManifest(path)
     backupFilePath.value = path
@@ -606,6 +621,8 @@ watch(isShown, async (shown) => {
     elapsedSeconds.value = 0
     if (typeof parameter.value === 'string' && parameter.value.trim()) {
       await loadFileFromPath(parameter.value.trim())
+    } else {
+      resetSelection()
     }
   } else {
     stopTimer()
@@ -635,6 +652,7 @@ function resetSelection() {
   manifest.value = null
   backupFilePath.value = ''
   selectedInstances.value = []
+  lastRestoreResult.value = null
 }
 
 async function browseBackupFile() {
@@ -691,11 +709,41 @@ function copyLogToClipboard() {
   })
 }
 
+const isRestoreSuccessful = computed(() => {
+  if (!lastRestoreResult.value) return false
+  const r = lastRestoreResult.value
+  const failedSettings = (restoreSettings.value && !!manifest.value?.includes.settings) && !r.restoredSettings
+  const failedCollections = (restoreCollections.value && !!manifest.value?.includes.collections) && !r.restoredCollections
+  const failedThemes = (restoreThemes.value && !!manifest.value?.includes.themes) && !r.restoredThemes
+  const totalRequestedInst = selectedInstances.value.length
+  const restoredInstCount = r.restoredInstances.length
+  const skippedInstCount = r.skippedInstances?.length ?? 0
+  const failedInstCount = totalRequestedInst - (restoredInstCount + skippedInstCount)
+  return !failedSettings && !failedCollections && !failedThemes && failedInstCount === 0
+})
+
+const isRestorePartial = computed(() => {
+  if (!lastRestoreResult.value) return false
+  const r = lastRestoreResult.value
+  const hasSettings = restoreSettings.value && !!manifest.value?.includes.settings
+  const hasCollections = restoreCollections.value && !!manifest.value?.includes.collections
+  const hasThemes = restoreThemes.value && !!manifest.value?.includes.themes
+  const anyRequested = hasSettings || hasCollections || hasThemes || selectedInstances.value.length > 0
+  if (!anyRequested) return false
+  const anySucceeded = (hasSettings && r.restoredSettings) ||
+    (hasCollections && r.restoredCollections) ||
+    (hasThemes && r.restoredThemes) ||
+    r.restoredInstances.length > 0 ||
+    (r.skippedInstances?.length ?? 0) > 0
+  return !isRestoreSuccessful.value && anySucceeded
+})
+
 async function startRestore() {
   if (!backupFilePath.value || !manifest.value) return
 
   dialogMode.value = 'working'
   logEntries.value = []
+  lastRestoreResult.value = null
   startTimer()
   addLog(t('backup.preparing'), 'info')
   addLog(`Reading ${backupFilePath.value}`, 'info')
@@ -710,9 +758,41 @@ async function startRestore() {
   }
 
   try {
-    await restoreBackup(options)
+    const result = await restoreBackup(options)
+    lastRestoreResult.value = result
     stopTimer()
-    addLog(t('backup.restoreDone'), 'success')
+
+    const hasFailedSettings = options.restoreSettings && !result.restoredSettings
+    const hasFailedCollections = options.restoreCollections && !result.restoredCollections
+    const hasFailedThemes = options.restoreThemes && !result.restoredThemes
+    const totalRequestedInst = selectedInstances.value.length
+    const restoredInstCount = result.restoredInstances.length
+    const skippedInstCount = result.skippedInstances?.length ?? 0
+    const failedInstCount = totalRequestedInst - (restoredInstCount + skippedInstCount)
+
+    if (hasFailedSettings) {
+      addLog(t('backup.restoreFailedCategory', { category: t('backup.stageSettings') }), 'warn')
+    }
+    if (hasFailedCollections) {
+      addLog(t('backup.restoreFailedCategory', { category: t('backup.stageCollections') }), 'warn')
+    }
+    if (hasFailedThemes) {
+      addLog(t('backup.restoreFailedCategory', { category: t('backup.stageThemes') }), 'warn')
+    }
+    if (skippedInstCount > 0) {
+      addLog(t('backup.instancesSkipped', { count: skippedInstCount }), 'info')
+    }
+    if (failedInstCount > 0) {
+      addLog(t('backup.instancesFailed', { count: failedInstCount }), 'warn')
+    }
+
+    const hasAnyFailure = hasFailedSettings || hasFailedCollections || hasFailedThemes || failedInstCount > 0
+    if (hasAnyFailure) {
+      addLog(t('backup.restorePartialTitle'), 'warn')
+    } else {
+      addLog(t('backup.restoreDone'), 'success')
+    }
+
     dialogMode.value = 'done'
   } catch (err: any) {
     stopTimer()

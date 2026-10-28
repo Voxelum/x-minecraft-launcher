@@ -148,6 +148,11 @@ backup:
   conflictOverwrite: Substituir arquivos da instância existente
   conflictSkip: Ignorar instâncias que já existem no disco
   restoreError: Falha ao restaurar backup
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Criar Backup
   createBackupDescription: Salve configurações, coleções, temas personalizados e instâncias em um único arquivo portátil.
   restoreBackupTitle: Restaurar Backup

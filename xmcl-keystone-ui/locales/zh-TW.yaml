@@ -153,6 +153,11 @@ backup:
   conflictOverwrite: 覆寫現有實例檔案
   conflictSkip: 略過磁碟上已存在的實例
   restoreError: 還原備份失敗
+  restorePartialTitle: 還原完成，存在警告
+  restorePartialHint: 部分元件或實例未能完全還原。請查看活動紀錄了解詳情。
+  restoreFailedCategory: '還原 {category} 失敗'
+  instancesSkipped: '已略過 {count} 個已存在的實例'
+  instancesFailed: '{count} 個實例還原失敗'
   createBackupTitle: 建立備份
   createBackupDescription: 將啟動器設定、收藏夾、自訂主題與實例儲存為單一可攜式封存檔。
   restoreBackupTitle: 還原備份

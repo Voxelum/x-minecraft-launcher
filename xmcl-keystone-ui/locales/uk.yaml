@@ -174,6 +174,11 @@ backup:
   conflictOverwrite: Перезаписати наявні файли інстанції
   conflictSkip: Пропустити вже наявні інстанції
   restoreError: Не вдалося відновити дані з резервної копії
+  restorePartialTitle: Відновлення завершено з попередженнями
+  restorePartialHint: Деякі компоненти або інстанції не вдалося відновити. Перевірте журнал для деталей.
+  restoreFailedCategory: Не вдалося відновити {category}
+  instancesSkipped: Пропущено {count} вже наявних інстанцій
+  instancesFailed: Не вдалося відновити {count} інстанцій
   createBackupTitle: Створити резервну копію
   createBackupDescription: Збережіть налаштування лаунчера, колекції, власні теми та інстанції в єдиний портативний архів.
   restoreBackupTitle: Відновити резервну копію

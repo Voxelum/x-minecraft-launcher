@@ -155,6 +155,11 @@ backup:
   conflictOverwrite: Mevcut örnek dosyalarının üzerine yaz
   conflictSkip: Diskte zaten var olan örnekleri atla
   restoreError: Yedek geri yüklenemedi
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Yedek Oluştur
   createBackupDescription: Başlatıcı ayarlarını, koleksiyonları, özel temaları ve örnekleri tek bir taşınabilir arşiv dosyasına kaydedin.
   restoreBackupTitle: Yedeği Geri Yükle

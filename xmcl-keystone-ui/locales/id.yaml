@@ -176,6 +176,11 @@ backup:
   conflictOverwrite: Timpa file instance yang ada
   conflictSkip: Lewati instance yang sudah ada di disk
   restoreError: Gagal memulihkan cadangan
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Buat Cadangan
   createBackupDescription: Simpan pengaturan peluncur, koleksi, tema kustom, dan instance ke satu file arsip portabel.
   restoreBackupTitle: Pulihkan Cadangan

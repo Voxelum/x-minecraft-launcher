@@ -10,7 +10,7 @@ import {
   RestoreBackupResult,
   RestoreProgress,
 } from '@xmcl/runtime-api'
-import { ref } from 'vue'
+import { onScopeDispose, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useNotifier } from './notifier'
 import { useService } from './service'
@@ -41,20 +41,30 @@ export function useBackup() {
   const isAutoBackupRunning = ref(false)
   const autoBackupFiles = ref<AutoBackupFileEntry[]>([])
 
-  on('backup-progress', (progress: BackupProgress) => {
+  const onBackupProgress = (progress: BackupProgress) => {
     backupProgress.value = progress
-  })
+  }
 
-  on('restore-progress', (progress: RestoreProgress) => {
+  const onRestoreProgress = (progress: RestoreProgress) => {
     restoreProgress.value = progress
-  })
+  }
 
-  on('auto-backup-status', async (status: AutoBackupStatusEvent) => {
+  const onAutoBackupStatus = async (status: AutoBackupStatusEvent) => {
     isAutoBackupRunning.value = status.running
     autoBackupConfig.value = status.config
     if (!status.running) {
       await refreshAutoBackupFiles()
     }
+  }
+
+  on('backup-progress', onBackupProgress)
+  on('restore-progress', onRestoreProgress)
+  on('auto-backup-status', onAutoBackupStatus)
+
+  onScopeDispose(() => {
+    service.removeListener('backup-progress', onBackupProgress)
+    service.removeListener('restore-progress', onRestoreProgress)
+    service.removeListener('auto-backup-status', onAutoBackupStatus)
   })
 
   async function refreshAutoBackupFiles() {

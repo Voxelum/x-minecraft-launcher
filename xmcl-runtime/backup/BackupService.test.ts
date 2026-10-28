@@ -284,8 +284,18 @@ describe('BackupService', () => {
     expect(restoreResult.restoredSettings).toBe(true)
     expect(restoreResult.restoredCollections).toBe(true)
     expect(restoreResult.restoredInstances).toHaveLength(1)
+    expect(restoreResult.skippedInstances).toEqual([])
     expect(mockCollectionService.state.collectionUpsert).toHaveBeenCalled()
     expect(mockInstanceService.loadInstance).toHaveBeenCalled()
+
+    // Test conflictStrategy: 'skip'
+    const skipResult = await backupService.restoreBackup({
+      backupPath: backupFile,
+      instances: ['SourceInst'],
+      instanceConflictStrategy: 'skip',
+    })
+    expect(skipResult.restoredInstances).toHaveLength(0)
+    expect(skipResult.skippedInstances).toEqual(['SourceInst'])
   })
 
   test('respects modListOnly option', async () => {

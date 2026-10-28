@@ -176,6 +176,11 @@ backup:
   conflictOverwrite: मौजूदा इंस्टेंस फ़ाइलों को ओवरराइट करें
   conflictSkip: डिस्क पर पहले से मौजूद इंस्टेंस छोड़ें
   restoreError: बैकअप रीस्टोर करने में विफल
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: बैकअप बनाएं
   createBackupDescription: अपनी लॉन्चर सेटिंग्स, कलेक्शन, कस्टम थीम और इंस्टेंस को एक पोर्टेबल आर्काइव फ़ाइल में सहेजें।
   restoreBackupTitle: बैकअप रीस्टोर करें

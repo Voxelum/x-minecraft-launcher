@@ -144,6 +144,11 @@ backup:
   conflictOverwrite: الكتابة فوق ملفات النسخة الموجودة
   conflictSkip: تخطي النسخ الموجودة بالفعل على القرص
   restoreError: فشلت استعادة النسخة الاحتياطية
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: إنشاء نسخة احتياطية
   createBackupDescription: احفظ إعدادات المشغل والمجموعات والسمات المخصصة والنسخ في ملف أرشيف محمول واحد.
   restoreBackupTitle: استعادة نسخة احتياطية

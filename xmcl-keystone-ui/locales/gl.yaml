@@ -144,6 +144,11 @@ backup:
   conflictOverwrite: Sobrescribir archivos de la instancia existente
   conflictSkip: Omitir instancias que ya existen en el disco
   restoreError: Error al restaurar la copia de seguridad
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Crear copia de seguridad
   createBackupDescription: Guarda los ajustes del lanzador, colecciones, temas personalizados e instancias en un único archivo portátil.
   restoreBackupTitle: Restaurar copia de seguridad

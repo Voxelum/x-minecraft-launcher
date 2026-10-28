@@ -91,6 +91,7 @@ export interface RestoreBackupResult {
   restoredCollections: boolean
   restoredThemes: boolean
   restoredInstances: string[]
+  skippedInstances?: string[]
 }
 
 export interface BackupCategoryCounts {

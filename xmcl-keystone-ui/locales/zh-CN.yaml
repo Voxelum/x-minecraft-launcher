@@ -199,6 +199,11 @@ backup:
   conflictOverwrite: 覆盖现有实例文件
   conflictSkip: 跳过磁盘上已存在的实例
   restoreError: 恢复备份失败
+  restorePartialTitle: 恢复完成，存在警告
+  restorePartialHint: 部分组件或实例未能完全恢复。请查看活动日志了解详情。
+  restoreFailedCategory: '恢复 {category} 失败'
+  instancesSkipped: '已跳过 {count} 个已存在的实例'
+  instancesFailed: '{count} 个实例恢复失败'
   createBackupTitle: 创建备份
   createBackupDescription: 将启动器设置、收藏夹、自定义主题和实例保存为单个便携归档文件。
   restoreBackupTitle: 恢复备份

@@ -15,6 +15,7 @@ import { pluginCommandHost } from '@xmcl/runtime/commands/pluginCommandHost'
 import { pluginExternalCredentialLifecycle } from '@xmcl/runtime/credential/pluginExternalCredentialLifecycle'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
+import { pluginBackup } from '@xmcl/runtime/backup'
 import {
   pluginClientToken,
   pluginFlights,
@@ -72,6 +73,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
 
   pluginMediaProtocol,
   pluginResourcePackLink,
+  pluginBackup,
   pluginUserPlaytime,
   pluginYggdrasilHandler,
   pluginClientToken,

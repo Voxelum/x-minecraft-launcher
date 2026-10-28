@@ -146,6 +146,11 @@ backup:
   conflictOverwrite: 既存のインスタンスファイルを上書き
   conflictSkip: 既に存在するインスタンスをスキップ
   restoreError: バックアップの復元に失敗しました
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: バックアップを作成
   createBackupDescription: 設定、コレクション、カスタムテーマ、インスタンスを単一のポータブルアーカイブに保存します。
   restoreBackupTitle: バックアップを復元

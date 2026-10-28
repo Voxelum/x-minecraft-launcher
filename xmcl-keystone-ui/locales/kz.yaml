@@ -144,6 +144,11 @@ backup:
   conflictOverwrite: Бар инстанция файлдарын үстінен жазу
   conflictSkip: Дискіде бар инстанцияларды өткізіп жіберу
   restoreError: Сақтық көшірмені қалпына келтіру мүмкін болмады
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Сақтық көшірме жасау
   createBackupDescription: Лаунчер баптауларын, жинақтарды, тақырыптарды және инстанцияларды бір портативті файлға сақтаңыз.
   restoreBackupTitle: Сақтық көшірмені қалпына келтіру

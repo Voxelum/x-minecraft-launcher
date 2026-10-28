@@ -155,6 +155,11 @@ backup:
   conflictOverwrite: 기존 인스턴스 파일 덮어쓰기
   conflictSkip: 디스크에 이미 존재하는 인스턴스 건너뛰기
   restoreError: 백업 복원 실패
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: 백업 생성
   createBackupDescription: 런처 설정, 컬렉션, 테마 및 인스턴스를 단일 휴대용 아카이브 파일로 저장합니다.
   restoreBackupTitle: 백업 복원

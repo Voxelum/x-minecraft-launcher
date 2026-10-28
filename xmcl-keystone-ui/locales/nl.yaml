@@ -144,6 +144,11 @@ backup:
   conflictOverwrite: Bestaande instantiebestanden overschrijven
   conflictSkip: Instanties overslaan die al op schijf staan
   restoreError: Back-up herstellen mislukt
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Back-up maken
   createBackupDescription: Sla je launcher-instellingen, collecties, aangepaste thema’s en instanties op in één draagbaar archiefbestand.
   restoreBackupTitle: Back-up herstellen

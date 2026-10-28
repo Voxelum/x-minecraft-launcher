@@ -691,6 +691,7 @@ export class BackupService extends AbstractService implements IBackupService {
       restoredCollections: false,
       restoredThemes: false,
       restoredInstances: [],
+      skippedInstances: [],
     }
 
     // 1. Settings
@@ -811,6 +812,7 @@ export class BackupService extends AbstractService implements IBackupService {
         if (existsSync(targetDir)) {
           if (conflict === 'skip') {
             this.log(`Skipping already existing instance folder: ${instFolderName}`)
+            result.skippedInstances?.push(instFolderName)
             continue
           }
           if (conflict === 'rename') {

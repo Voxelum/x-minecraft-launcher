@@ -176,6 +176,11 @@ backup:
   conflictOverwrite: Ghi đè các tệp phiên bản hiện có
   conflictSkip: Bỏ qua các phiên bản đã tồn tại trên ổ đĩa
   restoreError: Không thể khôi phục bản sao lưu
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Tạo bản sao lưu
   createBackupDescription: Lưu cài đặt, bộ sưu tập, giao diện tùy chỉnh và các phiên bản vào một tệp lưu trữ di động duy nhất.
   restoreBackupTitle: Khôi phục bản sao lưu

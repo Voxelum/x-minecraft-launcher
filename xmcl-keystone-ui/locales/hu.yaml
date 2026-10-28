@@ -152,6 +152,11 @@ backup:
   conflictOverwrite: Meglévő példányfájlok felülírása
   conflictSkip: Már létező példányok kihagyása
   restoreError: Nem sikerült visszaállítani a biztonsági mentést
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
   createBackupTitle: Biztonsági mentés létrehozása
   createBackupDescription: Mentse el az indító beállításait, gyűjteményeit, témáit és példányait egyetlen hordozható fájlba.
   restoreBackupTitle: Biztonsági mentés visszaállítása
