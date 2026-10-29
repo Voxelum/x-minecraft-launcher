@@ -150,6 +150,9 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
   }
 
   this.app.waitEngineReady().then(async () => {
+    const tray = new Tray(getTrayImage(darkTray, lightTray))
+    this.tray = tray
+
     this.app.registry.get(BaseService).then(service => {
       checkUpdate = () => service.checkUpdate()
       tray.setContextMenu(createMenu())
@@ -164,7 +167,6 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
       })
     })
 
-    const tray = new Tray(getTrayImage(darkTray, lightTray))
     if (this.app.platform.os === 'windows') {
       tray.on('double-click', () => {
         const window = this.mainWin
@@ -196,7 +198,6 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
     app.on('before-quit', () => {
       this.tray?.destroy()
     })
-    this.tray = tray
   })
 
   this.app.on('app-booted', (man) => {

@@ -27,6 +27,7 @@
         v-shared-tooltip.right="() => t('myStuff')"
         to="/me"
         :aria-label="myStuffAriaLabel"
+        @contextmenu.prevent="onAccountContextMenu"
       >
         <PlayerAvatar
           class="overflow-hidden rounded-full"
@@ -153,6 +154,7 @@
         to="/me"
         :aria-label="myStuffAriaLabel"
         class="non-moveable mr-1"
+        @contextmenu.prevent="onAccountContextMenu"
       >
         <PlayerAvatar
           class="overflow-hidden rounded-full"
@@ -243,6 +245,11 @@
       </v-btn>
     </div>
   </div>
+
+  <AppSideBarAccountMenu
+    ref="accountMenu"
+    :location="isHorizontal ? 'bottom start' : 'end top'"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -258,6 +265,7 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { useEventListener } from '@vueuse/core'
+import AppSideBarAccountMenu from './AppSideBarAccountMenu.vue'
 import AppSideBarInstances from './AppSideBarInstances.vue'
 import AppSideBarItem from './AppSideBarItem.vue'
 
@@ -268,6 +276,11 @@ const { request: openMultiplayer } = injection(kMultiplayerEntry)
 const { position } = useInjectSidebarSettings()
 
 const isHorizontal = computed(() => position.value === 'top' || position.value === 'bottom')
+const accountMenu = ref<InstanceType<typeof AppSideBarAccountMenu>>()
+
+function onAccountContextMenu(event: MouseEvent) {
+  accountMenu.value?.open(event)
+}
 const { open: openAgent } = useAgentChatEntry()
 const agentChatStatus = useAgentChatStatus()
 const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)
