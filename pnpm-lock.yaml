@@ -1271,7 +1271,7 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(vue@3.5.33(typescript@5.9.3))
       markdown-it:
-        specifier: ^14.3.3
+        specifier: ^14.2.0
         version: 14.3.3
       markdown-it-link-attributes:
         specifier: ^4.0.1
