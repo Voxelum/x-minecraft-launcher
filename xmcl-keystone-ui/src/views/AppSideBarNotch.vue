@@ -31,6 +31,7 @@
           :icon-size="iconSize"
           :tooltip="() => ({ text: t('myStuff'), direction: tooltipDirection })"
           to="/me"
+          @contextmenu.prevent="onAccountContextMenu"
         >
           <PlayerAvatar
             class="overflow-hidden rounded-full"
@@ -142,6 +143,11 @@
         </AppSideBarNotchItem>
       </div>
     </div>
+
+    <AppSideBarAccountMenu
+      ref="accountMenu"
+      :location="tooltipDirection === 'bottom' ? 'bottom start' : tooltipDirection === 'left' ? 'start top' : 'end top'"
+    />
   </div>
 </template>
 
@@ -159,9 +165,16 @@ import { kTheme } from '@/composables/theme'
 import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { computed, ref } from 'vue'
+import AppSideBarAccountMenu from './AppSideBarAccountMenu.vue'
 import AppSideBarNotchItem from './AppSideBarNotchItem.vue'
 import AppSideBarNotchItemGroup from './AppSideBarNotchItemGroup.vue'
 import AppSideBarNotchItemInstance from './AppSideBarNotchItemInstance.vue'
+
+const accountMenu = ref<InstanceType<typeof AppSideBarAccountMenu>>()
+
+function onAccountContextMenu(event: MouseEvent) {
+  accountMenu.value?.open(event)
+}
 
 const { blurSidebar, sideBarColor } = injection(kTheme)
 const { instances } = injection(kInstances)
