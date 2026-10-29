@@ -388,6 +388,7 @@ const isMinecraftProfileNotFoundError = (value: unknown) => {
 }
 
 const errorMessage = computed(() => {
+  if (loginAuthority.value !== authority.value) return ''
   const e = error.value as any
   // Prefer the structured `exception` payload for classification. `isException`
   // matches by class name, which can be lost or renamed when the UserException
@@ -502,7 +503,9 @@ const errorMessage = computed(() => {
 
 // Login
 const accountInput: Ref<any> = ref(null)
+const loginAuthority = ref(authority.value)
 const { refresh: onLogin, error } = useRefreshable(async () => {
+  loginAuthority.value = authority.value
   error.value = undefined
   accountInput.value.blur()
   await nextTick() // wait a tick to make sure username updated.
@@ -547,28 +550,9 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
   emit('login', profile)
 })
 
-const isMicrosoftAuthError = computed(() => {
-  if (authority.value === AUTHORITY_MICROSOFT && error.value) return true
-  if (!error.value) return false
-  const e = error.value as any
-  const type = e?.exception?.type
-  if (
-    type === 'userExchangeXboxTokenFailed' ||
-    type === 'userLoginMinecraftByXboxFailed' ||
-    type === 'userAcquireMicrosoftTokenFailed'
-  ) {
-    return true
-  }
-  const str = (e?.message || e?.exception?.message || String(e || '')).toLowerCase()
-  return (
-    str.includes('xbox') ||
-    str.includes('microsoft') ||
-    str.includes('canceled') ||
-    str.includes('cancelled') ||
-    str.includes('xerr') ||
-    str.includes('exchange')
-  )
-})
+const isMicrosoftAuthError = computed(
+  () => authority.value === AUTHORITY_MICROSOFT && !!errorMessage.value,
+)
 
 const { notify } = useNotifier()
 
@@ -600,6 +584,9 @@ watch(error, (err) => {
 })
 
 watch(authority, () => {
+  error.value = undefined
+  data.password = ''
+  data.verificationUri = ''
   emit('seed')
 })
 

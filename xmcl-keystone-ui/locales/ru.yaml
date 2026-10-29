@@ -731,6 +731,7 @@ minecraftVersion:
   showAlpha: Показать snapshot
   snapshot: Снапшот
 mod:
+  collapseAllGroups: Свернуть все группы
   acceptVersion: Принимает {version}
   applyGroupRules: Применить сохраненные правила группировки
   compatible: Совместимый мод.

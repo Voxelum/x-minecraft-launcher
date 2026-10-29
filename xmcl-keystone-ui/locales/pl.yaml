@@ -621,6 +621,7 @@ minecraftVersion:
   showAlpha: Pokaż snapshot
   snapshot: Migawka
 mod:
+  collapseAllGroups: Zwiń wszystkie grupy
   acceptVersion: Akceptuj {version}
   applyGroupRules: Zastosuj zapisane zasady grupowania
   compatible: Kompatybilny mod.

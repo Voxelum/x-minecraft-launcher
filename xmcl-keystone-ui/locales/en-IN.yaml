@@ -751,6 +751,7 @@ minecraftVersion:
   showAlpha: Show Snapshot
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Collapse all groups
   acceptVersion: Accept {version}
   applyGroupRules: Apply saved grouping rules
   compatible: Compatible Mod.

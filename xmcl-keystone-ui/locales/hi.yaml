@@ -751,6 +751,7 @@ minecraftVersion:
   showAlpha: स्नैपशॉट दिखाएं
   snapshot: स्नैपशॉट
 mod:
+  collapseAllGroups: सभी समूहों को संकुचित करें
   acceptVersion: '{version} स्वीकार करें'
   applyGroupRules: सहेजे गए समूहीकरण नियम लागू करें
   compatible: संगत मॉड।

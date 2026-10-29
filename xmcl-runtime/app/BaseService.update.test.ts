@@ -1,4 +1,4 @@
-import { Settings, type ReleaseInfo } from '@xmcl/runtime-api'
+import { Settings, SettingSchema, type ReleaseInfo } from '@xmcl/runtime-api'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('../constant', () => ({ HAS_DEV_SERVER: false }))
@@ -21,11 +21,47 @@ function setup() {
     getSettings: async () => settings,
     tasks: { create: () => task },
     log: vi.fn(),
+    warn: vi.fn(),
   })
   return { service, settings, info, updater, task }
 }
 
 describe('launcher update state', () => {
+  it('publishes runtime-only capability before returning settings and clears it for legacy adapters', async () => {
+    const { service, settings, updater } = setup()
+    const capability = { automatic: false, reason: 'not-implemented' } as const
+    Object.assign(service, { app: { updater: { ...updater, capability }, registry: { get: async () => settings } } })
+    expect(await BaseService.prototype.getSettings.call(service)).toBe(settings)
+    expect(settings.updateCapability).toEqual(capability)
+    expect(SettingSchema.parse(settings)).not.toHaveProperty('updateCapability')
+    expect(settings.updateInfo).toBeNull()
+    Object.assign(service, { app: { updater, registry: { get: async () => settings } } })
+    await BaseService.prototype.getSettings.call(service)
+    expect(settings.updateCapability).toBeUndefined()
+  })
+
+  it('contains background check failures and logs them without fabricating update state', async () => {
+    const { service, settings, updater } = setup()
+    const error = new Error('Automatic updates are not implemented for this host')
+    error.name = 'UnsupportedUpdateError'
+    updater.checkUpdateTask.mockRejectedValue(error)
+    const before = { info: settings.updateInfo, status: settings.updateStatus }
+    await expect(service.checkUpdateInBackground()).resolves.toBeUndefined()
+    expect(service.warn).toHaveBeenCalledWith(error)
+    expect(settings.updateInfo).toBe(before.info)
+    expect(settings.updateStatus).toBe(before.status)
+    // A later explicit user action must still reach the existing error handler.
+    await expect(service.checkUpdate()).rejects.toBe(error)
+    expect(error.name).toBe('UnsupportedUpdateError')
+  })
+
+  it('contains network errors during startup while preserving explicit check rejection', async () => {
+    const { service, updater } = setup()
+    updater.checkUpdateTask.mockRejectedValue(new Error('Network unavailable'))
+    await expect(service.checkUpdateInBackground()).resolves.toBeUndefined()
+    await expect(service.checkUpdate()).rejects.toMatchObject({ name: 'CheckUpdateError' })
+  })
+
   it('preserves a ready update when the updater returns the same verified release', async () => {
     const { service, settings, info } = setup()
     settings.updateInfoSet(info)

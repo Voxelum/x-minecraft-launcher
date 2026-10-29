@@ -681,6 +681,7 @@ minecraftVersion:
   showAlpha: Afficher les Snapshots
   snapshot: Snapshot
 mod:
+  collapseAllGroups: Replier tous les groupes
   acceptVersion: Accepter {version}
   applyGroupRules: Appliquer les règles de regroupement enregistrés
   compatible: Mod compatible.
