@@ -72,8 +72,8 @@ export function useInstanceScreenshots(path: Ref<string>) {
     return added
   }
 
-  async function saveAsFile(url: string, targetPath: string) {
-    return saveAs(url, targetPath)
+  async function saveAsFile(url: string, targetPath: string, overwrite = false) {
+    return saveAs(url, targetPath, overwrite)
   }
 
   async function setAsIcon(url: string) {

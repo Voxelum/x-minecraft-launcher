@@ -42,9 +42,9 @@ export interface InstanceScreenshotService {
   deleteScreenshots(urls: string[]): Promise<number>
 
   /**
-   * Export or copy a screenshot to a target file path
+   * Export a screenshot without overwriting by default. Set overwrite only after explicit file confirmation.
    */
-  saveScreenshotAs(url: string, targetPath: string): Promise<boolean>
+  saveScreenshotAs(url: string, targetPath: string, overwrite?: boolean): Promise<boolean>
 
   /**
    * Import photos or screenshots from external paths into the instance screenshots folder

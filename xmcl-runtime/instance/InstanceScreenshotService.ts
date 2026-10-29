@@ -4,11 +4,11 @@ import {
   SaveScreenshotDataOptions,
   ScreenshotItem,
 } from "@xmcl/runtime-api";
-import { existsSync } from "fs";
-import { mkdtemp, rename, rm } from "fs/promises";
+import { constants, existsSync } from "fs";
+import { lstat, mkdtemp, rename, rm } from "fs/promises";
 import { assertScreenshotDirectory, safeScreenshotPath } from "./safeScreenshot";
 import { copyFile, ensureDir, readdir, stat, unlink, writeFile } from "fs-extra";
-import { basename, extname, join } from "path";
+import { basename, dirname, extname, join } from "path";
 import { Inject, LauncherAppKey } from "~/app";
 import { AbstractService, ExposeServiceKey } from "~/service";
 import { LauncherApp } from "../app/LauncherApp";
@@ -84,18 +84,20 @@ export class InstanceScreenshotService
     }
   }
 
+  private async resolveScreenshot(url: string): Promise<string> {
+    const instanceService = await this.app.registry.get(InstanceService);
+    for (const instancePath of Object.keys(instanceService.state.all)) {
+      try { return await safeScreenshotPath(instancePath, url); } catch { /* Try the next registered root. */ }
+    }
+    throw new Error("Screenshot is not in a registered instance");
+  }
+
   async deleteScreenshot(url: string): Promise<boolean> {
     try {
-      const parsed = new URL(url);
-      const path = parsed.searchParams.get("path");
-      if (path && existsSync(path)) {
-        await unlink(path);
-        return true;
-      }
-      return false;
+      await unlink(await this.resolveScreenshot(url));
+      return true;
     } catch (e) {
-      const errorForLog = e instanceof Error ? e : new Error(String(e));
-      this.error(errorForLog);
+      this.error(e instanceof Error ? e : new Error(String(e)));
       return false;
     }
   }
@@ -109,24 +111,40 @@ export class InstanceScreenshotService
     return count;
   }
 
-  async saveScreenshotAs(url: string, targetPath: string): Promise<boolean> {
+  async saveScreenshotAs(url: string, targetPath: string, overwrite = false): Promise<boolean> {
     try {
-      const parsed = new URL(url);
-      const sourcePath = parsed.searchParams.get("path");
-      if (sourcePath && existsSync(sourcePath)) {
-        await copyFile(sourcePath, targetPath);
-        return true;
+      const sourcePath = await this.resolveScreenshot(url);
+      // Directory selection is not permission to overwrite colliding files.
+      // Only a single-file save dialog may explicitly authorize replacement.
+      await assertScreenshotDirectory(dirname(targetPath));
+      if (overwrite) {
+        const info = await lstat(targetPath).catch((e: NodeJS.ErrnoException) => {
+          if (e.code === "ENOENT") return undefined;
+          throw e;
+        });
+        if (info && (!info.isFile() || info.isSymbolicLink())) throw new Error("Unsafe export target");
+        const stage = await mkdtemp(join(dirname(targetPath), ".xmcl-export-"));
+        try {
+          const staged = join(stage, "image");
+          await copyFile(sourcePath, staged, constants.COPYFILE_EXCL);
+          await assertScreenshotDirectory(dirname(targetPath));
+          await rename(staged, targetPath);
+        } finally { await rm(stage, { recursive: true, force: true }); }
+      } else {
+        await copyFile(sourcePath, targetPath, constants.COPYFILE_EXCL);
       }
-      return false;
+      return true;
     } catch (e) {
-      const errorForLog = e instanceof Error ? e : new Error(String(e));
-      this.error(errorForLog);
+      this.error(e instanceof Error ? e : new Error(String(e)));
       return false;
     }
   }
 
   async importScreenshots(instancePath: string, filePaths: string[]): Promise<string[]> {
+    const instanceService = await this.app.registry.get(InstanceService);
+    if (!instanceService.state.all[instancePath]) throw new Error("Unknown screenshot instance");
     const screenshotsPath = join(instancePath, "screenshots");
+    await assertScreenshotDirectory(screenshotsPath);
     await ensureDir(screenshotsPath);
     const addedUrls: string[] = [];
     for (const source of filePaths) {
@@ -143,7 +161,7 @@ export class InstanceScreenshotService
           dest = join(screenshotsPath, base);
           counter++;
         }
-        await copyFile(source, dest);
+        await copyFile(source, dest, constants.COPYFILE_EXCL);
         const url = new URL("http://launcher/media");
         url.searchParams.append("path", dest);
         addedUrls.push(url.toString());

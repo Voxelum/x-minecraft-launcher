@@ -618,7 +618,9 @@ async function onExportSingle(item: ScreenshotItem) {
     ],
   })
   if (!saveResult.canceled && saveResult.filePath) {
-    await saveAsFile(item.url, saveResult.filePath)
+    if (!await saveAsFile(item.url, saveResult.filePath, true)) {
+      notify({ level: 'error', title: t('task.failed') })
+    }
   }
 }
 
@@ -646,14 +648,16 @@ async function onExportSelected() {
   if (!dialogResult.canceled && dialogResult.filePaths[0]) {
     const destDir = dialogResult.filePaths[0]
     const urls = Array.from(selectedUrls.value)
+    const failed = new Set<string>()
     for (const url of urls) {
       const item = items.value.find((i) => i.url === url)
       if (item) {
         const dest = `${destDir}/${item.name}`
-        await saveAsFile(url, dest)
+        if (!await saveAsFile(url, dest)) failed.add(url)
       }
     }
-    clearSelection()
+    selectedUrls.value = failed
+    if (failed.size > 0) notify({ level: 'error', title: t('task.failed') })
   }
 }
 

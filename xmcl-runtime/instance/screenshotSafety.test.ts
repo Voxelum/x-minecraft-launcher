@@ -30,6 +30,8 @@ beforeEach(async () => {
 afterEach(async () => { await rm(root, { recursive: true, force: true }) })
 function service(known = true) {
   const s = Object.create(InstanceScreenshotService.prototype)
+  s.error = vi.fn()
+  s.warn = vi.fn()
   s.app = { registry: { get: async () => ({ state: { all: known ? { [instance]: {} } : {} } }) } }
   return s
 }
@@ -78,4 +80,36 @@ test('failed staged write preserves the original screenshot', async () => {
     await expect(service().saveEditedScreenshot({ instancePath: instance, dataUrl, originalUrl: url(path) })).rejects.toThrow('Injected disk error')
     expect(await readFile(path, 'utf8')).toBe('OLD')
   } finally { spy.mockRestore() }
+})
+
+test('batch exports never overwrite collisions or follow a destination symlink', async () => {
+  const source = join(instance, 'screenshots', 'image.png')
+  const destination = join(root, 'image.png')
+  const linked = join(root, 'link.png')
+  await writeFile(source, 'IMAGE')
+  await writeFile(destination, 'IMPORTANT')
+  await symlink(destination, linked)
+  const s = service()
+  expect(await s.saveScreenshotAs(url(source), destination)).toBe(false)
+  expect(await s.saveScreenshotAs(url(source), linked)).toBe(false)
+  expect(await s.saveScreenshotAs(url(source), linked, true)).toBe(false)
+  expect(await readFile(destination, 'utf8')).toBe('IMPORTANT')
+  expect(await s.saveScreenshotAs(url(source), destination, true)).toBe(true)
+  expect(await readFile(destination, 'utf8')).toBe('IMAGE')
+})
+
+test('deletion rejects foreign files and import rejects a linked screenshot directory', async () => {
+  const outside = join(root, 'outside.png')
+  await writeFile(outside, 'IMPORTANT')
+  expect(await service().deleteScreenshot(url(outside))).toBe(false)
+  expect(await readFile(outside, 'utf8')).toBe('IMPORTANT')
+  const image = join(instance, 'screenshots', 'image.png')
+  await writeFile(image, 'IMAGE')
+  expect(await service().deleteScreenshot(url(image))).toBe(true)
+  const otherInstance = join(root, 'other-instance')
+  await mkdir(otherInstance)
+  await symlink(join(instance, 'screenshots'), join(otherInstance, 'screenshots'))
+  const s = service()
+  s.app.registry.get = async () => ({ state: { all: { [otherInstance]: {} } } })
+  await expect(s.importScreenshots(otherInstance, [outside])).rejects.toThrow()
 })
