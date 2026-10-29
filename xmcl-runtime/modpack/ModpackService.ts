@@ -1,3 +1,4 @@
+import { addPackwizMetadata, addPackwizOverride, getPackwizSide, validatePackwizPaths } from './packwizExport'
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import {
   InstanceLockSchema,
@@ -605,6 +606,8 @@ export class ModpackService extends AbstractService implements IModpackService {
       return {}
     }
 
+    if (emitPackwiz) validatePackwizPaths(files)
+
     let curseforgeConfig: CurseforgeModpackManifest | undefined
     let modrinthManifest: ModrinthModpackManifest | undefined
     let packwizManifest: PackwizModpackManifest | undefined
@@ -674,7 +677,6 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const backfillModrinth: [ModrinthModpackManifest['files'][number], UpdateResourcePayload][] = []
     const backfillCurseforge: { filePath: string; relativePath: string; sha1: string }[] = []
-    const packwizMetaFiles: { path: string; meta: PackwizFileMeta }[] = []
     const lockHashLookup = await this.getInstanceLockLookup(instancePath)
 
     const lookupFile = (filePath: string) =>
@@ -922,18 +924,6 @@ export class ModpackService extends AbstractService implements IModpackService {
         if (unreadablePaths.has(item.path)) continue
         const filePath = join(instancePath, item.source || item.path)
         try {
-          if (isServerOnlyExportFile(item)) {
-            // Server-only file: add raw file to packwiz zip directly
-            const fileBuf = await readFile(filePath)
-            const fileSha256 = createHash('sha256').update(fileBuf).digest('hex')
-            packwizZip.addBuffer(fileBuf, item.path)
-            packwizIndexFiles.push({
-              file: item.path,
-              hash: fileSha256,
-            })
-            continue
-          }
-
           if (
             item.path.startsWith('mods/') ||
             item.path.startsWith('resourcepacks/') ||
@@ -941,17 +931,11 @@ export class ModpackService extends AbstractService implements IModpackService {
           ) {
             if (item.override) {
               const fileBuf = await readFile(filePath)
-              const fileSha256 = createHash('sha256').update(fileBuf).digest('hex')
-              packwizZip.addBuffer(fileBuf, item.path)
-              packwizIndexFiles.push({
-                file: item.path,
-                hash: fileSha256,
-              })
+              packwizIndexFiles.push(addPackwizOverride(packwizZip, item, fileBuf))
             } else {
               const fileLike = await lookupFile(filePath)
-              const side: 'client' | 'server' | 'both' = item.env?.client === 'unsupported' ? 'server' : (item.env?.server === 'unsupported' ? 'client' : 'both')
+              const side = getPackwizSide(item)
               const fileName = basename(item.path)
-              const metaRelativePath = `${item.path}.pw.toml`
 
               // Try to find download URL from modrinth or curseforge
               let downloadUrl = ''
@@ -996,40 +980,21 @@ export class ModpackService extends AbstractService implements IModpackService {
                   },
                   update: updateBlock,
                 }
-                const pwTomlStr = stringifyToml(pwMeta as any)
-                const pwTomlBuf = Buffer.from(pwTomlStr)
-                const pwSha256 = createHash('sha256').update(pwTomlBuf).digest('hex')
-
-                packwizZip.addBuffer(pwTomlBuf, metaRelativePath)
-                packwizIndexFiles.push({
-                  file: metaRelativePath,
-                  hash: pwSha256,
-                  metafile: true,
-                })
+                packwizIndexFiles.push(addPackwizMetadata(packwizZip, item.path, pwMeta))
               } else {
                 // Direct override in packwiz
                 const fileBuf = await readFile(filePath)
-                const fileSha256 = createHash('sha256').update(fileBuf).digest('hex')
-                packwizZip.addBuffer(fileBuf, item.path)
-                packwizIndexFiles.push({
-                  file: item.path,
-                  hash: fileSha256,
-                })
+                packwizIndexFiles.push(addPackwizOverride(packwizZip, item, fileBuf))
               }
             }
           } else {
             // Regular config / script / extra file
             const fileBuf = await readFile(filePath)
-            const fileSha256 = createHash('sha256').update(fileBuf).digest('hex')
-            packwizZip.addBuffer(fileBuf, item.path)
-            packwizIndexFiles.push({
-              file: item.path,
-              hash: fileSha256,
-            })
+            packwizIndexFiles.push(addPackwizOverride(packwizZip, item, fileBuf))
           }
         } catch (e: any) {
           this.warn(`Failed to process file ${filePath} for packwiz: ${e.message}`)
-          skippedFiles.push({ path: item.path, reason: e.message || 'Packwiz file error' })
+          throw e
         }
       }
 
