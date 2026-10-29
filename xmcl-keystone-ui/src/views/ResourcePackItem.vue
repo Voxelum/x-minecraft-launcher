@@ -15,7 +15,7 @@
     :indent-color="indentColor"
     :get-context-menu-items="isBuiltIn ? undefined : getContextMenuItems"
     :install="install"
-    @drop="emit('drop', $event)"
+    @drop="emit('drop', typeof $event === 'object' && $event !== null ? $event.id : $event)"
     @click="isVirtual ? undefined : emit('click', $event)"
     @checked="emit('check', $event)"
   >

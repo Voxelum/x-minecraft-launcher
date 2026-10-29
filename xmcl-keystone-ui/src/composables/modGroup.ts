@@ -17,6 +17,9 @@ export type ProjectGroup<T extends ProjectFile = ProjectFile> = {
   name: string;
   projects: ProjectEntry<T>[];
   mtime: number;
+  color?: string;
+  icon?: string;
+  pinned?: boolean;
 };
 
 export type GroupableProjectFile = ProjectFile & { fileName: string };
@@ -68,7 +71,7 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
     },
   });
 
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const getGroupRuleId = (file: T) =>
     contentType === "mods" && "modId" in file && typeof file.modId === "string"
       ? file.modId
@@ -113,13 +116,37 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
 
   const groupNames = computed(() => Object.keys(instanceModGroupping.value));
 
-  function collapseAllGroups() {
-    const next = { ...groupCollapsedState.value };
-    for (const name of groupNames.value) {
-      next[name] = true;
+  const isAllCollapsed = computed(() => {
+    if (groupNames.value.length === 0) return false;
+    return groupNames.value.every((g) => !!groupCollapsedState.value[g]);
+  });
+
+  function toggleCollapseAll() {
+    const willCollapse = !isAllCollapsed.value;
+    const next: Record<string, boolean> = { ...groupCollapsedState.value };
+    for (const g of groupNames.value) {
+      next[g] = willCollapse;
     }
     groupCollapsedState.value = next;
   }
+
+  function expandAll() {
+    const next: Record<string, boolean> = { ...groupCollapsedState.value };
+    for (const g of groupNames.value) {
+      next[g] = false;
+    }
+    groupCollapsedState.value = next;
+  }
+
+  function collapseAll() {
+    const next: Record<string, boolean> = { ...groupCollapsedState.value };
+    for (const g of groupNames.value) {
+      next[g] = true;
+    }
+    groupCollapsedState.value = next;
+  }
+
+  const collapseAllGroups = collapseAll;
 
   function group(fileNames: string[], customName?: string) {
     const newVal = { ...instanceModGroupping.value };
@@ -184,6 +211,51 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
     }
   }
 
+  function updateGroupSetting(
+    oldName: string,
+    setting: { name?: string; color?: string; icon?: string; pinned?: boolean }
+  ) {
+    const newVal = { ...instanceModGroupping.value };
+    const group = newVal[oldName];
+    if (!group) return;
+
+    const newName = setting.name || oldName;
+    const updatedGroup: ModGroupData = {
+      ...group,
+      color: setting.color !== undefined ? setting.color : (group.color || ''),
+      icon: setting.icon !== undefined ? setting.icon : group.icon,
+      pinned: setting.pinned !== undefined ? setting.pinned : group.pinned,
+    };
+
+    if (oldName !== newName) {
+      delete newVal[oldName];
+      newVal[newName] = updatedGroup;
+
+      const collapsedState = groupCollapsedState.value[oldName];
+      if (collapsedState !== undefined) {
+        const newCollapsedState = { ...groupCollapsedState.value };
+        delete newCollapsedState[oldName];
+        newCollapsedState[newName] = collapsedState;
+        groupCollapsedState.value = newCollapsedState;
+      }
+    } else {
+      newVal[oldName] = updatedGroup;
+    }
+
+    instanceModGroupping.value = newVal;
+  }
+
+  function toggleGroupPin(groupName: string) {
+    const newVal = { ...instanceModGroupping.value };
+    const group = newVal[groupName];
+    if (!group) return;
+    newVal[groupName] = {
+      ...group,
+      pinned: !group.pinned,
+    };
+    instanceModGroupping.value = newVal;
+  }
+
   function sort(result: GroupOrProject[]) {
     // Separate groups from individual items
     const groups = result.filter(
@@ -193,13 +265,16 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
       (item) => !("projects" in item)
     ) as ProjectEntry<T>[];
 
-    // Always sort groups by name first (alphabetical with numeric sorting)
-    groups.sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, {
+    // Pinned groups sort first, then alphabetically by name (with numeric sorting)
+    groups.sort((a, b) => {
+      if (!!a.pinned !== !!b.pinned) {
+        return a.pinned ? -1 : 1;
+      }
+      return a.name.localeCompare(b.name, undefined, {
         numeric: true,
         sensitivity: "base",
-      })
-    );
+      });
+    });
 
     // Apply user-selected sorting to individual items
     sortFunc(sortBy.value as any, individuals);
@@ -243,10 +318,14 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
 
       if (group) {
         if (!resultByGroup[group]) {
+          const groupData = instanceModGroupping.value[group];
           resultByGroup[group] = {
             name: group,
             projects: [],
             mtime: 0,
+            color: groupData?.color,
+            icon: groupData?.icon,
+            pinned: groupData?.pinned,
           };
         }
         resultByGroup[group].projects.push(i);
@@ -351,7 +430,7 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
           group([normalizeModFileName(fileName)]);
         },
         children: groupNames.value.map((g) => ({
-          text: g,
+          text: getGroupDisplayName(g, t, locale.value),
           icon: "",
           onClick: () => {
             const newVal = { ...instanceModGroupping.value };
@@ -562,6 +641,58 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
     return counts;
   });
 
+  function autoCategorizeMods(): number {
+    const processedFiles = new Set(
+      items.value
+        .map(i => i.installed?.[0]?.fileName)
+        .filter((f): f is string => typeof f === 'string' && f.length > 0)
+        .map(normalizeModFileName)
+    );
+    if (processedFiles.size === 0) return 0;
+
+    // Preserve existing group assignments and metadata for files outside the processed subset
+    const result: Record<string, ModGroupData> = {};
+    for (const [groupName, groupData] of Object.entries(instanceModGroupping.value)) {
+      const remainingFiles = groupData.files.filter(f => !processedFiles.has(normalizeModFileName(f)));
+      if (remainingFiles.length > 0 || groupData.files.length === 0 || groupData.pinned) {
+        result[groupName] = {
+          ...groupData,
+          files: remainingFiles,
+        };
+      }
+    }
+
+    let count = 0;
+    for (const i of items.value) {
+      const fileName = i.installed?.[0]?.fileName;
+      if (!fileName) continue;
+      const cat = detectModCategory(i as any, t, locale?.value || 'en');
+      // Use stable rawKey identity rather than localized name so translations don't get hardcoded
+      const groupName = cat.rawKey || cat.name;
+      if (!result[groupName]) {
+        result[groupName] = {
+          ...instanceModGroupping.value[groupName],
+          color: instanceModGroupping.value[groupName]?.color ?? cat.color,
+          icon: instanceModGroupping.value[groupName]?.icon ?? cat.icon,
+          files: [],
+        };
+      }
+      const normalized = normalizeModFileName(fileName);
+      if (!result[groupName].files.includes(normalized)) {
+        result[groupName].files.push(normalized);
+      }
+      count++;
+    }
+
+    instanceModGroupping.value = result;
+    return count;
+  }
+
+  function ungroupAll() {
+    instanceModGroupping.value = {};
+    groupCollapsedState.value = {};
+  }
+
   return {
     isInGroup,
     groups: groupNames,
@@ -573,11 +704,343 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
     group,
     addToGroup,
     ungroup,
+    ungroupAll,
+    autoCategorizeMods,
     renameGroup,
+    updateGroupSetting,
+    toggleGroupPin,
     localGroupedItems,
     groupCollapsedState,
     toggleGroupCollapsed,
+    isAllCollapsed,
+    toggleCollapseAll,
+    expandAll,
+    collapseAll,
     collapseAllGroups,
     getContextMenuItemsForGroup,
+  };
+}
+
+export const categoryTranslations: Record<string, Record<string, string>> = {
+  'modCategory.optimization': {
+    en: 'Optimization & Performance',
+    uk: 'Оптимізація та продуктивність',
+    'zh-CN': '优化与性能',
+    'zh-HK': '優化與效能',
+    'zh-TW': '最佳化與效能',
+    ru: 'Оптимизация и производительность',
+    de: 'Optimierung & Leistung',
+    fr: 'Optimisation & Performance',
+    'es-ES': 'Optimización y Rendimiento',
+    'ja-JP': '最適化とパフォーマンス',
+    ko: '최적화 및 성능',
+    'pt-BR': 'Otimização e Desempenho',
+    'it-IT': 'Ottimizzazione e Prestazioni',
+    pl: 'Optymalizacja i wydajność',
+  },
+  'modCategory.libraries': {
+    en: 'Libraries & APIs',
+    uk: 'Бібліотеки та API',
+    'zh-CN': '库与 API',
+    'zh-HK': '程式庫與 API',
+    'zh-TW': '程式庫與 API',
+    ru: 'Библиотеки и API',
+    de: 'Bibliotheken & APIs',
+    fr: 'Bibliothèques & API',
+    'es-ES': 'Bibliotecas y APIs',
+    'ja-JP': 'ライブラリとAPI',
+    ko: 'ライ브러리 및 API',
+    'pt-BR': 'Bibliotecas e APIs',
+    'it-IT': 'Librerie e API',
+    pl: 'Biblioteki i API',
+  },
+  'modCategory.utilities': {
+    en: 'UI & Utilities',
+    uk: 'Інтерфейс та утиліти',
+    'zh-CN': '界面与实用工具',
+    'zh-HK': '介面與實用工具',
+    'zh-TW': '介面與公用程式',
+    ru: 'Интерфейс и утилиты',
+    de: 'UI & Dienstprogramme',
+    fr: 'Interface & Utilitaires',
+    'es-ES': 'Interfaz y Utilidades',
+    'ja-JP': 'UIとユーティリティ',
+    ko: 'UI 및 유틸리티',
+    'pt-BR': 'Interface e Utilitários',
+    'it-IT': 'Interfaccia e Utilità',
+    pl: 'Interfejs i narzędzia',
+  },
+  'modCategory.world': {
+    en: 'World & Biomes',
+    uk: 'Світ та біоми',
+    'zh-CN': '世界与生物群系',
+    'zh-HK': '世界與生態域',
+    'zh-TW': '世界與生態系',
+    ru: 'Мир и биомы',
+    de: 'Welt & Biome',
+    fr: 'Monde & Biomes',
+    'es-ES': 'Mundo y Biomas',
+    'ja-JP': 'ワールドとバイオーム',
+    ko: '월드 및 생물군계',
+    'pt-BR': 'Mundo e Biomas',
+    'it-IT': 'Mondo e Biomi',
+    pl: 'Świat i biomy',
+  },
+  'modCategory.visual': {
+    en: 'Visual & Audio',
+    uk: 'Візуал та аудіо',
+    'zh-CN': '视觉与音效',
+    'zh-HK': '視覺與音效',
+    'zh-TW': '視覺與音效',
+    ru: 'Визуал и аудио',
+    de: 'Grafik & Audio',
+    fr: 'Visuel & Audio',
+    'es-ES': 'Visual y Audio',
+    'ja-JP': 'ビジュアルとオーディオ',
+    ko: '비주얼 및 오디오',
+    'pt-BR': 'Visual e Áudio',
+    'it-IT': 'Grafica e Audio',
+    pl: 'Grafika i dźwięk',
+  },
+  'modCategory.gameplay': {
+    en: 'Gameplay & Content',
+    uk: 'Геймплей та контент',
+    'zh-CN': '玩法与内容',
+    'zh-HK': '玩法與內容',
+    'zh-TW': '遊戲性與內容',
+    ru: 'Геймплей и контент',
+    de: 'Gameplay & Inhalte',
+    fr: 'Gameplay & Contenu',
+    'es-ES': 'Jugabilidad y Contenido',
+    'ja-JP': 'ゲームプレイとコンテンツ',
+    ko: '게임플레이 및 콘텐츠',
+    'pt-BR': 'Jogabilidade e Conteúdo',
+    'it-IT': 'Gameplay e Contenuti',
+    pl: 'Rozgrywka i zawartość',
+  },
+  'modCategory.miscellaneous': {
+    en: 'Miscellaneous',
+    uk: 'Різне',
+    'zh-CN': '杂项',
+    'zh-HK': '雜項',
+    'zh-TW': '其他',
+    ru: 'Разное',
+    de: 'Verschiedenes',
+    fr: 'Divers',
+    'es-ES': 'Varios',
+    'ja-JP': 'その他',
+    ko: '기타',
+    'pt-BR': 'Diversos',
+    'it-IT': 'Varie',
+    pl: 'Różne',
+  },
+};
+
+export const standardCategoryMap: Record<string, string> = {
+  // English
+  'Optimization & Performance': 'modCategory.optimization',
+  'Libraries & APIs': 'modCategory.libraries',
+  'UI & Utilities': 'modCategory.utilities',
+  'World & Biomes': 'modCategory.world',
+  'Visual & Audio': 'modCategory.visual',
+  'Gameplay & Content': 'modCategory.gameplay',
+  'Miscellaneous': 'modCategory.miscellaneous',
+
+  // Ukrainian
+  'Оптимізація та продуктивність': 'modCategory.optimization',
+  'Бібліотеки та API': 'modCategory.libraries',
+  'Інтерфейс та утиліти': 'modCategory.utilities',
+  'Світ та біоми': 'modCategory.world',
+  'Візуал та аудіо': 'modCategory.visual',
+  'Геймплей та контент': 'modCategory.gameplay',
+  'Різне': 'modCategory.miscellaneous',
+
+  // Chinese (Simplified & Traditional)
+  '优化与性能': 'modCategory.optimization',
+  '優化與效能': 'modCategory.optimization',
+  '最佳化與效能': 'modCategory.optimization',
+  '库与 API': 'modCategory.libraries',
+  '程式庫與 API': 'modCategory.libraries',
+  '界面与实用工具': 'modCategory.utilities',
+  '介面與實用工具': 'modCategory.utilities',
+  '介面與公用程式': 'modCategory.utilities',
+  '世界与生物群系': 'modCategory.world',
+  '世界與生態域': 'modCategory.world',
+  '世界與生態系': 'modCategory.world',
+  '视觉与音效': 'modCategory.visual',
+  '視覺與音效': 'modCategory.visual',
+  '玩法与内容': 'modCategory.gameplay',
+  '玩法與內容': 'modCategory.gameplay',
+  '遊戲性與內容': 'modCategory.gameplay',
+  '杂项': 'modCategory.miscellaneous',
+  '雜項': 'modCategory.miscellaneous',
+
+  // Russian
+  'Оптимизация и производительность': 'modCategory.optimization',
+  'Библиотеки и API': 'modCategory.libraries',
+  'Интерфейс и утилиты': 'modCategory.utilities',
+  'Мир и биомы': 'modCategory.world',
+  'Визуал и аудио': 'modCategory.visual',
+  'Геймплей и контент': 'modCategory.gameplay',
+  'Разное': 'modCategory.miscellaneous',
+
+  // Keys
+  'modCategory.optimization': 'modCategory.optimization',
+  'modCategory.libraries': 'modCategory.libraries',
+  'modCategory.utilities': 'modCategory.utilities',
+  'modCategory.world': 'modCategory.world',
+  'modCategory.visual': 'modCategory.visual',
+  'modCategory.gameplay': 'modCategory.gameplay',
+  'modCategory.miscellaneous': 'modCategory.miscellaneous',
+};
+
+export function getGroupDisplayName(name: string, t: (key: string) => string, currentLocale?: string): string {
+  const key = standardCategoryMap[name] || Object.keys(categoryTranslations).find(
+    key => Object.values(categoryTranslations[key]).includes(name)
+  );
+  if (!key) return name;
+
+  const lang = currentLocale || '';
+  const dict = categoryTranslations[key];
+  if (dict && lang) {
+    if (dict[lang]) return dict[lang];
+    if (lang === 'zh-HK' || lang === 'zh-TW') {
+      return dict['zh-HK'] || dict['zh-TW'] || dict['zh-CN'];
+    }
+    const prefix = lang.split('-')[0];
+    if (dict[prefix]) return dict[prefix];
+    if (lang.startsWith('zh')) {
+      return dict['zh-CN'] || dict['zh-HK'];
+    }
+  }
+
+  const translated = t(key);
+  if (translated && translated !== key) {
+    return translated;
+  }
+
+  if (dict?.en) {
+    return dict.en;
+  }
+
+  return name;
+}
+
+export function detectModCategory<T extends GroupableProjectFile = ModFile>(
+  entry: ProjectEntry<T>,
+  t?: (key: string) => string,
+  currentLocale?: string
+): { name: string; rawKey: string; color: string; icon: string } {
+  const modrinthCategories = entry.modrinth?.categories || [];
+  const curseforgeCategories = entry.curseforge?.categories?.map((c: any) => (typeof c === 'string' ? c : c?.name || '')).filter(Boolean) || [];
+  const allCategories = [...modrinthCategories.map(c => c.toLowerCase()), ...curseforgeCategories.map(c => c.toLowerCase())];
+
+  const id = (entry.id || '').toLowerCase();
+  const title = (entry.title || '').toLowerCase();
+  const fileName = (entry.installed?.[0]?.fileName || '').toLowerCase();
+  const text = `${id} ${title} ${fileName}`;
+
+  const getName = (key: string, fallback: string) => {
+    const lang = currentLocale || '';
+    const dict = categoryTranslations[key];
+    if (dict && lang) {
+      if (dict[lang]) return dict[lang];
+      if (lang === 'zh-HK' || lang === 'zh-TW') {
+        return dict['zh-HK'] || dict['zh-TW'] || dict['zh-CN'];
+      }
+      const prefix = lang.split('-')[0];
+      if (dict[prefix]) return dict[prefix];
+    }
+    if (t) {
+      const trans = t(key);
+      if (trans && trans !== key) return trans;
+    }
+    return fallback;
+  };
+
+  // 1. Performance & Optimization
+  if (
+    allCategories.some(c => c.includes('optimization') || c.includes('performance')) ||
+    /\b(sodium|rubidium|embeddium|iris|oculus|lithium|ferritecore|ferrite-core|modernfix|immediatelyfast|immediately-fast|entityculling|entity-culling|canary|memoryleakfix|krypton|enhancedblockentities|bobby|noisium|chunky|fastfurnace|fastsuite|fastbench|smoothboot|dynamic-fps|dynamicfps|starlight|phosphor|c2me|vmp|dashloader|spark|debugify|lazydfu|clumps)\b/i.test(text)
+  ) {
+    return {
+      rawKey: 'modCategory.optimization',
+      name: getName('modCategory.optimization', 'Optimization & Performance'),
+      color: '#10B981',
+      icon: 'bolt'
+    };
+  }
+
+  // 2. Libraries & APIs
+  if (
+    allCategories.some(c => c.includes('library') || c.includes('api')) ||
+    /\b(api|lib|library|core|config|fabric-api|fabricloader|cloth-config|cloth_config|architectury|curios|yacl|yetanotherconfiglib|kotlin|fzzy|geckolib|patchouli|owo|cardinal-components|citresewn|indium|balm|collective|bookshelf|puzzleslib|resourceful-lib|cumulus|supermartijn642s-core-lib)\b/i.test(text) ||
+    id.endsWith('-lib') || id.endsWith('-api') || id.endsWith('lib')
+  ) {
+    return {
+      rawKey: 'modCategory.libraries',
+      name: getName('modCategory.libraries', 'Libraries & APIs'),
+      color: '#3B82F6',
+      icon: 'extension'
+    };
+  }
+
+  // 3. UI & Utilities
+  if (
+    allCategories.some(c => c.includes('utility') || c.includes('gui') || c.includes('management') || c.includes('map')) ||
+    /\b(jei|rei|emi|appleskin|jade|wthit|waila|minimap|journeymap|xaero|mousetweaks|controlling|modmenu|mod-menu|inventoryprofiles|inventory-profiles|invmove|shulkerboxtooltip|tooltip|crafting-tweaks|neat|roughlyenoughitems|justenoughitems|zoom|item-borders)\b/i.test(text)
+  ) {
+    return {
+      rawKey: 'modCategory.utilities',
+      name: getName('modCategory.utilities', 'UI & Utilities'),
+      color: '#06B6D4',
+      icon: 'build'
+    };
+  }
+
+  // 4. World & Biomes
+  if (
+    allCategories.some(c => c.includes('worldgen') || c.includes('biome') || c.includes('dimension')) ||
+    /\b(biome|worldgen|terralith|nullscape|incendium|biomesoplenty|biomes-o-plenty|alexscaves|yung|dungeon|structure|structory|geophilic|towns-and-towers|twilightforest|undergarden|aether|deeperdarker)\b/i.test(text)
+  ) {
+    return {
+      rawKey: 'modCategory.world',
+      name: getName('modCategory.world', 'World & Biomes'),
+      color: '#8B5CF6',
+      icon: 'public'
+    };
+  }
+
+  // 5. Visual & Audio
+  if (
+    allCategories.some(c => c.includes('decoration') || c.includes('cosmetic') || c.includes('audio')) ||
+    /\b(sound|presencefootsteps|soundphysics|etf|emf|entitytexturefeatures|entitymodelfeatures|waveycapes|skinlayers|3dskinlayers|firstperson|notenoughanimations|visuality|continuity|lambdynamiclights|dynamiclights|fallingleaves|ambientenvironment|physicsmod|voicechat|audioplayer)\b/i.test(text)
+  ) {
+    return {
+      rawKey: 'modCategory.visual',
+      name: getName('modCategory.visual', 'Visual & Audio'),
+      color: '#EC4899',
+      icon: 'palette'
+    };
+  }
+
+  // 6. Gameplay & Content
+  if (
+    allCategories.some(c => c.includes('technology') || c.includes('magic') || c.includes('adventure') || c.includes('equipment') || c.includes('food') || c.includes('mobs')) ||
+    /\b(create|mekanism|botania|thermal|farmersdelight|farmers-delight|irons_spellbooks|iron-spells|tetra|tinkers|supplementaries|comforts|alexsmobs|alexs-mobs|waystones|quark|apotheosis|enigmaticlegacy|immersiveengineering|refinedstorage|appliedenergistics|ae2)\b/i.test(text)
+  ) {
+    return {
+      rawKey: 'modCategory.gameplay',
+      name: getName('modCategory.gameplay', 'Gameplay & Content'),
+      color: '#F59E0B',
+      icon: 'sports_esports'
+    };
+  }
+
+  return {
+    rawKey: 'modCategory.miscellaneous',
+    name: getName('modCategory.miscellaneous', 'Miscellaneous'),
+    color: '#6B7280',
+    icon: 'folder'
   };
 }

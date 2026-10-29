@@ -15,6 +15,7 @@ export function useInstanceModpackMetadata() {
     emitModrinth: true,
     emitModrinthStrict: true,
     emitOffline: false,
+    emitPackwiz: false,
     emittedFiles: [],
     emittedServerFiles: [],
     filesEnvironments: {},

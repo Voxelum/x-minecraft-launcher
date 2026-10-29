@@ -790,6 +790,23 @@ mod:
   collapseAllGroups: 摺疊所有分組
   acceptVersion: 推薦 {version}
   applyGroupRules: 套用已儲存嘅分組規則
+  autoCategorize: 自動整理到資料夾
+  autoCategorizeHint: 自動根據分類（優化、程式庫、世界生成、玩法等）將模組整理到資料夾中
+  autoCategorizeSuccess: 成功整理到 {count} 個資料夾
+  ungroupAll: 解散所有資料夾
+  organization: 資料夾整理
+  collapseAll: 折疊所有資料夾
+  expandAll: 展開所有資料夾
+  folderSetting: 資料夾設定
+  folderColor: 資料夾顏色
+  folderIcon: 資料夾圖示
+  pinGroup: 置頂資料夾
+  pinToTop: 置頂顯示
+  pinToTopHint: 資料夾將始終顯示在清單頂部
+  pinned: 已置頂
+  unpinGroup: 取消置頂
+  customColor: 自訂顏色
+  preview: 預覽
   compatible: 可用於目前版本。
   createGroup: 建立分組
   currentVersion: 目前是 {current}
@@ -840,6 +857,14 @@ mod:
   syncGroupRules: 儲存分組規則
   toUpdate: '{count} 個有新版本'
   ungroup: 取消分組
+modCategory:
+  optimization: 優化與效能
+  libraries: 程式庫與 API
+  utilities: 介面與實用工具
+  world: 世界與生態域
+  visual: 視覺與音效
+  gameplay: 玩法與內容
+  miscellaneous: 雜項
 modFilter:
   clear: 清除篩選
   dependenciesInstallOnly: 僅顯示缺少相依項嘅模組
@@ -1844,6 +1869,7 @@ shaderPack:
   showFile: 喺資料夾中顯示此光影包
   'off': 'Off'
 shared:
+  reset: 重設
   pressKeyCombination: 按下按鍵組合...
   add: 新增
   author: 作者
@@ -1881,6 +1907,7 @@ shared:
   upgrade: 更新
   'yes': 是
   delete: 刪除
+  view: 檢視
 sidebar:
   pin: 釘選
   unpin: 取消釘選
