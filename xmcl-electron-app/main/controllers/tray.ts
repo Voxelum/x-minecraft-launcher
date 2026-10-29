@@ -1,3 +1,4 @@
+import { TrayRunningInstances } from './trayRunningInstances'
 import { ElectronController } from '@/ElectronController'
 import { darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
 import { BaseService } from '@xmcl/runtime/app'
@@ -18,7 +19,7 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
   let checkUpdate: (() => void) | undefined
   let instanceService: InstanceService | undefined
   let pinnedPaths = new Set<string>()
-  const runningPaths = new Set<string>()
+  const runningPaths = new TrayRunningInstances()
 
   const pinnedFilePath = join(this.app.appDataPath, 'pinned-instances.json')
   readJson(pinnedFilePath).then((paths) => {
@@ -428,21 +429,21 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
       service.getGameProcesses().then(processes => {
         for (const p of processes) {
           const dir = p.options?.gameDirectory
-          if (dir) runningPaths.add(dir)
+          if (dir) runningPaths.add(p.pid, dir)
         }
         tray.setContextMenu(createMenu())
       }).catch(() => {})
 
-      service.on('minecraft-start', (e: any) => {
-        const path = e?.options?.gameDirectory || e?.gameDirectory
+      service.on('minecraft-start', (e) => {
+        const path = e.gameDirectory
         if (path) {
-          runningPaths.add(path)
+          runningPaths.add(e.pid, path)
           tray.setContextMenu(createMenu())
         }
-      }).on('minecraft-exit', (e: any) => {
-        const path = e?.options?.gameDirectory || e?.gameDirectory
+      }).on('minecraft-exit', (e) => {
+        const path = e.gameDirectory
         if (path) {
-          runningPaths.delete(path)
+          runningPaths.delete(e.pid)
           tray.setContextMenu(createMenu())
         }
       })
