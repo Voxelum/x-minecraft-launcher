@@ -5,6 +5,8 @@ import {
   ScreenshotItem,
 } from "@xmcl/runtime-api";
 import { existsSync } from "fs";
+import { mkdtemp, rename, rm } from "fs/promises";
+import { assertScreenshotDirectory, safeScreenshotPath } from "./safeScreenshot";
 import { copyFile, ensureDir, readdir, stat, unlink, writeFile } from "fs-extra";
 import { basename, extname, join } from "path";
 import { Inject, LauncherAppKey } from "~/app";
@@ -159,7 +161,14 @@ export class InstanceScreenshotService
 
   async saveEditedScreenshot(options: SaveScreenshotDataOptions): Promise<ScreenshotItem> {
     const { instancePath, dataUrl, originalUrl, saveAsCopy } = options;
+    const instanceService = await this.app.registry.get(InstanceService);
+    if (!instanceService.state.all[instancePath]) {
+      throw new Error("Unknown screenshot instance");
+    }
     const screenshotsPath = join(instancePath, "screenshots");
+    // Validate before creating directories or writing any file.
+    await assertScreenshotDirectory(screenshotsPath);
+    const originalPath = originalUrl ? await safeScreenshotPath(instancePath, originalUrl) : undefined;
     await ensureDir(screenshotsPath);
 
     const match = dataUrl.match(/^data:image\/[a-zA-Z+]+;base64,(.+)$/);
@@ -171,18 +180,9 @@ export class InstanceScreenshotService
     let destPath = "";
     let fileName = "";
 
-    if (!saveAsCopy && originalUrl) {
-      try {
-        const parsed = new URL(originalUrl);
-        const originalPath = parsed.searchParams.get("path");
-        if (originalPath && existsSync(originalPath)) {
-          destPath = originalPath;
-          fileName = basename(originalPath);
-        }
-      } catch {
-        destPath = "";
-        fileName = "";
-      }
+    if (!saveAsCopy && originalPath) {
+      destPath = originalPath;
+      fileName = basename(originalPath);
     }
 
     if (!destPath) {
@@ -213,7 +213,22 @@ export class InstanceScreenshotService
       }
     }
 
-    await writeFile(destPath, buffer);
+    if (originalPath && !saveAsCopy) {
+      // Write the complete edit beside the screenshot before replacing it. A
+      // failed write must not truncate the only copy of the user's original.
+      const stage = await mkdtemp(join(screenshotsPath, ".xmcl-edit-"));
+      try {
+        const staged = join(stage, "image");
+        await writeFile(staged, buffer, { flag: "wx" });
+        await safeScreenshotPath(instancePath, originalUrl!);
+        await rename(staged, destPath);
+      } finally {
+        await rm(stage, { recursive: true, force: true });
+      }
+    } else {
+      // New copies must never clobber concurrent edits or imports.
+      await writeFile(destPath, buffer, { flag: "wx" });
+    }
     const fileStat = await stat(destPath);
     const url = new URL("http://launcher/media");
     url.searchParams.append("path", destPath);
