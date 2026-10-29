@@ -632,8 +632,8 @@ export class InstallCoordinator {
           const instance = this.instanceService.state.all[request.instancePath]
           await this.ensureSelectedInstanceJava(
             resolved,
-            instance?.runtime.minecraft || request.runtime.minecraft || resolved.minecraftVersion,
-            instance?.runtime.forge || request.runtime.forge,
+            request.runtime.minecraft || resolved.minecraftVersion,
+            request.runtime.forge,
             instance?.java,
           )
           return {
