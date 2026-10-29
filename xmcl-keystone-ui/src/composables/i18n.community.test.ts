@@ -1,7 +1,11 @@
 import { ref } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@/telemetry', () => ({ trackRendererException: vi.fn().mockResolvedValue(undefined) }))
+const { trackRendererException, loadTelemetry } = vi.hoisted(() => {
+  const trackRendererException = vi.fn().mockResolvedValue(undefined)
+  return { trackRendererException, loadTelemetry: vi.fn(() => ({ trackRendererException })) }
+})
+vi.mock('@/telemetry', loadTelemetry)
 vi.mock('@xmcl/runtime-api', () => ({ resolveXmclApiEndpoints: () => ({ common: 'https://example.invalid' }) }))
 vi.mock('./flights', () => ({ kFlights: Symbol(), useI18nSearchFlights: vi.fn() }))
 
@@ -19,12 +23,12 @@ describe('community translation composable integration', () => {
     vi.stubGlobal('useI18n', () => ({ locale }))
     vi.stubGlobal('inject', () => ({}))
     vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { trackRendererException } = await import('@/telemetry')
     vi.mocked(trackRendererException).mockRejectedValueOnce(new Error('telemetry unavailable'))
     const { useAutoI18nCommunityContent } = await import('./i18n')
     const { getContent } = useAutoI18nCommunityContent(['zh-CN', 'ja'])
     expect(await getContent('modrinth', 'secret-project')).toBe('')
     expect(fetch).not.toHaveBeenCalled()
+    expect(loadTelemetry).not.toHaveBeenCalled()
     locale.value = 'zh-CN'
     const a = getContent('modrinth', 'secret-project')
     const b = getContent('modrinth', 'secret-project')

@@ -1,4 +1,3 @@
-import { trackRendererException } from '@/telemetry'
 import { createCommunityTranslator } from './communityTranslation'
 import { resolveXmclApiEndpoints, Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
@@ -8,8 +7,9 @@ import { kFlights, useI18nSearchFlights } from './flights'
 const locales = import.meta.glob('../../locales/*.yaml')
 const translateCommunityContent = createCommunityTranslator(fetch, (error) => {
   console.warn(error)
+  // Keep the renderer telemetry/i18n bootstrap out of this composable's import graph.
   // One sanitized diagnostic per failed key/cooldown, not one per watcher.
-  void trackRendererException(error).catch(() => {})
+  void import('@/telemetry').then(({ trackRendererException }) => trackRendererException(error)).catch(() => {})
 })
 
 export function useI18nSync(state: Ref<Settings | undefined>) {
