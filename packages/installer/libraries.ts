@@ -1,6 +1,5 @@
 /* eslint-disable n/no-unsupported-features/node-builtins */
-import { MinecraftFolder, MinecraftLocation, ResolvedLibrary, ResolvedVersion } from '@xmcl/core'
-import { isNotNull } from '@xmcl/core/utils'
+import { MinecraftFolder, MinecraftLocation, ResolvedLibrary, ResolvedVersion, isNotNull } from '@xmcl/core'
 import { open, walkEntriesGenerator } from '@xmcl/unzip'
 import { stat } from 'fs/promises'
 import { join } from 'path'
