@@ -94,7 +94,7 @@
           dot
           inline
         />
-        <template v-if="item.installed.length > 0 && getContextMenuItems">
+        <template v-if="!slots.append && item.installed.length > 0 && getContextMenuItems">
           <v-icon
             v-if="hasDuplicate"
             v-shared-tooltip="props.item.installed.map(v => basename(v.path)).join(', ')"
@@ -115,7 +115,7 @@
             </v-icon>
           </v-btn>
         </template>
-        <template v-else-if="dense">
+        <template v-else-if="dense && !slots.append">
           <v-icon size="x-small">
             {{ getTrailingIcon() }}
           </v-icon>
@@ -160,6 +160,10 @@
           </template>
         </template>
       </div>
+    </template>
+
+    <template v-if="slots.append" #append>
+      <slot name="append" />
     </template>
   </v-list-item>
 </template>
@@ -234,7 +238,14 @@ const iconImage: Ref<any> = ref(null)
 function onDragStart(e: DragEvent) {
   e.dataTransfer!.effectAllowed = 'move'
   e.dataTransfer?.setData('id', props.item.id)
-  e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
+  const installedFile = props.item.installed?.[0] as any
+  const fn = installedFile?.fileName || (installedFile?.path ? basename(installedFile.path) : undefined)
+  if (fn) {
+    e.dataTransfer?.setData('fileName', fn)
+  }
+  if (iconImage.value) {
+    e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
+  }
 }
 function onDragEnd(e: DragEvent) {
 }
@@ -250,7 +261,13 @@ function onDrop(e: DragEvent) {
     }
     return
   }
-  emit('drop', e.dataTransfer?.getData('id'))
+  const droppedId = e.dataTransfer?.getData('id')
+  const droppedFileName = e.dataTransfer?.getData('fileName')
+  if (droppedId || droppedFileName) {
+    e.preventDefault()
+    e.stopPropagation()
+    emit('drop', { id: droppedId, fileName: droppedFileName })
+  }
 }
 function onDragOver(e: DragEvent) {
   if (props.draggable || (props.droppable && isFileDrag(e))) {
@@ -269,7 +286,8 @@ watch(() => props.item, (newVal, old) => {
     downloadCount.value = undefined
     followerCount.value = undefined
 
-    if (!newVal.curseforge && !newVal.modrinth) {
+    // Optimize: only fetch online details if icon or description is not already provided locally
+    if (!newVal.curseforge && !newVal.modrinth && (!newVal.icon || (!newVal.description && !newVal.localizedDescription))) {
       const { curseforgeProjectId, modrinthProjectId } = newVal
       if (modrinthProjectId) {
         getSWRV(getModrinthProjectModel(ref(modrinthProjectId)), config).then((project) => {
@@ -381,7 +399,11 @@ const onInstall = async () => {
 
 <style scoped>
 .dragged-over {
-  @apply border border-dashed border-transparent border-yellow-400;
+  border: 1px dashed rgba(var(--v-theme-primary), 0.8) !important;
+  background: rgba(var(--v-theme-primary), 0.12) !important;
+  border-radius: 8px;
+  transform: scale(0.99);
+  transition: all 0.15s ease;
 }
 .market-item__indent-guide {
   width: 3px;

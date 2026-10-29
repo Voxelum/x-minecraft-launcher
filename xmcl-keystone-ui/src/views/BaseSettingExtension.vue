@@ -173,6 +173,7 @@ const contextItems = computed<AvatarItemProps[]>(() => {
     const formats = [
       modpackMetadata.emitModrinth && 'Modrinth',
       modpackMetadata.emitCurseforge && 'CurseForge',
+      modpackMetadata.emitPackwiz && 'Packwiz',
     ].filter(Boolean).join(' + ')
     return [{
       icon: 'sell',

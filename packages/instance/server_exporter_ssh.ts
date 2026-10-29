@@ -1,4 +1,4 @@
-import { isNotNull } from '@xmcl/core/utils'
+import { isNotNull } from '@xmcl/core'
 import { stat } from 'fs-extra'
 import { dirname, join } from 'path'
 import type { Client, SFTPWrapper, Stats } from 'ssh2'

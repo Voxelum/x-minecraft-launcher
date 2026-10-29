@@ -1,6 +1,6 @@
 <template>
   <SettingCard id="modpack-metadata-card" :title="t('modpack.name', 1)" icon="folder_zip">
-    <SettingItem long-action :title="t('modpack.modpackVersion')" :description="t('modpack.modpackVersion')">
+    <SettingItem long-action :title="t('modpack.modpackVersion')" :description="t('modpack.modpackVersionHint')">
       <template #preaction>
         <v-icon>history</v-icon>
       </template>
@@ -82,13 +82,27 @@
         />
       </template>
     </SettingItem>
-    <div id="modrinth-project-anchor" />
+    <template v-if="modrinthContext">
+      <v-divider class="my-2" />
+      <BaseSettingModrinthProjectCard
+        :project-id="modrinthContext.boundProjectId.value"
+        :last-version-id="modpackMetadata.modrinth.lastVersionId"
+        :bind-loading="modrinthContext.bindingProject.value"
+        :create-loading="modrinthContext.creatingProject.value"
+        :unbinding="modrinthContext.unbindingProject.value"
+        @bind="modrinthContext.openBindDialog"
+        @create="modrinthContext.openCreateDialog"
+        @publish="modrinthContext.openPublishDialog"
+        @unbind="modrinthContext.unbindProject"
+      />
+    </template>
   </SettingCard>
 </template>
 
 <script lang="ts" setup>
 import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
+import BaseSettingModrinthProjectCard from '@/components/BaseSettingModrinthProjectCard.vue'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
@@ -103,6 +117,7 @@ const { gameProfile } = injection(kUserContext)
 const { t } = useI18n()
 
 const { modpackMetadata } = inject('modpackMetadata', useInstanceModpackMetadata())
+const { exportModpack, modrinthContext } = injection(kModpackExport)
 
 const onIncr = (minor: boolean = false) => {
   modpackMetadata.modpackVersion =
@@ -110,7 +125,6 @@ const onIncr = (minor: boolean = false) => {
 }
 
 // Gamepad X on the modpack tab exports the modpack.
-const { exportModpack } = injection(kModpackExport)
 useGamepadAction('X', {
   label: () => t('modpack.export'),
   handler: () => exportModpack(),

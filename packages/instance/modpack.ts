@@ -291,6 +291,75 @@ export interface CurseforgeModpackManifest extends ModpackManifest {
   overrides: string
 }
 
+/**
+ * Packwiz pack.toml manifest format
+ */
+export interface PackwizModpackManifest {
+  name: string
+  author?: string
+  version?: string
+  description?: string
+  'pack-format': string
+  index: {
+    file: string
+    'hash-format': string
+    hash: string
+  }
+  versions: {
+    minecraft: string
+    forge?: string
+    fabric?: string
+    neoforge?: string
+    quilt?: string
+    [key: string]: string | undefined
+  }
+  options?: {
+    [key: string]: any
+  }
+}
+
+/**
+ * Packwiz index.toml manifest format
+ */
+export interface PackwizIndexManifest {
+  'hash-format': string
+  files: Array<{
+    file: string
+    hash: string
+    metafile?: boolean
+    preserve?: boolean
+  }>
+}
+
+/**
+ * Packwiz individual mod / file metadata (.pw.toml)
+ */
+export interface PackwizFileMeta {
+  name: string
+  filename: string
+  side?: 'client' | 'server' | 'both'
+  download: {
+    url: string
+    'hash-format': string
+    hash: string
+  }
+  option?: {
+    optional?: boolean
+    default?: boolean
+    description?: string
+  }
+  update?: {
+    modrinth?: {
+      'mod-id': string
+      version: string
+    }
+    curseforge?: {
+      'project-id': number | string
+      'file-id': number | string
+    }
+  }
+}
+
 // Conversion functions from modpack manifests to instance configurations
 
 /**
@@ -701,6 +770,30 @@ export function getMcbbsModpackFromInstance(instance: InstanceData): McbbsModpac
   }
 
   return mcbbsManifest
+}
+
+/**
+ * Convert instance data to Packwiz modpack manifest
+ */
+export function getPackwizModpackFromInstance(instance: InstanceData): PackwizModpackManifest {
+  return {
+    name: instance.name,
+    author: instance.author || undefined,
+    description: instance.description || undefined,
+    'pack-format': 'packwiz:1.1.0',
+    index: {
+      file: 'index.toml',
+      'hash-format': 'sha256',
+      hash: '',
+    },
+    versions: {
+      minecraft: instance.runtime.minecraft,
+      forge: instance.runtime.forge || undefined,
+      fabric: instance.runtime.fabricLoader || undefined,
+      neoforge: instance.runtime.neoForged || undefined,
+      quilt: instance.runtime.quiltLoader || undefined,
+    },
+  }
 }
 
 export interface ModpackInstallProfile {

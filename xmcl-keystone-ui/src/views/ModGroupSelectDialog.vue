@@ -84,7 +84,7 @@
               <template #prepend><v-avatar>
                 <v-icon>folder</v-icon>
               </v-avatar></template>
-              <v-list-item-title>{{ g[0] }}</v-list-item-title>
+              <v-list-item-title>{{ displayName(g[0]) }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{ countLabel(groupModCounts[g[0]] || 0) }}
                 </v-list-item-subtitle>
@@ -132,9 +132,11 @@
 
 <script setup lang="ts">
 import { useDialog } from '@/composables/dialog'
+import { getGroupDisplayName } from '@/composables/modGroup'
 import { ModGroupData } from '@xmcl/runtime-api'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const displayName = (name: string) => getGroupDisplayName(name, t, locale.value)
 const searchQuery = ref('' as string | null)
 const creatingNew = ref(false)
 const newGroupName = ref('')
@@ -160,10 +162,10 @@ const filteredGroups = computed(() => {
   let filtered = Object.entries(groups.value)
 
   if (query) {
-    filtered = filtered.filter(([g]) => g.toLowerCase().includes(query))
+    filtered = filtered.filter(([g]) => displayName(g).toLowerCase().includes(query))
   }
 
-  return filtered.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
+  return filtered.sort(([a], [b]) => displayName(a).localeCompare(displayName(b), locale.value, { numeric: true, sensitivity: 'base' }))
 })
 
 function onSelectGroup(groupName: string) {
@@ -207,4 +209,3 @@ function reset() {
   newGroupName.value = ''
 }
 </script>
-

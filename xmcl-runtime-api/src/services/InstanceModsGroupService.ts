@@ -5,6 +5,8 @@ import type { ServiceKey } from './Service'
 export interface ModGroupData {
   color: string
   files: string[]
+  icon?: string
+  pinned?: boolean
 }
 
 export type InstanceContentGroupType = 'mods' | 'resourcepacks' | 'shaderpacks'
