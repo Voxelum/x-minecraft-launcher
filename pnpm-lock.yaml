@@ -1565,6 +1565,9 @@ importers:
       png2icons:
         specifier: ^2.0.1
         version: 2.0.1
+      smol-toml:
+        specifier: ^1.7.0
+        version: 1.9.0
       ssh2:
         specifier: ^1.16.0
         version: 1.16.0

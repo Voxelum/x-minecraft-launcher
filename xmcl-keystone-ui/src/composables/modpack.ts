@@ -24,12 +24,28 @@ export function useModpacks() {
 
 export const kModpackExport: InjectionKey<ReturnType<typeof useModpackExport>> = Symbol('ModpackExport')
 
+export interface ModpackModrinthContext {
+  boundProjectId: Ref<string>
+  bindingProject: Ref<boolean>
+  creatingProject: Ref<boolean>
+  unbindingProject: Ref<boolean>
+  openBindDialog: () => Promise<void>
+  openCreateDialog: () => Promise<void>
+  openPublishDialog: (project: any) => void
+  unbindProject: () => Promise<void>
+}
+
 export function useModpackExport() {
   let onExport: (() => Promise<void>) | undefined
   const exporting = ref(false)
   const loading = ref(false)
+  const modrinthContext = shallowRef<ModpackModrinthContext>()
+
   function setExportHandler(handler?: () => Promise<void>) {
     onExport = handler
+  }
+  function setModrinthContext(ctx?: ModpackModrinthContext) {
+    modrinthContext.value = ctx
   }
   async function exportModpack() {
     if (exporting.value) return
@@ -46,7 +62,9 @@ export function useModpackExport() {
   return {
     loading,
     exporting,
+    modrinthContext,
     setExportHandler,
+    setModrinthContext,
     exportModpack,
   }
 }
