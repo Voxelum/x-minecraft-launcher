@@ -32,20 +32,12 @@ export function useInstanceLaunch(
   const launchingStatus = computed(() => allLaunchingStatus.value[launchToken.value]?.status ?? '')
   const launching = computed(() => Object.values(allLaunchingStatus.value).some(v => v.status.length > 0))
 
-  function assignStatus(token: string, status: LaunchStatus, controller?: AbortController) {
+  function assignStatus(token: string, status: LaunchStatus, controller?: AbortController, state = allLaunchingStatus.value[token]) {
+    if (!state || allLaunchingStatus.value[token] !== state) return
     const oldVal = allLaunchingStatus.value
-    const controllers = oldVal[token]?.controllers || {}
-    if (controller) {
-      controllers[status] = controller
-    }
-    allLaunchingStatus.value = {
-      ...oldVal,
-      [token]: markRaw({
-        aborted: false,
-        status,
-        controllers,
-      }),
-    }
+    if (controller) state.controllers[status] = controller
+    state.status = status
+    allLaunchingStatus.value = { ...oldVal }
   }
 
   const error = ref<any | undefined>(undefined)
@@ -79,7 +71,7 @@ export function useInstanceLaunch(
     data.value = data.value?.filter(p => p.pid !== pid)
   })
 
-  async function track<T>(token: string, p: Promise<T>, name: LaunchStatus, id: string) {
+  async function track<T>(token: string, p: Promise<T> | (() => Promise<T>), name: LaunchStatus, id: string, state = allLaunchingStatus.value[token]) {
     const start = performance.now()
     if (id) {
       reportOperation({
@@ -90,13 +82,14 @@ export function useInstanceLaunch(
     try {
       const controller = new AbortController()
       if (id) {
-        assignStatus(token, name, controller)
+        assignStatus(token, name, controller, state)
       }
-      const v = await Promise.race([p, new Promise<T>((resolve, reject) => {
-        controller.signal.onabort = () => {
-          reject(new Error('Aborted'))
-        }
-      })])
+      const cancelled = new Promise<T>((resolve, reject) => {
+        controller.signal.onabort = () => reject(new Error('Aborted'))
+        if (state?.aborted) controller.abort()
+      })
+      const pending = typeof p === 'function' ? p() : p
+      const v = await Promise.race([pending, cancelled])
       if (id) {
         reportOperation({
           duration: performance.now() - start,
@@ -119,7 +112,7 @@ export function useInstanceLaunch(
     }
   }
 
-  async function generateLaunchOptions(instancePath: string, userProfile: UserProfile, operationId: string, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>, dry = false) {
+  async function generateLaunchOptions(instancePath: string, userProfile: UserProfile, operationId: string, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>, dry = false, state = allLaunchingStatus.value[getLaunchToken(userProfile, instancePath)]) {
     const ver = overrides?.version ?? side === 'client' ? version.value : serverVersion.value
     const token = getLaunchToken(userProfile, instancePath)
 
@@ -150,7 +143,7 @@ export function useInstanceLaunch(
         globalResolution: globalResolution.value,
         modCount: mods.value.length,
         getOrInstallAuthlibInjector,
-        track: track as any,
+        track: (token, pending, name, id) => track(token, pending, name as LaunchStatus, id, state),
       }
     )
   }
@@ -168,36 +161,36 @@ export function useInstanceLaunch(
     // return instancePath
   }
 
-  async function _launch(instancePath: string, user: UserProfile, operationId: string, side: 'client' | 'server', overrides?: Partial<LaunchOptions>) {
+  async function _launch(instancePath: string, user: UserProfile, operationId: string, side: 'client' | 'server', overrides: Partial<LaunchOptions> | undefined, state: LaunchStatusState) {
     const token = getLaunchToken(user, instancePath)
     try {
       error.value = undefined
-      const options = await generateLaunchOptions(instancePath, user, operationId, side, overrides)
+      const options = await generateLaunchOptions(instancePath, user, operationId, side, overrides, false, state)
+      if (state.aborted) return
 
       if (!options.skipAssetsCheck && side === 'client') {
         console.log('refreshing user')
         try {
-          await track(token, refreshUser(user.id, { validate: true }), 'refreshing-user', operationId)
+          await track(token, refreshUser(user.id, { validate: true }), 'refreshing-user', operationId, state)
         } catch (e) {
+          if (state.aborted) return
           console.error(e)
         }
       }
 
       if (shouldEnableVoiceChat() && side === 'client') {
         try {
-          await track(token, windowController.queryAudioPermission(), 'checking-permission', operationId)
+          await track(token, windowController.queryAudioPermission(), 'checking-permission', operationId, state)
         } catch (e) {
+          if (state.aborted) return
           console.error(e)
         }
       }
 
-      assignStatus(token, 'spawning-process')
+      if (state.aborted) return
+      assignStatus(token, 'spawning-process', undefined, state)
       console.log('spawning process')
 
-      const state = allLaunchingStatus.value[token]
-      if (state?.aborted) {
-        return
-      }
       const pid = await launch(options)
       if (pid) {
         mutate()
@@ -213,11 +206,12 @@ export function useInstanceLaunch(
         }
       }
     } catch (e) {
+      if (state.aborted) return
       console.error(e)
       error.value = e as any
       throw e
     } finally {
-      assignStatus(token, '')
+      assignStatus(token, '', undefined, state)
     }
   }
 
@@ -226,7 +220,16 @@ export function useInstanceLaunch(
     const instancePath = instance.value.path
     const user = userProfile.value
     const token = getLaunchToken(user, instancePath)
-    await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
+    const state: LaunchStatusState = markRaw({ status: 'launching', controllers: {}, aborted: false })
+    allLaunchingStatus.value = { ...allLaunchingStatus.value, [token]: state }
+    try {
+      // Install the outer cancellation handler before starting asynchronous preparation.
+      await track(token, () => _launch(instancePath, user, operationId, side, overrides, state), 'launching', operationId, state)
+    } catch (e) {
+      if (!state.aborted) throw e
+    } finally {
+      assignStatus(token, '', undefined, state)
+    }
   }
 
   async function killGame(side: 'client' | 'server' = 'client') {
@@ -242,11 +245,10 @@ export function useInstanceLaunch(
   function abort() {
     const token = launchToken.value
     const state = allLaunchingStatus.value[token]
+    if (!state || !state.status) return
     state.aborted = true
     const controllers = state.controllers
-    controllers['preparing-authlib']?.abort()
-    controllers['refresh-user']?.abort()
-    controllers['checking-permission']?.abort()
+    for (const controller of Object.values(controllers)) controller.abort()
   }
 
   return {
@@ -263,18 +265,18 @@ export function useInstanceLaunch(
     abort,
     skipAuthLib: () => {
       const token = launchToken.value
-      const controllers = allLaunchingStatus.value[token].controllers
-      controllers['preparing-authlib']?.abort()
+      const controllers = allLaunchingStatus.value[token]?.controllers
+      controllers?.['preparing-authlib']?.abort()
     },
     skipRefresh: () => {
       const token = launchToken.value
-      const controllers = allLaunchingStatus.value[token].controllers
-      controllers['refreshing-user']?.abort()
+      const controllers = allLaunchingStatus.value[token]?.controllers
+      controllers?.['refreshing-user']?.abort()
     },
     skipPermission: () => {
       const token = launchToken.value
-      const controllers = allLaunchingStatus.value[token].controllers
-      controllers['checking-permission']?.abort()
+      const controllers = allLaunchingStatus.value[token]?.controllers
+      controllers?.['checking-permission']?.abort()
     },
   }
 }

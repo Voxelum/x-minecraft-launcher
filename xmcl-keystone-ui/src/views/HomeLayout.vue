@@ -44,11 +44,17 @@ import HomeDropModpackDialog from './HomeDropModpackDialog.vue'
 
 const router = useRouter()
 
-router.afterEach((r) => {
+const removeAfterEach = router.afterEach((r, from) => {
   document.title = `XMCL KeyStone - ${r.fullPath}`
-  if (containerRef.value) {
+  // Selecting a market item only changes the query. Keep the list position
+  // instead of jumping to the header on every selection.
+  if (r.path !== from.path && containerRef.value) {
     containerRef.value.scrollTop = 0
   }
+})
+
+onUnmounted(() => {
+  removeAfterEach()
 })
 
 const headerEl = ref(null as null | HTMLDivElement)

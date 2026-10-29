@@ -49,7 +49,7 @@ function getResourcePackItem(resource: Resource, enabled: Set<string>): Instance
     version: '',
     enabled: enabled.has(resource.fileName) || enabled.has(`file/${resource.fileName}`),
     name: resource.name,
-    id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
+    id: `file/${resource.fileName}`,
     pack_format: 0,
     mtime: resource.mtime,
     description: '',
