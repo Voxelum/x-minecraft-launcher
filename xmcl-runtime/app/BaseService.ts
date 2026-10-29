@@ -48,7 +48,7 @@ export class BaseService extends AbstractService implements IBaseService {
     @Inject(kTasks) private tasks: Tasks,
   ) {
     super(app, async () => {
-      this.checkUpdate()
+      await this.checkUpdateInBackground()
     })
   }
 
@@ -77,7 +77,12 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   async getSettings(): Promise<SharedState<Settings>> {
-    return this.app.registry.get(kSettings)
+    const settings = await this.app.registry.get(kSettings)
+    const capability = this.app.updater.capability
+    if (settings.updateCapability?.automatic !== capability?.automatic || settings.updateCapability?.reason !== capability?.reason) {
+      settings.updateCapabilitySet(capability)
+    }
+    return settings
   }
 
   async getEnvironment(): Promise<Environment> {
@@ -103,7 +108,13 @@ export class BaseService extends AbstractService implements IBaseService {
       steamDeck:
         process.env.STEAM_DECK === '1' ||
         process.env.USER === 'deck' ||
-        (process.platform === 'linux' && os.release().toLowerCase().includes('steamdeck')),
+        process.env.SteamGamepadUI === '1' ||
+        process.env.SteamTenfoot === '1' ||
+        Boolean(process.env.GAMESCOPE_WAYLAND_DISPLAY) ||
+        Boolean(process.env.XDG_CURRENT_DESKTOP?.toLowerCase().includes('gamescope')) ||
+        (process.platform === 'linux' && os.release().toLowerCase().includes('steamdeck')) ||
+        process.argv.includes('--big-picture') ||
+        process.argv.includes('--gamepad'),
     }
   }
 
@@ -283,6 +294,16 @@ export class BaseService extends AbstractService implements IBaseService {
       await this.app.updater.installUpdateAndQuit(settings.updateInfo)
     } else {
       this.warn('There is no update available!')
+    }
+  }
+
+  /** Startup is best-effort; explicit user checks still reject for the error UI. */
+  async checkUpdateInBackground(): Promise<void> {
+    try {
+      await this.checkUpdate()
+    } catch (error) {
+      this.warn('Background update check failed; check updates manually from Settings.')
+      this.warn(error)
     }
   }
 

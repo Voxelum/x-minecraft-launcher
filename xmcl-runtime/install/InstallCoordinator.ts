@@ -27,6 +27,7 @@ import {
   resolveForgeInstallerFile,
   resolveLibraryInstallFiles,
   resolveMinecraftJarInstallFile,
+  resolveMinecraftServerProfileTask,
   resolveMinecraftVersionJsonInstallFile,
   resolveNeoForgedInstallerFile,
   resolveOptifineInstallManifest,
@@ -713,11 +714,15 @@ export class InstallCoordinator {
       }
       const files = resolveLibraryInstallFiles(resolved.libraries, folder, options)
       const jar = resolveMinecraftJarInstallFile(resolved, { ...options, side: 'server' })
-      if (jar) files.push(jar)
+      if (!jar) throw new Error(`Minecraft ${minecraft} does not provide a server jar`)
+      files.push(jar)
       await this.executePrimitivePlan(
         {
           schemaVersion: 1,
-          tasks: [{ id: 'server-base-files', type: 'files', files }],
+          tasks: [
+            { id: 'server-base-files', type: 'files', files },
+            { ...resolveMinecraftServerProfileTask(resolved), dependsOn: ['server-base-files'] },
+          ],
         },
         options,
       )
@@ -745,6 +750,9 @@ export class InstallCoordinator {
       } else if (runtime.quiltLoader) {
         version = await this.applyQuiltRecipe(minecraft, runtime.quiltLoader, undefined, 'server')
       }
+      // Refresh only logs parse failures. Do not report a successful install unless
+      // the profile required by launch/export/deployment really exists and resolves.
+      await this.versionService.resolveServerVersion(version)
       await this.versionService.refreshServerVersion(version)
       task.complete()
       return version

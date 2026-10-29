@@ -40,9 +40,48 @@ export async function getZuluJdkPath() {
   return files.map(f => join('C:\\Program Files\\Zulu', f, 'bin', 'java.exe'))
 }
 
-export async function getJavaPathsLinux() {
-  const files = await readdir('/usr/lib/jvm').catch(() => [])
-  return files.map(f => join('/usr/lib/jvm', f, 'bin', 'java'))
+/**
+ * Whether the launcher is running inside a Flatpak sandbox.
+ *
+ * Flatpak sets `FLATPAK_ID` to the application id for every process in the
+ * sandbox, so its presence is a reliable signal without spawning a process.
+ */
+export function isFlatpakSandbox(environment: NodeJS.ProcessEnv = process.env) {
+  return typeof environment.FLATPAK_ID === 'string' && environment.FLATPAK_ID.length > 0
+}
+
+/**
+ * Distro JDK roots of the host system, visible from a Flatpak sandbox.
+ *
+ * Inside Flatpak, `/usr` belongs to the Flatpak runtime (usually the
+ * freedesktop one), which ships no JDK at all — so `/usr/lib/jvm` is always
+ * empty there. The host filesystem is bind mounted read-only under `/run/host`
+ * (`/var/run` is a symlink to `/run`), which is the only place the system
+ * installed JDKs can be discovered from the sandbox. See issue #1789.
+ */
+const FLATPAK_HOST_JVM_ROOTS = [
+  '/var/run/host/usr/lib/jvm',
+  '/var/run/host/usr/lib64/jvm',
+  '/var/run/host/usr/java',
+]
+
+async function listJavaInJvmRoots(roots: string[]) {
+  const paths = await Promise.all(roots.map(async (root) => {
+    // A missing or inaccessible root is expected: `/usr/lib/jvm` may not exist
+    // on some distributions and `/var/run/host/*` is unreadable when the
+    // sandbox blocks host access. Never let one root hide the others.
+    const files = await readdir(root).catch(() => [] as string[])
+    return files.map(f => join(root, f, 'bin', 'java'))
+  }))
+  return paths.flat()
+}
+
+export async function getJavaPathsLinux(environment: NodeJS.ProcessEnv = process.env) {
+  const roots = ['/usr/lib/jvm']
+  if (isFlatpakSandbox(environment)) {
+    roots.push(...FLATPAK_HOST_JVM_ROOTS)
+  }
+  return listJavaInJvmRoots(roots)
 }
 
 export async function getJavaPathsLinuxSDK() {

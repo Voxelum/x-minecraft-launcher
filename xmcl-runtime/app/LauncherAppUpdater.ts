@@ -1,11 +1,13 @@
 import { Tracker } from '@xmcl/installer'
-import { ReleaseInfo, DownloadUpdateTrackerEvents } from '@xmcl/runtime-api'
+import { ReleaseInfo, DownloadUpdateTrackerEvents, UpdateCapability } from '@xmcl/runtime-api'
 export interface DownloadUpdateOptions {
   tracker?: Tracker<DownloadUpdateTrackerEvents>
   abortSignal?: AbortSignal
 }
 
 export interface LauncherAppUpdater {
+  readonly capability?: UpdateCapability
+
   /**
    * Check update for the x-minecraft-launcher-core
    */

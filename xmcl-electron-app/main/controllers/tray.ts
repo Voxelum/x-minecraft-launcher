@@ -387,6 +387,7 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
     const tray = new Tray(getTrayImage(darkTray, lightTray))
     this.tray = tray
 
+
     if (this.app.platform.os === 'windows') {
       tray.on('double-click', () => {
         const window = this.mainWin

@@ -13,7 +13,7 @@ import { writeFile } from 'fs/promises'
 import { join, relative, sep } from 'path'
 import { diagnoseFile } from './diagnose'
 import { InstallError } from './error'
-import { type InstallFile } from './installManifest'
+import { type InstallFile, type InstallMaterializeTask } from './installManifest'
 import { MinecraftVersionBaseInfo } from './minecraft.browser'
 import { onDownloadMultiple, Tracker, WithDownload } from './tracker'
 import { WithDiagnose } from './utils'
@@ -110,5 +110,29 @@ export function resolveMinecraftVersionJsonInstallFile(
     urls: resolveDownloadUrls(version.url, version, options.json),
     validator: 'json',
     replace: true,
+  }
+}
+
+/** Materialize the launcher-specific server profile after the server jar is installed. */
+export function resolveMinecraftServerProfileTask(version: ResolvedVersion): InstallMaterializeTask {
+  const folder = MinecraftFolder.from(version.minecraftDirectory)
+  const id = version.minecraftVersion
+  const server: Version = {
+    id,
+    type: 'release',
+    time: version.time,
+    releaseTime: version.releaseTime,
+    jar: relative(folder.libraries, folder.getVersionJar(id, 'server')).replaceAll(sep, '/'),
+    arguments: { game: [], jvm: [] },
+    mainClass: '',
+    minimumLauncherVersion: 13,
+    libraries: [],
+  }
+  const path = folder.getVersionServerJson(id)
+  return {
+    id: 'minecraft-server-profile',
+    type: 'materialize',
+    operations: [{ type: 'write', path, content: JSON.stringify(server, null, 2) }],
+    outputs: [{ path, validator: 'json' }],
   }
 }

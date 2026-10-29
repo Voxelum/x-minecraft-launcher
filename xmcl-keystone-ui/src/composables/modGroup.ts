@@ -89,19 +89,19 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
 
   const groupCollapsedState = shallowRef(loadCollapsedState());
 
-  // Watch for changes and persist to localStorage
+  // Persist before an instance switch can change the storage key.
   watch(groupCollapsedState, (newState) => {
     try {
       localStorage.setItem(getStorageKey(), JSON.stringify(newState));
     } catch (error) {
       console.warn("Failed to save group collapsed state:", error);
     }
-  });
+  }, { flush: "sync" });
 
   // Watch for path changes and reload state for new instance
   watch(path, () => {
     groupCollapsedState.value = loadCollapsedState();
-  });
+  }, { flush: "sync" });
 
   // Toggle group collapsed state with proper reactivity
   function toggleGroupCollapsed(groupName: string) {
@@ -112,6 +112,14 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
   }
 
   const groupNames = computed(() => Object.keys(instanceModGroupping.value));
+
+  function collapseAllGroups() {
+    const next = { ...groupCollapsedState.value };
+    for (const name of groupNames.value) {
+      next[name] = true;
+    }
+    groupCollapsedState.value = next;
+  }
 
   function group(fileNames: string[], customName?: string) {
     const newVal = { ...instanceModGroupping.value };
@@ -569,6 +577,7 @@ export function useModGroups<T extends GroupableProjectFile = ModFile>(
     localGroupedItems,
     groupCollapsedState,
     toggleGroupCollapsed,
+    collapseAllGroups,
     getContextMenuItemsForGroup,
   };
 }

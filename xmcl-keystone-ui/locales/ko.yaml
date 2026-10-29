@@ -688,6 +688,7 @@ minecraftVersion:
   showAlpha: 스냅샷 표시
   snapshot: 스냅샷
 mod:
+  collapseAllGroups: 모든 그룹 접기
   acceptVersion: '{version} 적용'
   applyGroupRules: 저장된 그룹 규칙 적용
   compatible: 호환되는 모드입니다.

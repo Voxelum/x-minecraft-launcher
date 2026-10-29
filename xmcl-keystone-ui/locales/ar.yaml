@@ -678,6 +678,7 @@ minecraftVersion:
   showAlpha: عرض لقطة
   snapshot: لقطة
 mod:
+  collapseAllGroups: طي جميع المجموعات
   acceptVersion: قبول {version}
   applyGroupRules: تطبيق قواعد التجميع المحفوظة
   compatible: مود متوافق.
