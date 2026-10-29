@@ -902,6 +902,7 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ScreenshotItem } from '@xmcl/runtime-api'
+import { createScreenshotImageLoader, screenshotCanvasContext } from '@/util/screenshotEditor'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 type ToolType = 'move' | 'pan' | 'pen' | 'highlighter' | 'arrow' | 'rect' | 'circle' | 'line' | 'text' | 'blur' | 'crop'
@@ -988,19 +989,16 @@ const canvasRef = ref<HTMLCanvasElement | null>(null)
 const overlayCanvasRef = ref<HTMLCanvasElement | null>(null)
 const textInputRef = ref<HTMLTextAreaElement | null>(null)
 
-// Cached 2D rendering contexts (avoids repeated getContext calls on hot paths)
-let mainCtx: CanvasRenderingContext2D | null = null
-let overlayCtx: CanvasRenderingContext2D | null = null
-
+// A dialog may recreate its canvas on every open. Never retain a context
+// belonging to a detached canvas: saving the replacement would emit a blank PNG.
 function getMainCtx(): CanvasRenderingContext2D | null {
-  if (!mainCtx && canvasRef.value) mainCtx = canvasRef.value.getContext('2d')
-  return mainCtx
+  return screenshotCanvasContext(canvasRef.value)
 }
 
 function getOverlayCtx(): CanvasRenderingContext2D | null {
-  if (!overlayCtx && overlayCanvasRef.value) overlayCtx = overlayCanvasRef.value.getContext('2d')
-  return overlayCtx
+  return screenshotCanvasContext(overlayCanvasRef.value)
 }
+const imageLoader = createScreenshotImageLoader()
 
 const colorPalette = [
   '#f44336', // Red
@@ -1326,6 +1324,8 @@ function setTool(tool: ToolType) {
 }
 
 function resetState() {
+  imageLoader.cancel()
+  baseImage.value = null
   if (renderLayersRafId !== null) {
     cancelAnimationFrame(renderLayersRafId)
     renderLayersRafId = null
@@ -1359,13 +1359,12 @@ function resetState() {
 }
 
 function loadImage(url: string) {
-  const img = new Image()
-  img.crossOrigin = 'anonymous'
-  img.onload = () => {
+  baseImage.value = null
+  imageLoader.load(url, (img) => {
+    if (!props.modelValue || props.screenshot?.url !== url) return
     baseImage.value = img
     initCanvas(img)
-  }
-  img.src = url
+  })
 }
 
 function initCanvas(img: HTMLImageElement) {
@@ -3159,6 +3158,7 @@ async function copyToClipboard() {
 
 // Save (Silent without toasts as requested)
 async function save(saveAsCopy: boolean) {
+  if (!baseImage.value || layers.value.length === 0) return
   if (textOverlayState.value.active) {
     commitText()
   }

@@ -1,4 +1,4 @@
-import { InjectionKey, Ref, computed, inject, ref } from 'vue'
+import { InjectionKey, Ref, computed, inject, ref, watch } from 'vue'
 import { ScreenshotItem } from '@xmcl/runtime-api'
 import { useInstanceScreenshots } from './screenshot'
 import { injection } from '@/util/inject'
@@ -9,7 +9,7 @@ export type ScreenshotViewMode = 'grid' | 'gridCompact' | 'list'
 export function useScreenshotManager(instancePath: Ref<string>) {
   const screenshots = useInstanceScreenshots(instancePath)
 
-  const search = ref('')
+  const search = ref<string | null>('')
   const sort = ref<ScreenshotSortOption>('dateDesc')
   const viewMode = ref<ScreenshotViewMode>('grid')
   const selectedUrls = ref(new Set<string>())
@@ -22,8 +22,8 @@ export function useScreenshotManager(instancePath: Ref<string>) {
 
   const filteredItems = computed(() => {
     let result = [...screenshots.items.value]
-    if (search.value.trim()) {
-      const q = search.value.trim().toLowerCase()
+    const q = (search.value ?? '').trim().toLowerCase()
+    if (q) {
       result = result.filter(
         (i) => i.name.toLowerCase().includes(q)
       )
@@ -66,6 +66,12 @@ export function useScreenshotManager(instancePath: Ref<string>) {
   function clearSelection() {
     selectedUrls.value = new Set()
   }
+
+  watch(instancePath, () => {
+    clearSelection()
+    isPreviewOpen.value = false
+    activePreviewIndex.value = 0
+  })
 
   function openPreview(index: number) {
     activePreviewIndex.value = index
