@@ -23,11 +23,13 @@
               name="actions"
             />
             <v-alert
-              v-if="error"
+              v-if="error && !dismissedError"
               v-shared-tooltip="error.message"
               type="error"
+              closable
               dense
               class="overflow-hidden text-ellipsis whitespace-nowrap"
+              @click:close="dismissedError = true"
             >
               {{ error }}
             </v-alert>
@@ -189,10 +191,15 @@ const onSelect = (event: MouseEvent, i: any) => {
   }
 }
 
+const dismissedError = ref(false)
+watch(() => props.error, () => {
+  dismissedError.value = false
+})
+
 const onScroll = (e: Event) => {
   const target = e.target as HTMLElement
   if (!target) return
-  if (target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
+  if (target.scrollTop + target.clientHeight >= target.scrollHeight - 200) {
     emit('load')
   }
 }

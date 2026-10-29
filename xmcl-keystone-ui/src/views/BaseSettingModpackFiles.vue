@@ -1,8 +1,4 @@
 <template>
-  <Teleport defer to="#modrinth-project-anchor">
-    <BaseSettingModrinthProjectCard :project-id="boundProjectId" :last-version-id="modpackMetadata.modrinth.lastVersionId" :bind-loading="bindingProject" :create-loading="creatingProject" :unbinding="unbindingProject" @bind="openBindDialog" @create="openCreateDialog" @publish="openPublishDialog" @unbind="unbindProject" />
-  </Teleport>
-
   <SettingCard id="modpack-options-card" :title="t('modpack.export')" icon="ios_share">
     <SettingItem
       long-action
@@ -21,6 +17,7 @@
     <v-divider class="my-2" />
     <SettingItem
       :title="t('modpack.emitCurseforge')"
+      :description="t('modpack.emitCurseforgeDescription')"
       class="cursor-pointer"
       @click="modpackMetadata.emitCurseforge = !modpackMetadata.emitCurseforge"
     >
@@ -41,6 +38,7 @@
     <v-divider class="my-2" />
     <SettingItem
       :title="t('modpack.emitModrinth')"
+      :description="t('modpack.emitModrinthDescription')"
       class="cursor-pointer"
       @click="modpackMetadata.emitModrinth = !modpackMetadata.emitModrinth"
     >
@@ -50,6 +48,27 @@
       <template #action>
         <v-switch
           v-model="modpackMetadata.emitModrinth"
+          color="primary"
+          hide-details
+          inset
+          density="compact"
+          @click.stop
+        />
+      </template>
+    </SettingItem>
+    <v-divider class="my-2" />
+    <SettingItem
+      :title="t('modpack.emitPackwiz')"
+      :description="t('modpack.emitPackwizDescription')"
+      class="cursor-pointer"
+      @click="modpackMetadata.emitPackwiz = !modpackMetadata.emitPackwiz"
+    >
+      <template #preaction>
+        <v-icon>terminal</v-icon>
+      </template>
+      <template #action>
+        <v-switch
+          v-model="modpackMetadata.emitPackwiz"
           color="primary"
           hide-details
           inset
@@ -116,6 +135,21 @@
           ~{{ getExpectedSize(totalSize) }}
         </div>
         <v-btn
+          v-shared-tooltip="() => (openAll ? t('modpack.collapseAll') : t('modpack.expandAll'))"
+          variant="text"
+          :icon="openAll ? 'unfold_less' : 'unfold_more'"
+          size="small"
+          @click="openAll = !openAll"
+        />
+        <v-btn
+          v-shared-tooltip="() => (allSelected ? t('modpack.deselectAllFiles') : t('modpack.selectAllFiles'))"
+          variant="text"
+          :icon="allSelected ? 'check_box' : 'check_box_outline_blank'"
+          size="small"
+          :disabled="(fileSide === 'client' ? refreshing : serverRefreshing) || !activeFiles.length"
+          @click="toggleSelectAll"
+        />
+        <v-btn
           v-shared-tooltip="() => t('modpack.selectDefaultFiles')"
           variant="text"
           icon="restore"
@@ -137,6 +171,7 @@
         v-model="activeSelection"
         :loading="refreshing || serverRefreshing"
         selectable
+        :open-all="openAll"
         :scroll-element="scrollElement"
       >
         <template #default="{ item }">
@@ -200,6 +235,114 @@
       </v-btn>
     </div>
   </SettingCard>
+
+  <!-- Skipped Files Dialog -->
+  <v-dialog
+    v-model="skippedDialogShown"
+    max-width="640"
+    scrollable
+    transition="fade-transition"
+  >
+    <div
+      class="select-none flex max-h-[85vh] flex-col overflow-hidden rounded-xl"
+      style="background-color: rgba(var(--v-theme-surface), 1)"
+    >
+      <!-- Header -->
+      <div class="flex items-center px-6 pt-6 pb-3">
+        <div class="flex items-center gap-3 flex-grow min-w-0">
+          <div
+            class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style="background-color: rgba(var(--v-theme-warning), 0.12)"
+          >
+            <v-icon size="22" color="warning">warning</v-icon>
+          </div>
+          <div class="min-w-0">
+            <div class="text-base font-bold tracking-tight text-white/90">
+              {{ t('modpack.skippedFilesDialogTitle') }}
+            </div>
+            <div class="text-xs text-white/60">
+              {{ t('modpack.skippedFilesDialogDescription', { count: skippedFilesList.length }) }}
+            </div>
+          </div>
+        </div>
+        <v-btn
+          icon="close"
+          variant="text"
+          size="small"
+          @click="skippedDialogShown = false"
+        />
+      </div>
+
+      <v-divider />
+
+      <!-- Notice Banner -->
+      <div class="mx-6 mt-4 p-3 rounded-lg flex items-start gap-3 text-xs bg-amber-500/10 text-amber-300">
+        <v-icon size="18" color="warning" class="mt-0.5 flex-shrink-0">info</v-icon>
+        <div class="leading-relaxed">
+          {{ t('modpack.skippedFilesNotice') }}
+        </div>
+      </div>
+
+      <!-- File List -->
+      <div class="visible-scroll flex flex-col gap-2 overflow-y-auto px-6 py-4 max-h-[50vh]">
+        <div
+          v-for="file of skippedFilesList"
+          :key="file.path"
+          class="flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-white/5"
+          style="background-color: rgba(var(--v-theme-on-surface), 0.04)"
+        >
+          <div class="flex items-center gap-3 min-w-0 flex-grow">
+            <div
+              class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+              style="background-color: rgba(var(--v-theme-surface-variant), 0.4)"
+            >
+              <v-icon size="18" color="warning">block</v-icon>
+            </div>
+            <div class="flex flex-col min-w-0">
+              <span class="truncate text-sm font-semibold text-white/90">
+                {{ file.path.split('/').pop() }}
+              </span>
+              <span class="truncate text-xs text-white/50 font-mono">
+                {{ file.path }}
+              </span>
+            </div>
+          </div>
+
+          <v-chip
+            size="small"
+            color="warning"
+            variant="tonal"
+            class="flex-shrink-0 text-xs font-medium"
+          >
+            {{ getSkippedReasonText(file.reason) }}
+          </v-chip>
+        </div>
+      </div>
+
+      <v-divider />
+
+      <!-- Footer Buttons -->
+      <div class="flex items-center justify-between px-6 py-4 gap-3">
+        <v-btn
+          v-if="exportedDestinationPath || modpackMetadata.exportDirectory"
+          variant="tonal"
+          color="primary"
+          prepend-icon="folder_open"
+          @click="onOpenExportFolder"
+        >
+          {{ t('modpack.openExportFolder') }}
+        </v-btn>
+        <v-spacer v-else />
+        <v-btn
+          color="primary"
+          variant="elevated"
+          @click="skippedDialogShown = false"
+        >
+          {{ t('modpack.closeDialog') }}
+        </v-btn>
+      </div>
+    </div>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -240,13 +383,42 @@ import {
   ModpackServiceKey,
 } from '@xmcl/runtime-api'
 import { useDialog } from '@/composables/dialog'
+import { useNotifier } from '@/composables/notifier'
 import { ModrinthProjectBindDialogKey, ModrinthProjectCreateDialogKey, ModrinthVersionPublishDialogKey, useModrinthProjectBindingBus } from '@/composables/modrinthProjectBinding'
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 
 const { t } = useI18n()
+const { notify } = useNotifier()
 const { getInstanceManifest, getInstanceServerManifest } = useService(InstanceManifestServiceKey)
 const { getInstanceModpackMetadata } = useService(InstanceServiceKey)
 const { exportModpack, unbindModrinthProject } = useService(ModpackServiceKey)
+
+const skippedDialogShown = ref(false)
+const skippedFilesList = ref<Array<{ path: string; reason: string }>>([])
+const exportedDestinationPath = ref('')
+
+function getSkippedReasonText(reason: string) {
+  if (!reason) return t('modpack.skippedReasonEperm')
+  const r = reason.toLowerCase()
+  if (r.includes('eperm') || r.includes('access denied') || r.includes('eacces')) {
+    return t('modpack.skippedReasonEperm')
+  }
+  if (r.includes('ebusy')) {
+    return t('modpack.skippedReasonEbusy')
+  }
+  if (r.includes('enoent') || r.includes('not exist') || r.includes('not found')) {
+    return t('modpack.skippedReasonEnoent')
+  }
+  return reason
+}
+
+function onOpenExportFolder() {
+  if (exportedDestinationPath.value) {
+    showItemInDirectory(exportedDestinationPath.value)
+  } else if (modpackMetadata.exportDirectory) {
+    showItemInDirectory(modpackMetadata.exportDirectory)
+  }
+}
 
 const { modpackMetadata } = inject('modpackMetadata', useInstanceModpackMetadata())
 const cache = shallowReactive({
@@ -255,6 +427,7 @@ const cache = shallowReactive({
 })
 const serverCache = shallowReactive({ selected: [] as string[], files: [] as InstanceFile[] })
 const defaultServerFileRoots = ['mods', 'config', 'defaultconfigs', 'kubejs', 'scripts', 'plugins']
+const openAll = ref(false)
 const fileSide = ref<'client' | 'server'>('client')
 const activeSelection = computed({
   get: () => fileSide.value === 'client' ? cache.selected : serverCache.selected,
@@ -320,6 +493,20 @@ function selectDefaultFiles() {
   activeSelection.value = fileSide.value === 'client'
     ? getDefaultClientFiles(cache.files)
     : getDefaultServerFiles(serverCache.files)
+}
+
+const allSelected = computed(() => {
+  const current = activeSelection.value
+  const files = activeFiles.value
+  return files.length > 0 && current.length >= files.length
+})
+
+function toggleSelectAll() {
+  if (allSelected.value) {
+    activeSelection.value = []
+  } else {
+    activeSelection.value = activeFiles.value.map(f => f.path)
+  }
 }
 
 const stopBindingBus = bindingBus.on((project) => {
@@ -584,12 +771,13 @@ function openPublishDialog(project: Project) {
 const disabledBuild = computed(
   () =>
     !modpackMetadata.emitCurseforge &&
-    !modpackMetadata.emitModrinth,
+    !modpackMetadata.emitModrinth &&
+    !modpackMetadata.emitPackwiz,
 )
 const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
   try {
     const path = instance.value.path
-    await exportModpack({
+    const result = await exportModpack({
       instancePath: path,
       gameVersion: instance.value.runtime.minecraft || versionId.value || '',
       name: instance.value.name,
@@ -600,23 +788,52 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
       emitOffline: false,
       emitCurseforge: modpackMetadata.emitCurseforge,
       emitModrinth: modpackMetadata.emitModrinth,
+      emitPackwiz: modpackMetadata.emitPackwiz,
       strictModeInModrinth: modpackMetadata.emitModrinthStrict,
     })
     modpackMetadata.emittedFiles = cache.selected
-  } catch (e) {
+    const destination = result?.modrinth || result?.curseforge || result?.packwiz || result?.curseforgeServer || result?.offline || ''
+    exportedDestinationPath.value = destination
+
+    if (result?.skippedFiles && result.skippedFiles.length > 0) {
+      skippedFilesList.value = result.skippedFiles
+      skippedDialogShown.value = true
+    } else {
+      notify({
+        level: 'success',
+        title: t('modpack.exportSuccess'),
+      })
+    }
+  } catch (e: any) {
     console.error(e)
+    notify({
+      level: 'error',
+      title: t('modpack.exportFailed'),
+      body: e?.message || String(e),
+    })
   }
 })
 
-const { setExportHandler, loading } = injection(kModpackExport)
+const { setExportHandler, setModrinthContext, loading } = injection(kModpackExport)
 syncRef(loading, refreshing)
 onMounted(() => {
   setExportHandler(() => {
     return confirm()
   })
+  setModrinthContext({
+    boundProjectId,
+    bindingProject,
+    creatingProject,
+    unbindingProject,
+    openBindDialog,
+    openCreateDialog,
+    openPublishDialog,
+    unbindProject,
+  })
 })
 onUnmounted(() => {
   setExportHandler(undefined)
+  setModrinthContext(undefined)
 })
 </script>
 
