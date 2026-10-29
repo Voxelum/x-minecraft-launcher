@@ -31,14 +31,14 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
       error.value = undefined
       loading.value = false
       result.value = undefined
-      return
+      return false
     }
 
     loading.value = true
     try {
       error.value = undefined
       const searchResult = await search(offset, signal)
-      if (signal.aborted) return
+      if (signal.aborted) return false
       if (!append || !result.value) {
         result.value = searchResult as any
       } else {
@@ -49,9 +49,11 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
           limit: searchResult.limit,
         }
       }
+      return true
     } catch (e) {
-      if (signal.aborted) return
+      if (signal.aborted) return false
       error.value = e
+      return false
     } finally {
       if (abortController === controller) {
         loading.value = false
@@ -68,13 +70,16 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
     if (!hasMore.value) return
     if (loading.value) return
     const nextPage = page.value + 1
-    await executeSearch(nextPage * get(pageSize), true)
-    if (!error.value) {
+    const applied = await executeSearch(nextPage * get(pageSize), true)
+    if (applied) {
       page.value = nextPage
     }
   }
 
   const onSearch = async () => {
+    // Invalidate immediately, not 400ms later when the debounce fires.
+    abortController?.abort()
+    abortController = undefined
     page.value = 0
     error.value = undefined
     loading.value = true

@@ -58,3 +58,34 @@ describe('useSearchPattern', () => {
     expect(page.value).toBe(0)
   })
 })
+
+
+describe('search invalidation during debounce', () => {
+  it('does not apply an old page or advance pagination after a new filter is queued', async () => {
+    vi.useFakeTimers()
+    try {
+      let completePage!: (value: { data: number[]; total: number; offset: number; limit: number }) => void
+      const search = vi.fn()
+        .mockResolvedValueOnce({ data: [1], total: 3, offset: 0, limit: 1 })
+        .mockImplementationOnce(() => new Promise(resolve => { completePage = resolve }))
+        .mockResolvedValueOnce({ data: [9], total: 1, offset: 0, limit: 1 })
+      const state = useSearchPattern(search, () => true, 1)
+      const initial = state.onSearch()
+      await vi.advanceTimersByTimeAsync(400)
+      await initial
+      const pendingPage = state.loadMore()
+      const filtered = state.onSearch()
+      completePage({ data: [2], total: 3, offset: 1, limit: 1 })
+      await pendingPage
+      expect(state.result.value?.data).toEqual([1])
+      expect(state.page.value).toBe(0)
+      expect(state.loading.value).toBe(true)
+      await vi.advanceTimersByTimeAsync(400)
+      await filtered
+      expect(state.result.value?.data).toEqual([9])
+      expect(state.page.value).toBe(0)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+})
