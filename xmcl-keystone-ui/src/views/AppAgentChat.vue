@@ -435,7 +435,7 @@ watch([transcriptItems, events, confirmationShown, displayError], async () => {
   if (!followTranscript.value) return
   await nextTick()
   if (followTranscript.value) scrollTranscriptToBottom()
-}, { deep: true })
+})
 
 </script>
 
