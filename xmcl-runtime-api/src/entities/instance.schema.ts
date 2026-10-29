@@ -45,6 +45,8 @@ export const InstanceModpackMetadataSchema = z.object({
   emitModrinthStrict: z.boolean().default(true),
   /** Emit the offline format zip */
   emitOffline: z.boolean().default(false),
+  /** Emit the packwiz format zip */
+  emitPackwiz: z.boolean().default(false),
   /** The files to included in last export */
   emittedFiles: z.array(z.string()).default([]),
   /** The server-folder files included in server exports and deployments. */

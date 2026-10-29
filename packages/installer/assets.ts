@@ -1,5 +1,4 @@
-import { MinecraftFolder, ResolvedVersion } from '@xmcl/core'
-import { isNotNull } from '@xmcl/core/utils'
+import { MinecraftFolder, ResolvedVersion, isNotNull } from '@xmcl/core'
 import { readFile, stat } from 'fs/promises'
 import { DiagnoseOptions, Issue, diagnoseFile } from './diagnose'
 import { type InstallFile, type InstallManifest } from './installManifest'

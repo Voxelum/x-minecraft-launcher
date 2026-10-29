@@ -978,24 +978,45 @@ modified:
   unsaved: Your modification is unsaved!
 modpack:
   author: Author Name
-  authorHint: This might be used to sign an exported modpack (Curseforge)
+  authorHint: The creator or team name for this modpack
   description: Description
-  descriptionHint: General description for you modpack. Might be used for exporting as curseforge modpack.
+  descriptionHint: Short summary or description of what this modpack includes
   dropHint: Drop modpack zip to here to import
-  emitCurseforge: Export Curseforge Modpack
-  emitModrinth: Export Modrinth Modpack
-  emitModrinthStrict: Strict Modrinth Format
-  emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
+  emitCurseforge: Export CurseForge (.zip)
+  emitCurseforgeDescription: Standard zip modpack archive for CurseForge
+  emitModrinth: Export Modrinth (.mrpack)
+  emitModrinthDescription: Lightweight official format with fast CDN downloads
+  emitModrinthStrict: Strict Modrinth Domain Policy
+  emitModrinthStrictDescription: Only allow download URLs from verified domains (Modrinth, GitHub, GitLab)
+  emitPackwiz: Export Packwiz Modpack
+  emitPackwizDescription: Lightweight git-friendly format (pack.toml, index.toml, and .pw.toml files)
   export: Export as Modpack
+  exportSuccess: Modpack exported successfully!
+  exportSuccessWithWarnings: Modpack exported with warnings
+  exportSkippedFiles: "{count} unreadable or locked files were skipped during export"
+  exportFailed: Failed to export modpack
+  skippedFilesDialogTitle: Some files could not be exported
+  skippedFilesDialogDescription: Modpack created, but {count} files were skipped
+  skippedReasonEperm: Access denied (locked by OS or another process)
+  skippedReasonEbusy: File is in use by another program
+  skippedReasonEnoent: File not found or broken
+  skippedFilesNotice: The rest of your files were successfully packaged into the modpack. The files above were skipped due to Windows system restrictions or missing access permissions.
+  openExportFolder: Open modpack folder
+  closeDialog: Got it
   exportDirectory: Export Directory
-  exportDirectoryDescription: The modpack will be exported to Downloads folder by default
+  exportDirectoryDescription: Destination folder where exported files will be saved
   includeAssets: Include Assets
   includes: Files to include
+  expandAll: Expand all folders
+  collapseAll: Collapse all folders
   modpackVersion: Modpack Version
+  modpackVersionHint: Semantic version string (e.g. 1.0.0). Use + to increment patch/minor
   modrinthProject: Modrinth project
   name: Modpack | Modpacks
   overrides: Overrides
   selectDefaultFiles: Select default files
+  selectAllFiles: Select all files
+  deselectAllFiles: Deselect all files
   bindProject: Bind project
   bindProjectHint: Select a Modrinth modpack project managed by the current account.
   bindProjectTypeImmutableHint: Modrinth fixes a project's type when its first version is uploaded, and it can't be changed afterwards. Draft projects without any version yet can still be bound here, but a project already published as a mod/resource pack/etc. can't be converted into a modpack — use "Create new project" instead.
