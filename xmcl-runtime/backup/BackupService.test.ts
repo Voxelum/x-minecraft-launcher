@@ -3,7 +3,7 @@ import {
   LocalCollectionState,
   Settings,
 } from '@xmcl/runtime-api'
-import { ensureDir, mkdtemp, readFile, readJson, rm, writeFile, writeJson } from 'fs-extra'
+import { ensureDir, mkdtemp, realpath, readFile, readJson, rm, writeFile, writeJson } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -63,7 +63,7 @@ describe('BackupService', () => {
   let backupService: BackupService
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'xmcl-backup-test-'))
+    tempDir = await realpath(await mkdtemp(join(tmpdir(), 'xmcl-backup-test-')))
     appDataDir = join(tempDir, 'appData')
     gameDataDir = join(tempDir, 'gameData')
     await ensureDir(appDataDir)

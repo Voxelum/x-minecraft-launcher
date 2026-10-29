@@ -15,7 +15,9 @@ import {
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 
 type ZipEntry = Awaited<ReturnType<typeof readAllEntries>>[number]
-import { createWriteStream } from 'fs'
+import { constants, createReadStream, createWriteStream } from 'fs'
+import { mkdtemp, open as openFile, rm } from 'fs/promises'
+import { safeBackupPath, validateInstanceFolder } from './safePath'
 import {
   close as closeFs,
   ensureDir,
@@ -27,11 +29,10 @@ import {
   readJson,
   stat,
   unlink,
-  writeFile,
   writeJson,
 } from 'fs-extra'
 import filenamify from 'filenamify'
-import { basename, dirname, join, normalize, relative } from 'path'
+import { basename, dirname, join, relative, resolve } from 'path'
 import { pipeline } from 'stream/promises'
 import { ZipFile } from 'yazl'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
@@ -658,24 +659,29 @@ export class BackupService extends AbstractService implements IBackupService {
     }
 
     const zipFile = await open(backupPath)
-    const entries = await readAllEntries(zipFile)
-    const manifestEntry = entries.find((e) => e.fileName === 'manifest.json')
+    try {
+      const entries = await readAllEntries(zipFile)
+      const manifestEntry = entries.find((e) => e.fileName === 'manifest.json')
 
-    if (!manifestEntry) {
-      throw new Error('Invalid backup file: manifest.json not found')
+      if (!manifestEntry) {
+        throw new Error('Invalid backup file: manifest.json not found')
+      }
+
+      const buffer = await readZipEntryAsBuffer(zipFile, manifestEntry)
+      const manifest = JSON.parse(buffer.toString('utf-8')) as BackupManifest
+
+      if (!manifest.version || !manifest.includes) {
+        throw new Error('Invalid backup manifest format')
+      }
+
+      return manifest
+    } finally {
+      zipFile.close()
     }
-
-    const buffer = await readZipEntryAsBuffer(zipFile, manifestEntry)
-    const manifest = JSON.parse(buffer.toString('utf-8')) as BackupManifest
-
-    if (!manifest.version || !manifest.includes) {
-      throw new Error('Invalid backup manifest format')
-    }
-
-    return manifest
   }
 
   async restoreBackup(options: RestoreBackupOptions): Promise<RestoreBackupResult> {
+    for (const name of options.instances || []) validateInstanceFolder(name)
     this.emit('restore-progress', {
       phase: 'reading',
       percent: 5,
@@ -684,197 +690,210 @@ export class BackupService extends AbstractService implements IBackupService {
 
     const manifest = await this.loadBackupManifest(options.backupPath)
     const zipFile = await open(options.backupPath)
-    const entries = await readAllEntries(zipFile)
+    try {
+      const entries = await readAllEntries(zipFile)
 
-    const result: RestoreBackupResult = {
-      restoredSettings: false,
-      restoredCollections: false,
-      restoredThemes: false,
-      restoredInstances: [],
-      skippedInstances: [],
-    }
-
-    // 1. Settings
-    if (options.restoreSettings && manifest.includes.settings) {
-      this.emit('restore-progress', {
-        phase: 'settings',
-        percent: 20,
-        message: 'Restoring launcher settings...',
-      })
-      const settingEntry = entries.find((e) => e.fileName === 'settings/setting.json' || e.fileName === 'setting.json')
-      if (settingEntry) {
-        try {
-          const buf = await readZipEntryAsBuffer(zipFile, settingEntry)
-          const parsed = JSON.parse(buf.toString('utf-8'))
-          const validated = SettingSchema.parse(parsed)
-          const settingsState = await this.app.registry.get(kSettings)
-          settingsState.config(validated)
-          result.restoredSettings = true
-          this.log('Settings restored successfully from backup')
-        } catch (e) {
-          this.warn(`Failed to restore settings: ${e}`)
-        }
+      const result: RestoreBackupResult = {
+        restoredSettings: false,
+        restoredCollections: false,
+        restoredThemes: false,
+        restoredInstances: [],
+        skippedInstances: [],
       }
-    }
 
-    // 2. Collections
-    if (options.restoreCollections && manifest.includes.collections) {
-      this.emit('restore-progress', {
-        phase: 'collections',
-        percent: 35,
-        message: 'Restoring saved collections...',
-      })
-      const colEntry = entries.find((e) => e.fileName === 'collections/collections.json' || e.fileName === 'collections.json')
-      if (colEntry) {
-        try {
-          const buf = await readZipEntryAsBuffer(zipFile, colEntry)
-          const parsed = JSON.parse(buf.toString('utf-8'))
-          const validated = CollectionsFileSchema.parse(parsed)
-
-          for (const col of validated.collections) {
-            this.collectionService.state.collectionUpsert(col)
-          }
-          result.restoredCollections = true
-          this.log(`Restored ${validated.collections.length} collections from backup`)
-        } catch (e) {
-          this.warn(`Failed to restore collections: ${e}`)
-        }
-      }
-    }
-
-    // 3. Themes
-    if (options.restoreThemes && manifest.includes.themes) {
-      this.emit('restore-progress', {
-        phase: 'themes',
-        percent: 50,
-        message: 'Restoring custom themes and media...',
-      })
-      const themeEntry = entries.find((e) => e.fileName === 'themes/theme.json' || e.fileName === 'theme.json')
-      if (themeEntry) {
-        try {
-          const buf = await readZipEntryAsBuffer(zipFile, themeEntry)
-          const themeData = JSON.parse(buf.toString('utf-8'))
-
-          const themeMediaFolder = this.getAppDataPath('theme-media')
-          await ensureDir(themeMediaFolder)
-
-          for (const entry of entries) {
-            if (entry.fileName.startsWith('themes/theme-media/')) {
-              const relName = entry.fileName.substring('themes/theme-media/'.length)
-              if (!relName || relName.endsWith('/')) continue
-              const outPath = join(themeMediaFolder, relName)
-              // zip-slip check
-              if (!normalize(outPath).startsWith(normalize(themeMediaFolder))) continue
-
-              await ensureDir(dirname(outPath))
-              const readable = await openEntryReadStream(zipFile, entry)
-              await pipeline(readable, createWriteStream(outPath))
-            } else if (entry.fileName === 'themes/theme.css' || entry.fileName === 'theme.css') {
-              const cssBuf = await readZipEntryAsBuffer(zipFile, entry)
-              await writeFile(this.getAppDataPath('theme.css'), cssBuf)
-            }
-          }
-
-          await this.themeService.setCurrentTheme(themeData)
-          result.restoredThemes = true
-          this.log('Themes restored successfully from backup')
-        } catch (e) {
-          this.warn(`Failed to restore themes: ${e}`)
-        }
-      }
-    }
-
-    // 4. Instances
-    const instancesToRestore = options.instances || []
-    if (instancesToRestore.length > 0) {
-      const instancesRoot = this.getPath('instances')
-      await ensureDir(instancesRoot)
-
-      const totalInst = instancesToRestore.length
-      for (let i = 0; i < totalInst; i++) {
-        const instFolderName = instancesToRestore[i]
-        const instPercent = Math.round(55 + ((i) / totalInst) * 40)
+      // 1. Settings
+      if (options.restoreSettings && manifest.includes.settings) {
         this.emit('restore-progress', {
-          phase: 'instances',
-          currentInstance: instFolderName,
-          currentInstanceIndex: i + 1,
-          totalInstances: totalInst,
-          percent: instPercent,
-          message: `Restoring instance: ${instFolderName} (${i + 1}/${totalInst})`,
+          phase: 'settings',
+          percent: 20,
+          message: 'Restoring launcher settings...',
         })
-        const prefix = `instances/${instFolderName}/`
-        const instEntries = entries.filter((e) => e.fileName.startsWith(prefix) && !e.fileName.endsWith('/'))
-        if (instEntries.length === 0) continue
-
-        let targetDir = join(instancesRoot, instFolderName)
-        const conflict = options.instanceConflictStrategy || 'rename'
-
-        if (existsSync(targetDir)) {
-          if (conflict === 'skip') {
-            this.log(`Skipping already existing instance folder: ${instFolderName}`)
-            result.skippedInstances?.push(instFolderName)
-            continue
-          }
-          if (conflict === 'rename') {
-            let counter = 1
-            let candidate = `${instFolderName}-restored`
-            while (existsSync(join(instancesRoot, candidate))) {
-              counter++
-              candidate = `${instFolderName}-restored-${counter}`
-            }
-            targetDir = join(instancesRoot, candidate)
-          }
-          // If 'overwrite', targetDir remains the same
-        }
-
-        await ensureDir(targetDir)
-
-        for (const entry of instEntries) {
-          const relPath = entry.fileName.substring(prefix.length)
-          const destPath = join(targetDir, relPath)
-
-          // zip-slip check
-          if (!normalize(destPath).startsWith(normalize(targetDir))) {
-            continue
-          }
-
-          await ensureDir(dirname(destPath))
-          const readable = await openEntryReadStream(zipFile, entry)
-          await pipeline(readable, createWriteStream(destPath))
-        }
-
-        // If the instance was renamed, update its internal name in instance.json
-        const instJsonPath = join(targetDir, 'instance.json')
-        if (existsSync(instJsonPath)) {
+        const settingEntry = entries.find((e) => e.fileName === 'settings/setting.json' || e.fileName === 'setting.json')
+        if (settingEntry) {
           try {
-            const data = await readJson(instJsonPath)
-            if (targetDir !== join(instancesRoot, instFolderName)) {
-              data.name = `${data.name || instFolderName} (Restored)`
-              await writeJson(instJsonPath, data, { spaces: 2 })
-            }
-          } catch {
-            // Ignore error updating name
+            const buf = await readZipEntryAsBuffer(zipFile, settingEntry)
+            const parsed = JSON.parse(buf.toString('utf-8'))
+            const validated = SettingSchema.parse(parsed)
+            const settingsState = await this.app.registry.get(kSettings)
+            settingsState.config(validated)
+            result.restoredSettings = true
+            this.log('Settings restored successfully from backup')
+          } catch (e) {
+            this.warn(`Failed to restore settings: ${e}`)
           }
-        }
-
-        // Load into InstanceService
-        try {
-          await this.instanceService.loadInstance(targetDir)
-          result.restoredInstances.push(targetDir)
-          this.log(`Restored instance: ${targetDir}`)
-        } catch (e) {
-          this.warn(`Failed to load restored instance at ${targetDir}: ${e}`)
         }
       }
+
+      // 2. Collections
+      if (options.restoreCollections && manifest.includes.collections) {
+        this.emit('restore-progress', {
+          phase: 'collections',
+          percent: 35,
+          message: 'Restoring saved collections...',
+        })
+        const colEntry = entries.find((e) => e.fileName === 'collections/collections.json' || e.fileName === 'collections.json')
+        if (colEntry) {
+          try {
+            const buf = await readZipEntryAsBuffer(zipFile, colEntry)
+            const parsed = JSON.parse(buf.toString('utf-8'))
+            const validated = CollectionsFileSchema.parse(parsed)
+
+            for (const col of validated.collections) {
+              this.collectionService.state.collectionUpsert(col)
+            }
+            result.restoredCollections = true
+            this.log(`Restored ${validated.collections.length} collections from backup`)
+          } catch (e) {
+            this.warn(`Failed to restore collections: ${e}`)
+          }
+        }
+      }
+
+      // 3. Themes
+      if (options.restoreThemes && manifest.includes.themes) {
+        this.emit('restore-progress', {
+          phase: 'themes',
+          percent: 50,
+          message: 'Restoring custom themes and media...',
+        })
+        const themeEntry = entries.find((e) => e.fileName === 'themes/theme.json' || e.fileName === 'theme.json')
+        if (themeEntry) {
+          try {
+            const buf = await readZipEntryAsBuffer(zipFile, themeEntry)
+            const themeData = JSON.parse(buf.toString('utf-8'))
+
+            const themeMediaFolder = this.getAppDataPath('theme-media')
+            await ensureDir(themeMediaFolder)
+
+            for (const entry of entries) {
+              if (entry.fileName.startsWith('themes/theme-media/')) {
+                const relName = entry.fileName.substring('themes/theme-media/'.length)
+                if (!relName || relName.endsWith('/')) continue
+                const outPath = await safeBackupPath(themeMediaFolder, relName)
+
+                await ensureDir(dirname(outPath))
+                const readable = await openEntryReadStream(zipFile, entry)
+                await pipeline(readable, (await openFile(outPath, constants.O_WRONLY | constants.O_CREAT | constants.O_TRUNC | constants.O_NOFOLLOW)).createWriteStream())
+              } else if (entry.fileName === 'themes/theme.css' || entry.fileName === 'theme.css') {
+                const cssBuf = await readZipEntryAsBuffer(zipFile, entry)
+                const cssPath = await safeBackupPath(this.getAppDataPath(), 'theme.css')
+                const handle = await openFile(cssPath, constants.O_WRONLY | constants.O_CREAT | constants.O_TRUNC | constants.O_NOFOLLOW)
+                try { await handle.writeFile(cssBuf) } finally { await handle.close() }
+              }
+            }
+
+            await this.themeService.setCurrentTheme(themeData)
+            result.restoredThemes = true
+            this.log('Themes restored successfully from backup')
+          } catch (e) {
+            this.warn(`Failed to restore themes: ${e}`)
+          }
+        }
+      }
+
+      // 4. Instances
+      const instancesToRestore = options.instances || []
+      if (instancesToRestore.length > 0) {
+        const instancesRoot = this.getPath('instances')
+        await ensureDir(instancesRoot)
+
+        const totalInst = instancesToRestore.length
+        for (let i = 0; i < totalInst; i++) {
+          const instFolderName = instancesToRestore[i]
+          const instPercent = Math.round(55 + ((i) / totalInst) * 40)
+          this.emit('restore-progress', {
+            phase: 'instances',
+            currentInstance: instFolderName,
+            currentInstanceIndex: i + 1,
+            totalInstances: totalInst,
+            percent: instPercent,
+            message: `Restoring instance: ${instFolderName} (${i + 1}/${totalInst})`,
+          })
+          const prefix = `instances/${instFolderName}/`
+          const instEntries = entries.filter((e) => e.fileName.startsWith(prefix) && !e.fileName.endsWith('/'))
+          if (instEntries.length === 0) continue
+
+          let targetDir = join(instancesRoot, instFolderName)
+          const conflict = options.instanceConflictStrategy || 'rename'
+
+          if (existsSync(targetDir)) {
+            if (conflict === 'skip') {
+              this.log(`Skipping already existing instance folder: ${instFolderName}`)
+              result.skippedInstances?.push(instFolderName)
+              continue
+            }
+            if (conflict === 'rename') {
+              let counter = 1
+              let candidate = `${instFolderName}-restored`
+              while (existsSync(join(instancesRoot, candidate))) {
+                counter++
+                candidate = `${instFolderName}-restored-${counter}`
+              }
+              targetDir = join(instancesRoot, candidate)
+            }
+            // If 'overwrite', targetDir remains the same
+          }
+
+          // Preflight every destination before touching existing instance files. Decode
+          // the complete archive into staging first so bad streams cannot truncate saves.
+          const targetName = basename(targetDir)
+          const paths = instEntries.map(entry => entry.fileName.substring(prefix.length))
+          if (new Set(paths).size !== paths.length) throw new Error('Duplicate backup paths')
+          for (const relPath of paths) await safeBackupPath(instancesRoot, `${targetName}/${relPath}`)
+          const stage = await mkdtemp(join(instancesRoot, '.xmcl-restore-'))
+          try {
+            for (let index = 0; index < instEntries.length; index++) {
+              const staged = await safeBackupPath(stage, paths[index])
+              await ensureDir(dirname(staged))
+              const readable = await openEntryReadStream(zipFile, instEntries[index])
+              await pipeline(readable, createWriteStream(staged, { flags: 'wx' }))
+            }
+            // This is not a transaction: I/O errors during this commit phase still
+            // require rollback support before overwrite can be considered lossless.
+            for (const relPath of paths) {
+              const destPath = await safeBackupPath(instancesRoot, `${targetName}/${relPath}`)
+              await ensureDir(dirname(destPath))
+              await pipeline(createReadStream(join(stage, relPath)), (await openFile(destPath, constants.O_WRONLY | constants.O_CREAT | constants.O_TRUNC | constants.O_NOFOLLOW)).createWriteStream())
+            }
+          } finally {
+            await rm(stage, { recursive: true, force: true })
+          }
+
+          // If the instance was renamed, update its internal name in instance.json
+          const instJsonPath = join(targetDir, 'instance.json')
+          if (existsSync(instJsonPath)) {
+            try {
+              const data = await readJson(instJsonPath)
+              if (targetDir !== join(instancesRoot, instFolderName)) {
+                data.name = `${data.name || instFolderName} (Restored)`
+                await writeJson(instJsonPath, data, { spaces: 2 })
+              }
+            } catch {
+              // Ignore error updating name
+            }
+          }
+
+          // Load into InstanceService
+          try {
+            await this.instanceService.loadInstance(targetDir)
+            result.restoredInstances.push(targetDir)
+            this.log(`Restored instance: ${targetDir}`)
+          } catch (e) {
+            this.warn(`Failed to load restored instance at ${targetDir}: ${e}`)
+          }
+        }
+      }
+
+      this.emit('restore-progress', {
+        phase: 'complete',
+        percent: 100,
+        message: 'Restore completed successfully!',
+      })
+
+      return result
+    } finally {
+      zipFile.close()
     }
-
-    this.emit('restore-progress', {
-      phase: 'complete',
-      percent: 100,
-      message: 'Restore completed successfully!',
-    })
-
-    return result
   }
 
   private getDefaultAutoBackupConfig(): AutoBackupConfig {
@@ -1139,11 +1158,12 @@ export class BackupService extends AbstractService implements IBackupService {
 
   async deleteAutoBackup(filePath: string): Promise<void> {
     const cfg = await this.loadAutoBackupConfig()
-    const destDir = normalize(cfg.destinationDir || this.getAppDataPath('backups'))
-    const target = normalize(filePath)
-    if (!target.startsWith(destDir)) {
+    const destDir = resolve(cfg.destinationDir || this.getAppDataPath('backups'))
+    const requested = resolve(filePath)
+    if (dirname(requested) !== destDir) {
       throw new Error('Cannot delete file outside auto-backup directory')
     }
+    const target = await safeBackupPath(destDir, basename(requested))
     if (!target.endsWith('.xmclbackup') && !target.endsWith('.zip')) {
       throw new Error('Invalid backup archive extension')
     }
