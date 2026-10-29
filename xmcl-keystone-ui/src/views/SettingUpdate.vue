@@ -4,7 +4,24 @@
     :title="t('setting.update')"
     icon="rocket_launch"
   >
-    <SettingItem>
+    <v-progress-linear v-if="!updateStateReady" indeterminate />
+    <template v-else-if="updateUnavailable">
+      <v-alert type="info" variant="tonal" class="ma-4" role="status">
+        <strong>{{ t('launcherUpdate.automaticUnavailable') }}</strong>
+        <div>{{ t(updateCapabilityReason === 'not-configured' ? 'launcherUpdate.automaticNotConfigured' : 'launcherUpdate.automaticNotImplemented') }}</div>
+        <div>{{ t('launcherUpdate.manualCheckHint') }}</div>
+        <div v-if="manualCheckRequested">{{ t('launcherUpdate.manualCheckRequired') }}</div>
+      </v-alert>
+      <div class="flex gap-2 px-4 pb-4">
+        <v-btn variant="text" :loading="checkingUpdate" @click="checkUpdate">
+          {{ t('setting.checkUpdate') }}
+        </v-btn>
+        <v-btn variant="text" @click="openReleases">
+          {{ t('setting.githubRelease') }}
+        </v-btn>
+      </div>
+    </template>
+    <SettingItem v-else>
       <template #preaction>
         <v-btn
           data-testid="settings-check-update"
@@ -72,7 +89,10 @@ import SettingItem from '@/components/SettingItem.vue'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'
-const { updateInfo, installing, updateStatus, checkUpdate, checkingUpdate, version } = injection(kUpdateSettings)
+function openReleases() {
+  window.open('https://github.com/voxelum/x-minecraft-launcher/releases', 'browser')
+}
+const { updateInfo, installing, updateStatus, checkUpdate, checkingUpdate, version, updateStateReady, updateUnavailable, updateCapabilityReason, manualCheckRequested } = injection(kUpdateSettings)
 const hasNewUpdate = computed(() => updateStatus.value !== 'none' && !!updateInfo.value?.newUpdate)
 const { t } = useI18n()
 
