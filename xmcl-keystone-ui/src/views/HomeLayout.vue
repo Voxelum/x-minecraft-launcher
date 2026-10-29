@@ -50,7 +50,7 @@ import { useGamepadInnerNav } from '@/composables/gamepad'
 const router = useRouter()
 
 // Gamepad triggers (L2/R2) cycle through the instance pages.
-const HOME_GROUP = ['/', '/mods', '/resourcepacks', '/shaderpacks', '/save']
+const HOME_GROUP = ['/', '/mods', '/resourcepacks', '/shaderpacks', '/save', '/screenshots']
 useGamepadInnerNav({
   handler: (dir) => {
     const cur = router.currentRoute.value.path
