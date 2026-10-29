@@ -1,3 +1,4 @@
+vi.mock('./commandHost', () => ({ useRendererCommandHost: vi.fn() }))
 import type { LaunchService } from '@xmcl/runtime-api'
 import { effectScope } from 'vue'
 import { describe, expect, it, vi } from 'vitest'

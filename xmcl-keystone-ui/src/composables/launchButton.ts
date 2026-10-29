@@ -1,4 +1,5 @@
 import { injection } from '@/util/inject'
+import { runLaunchButtonPreflight } from './launchButtonPreflight'
 import { isBedrockInstance } from '@xmcl/instance'
 import { InjectionKey } from 'vue'
 import { useDialog } from './dialog'
@@ -415,13 +416,7 @@ export function useLaunchButton() {
     if ((loading.value || transition.value) && !launching.value) return
     const instancePath = path.value
     if (!instancePath) return
-    for (const listener of listeners) {
-      try {
-        await listener()
-      } catch {
-        return
-      }
-    }
+    if (!await runLaunchButtonPreflight(launching.value && !hasTaskRunning.value, abort, listeners)) return
     if (path.value !== instancePath) return
     const facade = launchButtonFacade.value
     if (facade.actionName) {

@@ -20,6 +20,10 @@ import {
   type RendererActionScope,
 } from '@/rendererAction'
 
+class LaunchStageCancelled extends Error {
+  constructor() { super('Aborted') }
+}
+
 export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> =
   Symbol('InstanceLaunch')
 
@@ -82,20 +86,17 @@ export function useInstanceLaunch(
     Object.values(allLaunchingStatus.value).some((v) => v.status.length > 0),
   )
 
-  function assignStatus(token: string, status: LaunchStatus, controller?: AbortController) {
-    const oldVal = allLaunchingStatus.value
-    const controllers = oldVal[token]?.controllers || {}
-    if (controller) {
-      controllers[status] = controller
-    }
-    allLaunchingStatus.value = {
-      ...oldVal,
-      [token]: markRaw({
-        aborted: false,
-        status,
-        controllers,
-      }),
-    }
+  function assignStatus(token: string, status: LaunchStatus, controller?: AbortController, state = allLaunchingStatus.value[token]) {
+    if (!state || allLaunchingStatus.value[token] !== state) return
+    if (controller) state.controllers[status] = controller
+    state.status = status
+    allLaunchingStatus.value = { ...allLaunchingStatus.value }
+  }
+
+  function beginLaunch(token: string): LaunchStatusState {
+    const state = markRaw({ status: '' as LaunchStatus, controllers: {}, aborted: false })
+    allLaunchingStatus.value = { ...allLaunchingStatus.value, [token]: state }
+    return state
   }
 
   const error = ref<any | undefined>(undefined)
@@ -137,17 +138,22 @@ export function useInstanceLaunch(
     token: string,
     operation: () => Promise<T>,
     name: LaunchStatus,
+    state = allLaunchingStatus.value[token],
   ) {
+    if (state?.aborted) throw new LaunchStageCancelled()
     const controller = new AbortController()
-    assignStatus(token, name, controller)
-    return Promise.race([
-      action ? action.run(operation) : operation(),
-      new Promise<T>((resolve, reject) => {
-        controller.signal.onabort = () => {
-          reject(new Error('Aborted'))
-        }
-      }),
-    ])
+    assignStatus(token, name, controller, state)
+    // Register cancellation before invoking an operation: it may synchronously
+    // start a nested stage or trigger cancellation itself.
+    const cancelled = new Promise<T>((_resolve, reject) => {
+      controller.signal.onabort = () => reject(new LaunchStageCancelled())
+    })
+    try {
+      return await Promise.race([cancelled, action ? action.run(operation) : operation()])
+    } finally {
+      controller.signal.onabort = null
+      if (state?.controllers[name] === controller) delete state.controllers[name]
+    }
   }
 
   async function generateLaunchOptions(
@@ -158,6 +164,7 @@ export function useInstanceLaunch(
     overrides?: Partial<LaunchOptions>,
     dry = false,
     action?: RendererActionScope,
+    state?: LaunchStatusState,
   ) {
     const ver = overrides?.version ?? (side === 'client' ? version.value : serverVersion.value)
     const token = getLaunchToken(userProfile, instancePath)
@@ -190,7 +197,7 @@ export function useInstanceLaunch(
         modCount: mods.value.length,
         getOrInstallAuthlibInjector,
         track: ((token: string, operation: () => Promise<any>, name: LaunchStatus) =>
-          track(action, token, operation, name)) as any,
+          track(action, token, operation, name, state)) as any,
       },
     )
   }
@@ -213,6 +220,7 @@ export function useInstanceLaunch(
     instancePath: string,
     user: UserProfile,
     operationId: string,
+    state: LaunchStatusState,
     side: 'client' | 'server',
     overrides?: Partial<LaunchOptions>,
   ) {
@@ -223,14 +231,15 @@ export function useInstanceLaunch(
     if (isBedrockInstance(instance.value)) {
       try {
         error.value = undefined
-        assignStatus(token, 'spawning-process')
+        assignStatus(token, 'spawning-process', undefined, state)
         await action.run(() => launchBedrock())
       } catch (e) {
-        if (!isRuntimeServiceError(e)) console.error(e)
-        error.value = e as any
+        if (state.aborted) return
+        if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e)) console.error(e)
+        if (allLaunchingStatus.value[token] === state) error.value = e as any
         throw e
       } finally {
-        assignStatus(token, '')
+        assignStatus(token, '', undefined, state)
       }
       return { operationId }
     }
@@ -244,6 +253,7 @@ export function useInstanceLaunch(
         overrides,
         false,
         action,
+        state,
       )
 
       // Always refresh the access token before launching so the game uses
@@ -259,13 +269,14 @@ export function useInstanceLaunch(
             () =>
               refreshUser(user.id, { validate: !options.skipAssetsCheck }).then(
                 (profile: UserProfile) => {
-                user = profile
+                  user = profile
                 },
               ),
             'refreshing-user',
+            state,
           )
         } catch (e) {
-          if (!isRuntimeServiceError(e)) console.error(e)
+          if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e)) console.error(e)
         }
       }
 
@@ -276,16 +287,16 @@ export function useInstanceLaunch(
             token,
             () => windowController.queryAudioPermission(),
             'checking-permission',
+            state,
           )
         } catch (e) {
-          if (!isRuntimeServiceError(e)) console.error(e)
+          if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e)) console.error(e)
         }
       }
 
-      assignStatus(token, 'spawning-process')
+      assignStatus(token, 'spawning-process', undefined, state)
       console.log('spawning process')
 
-      const state = allLaunchingStatus.value[token]
       if (state?.aborted) {
         return
       }
@@ -298,14 +309,18 @@ export function useInstanceLaunch(
         .run(() => launch(options))
         .finally(() => removeListener('minecraft-start', captureLaunch))
       if (pid) {
+        if (state.aborted) {
+          await action.run(() => kill(pid))
+          return { operationId }
+        }
         launchId = await resolveLaunchId(pid, launchId, (pid) =>
           action.run(() => getGameProcess(pid)),
         )
-        if (!launchId) throw new Error('Launch started but no launch ID was reported')
-        mutate()
         if (state.aborted) {
           await action.run(() => kill(pid))
         } else {
+          if (!launchId) throw new Error('Launch started but no launch ID was reported')
+          mutate()
           data.value?.push({
             pid,
             launchId,
@@ -318,11 +333,12 @@ export function useInstanceLaunch(
       }
       return { operationId }
     } catch (e) {
-      if (!isRuntimeServiceError(e)) console.error(e)
-      error.value = e as any
+      if (state.aborted) return
+      if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e)) console.error(e)
+      if (allLaunchingStatus.value[token] === state) error.value = e as any
       throw e
     } finally {
-      assignStatus(token, '')
+      assignStatus(token, '', undefined, state)
     }
   }
 
@@ -341,12 +357,21 @@ export function useInstanceLaunch(
         const instancePath = instance.value.path
         const user = userProfile.value
         const token = getLaunchToken(user, instancePath)
-        return await track(
-          action,
-          token,
-          () => _launch(action, instancePath, user, operationId, side, overrides),
-          'launching',
-        )
+        const state = beginLaunch(token)
+        try {
+          return await track(
+            action,
+            token,
+            () => _launch(action, instancePath, user, operationId, state, side, overrides),
+            'launching',
+            state,
+          )
+        } catch (e) {
+          // Consume intentional cancellation inside the renderer action. Some
+          // UI callers fire-and-forget; rejection would become a global error.
+          if (state.aborted) return
+          throw e
+        }
       },
       {
         'game.side': side,
@@ -370,12 +395,21 @@ export function useInstanceLaunch(
           crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
         const instancePath = instance.value.path
         const token = getLaunchToken(user, instancePath)
-        return await track(
-          action,
-          token,
-          () => _launch(action, instancePath, user, operationId, side, overrides),
-          'launching',
-        )
+        const state = beginLaunch(token)
+        try {
+          return await track(
+            action,
+            token,
+            () => _launch(action, instancePath, user, operationId, state, side, overrides),
+            'launching',
+            state,
+          )
+        } catch (e) {
+          // Consume intentional cancellation inside the renderer action. Some
+          // UI callers fire-and-forget; rejection would become a global error.
+          if (state.aborted) return
+          throw e
+        }
       },
       {
         'game.side': side,
@@ -397,11 +431,10 @@ export function useInstanceLaunch(
   function abort() {
     const token = launchToken.value
     const state = allLaunchingStatus.value[token]
+    if (!state) return
     state.aborted = true
-    const controllers = state.controllers
-    controllers['preparing-authlib']?.abort()
-    controllers['refresh-user']?.abort()
-    controllers['checking-permission']?.abort()
+    assignStatus(token, '', undefined, state)
+    for (const controller of Object.values(state.controllers)) controller.abort()
   }
 
   return {
@@ -420,18 +453,18 @@ export function useInstanceLaunch(
     abort,
     skipAuthLib: () => {
       const token = launchToken.value
-      const controllers = allLaunchingStatus.value[token].controllers
-      controllers['preparing-authlib']?.abort()
+      const controllers = allLaunchingStatus.value[token]?.controllers
+      controllers?.['preparing-authlib']?.abort()
     },
     skipRefresh: () => {
       const token = launchToken.value
-      const controllers = allLaunchingStatus.value[token].controllers
-      controllers['refreshing-user']?.abort()
+      const controllers = allLaunchingStatus.value[token]?.controllers
+      controllers?.['refreshing-user']?.abort()
     },
     skipPermission: () => {
       const token = launchToken.value
-      const controllers = allLaunchingStatus.value[token].controllers
-      controllers['checking-permission']?.abort()
+      const controllers = allLaunchingStatus.value[token]?.controllers
+      controllers?.['checking-permission']?.abort()
     },
   }
 }

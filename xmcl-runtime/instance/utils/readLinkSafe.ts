@@ -1,6 +1,6 @@
 import { isSystemError } from '@xmcl/utils'
 import { readlink } from 'fs-extra'
-import { resolve } from 'path'
+import { dirname, resolve } from 'path'
 import { ENOENT_ERROR } from '../../util/fs'
 
 export function readlinkSafe(path: string) {
@@ -22,8 +22,8 @@ export function readlinkSafe(path: string) {
  * reports its target through `readlink` with a `\\?\` prefix and/or a trailing
  * separator, so a raw string compare against the intended target never matches.
  */
-export function normalizeLinkTarget(target: string) {
-  return resolve(target.replace(/^\\\\\?\\/, ''))
+export function normalizeLinkTarget(target: string, base = process.cwd()) {
+  return resolve(base, target.replace(/^\\\\\?\\/, ''))
 }
 
 /**
@@ -32,5 +32,5 @@ export function normalizeLinkTarget(target: string) {
 export async function isLinkTo(linkPath: string, target: string) {
   const actual = await readlinkSafe(linkPath).catch(() => '')
   if (!actual) return false
-  return normalizeLinkTarget(actual) === normalizeLinkTarget(target)
+  return normalizeLinkTarget(actual, dirname(resolve(linkPath))) === normalizeLinkTarget(target)
 }
