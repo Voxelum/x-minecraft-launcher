@@ -9,6 +9,7 @@
         / {{ t('items.total', { total }) }}
       </span>
     </div>
+    <slot name="badges" />
     <v-spacer />
     <slot />
     <v-btn

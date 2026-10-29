@@ -734,6 +734,23 @@ mod:
   collapseAllGroups: Свернуть все группы
   acceptVersion: Принимает {version}
   applyGroupRules: Применить сохраненные правила группировки
+  autoCategorize: Авто-сортировка по папкам
+  autoCategorizeHint: Автоматически группировать моды по папкам категорий (Оптимизация, Библиотеки, Мир, Геймплей и др.)
+  autoCategorizeSuccess: Моды успешно отсортированы в {count} папок
+  ungroupAll: Разгруппировать все
+  organization: Организация папок
+  collapseAll: Свернуть все папки
+  expandAll: Развернуть все папки
+  folderSetting: Настройки папки
+  folderColor: Цвет папки
+  folderIcon: Иконка папки
+  pinGroup: Закрепить наверху
+  pinToTop: Закрепить наверху
+  pinToTopHint: Папка будет отображаться первой в списке
+  pinned: Закреплено
+  unpinGroup: Открепить папку
+  customColor: Пользовательский цвет
+  preview: Предпросмотр
   compatible: Совместимый мод.
   createGroup: Создать группу
   currentVersion: Текущая {current}
@@ -784,6 +801,14 @@ mod:
   syncGroupRules: Сохранить правила группировки
   toUpdate: '{count} для обновления'
   ungroup: Негруппинг
+modCategory:
+  optimization: Оптимизация и производительность
+  libraries: Библиотеки и API
+  utilities: Интерфейс и утилиты
+  world: Мир и биомы
+  visual: Визуал и аудио
+  gameplay: Геймплей и контент
+  miscellaneous: Разное
 modFilter:
   clear: Чистый фильтр
   dependenciesInstallOnly: Только показывать пропущенные моды зависимости
@@ -1583,6 +1608,7 @@ shaderPack:
   noPacks: Шейдер-паки не установлены
   search: Поиск шейдер-паков...
 shared:
+  reset: Сбросить
   close: Закрыть
   pressKeyCombination: Нажмите сочетание клавиш...
   add: Добавить
@@ -1615,6 +1641,7 @@ shared:
   upgrade: Обновить
   'yes': Да
   delete: Удалить
+  view: Просмотреть
 sidebar:
   pin: Закрепить
   unpin: Открепить

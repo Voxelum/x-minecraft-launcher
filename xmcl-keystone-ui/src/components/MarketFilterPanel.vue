@@ -9,194 +9,218 @@
     <v-tabs
       v-if="!noTab"
       v-model="tab"
-      color="primary"
-      slider-color="primary"
       align-tabs="center"
       fixed-tabs
-      class="min-h-[48px]"
+      hide-slider
+      class="market-tabs"
+      @update:model-value="onTabSelect"
     >
-      <v-tab :value="0" prepend-icon="storefront">
+      <v-tab :value="0" prepend-icon="storefront" variant="text" class="market-tab" :selected-class="'market-tab--active'">
         {{ t('search.market') }}
       </v-tab>
-      <v-tab :value="1" prepend-icon="inventory_2">
+      <v-tab :value="1" prepend-icon="inventory_2" variant="text" class="market-tab" :selected-class="'market-tab--active'">
         {{ t('search.local') }}
       </v-tab>
-      <v-tab :value="2" prepend-icon="favorite" data-testid="market-filter-favorite-tab">
+      <v-tab :value="2" prepend-icon="favorite" variant="text" class="market-tab" :selected-class="'market-tab--active'" data-testid="market-filter-favorite-tab">
         {{ t('search.favorate') }}
       </v-tab>
     </v-tabs>
 
-    <v-tabs-window v-model="tab" class="flex min-h-0 flex-grow">
-      <v-tabs-window-item :value="0" class="tab">
-        <div class="filter-sort-size-row">
-          <div class="min-w-0">
-            <div class="filter-subheader flex">
-              <v-icon size="16" class="mr-1">sort</v-icon>
-              {{ t('modrinth.sort.title') }}
-            </div>
-            <v-btn-toggle
-              v-roving-tabindex
-              :aria-label="t('modrinth.sort.title')"
-              :model-value="sort"
-              mandatory
-              density="compact"
-              divided
-              class="px-1"
-              @update:model-value="emit('update:sort', $event || 'alpha_asc')"
-            >
-              <v-btn
-                v-for="tag in sortByItems"
-                :key="tag.value"
-                v-shared-tooltip="tag.text"
-                class="transition-all duration-200"
-                size="small"
-                variant="text"
-                border
-              >
-                <v-icon class="material-icons-outlined" size="small">
-                  {{ tag.icon }}
-                </v-icon>
-              </v-btn>
-            </v-btn-toggle>
-          </div>
-
-          <div class="min-w-0">
-            <div class="filter-subheader flex">
-              <v-icon size="16" class="mr-1">density_medium</v-icon>
-              {{ t('search.pageSize') }}
-            </div>
-            <v-btn-toggle
-              v-roving-tabindex
-              :aria-label="t('search.pageSize')"
-              :model-value="pageSize"
-              mandatory
-              density="compact"
-              divided
-              class="px-1"
-              data-testid="market-page-size"
-              @update:model-value="pageSize = $event"
-            >
-              <v-btn
-                v-for="size in pageSizeOptions"
-                :key="size"
-                :value="size"
-                size="small"
-                variant="text"
-                border
-              >
-                {{ size }}
-              </v-btn>
-            </v-btn-toggle>
-          </div>
-        </div>
-
-        <div class="filter-subheader flex">
-          <v-icon size="16" class="mr-1">view_in_ar</v-icon>
-          {{ t('minecraftVersion.name') }}
-        </div>
-        <v-chip-group
-          ref="chipGroup"
-          v-roving-tabindex
-          :aria-label="t('minecraftVersion.name')"
-          v-model="gameVersionModel"
-          density="compact"
-          center-active
-          show-arrows
-          mandatory
-          @wheel.native.stop="onWheel"
+    <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+      <div v-show="tab === 0" class="tab">
+        <!-- Sort & Page Size Card -->
+        <v-card
+          class="rounded-xl border border-white/10 bg-white/[0.02] p-3 mb-3"
+          elevation="0"
         >
-          <v-chip key="__all__" filter variant="outlined" label>
-            {{ t('minecraftVersion.all') }}
-          </v-chip>
-          <v-chip v-for="v of versionIds" :key="v" filter variant="outlined" label>
-            {{ v }}
-          </v-chip>
-        </v-chip-group>
-
-        <div v-if="modLoaders || modrinthCategoryFilter" class="filter-loader-env-row">
-          <div v-if="modLoaders" class="min-w-0">
-            <div class="filter-subheader">
-              <v-icon size="16" class="mr-1">extension</v-icon>
-              {{ t('modrinth.modLoaders.name') }}
+          <div class="filter-sort-size-row">
+            <div class="min-w-0">
+              <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis flex items-center gap-1.5 mb-2">
+                <v-icon size="16" color="primary">sort</v-icon>
+                <span>{{ t('modrinth.sort.title') }}</span>
+              </div>
+              <v-btn-toggle
+                v-roving-tabindex
+                :aria-label="t('modrinth.sort.title')"
+                :model-value="sort"
+                mandatory
+                density="compact"
+                rounded="lg"
+                variant="outlined"
+                class="w-full"
+                @update:model-value="emit('update:sort', $event || 'alpha_asc')"
+              >
+                <v-btn
+                  v-for="tag in sortByItems"
+                  :key="tag.value"
+                  v-shared-tooltip="tag.text"
+                  class="flex-1 transition-all duration-200"
+                  size="small"
+                >
+                  <v-icon class="material-icons-outlined" size="small">
+                    {{ tag.icon }}
+                  </v-icon>
+                </v-btn>
+              </v-btn-toggle>
             </div>
-            <v-btn-toggle
-              v-roving-tabindex
-              :aria-label="t('modrinth.modLoaders.name')"
-              class="px-1"
-              density="compact"
-              divided
-              :model-value="modloader"
-              @update:model-value="emit('update:modloader', $event)"
-            >
-              <v-btn
-                v-for="loader in modLoaders"
-                :key="loader"
-                :value="loader"
-                size="small"
-                variant="text"
-                border
-              >
-                <img height="24" :src="getIcon(loader)" />
-              </v-btn>
-            </v-btn-toggle>
-          </div>
-          <div v-if="modrinthCategoryFilter" class="min-w-0">
-            <div class="filter-subheader flex">
-              <v-icon size="16" class="mr-1">devices</v-icon>
-              {{ t('modrinth.environments.name') }}
-            </div>
-            <v-btn-toggle
-              v-roving-tabindex
-              :aria-label="t('modrinth.environments.name')"
-              background-color="transparent"
-              class="px-1"
-              variant="outlined"
-              density="compact"
-              :model-value="modrinthEnvironment"
-              :disabled="!enableModrinth"
-              @update:model-value="emit('update:modrinthEnvironment', $event || '')"
-            >
-              <v-btn
-                v-shared-tooltip="t('modrinth.environments.all')"
-                value=""
-                :disabled="!enableModrinth"
-                size="small"
-              >
-                <v-icon size="small"> devices </v-icon>
-              </v-btn>
-              <v-btn
-                v-shared-tooltip="t('shared.client')"
-                value="client"
-                :disabled="!enableModrinth"
-                size="small"
-              >
-                <v-icon size="small"> computer </v-icon>
-              </v-btn>
-              <v-btn
-                v-shared-tooltip="t('shared.server')"
-                value="server"
-                :disabled="!enableModrinth"
-                size="small"
-              >
-                <v-icon size="small"> dns </v-icon>
-              </v-btn>
-            </v-btn-toggle>
-          </div>
-        </div>
 
+            <div class="min-w-0">
+              <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis flex items-center gap-1.5 mb-2">
+                <v-icon size="16" color="primary">density_medium</v-icon>
+                <span>{{ t('search.pageSize') }}</span>
+              </div>
+              <v-btn-toggle
+                v-roving-tabindex
+                :aria-label="t('search.pageSize')"
+                :model-value="pageSize"
+                mandatory
+                density="compact"
+                rounded="lg"
+                variant="outlined"
+                class="w-full"
+                data-testid="market-page-size"
+                @update:model-value="pageSize = $event"
+              >
+                <v-btn
+                  v-for="size in pageSizeOptions"
+                  :key="size"
+                  :value="size"
+                  class="flex-1"
+                  size="small"
+                >
+                  {{ size }}
+                </v-btn>
+              </v-btn-toggle>
+            </div>
+          </div>
+        </v-card>
+
+        <!-- Game Version & Platform Card -->
+        <v-card
+          class="rounded-xl border border-white/10 bg-white/[0.02] p-3 mb-3"
+          elevation="0"
+        >
+          <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis flex items-center gap-1.5 mb-2">
+            <v-icon size="16" color="primary">view_in_ar</v-icon>
+            <span>{{ t('minecraftVersion.name') }}</span>
+          </div>
+          <v-chip-group
+            ref="chipGroup"
+            v-roving-tabindex
+            :aria-label="t('minecraftVersion.name')"
+            v-model="gameVersionModel"
+            density="compact"
+            center-active
+            show-arrows
+            mandatory
+            @wheel.native.stop="onWheel"
+          >
+            <v-chip key="__all__" filter variant="outlined" rounded="lg">
+              {{ t('minecraftVersion.all') }}
+            </v-chip>
+            <v-chip v-for="v of versionIds" :key="v" filter variant="outlined" rounded="lg">
+              {{ v }}
+            </v-chip>
+          </v-chip-group>
+
+          <template v-if="modLoaders || modrinthCategoryFilter">
+            <v-divider class="my-3 opacity-20" />
+            <div class="filter-loader-env-row">
+              <div v-if="modLoaders" class="min-w-0">
+                <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis flex items-center gap-1.5 mb-2">
+                  <v-icon size="16" color="primary">extension</v-icon>
+                  <span>{{ t('modrinth.modLoaders.name') }}</span>
+                </div>
+                <v-btn-toggle
+                  v-roving-tabindex
+                  :aria-label="t('modrinth.modLoaders.name')"
+                  density="compact"
+                  rounded="lg"
+                  variant="outlined"
+                  class="w-full"
+                  :model-value="modloader"
+                  @update:model-value="emit('update:modloader', $event)"
+                >
+                  <v-btn
+                    v-for="loader in modLoaders"
+                    :key="loader"
+                    :value="loader"
+                    class="flex-1"
+                    size="small"
+                  >
+                    <img height="22" :src="getIcon(loader)" />
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+              <div v-if="modrinthCategoryFilter" class="min-w-0">
+                <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis flex items-center gap-1.5 mb-2">
+                  <v-icon size="16" color="primary">devices</v-icon>
+                  <span>{{ t('modrinth.environments.name') }}</span>
+                </div>
+                <v-btn-toggle
+                  v-roving-tabindex
+                  :aria-label="t('modrinth.environments.name')"
+                  density="compact"
+                  rounded="lg"
+                  variant="outlined"
+                  class="w-full"
+                  :model-value="modrinthEnvironment"
+                  :disabled="!enableModrinth"
+                  @update:model-value="emit('update:modrinthEnvironment', $event || '')"
+                >
+                  <v-btn
+                    v-shared-tooltip="t('modrinth.environments.all')"
+                    value=""
+                    :disabled="!enableModrinth"
+                    class="flex-1"
+                    size="small"
+                  >
+                    <v-icon size="small"> devices </v-icon>
+                  </v-btn>
+                  <v-btn
+                    v-shared-tooltip="t('shared.client')"
+                    value="client"
+                    :disabled="!enableModrinth"
+                    class="flex-1"
+                    size="small"
+                  >
+                    <v-icon size="small"> computer </v-icon>
+                  </v-btn>
+                  <v-btn
+                    v-shared-tooltip="t('shared.server')"
+                    value="server"
+                    :disabled="!enableModrinth"
+                    class="flex-1"
+                    size="small"
+                  >
+                    <v-icon size="small"> dns </v-icon>
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+            </div>
+          </template>
+        </v-card>
+
+        <!-- Content Categories -->
         <div
           class="filter-category-groups"
           :class="{ 'filter-category-groups--dual': modrinthCategoryFilter && curseforgeCategoryFilter }"
         >
-          <div v-if="modrinthCategoryFilter" class="filter-category-column">
-            <div class="filter-subheader flex gap-1">
-              <ModrinthIcon class="mr-1 h-4 w-4" style="color: #1bd96a" />
-              Modrinth
-              <div class="flex-grow" />
+          <v-card
+            v-if="modrinthCategoryFilter"
+            class="filter-category-column rounded-xl border border-white/10 bg-white/[0.02] p-3 mb-3"
+            elevation="0"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-medium-emphasis">
+                <ModrinthIcon class="h-4 w-4" style="color: #1bd96a" />
+                <span>Modrinth</span>
+              </div>
               <v-switch
                 density="compact"
                 hide-details
                 color="primary"
+                inset
                 :model-value="enableModrinth"
                 @update:model-value="emit('update:enableModrinth', !!$event)"
               />
@@ -215,21 +239,28 @@
                 :disabled="!enableModrinth"
               />
             </v-chip-group>
-          </div>
-          <div v-if="curseforgeCategoryFilter" class="filter-category-column">
-            <div class="filter-subheader flex">
-              <CurseforgeIcon class="mr-1 h-4 w-4" style="color: #f16436" />
-              CurseForge
-              <div class="flex-grow" />
+          </v-card>
+
+          <v-card
+            v-if="curseforgeCategoryFilter"
+            class="filter-category-column rounded-xl border border-white/10 bg-white/[0.02] p-3 mb-3"
+            elevation="0"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-medium-emphasis">
+                <CurseforgeIcon class="h-4 w-4" style="color: #f16436" />
+                <span>CurseForge</span>
+              </div>
               <v-switch
                 density="compact"
                 hide-details
                 color="primary"
+                inset
                 :model-value="enableCurseforge"
                 @update:model-value="emit('update:enableCurseforge', !!$event)"
               />
             </div>
-            <div v-if="curseforgeCategoryLabel" class="filter-subheader filter-subheader--minor flex">
+            <div v-if="curseforgeCategoryLabel" class="text-xs text-medium-emphasis mb-1.5">
               {{ curseforgeCategoryLabel }}
             </div>
             <v-chip-group
@@ -247,7 +278,8 @@
               />
             </v-chip-group>
             <template v-if="curseforgeSecondaryCategoryFilter">
-              <div v-if="curseforgeSecondaryCategoryLabel" class="filter-subheader filter-subheader--minor flex">
+              <v-divider class="my-2.5 opacity-20" />
+              <div v-if="curseforgeSecondaryCategoryLabel" class="text-xs text-medium-emphasis mb-1.5">
                 {{ curseforgeSecondaryCategoryLabel }}
               </div>
               <v-chip-group
@@ -265,43 +297,48 @@
                 />
               </v-chip-group>
             </template>
-          </div>
+          </v-card>
         </div>
-      </v-tabs-window-item>
-      <v-tabs-window-item :value="1" class="tab">
-        <div class="filter-subheader flex">
-          <v-icon size="16" class="mr-1">sort</v-icon>
-          {{ t('modrinth.sort.title') }}
-        </div>
-        <v-btn-toggle
-          v-roving-tabindex
-          :aria-label="t('modrinth.sort.title')"
-          background-color="transparent"
-          density="compact"
-          :rounded="10"
-          :model-value="sortByItems.findIndex((i) => i.value === localSort)"
-          variant="outlined"
-          class="bg-transparent px-1"
-          @update:model-value="updateLocalSort"
+      </div>
+      <div v-show="tab === 1" class="tab">
+        <v-card
+          class="sort-card rounded-xl border border-white/10 bg-white/[0.02] p-4 mb-4"
+          elevation="0"
         >
-          <v-btn
-            v-for="tag in sortByLocalItems"
-            :key="tag.value"
-            v-shared-tooltip="tag.text"
-            size="small"
+          <div class="text-xs font-semibold uppercase tracking-wider text-medium-emphasis flex items-center gap-1.5 mb-2.5">
+            <v-icon size="16" color="primary">sort</v-icon>
+            <span>{{ t('modrinth.sort.title') }}</span>
+          </div>
+          <v-btn-toggle
+            v-roving-tabindex
+            :aria-label="t('modrinth.sort.title')"
+            density="compact"
+            rounded="lg"
+            :model-value="sortByItems.findIndex((i) => i.value === localSort)"
+            variant="outlined"
+            class="w-full"
+            @update:model-value="updateLocalSort"
           >
-            <v-icon class="material-icons-outlined" size="small">
-              {{ tag.icon }}
-            </v-icon>
-            <v-icon size="small">
-              {{ tag.value.endsWith('asc') ? 'arrow_upward' : 'arrow_downward' }}
-            </v-icon>
-          </v-btn>
-        </v-btn-toggle>
+            <v-btn
+              v-for="tag in sortByLocalItems"
+              :key="tag.value"
+              v-shared-tooltip="tag.text"
+              size="small"
+              class="flex-1"
+            >
+              <v-icon class="material-icons-outlined mr-1" size="small">
+                {{ tag.icon }}
+              </v-icon>
+              <v-icon size="small">
+                {{ tag.value.endsWith('asc') ? 'arrow_upward' : 'arrow_downward' }}
+              </v-icon>
+            </v-btn>
+          </v-btn-toggle>
+        </v-card>
 
         <slot name="local" />
-      </v-tabs-window-item>
-      <v-tabs-window-item :value="2" class="tab h-full overflow-y-auto">
+      </div>
+      <div v-show="tab === 2" class="tab h-full overflow-y-auto">
         <AppLocalCollectionList
           :select="collection"
           @update:select="emit('update:collection', $event)"
@@ -314,8 +351,8 @@
           :select="collection"
           @update:select="emit('update:collection', $event)"
         />
-      </v-tabs-window-item>
-    </v-tabs-window>
+      </div>
+    </div>
   </v-card>
 </template>
 <script setup lang="ts">
@@ -394,20 +431,25 @@ const emit = defineEmits<{
 const { versions } = useMinecraftVersions()
 const { pageSize } = useMarketPageSize()
 const pageSizeOptions = MARKET_PAGE_SIZE_OPTIONS
-const tab = computed({
-  get() {
-    return props.mode === 'local' ? 1 : props.mode === 'remote' ? 0 : 2
-  },
-  set(v) {
-    if (v === 0) {
-      emit('update:mode', 'remote')
-    } else if (v === 1) {
-      emit('update:mode', 'local')
-    } else {
-      emit('update:mode', 'favorite')
-    }
-  },
+const tab = ref(props.mode === 'local' ? 1 : props.mode === 'remote' ? 0 : 2)
+
+watch(() => props.mode, (mode) => {
+  const target = mode === 'local' ? 1 : mode === 'remote' ? 0 : 2
+  if (tab.value !== target) {
+    tab.value = target
+  }
 })
+
+function onTabSelect(v: any) {
+  tab.value = v
+  if (v === 0) {
+    if (props.mode !== 'remote') emit('update:mode', 'remote')
+  } else if (v === 1) {
+    if (props.mode !== 'local') emit('update:mode', 'local')
+  } else {
+    if (props.mode !== 'favorite') emit('update:mode', 'favorite')
+  }
+}
 
 const { interact } = injection(kModrinthAuthenticatedAPI)
 watch(tab, (i) => {
@@ -504,14 +546,14 @@ const remoteSearchKey = keys['Ctrl+F']
 watch(localSearchKey, (v) => {
   if (v) {
     nextTick(() => {
-      tab.value = 1
+      onTabSelect(1)
     })
   }
 })
 watch(remoteSearchKey, (v) => {
   if (v) {
     nextTick(() => {
-      tab.value = 0
+      onTabSelect(0)
     })
   }
 })
@@ -609,6 +651,48 @@ function getIcon(loader: string) {
   height: 100%;
   max-height: 100%;
   min-width: 0;
+}
+.market-filter-card .market-tabs {
+  margin: 6px 12px 10px 12px;
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 3px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+.market-filter-card .market-tabs .v-btn__overlay,
+.market-filter-card .market-tabs .v-btn__underlay,
+.market-filter-card .market-tabs .v-tab__slider {
+  display: none !important;
+}
+.market-filter-card .market-tabs .v-slide-group__content {
+  gap: 3px;
+}
+.market-filter-card .market-tab {
+  border-radius: 9px !important;
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: normal;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 32px;
+  height: 32px;
+  opacity: 0.65;
+  color: rgba(var(--v-theme-on-surface), 0.7) !important;
+}
+.market-filter-card .market-tab:hover {
+  opacity: 1;
+  background: rgba(var(--v-theme-on-surface), 0.08);
+  color: rgb(var(--v-theme-on-surface)) !important;
+}
+.market-filter-card .market-tab.v-tab--selected,
+.market-filter-card .market-tab--active {
+  background: rgba(var(--v-theme-on-surface), 0.12) !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
 }
 </style>
 <style scoped>
