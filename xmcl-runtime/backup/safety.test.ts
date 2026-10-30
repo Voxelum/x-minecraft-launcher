@@ -32,12 +32,17 @@ test('rejects traversal, prefix siblings and linked ancestors without modifying 
   }
   for (const name of ['../outside', '..', 'a/b', 'a\\b']) expect(() => validateInstanceFolder(name)).toThrow()
   const service = Object.create(BackupService.prototype)
+  service.operation = Promise.resolve()
+  service.initialize = async () => {}
   service.loadAutoBackupConfig = async () => ({ destinationDir: join(root, 'backups') })
   await expect(service.deleteAutoBackup(join(root, 'backups-other', 'data.zip'))).rejects.toThrow()
   await expect(service.deleteAutoBackup(join(root, 'backups', 'linked', 'data.zip'))).rejects.toThrow()
   expect(await readFile(join(root, 'backups-other', 'data.zip'), 'utf8')).toBe('OLD')
 })
 
+function manifest() {
+  return { version: 1, createdAt: Date.now(), appVersion: '1', includes: { settings: false, collections: false, themes: false, instances: [{ id: 'demo', folderName: 'demo', name: 'demo', includesSaves: false, includesConfigs: true, includesMods: false, includesResourcePacks: false, includesShaderPacks: false }] } }
+}
 async function archive(files: Record<string, string>) {
   const zip = new ZipFile()
   for (const [name, data] of Object.entries(files)) zip.addBuffer(Buffer.from(data), name)
@@ -50,6 +55,10 @@ async function archive(files: Record<string, string>) {
 
 function service() {
   const s = Object.create(BackupService.prototype)
+  s.operation = Promise.resolve()
+  s.initialize = async () => {}
+  s.getAppDataPath = (...parts: string[]) => join(root, 'app', ...parts)
+  s.app = { registry: { get: async () => ({ enter: async () => ({ prepareInstances: async () => Buffer.from('{}'), publish: async () => {}, undoPublish: async () => {}, release: async () => {} }) }) } }
   s.getPath = (...parts: string[]) => join(root, ...parts)
   s.emit = () => {}
   s.log = () => {}
@@ -64,7 +73,8 @@ test('preflight failure leaves all existing files intact', async () => {
   await writeFile(join(dir, 'first.txt'), 'OLD')
   await writeFile(join(dir, 'blocker'), 'not-directory')
   const backupPath = await archive({
-    'manifest.json': JSON.stringify({ version: 1, includes: {} }),
+    'manifest.json': JSON.stringify(manifest()),
+    'instances/demo/instance.json': JSON.stringify({ name: 'demo' }),
     'instances/demo/first.txt': 'NEW',
     'instances/demo/blocker/second.txt': 'NEW',
   })
@@ -77,7 +87,8 @@ test('staging stream failure leaves existing files intact', async () => {
   await mkdir(dir, { recursive: true })
   await writeFile(join(dir, 'first.txt'), 'OLD')
   const zip = new ZipFile()
-  zip.addBuffer(Buffer.from(JSON.stringify({ version: 1, includes: {} })), 'manifest.json')
+  zip.addBuffer(Buffer.from(JSON.stringify(manifest())), 'manifest.json')
+  zip.addBuffer(Buffer.from(JSON.stringify({ name: 'demo' })), 'instances/demo/instance.json')
   zip.addBuffer(Buffer.from('NEW'), 'instances/demo/first.txt')
   zip.addBuffer(Buffer.from('SECOND'), 'instances/demo/second.txt')
   const backupPath = join(root, 'duplicate.zip')
@@ -101,7 +112,8 @@ test('restore refuses an existing linked file and keeps its outside target intac
   await writeFile(outside, 'OLD')
   await symlink(outside, join(dir, 'config.txt'))
   const backupPath = await archive({
-    'manifest.json': JSON.stringify({ version: 1, includes: {} }),
+    'manifest.json': JSON.stringify(manifest()),
+    'instances/demo/instance.json': JSON.stringify({ name: 'demo' }),
     'instances/demo/config.txt': 'NEW',
   })
   await expect(service().restoreBackup({ backupPath, instances: ['demo'], instanceConflictStrategy: 'overwrite' })).rejects.toThrow()

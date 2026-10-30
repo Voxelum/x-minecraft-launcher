@@ -8,6 +8,8 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { open, readAllEntries } from '@xmcl/unzip'
+import { kRestoreMaintenance } from './restoreMaintenance'
+import { RestoreTransaction } from './restoreTransaction'
 
 vi.mock('~/app', () => ({
   LauncherAppKey: Symbol('LauncherAppKey'),
@@ -39,6 +41,7 @@ vi.mock('~/service', () => {
       constructor(app: any) {
         this.app = app
       }
+      initialize = async () => {}
       emit = (event: string, ...args: any[]) => true
       getAppDataPath = (...args: string[]) => joinPath(this.app.appDataPath, ...args)
       log = () => { }
@@ -73,9 +76,10 @@ describe('BackupService', () => {
     mockApp = {
       appDataPath: appDataDir,
       version: '0.45.0',
+      registryDisposer: vi.fn(),
       registry: {
         get: vi.fn().mockImplementation((key) => {
-          return Promise.resolve(mockSettingsState)
+          return Promise.resolve(key === kRestoreMaintenance ? maintenance : mockSettingsState)
         }),
       },
     }
@@ -90,10 +94,27 @@ describe('BackupService', () => {
 
     mockCollectionService = {
       state: {
+        collections: [],
         collectionUpsert: vi.fn(),
       },
     }
 
+    const maintenance = { enter: async () => {
+      const oldSettings = JSON.parse(JSON.stringify(mockSettingsState))
+      const oldCollections = [...mockCollectionService.state.collections]
+      return {
+        prepareInstances: async (instances: any[]) => Buffer.from(JSON.stringify({ instances: instances.map(i => i.path), groups: [], selectedInstance: '' })),
+        publish: async (plan: any) => {
+          if (plan.settings) mockSettingsState.config(plan.settings)
+          if (plan.collections) {
+            mockCollectionService.state.collections = plan.collections.collections
+            for (const c of plan.collections.collections) mockCollectionService.state.collectionUpsert(c)
+          }
+        },
+        undoPublish: async () => { mockSettingsState.config(oldSettings); mockCollectionService.state.collections = oldCollections },
+        release: async () => {},
+      }
+    } }
     const getPath = (...args: string[]) => join(gameDataDir, ...args)
 
     backupService = new BackupService(
@@ -286,7 +307,9 @@ describe('BackupService', () => {
     expect(restoreResult.restoredInstances).toHaveLength(1)
     expect(restoreResult.skippedInstances).toEqual([])
     expect(mockCollectionService.state.collectionUpsert).toHaveBeenCalled()
-    expect(mockInstanceService.loadInstance).toHaveBeenCalled()
+    expect(mockInstanceService.loadInstance).not.toHaveBeenCalled()
+    expect(await readJson(join(restoreResult.restoredInstances[0], 'instance.json'))).toMatchObject({ name: 'SourceInst (Restored)' })
+    expect(await readJson(join(appDataDir, 'setting.json'))).toMatchObject({ locale: 'uk' })
 
     // Test conflictStrategy: 'skip'
     const skipResult = await backupService.restoreBackup({
@@ -296,6 +319,79 @@ describe('BackupService', () => {
     })
     expect(skipResult.restoredInstances).toHaveLength(0)
     expect(skipResult.skippedInstances).toEqual(['SourceInst'])
+  })
+
+  test('overwrite retains unselected categories and transaction publication failure restores bytes', async () => {
+    const inst = join(gameDataDir, 'instances', 'Demo')
+    await ensureDir(join(inst, 'config'))
+    await ensureDir(join(inst, 'saves', 'world'))
+    await writeJson(join(inst, 'instance.json'), { name: 'Demo', runtime: { minecraft: '1.20.1' } })
+    await writeFile(join(inst, 'config', 'demo.cfg'), 'ARCHIVED')
+    const archive = join(tempDir, 'overwrite.xmclbackup')
+    await backupService.createBackup({ destinationPath: archive, instances: [{ instancePath: inst, includeConfigs: true }] })
+    await writeFile(join(inst, 'config', 'demo.cfg'), 'ORIGINAL')
+    await writeFile(join(inst, 'saves', 'world', 'level.dat'), 'UNSELECTED WORLD')
+    const originalJSON = await readFile(join(inst, 'instance.json'))
+    const prepare = RestoreTransaction.prepare
+    const spy = vi.spyOn(RestoreTransaction, 'prepare').mockImplementation((root, inputs) => prepare(root, inputs, point => {
+      if (point === 'publish-after') throw new Error('injected publish failure')
+    }))
+    await expect(backupService.restoreBackup({ backupPath: archive, instances: ['Demo'], instanceConflictStrategy: 'overwrite' })).rejects.toThrow('injected publish failure')
+    expect(await readFile(join(inst, 'config', 'demo.cfg'), 'utf8')).toBe('ORIGINAL')
+    expect(await readFile(join(inst, 'instance.json'))).toEqual(originalJSON)
+    expect(await readFile(join(inst, 'saves', 'world', 'level.dat'), 'utf8')).toBe('UNSELECTED WORLD')
+    spy.mockRestore()
+    await backupService.restoreBackup({ backupPath: archive, instances: ['Demo'], instanceConflictStrategy: 'overwrite' })
+    expect(await readFile(join(inst, 'config', 'demo.cfg'), 'utf8')).toBe('ARCHIVED')
+    expect(await readFile(join(inst, 'saves', 'world', 'level.dat'), 'utf8')).toBe('UNSELECTED WORLD')
+  })
+
+  test('RPC cancellation during staging preserves original bytes; commit refuses cancellation', async () => {
+    const inst = join(gameDataDir, 'instances', 'Demo')
+    await ensureDir(inst)
+    await writeJson(join(inst, 'instance.json'), { name: 'Demo' })
+    await writeFile(join(inst, 'config.txt'), 'ARCHIVED')
+    const archive = join(tempDir, 'cancel.xmclbackup')
+    await backupService.createBackup({ destinationPath: archive, instances: [{ instancePath: inst, includeConfigs: true }] })
+    await writeFile(join(inst, 'config.txt'), 'ORIGINAL')
+    const prepare = RestoreTransaction.prepare
+    const spy = vi.spyOn(RestoreTransaction, 'prepare').mockImplementation((root, inputs, fault) => prepare(root, inputs, async (point, index) => {
+      if (point === 'staging-after' && index === 0) expect(await backupService.cancelBackupOperation()).toBe(true)
+      await fault?.(point, index)
+    }))
+    await expect(backupService.restoreBackup({ backupPath: archive, instances: ['Demo'], instanceConflictStrategy: 'overwrite' })).rejects.toThrow('cancelled')
+    expect(await readFile(join(inst, 'config.txt'), 'utf8')).toBe('ORIGINAL')
+    spy.mockRestore()
+    const commitSpy = vi.spyOn(RestoreTransaction, 'prepare').mockImplementation((root, inputs, fault) => prepare(root, inputs, async (point, index) => {
+      if (point === 'old-before') expect(await backupService.cancelBackupOperation()).toBe(false)
+      await fault?.(point, index)
+    }))
+    await backupService.restoreBackup({ backupPath: archive, instances: ['Demo'], instanceConflictStrategy: 'overwrite' })
+    expect(await readFile(join(inst, 'config.txt'), 'utf8')).toBe('ARCHIVED')
+    expect(await backupService.cancelBackupOperation()).toBe(false)
+    commitSpy.mockRestore()
+  })
+
+  test('all archive mutations share the exclusive gate without nested auto-backup deadlock', async () => {
+    const service = backupService as any
+    const events: string[] = []
+    let release!: () => void
+    const held = new Promise<void>(resolve => { release = resolve })
+    service.createBackupInternal = async () => { events.push('create-start'); await held; events.push('create-end'); return 'created' }
+    service.deleteAutoBackupInternal = async () => { events.push('delete') }
+    const create = backupService.createBackup({ destinationPath: 'unused' })
+    const remove = backupService.deleteAutoBackup('unused')
+    await new Promise(resolve => setTimeout(resolve, 10))
+    expect(events).toEqual(['create-start'])
+    release(); await Promise.all([create, remove])
+    expect(events).toEqual(['create-start', 'create-end', 'delete'])
+  })
+
+  test('backup refuses existing destination and preserves its bytes', async () => {
+    const path = join(tempDir, 'existing.xmclbackup')
+    await writeFile(path, 'ORIGINAL')
+    await expect(backupService.createBackup({ destinationPath: path })).rejects.toThrow('already exists')
+    expect(await readFile(path, 'utf8')).toBe('ORIGINAL')
   })
 
   test('respects modListOnly option', async () => {

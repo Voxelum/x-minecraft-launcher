@@ -87,6 +87,9 @@ export interface RestoreBackupOptions {
 }
 
 export interface RestoreBackupResult {
+  /** Commit is durable, but retained disposable evidence needs cleanup on restart. */
+  cleanupPending?: boolean
+  recoveryPath?: string
   restoredSettings: boolean
   restoredCollections: boolean
   restoredThemes: boolean
@@ -118,8 +121,15 @@ export interface BackupProgress {
   counts?: BackupProgressCounts
 }
 
+/** Restore failures requiring manual/restart recovery retain this path in the
+ * service error message and recovery-required progress event. */
+export interface RestoreFailure {
+  recoveryPath?: string
+}
+
 export interface RestoreProgress {
-  phase: 'reading' | 'settings' | 'collections' | 'themes' | 'instances' | 'complete'
+  recoveryPath?: string
+  phase: 'reading' | 'settings' | 'collections' | 'themes' | 'instances' | 'committing' | 'rolling-back' | 'recovery-required' | 'complete'
   currentInstance?: string
   currentInstanceIndex?: number
   totalInstances?: number
@@ -135,6 +145,8 @@ export interface BackupServiceEventMap {
 }
 
 export interface BackupService extends GenericEventEmitter<BackupServiceEventMap> {
+  /** True: staging cancellation requested. False: idle or commit/rollback must finish. */
+  cancelBackupOperation(): Promise<boolean>
   createBackup(options: BackupOptions): Promise<string>
   loadBackupManifest(backupPath: string): Promise<BackupManifest>
   restoreBackup(options: RestoreBackupOptions): Promise<RestoreBackupResult>

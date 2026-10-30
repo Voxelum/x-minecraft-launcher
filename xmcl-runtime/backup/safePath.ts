@@ -2,7 +2,7 @@ import { lstat } from 'fs/promises'
 import { isAbsolute, join, parse, relative, resolve } from 'path'
 
 /** Resolve an untrusted archive name without following existing links below root. */
-export async function safeBackupPath(root: string, name: string): Promise<string> {
+export async function safeBackupPath(root: string, name: string, type: 'file' | 'directory' = 'file'): Promise<string> {
   const parts = name.split(/[\\/]/)
   if (!name || isAbsolute(name) || parts.some(p => !p || p === '.' || p === '..' || (p.includes(':') || p.includes('\0')))) {
     throw new Error('Invalid backup path')
@@ -23,7 +23,7 @@ export async function safeBackupPath(root: string, name: string): Promise<string
       throw e
     })
     if (!info) continue
-    if (info.isSymbolicLink() || (i < components.length - 1 ? !info.isDirectory() : !info.isFile())) {
+    if (info.isSymbolicLink() || (i < components.length - 1 || type === 'directory' ? !info.isDirectory() : !info.isFile())) {
       throw new Error('Backup target contains a link or incompatible file type')
     }
   }
@@ -31,7 +31,7 @@ export async function safeBackupPath(root: string, name: string): Promise<string
 }
 
 export function validateInstanceFolder(name: string): void {
-  if (!name || (/[\\/:]/.test(name) || name.includes('\0')) || name === '.' || name === '..') {
+  if (!name || (/[\\/:<>"|?*]/.test(name) || [...name].some(c => c.charCodeAt(0) < 32)) || /[. ]$/.test(name) || /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(name) || name === '.' || name === '..') {
     throw new Error('Invalid backup instance folder')
   }
 }
