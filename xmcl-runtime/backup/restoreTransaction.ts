@@ -5,9 +5,10 @@
 import { createHash, randomUUID } from 'crypto'
 import { lstat, mkdir, open, readdir, readFile, rename, rm } from 'fs/promises'
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'path'
+import { readManagedRestoreLink, validateManagedRestoreLinks, type ManagedRestoreLinks } from './managedLinks'
 
 type Identity = { dev: number; ino: number; hash: string }
-type Target = { live: string; candidate: string; rollback: string; original?: Identity; replacement?: Identity }
+type Target = { live: string; candidate: string; rollback: string; original?: Identity; replacement?: Identity; managedLinks?: ManagedRestoreLinks }
 type Journal = { version: 1; id: string; root: string; phase: 'staging' | 'prepared' | 'committing' | 'publishing' | 'committed' | 'rolling-back' | 'rolled-back'; targets: Target[]; cleanupAuthorized?: boolean; intent?: string; done?: string }
 export type RestoreFault = (point: string, index: number) => void | Promise<void>
 export class RestoreRecoveryError extends Error {
@@ -26,12 +27,17 @@ async function assertAncestors(path: string) {
     parent = next
   }
 }
-async function identity(path: string): Promise<Identity> {
+async function identity(path: string, managedLinks?: ManagedRestoreLinks): Promise<Identity> {
   const st = await lstat(path)
   const hash = createHash('sha256')
   async function visit(p: string) {
     const s = await lstat(p)
-    if (s.isSymbolicLink() || (!s.isDirectory() && !s.isFile())) throw new Error(`Unsafe restore target: ${p}`)
+    if (s.isSymbolicLink()) {
+      const text = await readManagedRestoreLink(path, p, managedLinks)
+      hash.update(`managed-link\0${Buffer.byteLength(text)}\0${text}\0`)
+      return
+    }
+    if (!s.isDirectory() && !s.isFile()) throw new Error(`Unsafe restore target: ${p}`)
     hash.update(s.isDirectory() ? 'directory\0' : 'file\0')
     if (s.isDirectory()) {
       for (const name of (await readdir(p)).sort()) { hash.update(`${name}\0`); await visit(join(p, name)) }
@@ -45,15 +51,16 @@ async function identity(path: string): Promise<Identity> {
   await visit(path)
   return { dev: st.dev, ino: st.ino, hash: hash.digest('hex') }
 }
-async function matches(path: string, expected?: Identity) {
+async function matches(path: string, expected?: Identity, managedLinks?: ManagedRestoreLinks) {
   if (!expected || !await present(path)) return false
-  const actual = await identity(path)
+  const actual = await identity(path, managedLinks)
   return actual.dev === expected.dev && actual.ino === expected.ino && actual.hash === expected.hash
 }
-async function syncTree(path: string): Promise<void> {
+async function syncTree(path: string, managedLinks?: ManagedRestoreLinks, root = path): Promise<void> {
   const s = await lstat(path)
+  if (s.isSymbolicLink()) { await readManagedRestoreLink(root, path, managedLinks); return }
   if (s.isDirectory()) {
-    for (const name of await readdir(path)) await syncTree(join(path, name))
+    for (const name of await readdir(path)) await syncTree(join(path, name), managedLinks, root)
     await syncRestoreDirectory(path)
   } else {
     const handle = await open(path, 'r')
@@ -83,6 +90,7 @@ function validate(j: Journal, root: string) {
   if (!['staging', 'prepared', 'committing', 'publishing', 'committed', 'rolling-back', 'rolled-back'].includes(j.phase) || j.version !== 1 || j.root !== resolve(root) || !/^[a-f0-9-]{36}$/.test(j.id) || !Array.isArray(j.targets)) throw new Error('Invalid restore journal')
   const paths = new Set<string>()
   for (const t of j.targets) {
+    validateManagedRestoreLinks(t.managedLinks)
     if (!isAbsolute(t.live) || t.live !== resolve(t.live) || t.candidate !== join(dirname(t.live), `.xmcl-restore-${j.id}-${basename(t.live)}.candidate`) || t.rollback !== join(dirname(t.live), `.xmcl-restore-${j.id}-${basename(t.live)}.rollback`) || (!['staging', 'rolling-back', 'rolled-back'].includes(j.phase) && !t.replacement?.hash)) throw new Error('Invalid restore journal target')
     for (const identity of [t.original, t.replacement]) if (identity && (!Number.isFinite(identity.dev) || !Number.isFinite(identity.ino) || !/^[a-f0-9]{64}$/.test(identity.hash))) throw new Error('Invalid restore target identity')
     for (const p of [t.live, t.candidate, t.rollback]) { if (paths.has(p)) throw new Error('Duplicate restore target'); paths.add(p) }
@@ -96,7 +104,7 @@ function validate(j: Journal, root: string) {
 }
 export class RestoreTransaction {
   private constructor(readonly journalPath: string, private journal: Journal, private fault?: RestoreFault) {}
-  static async prepare(root: string, inputs: { live: string; stage: (candidate: string) => Promise<void> }[], fault?: RestoreFault) {
+  static async prepare(root: string, inputs: { live: string; managedLinks?: ManagedRestoreLinks; stage: (candidate: string) => Promise<void> }[], fault?: RestoreFault) {
     root = resolve(root)
     await assertAncestors(join(root, 'journal'))
     await mkdir(root, { recursive: true })
@@ -111,8 +119,9 @@ export class RestoreTransaction {
         await mkdir(dirname(live), { recursive: true })
         const candidate = join(dirname(live), `.xmcl-restore-${id}-${basename(live)}.candidate`)
         const rollback = join(dirname(live), `.xmcl-restore-${id}-${basename(live)}.rollback`)
-        const original = await present(live) ? await identity(live) : undefined
-        const target: Target = { live, candidate, rollback, original }
+        validateManagedRestoreLinks(input.managedLinks)
+        const original = await present(live) ? await identity(live, input.managedLinks) : undefined
+        const target: Target = { live, candidate, rollback, original, managedLinks: input.managedLinks }
         journal.targets.push(target)
         // Reject duplicate/nested targets before staging or touching any live data.
         validate(journal, root)
@@ -120,8 +129,8 @@ export class RestoreTransaction {
         await fault?.('staging-before', journal.targets.length - 1)
         await input.stage(candidate)
         await fault?.('staging-after', journal.targets.length - 1)
-        target.replacement = await identity(candidate)
-        await syncTree(candidate)
+        target.replacement = await identity(candidate, target.managedLinks)
+        await syncTree(candidate, target.managedLinks)
         await save(tx.journalPath, journal)
       }
       journal.phase = 'prepared'
@@ -144,8 +153,8 @@ export class RestoreTransaction {
         const t = j.targets[i]
         await assertAncestors(t.live)
         await this.fault?.('journal-before', i)
-        if (t.original ? !await matches(t.live, t.original) : !!await present(t.live)) throw new Error(`Restore target changed: ${t.live}`)
-        if (!await matches(t.candidate, t.replacement)) throw new Error(`Restore candidate changed: ${t.candidate}`)
+        if (t.original ? !await matches(t.live, t.original, t.managedLinks) : !!await present(t.live)) throw new Error(`Restore target changed: ${t.live}`)
+        if (!await matches(t.candidate, t.replacement, t.managedLinks)) throw new Error(`Restore candidate changed: ${t.candidate}`)
         for (const step of ['old', 'new'] as const) {
           j.intent = `${i}:${step}`; await save(this.journalPath, j); await this.fault?.('journal-after', i); await this.fault?.(`${step}-before`, i)
           if (step === 'old') { if (t.original) await durableRename(t.live, t.rollback) } else { await durableRename(t.candidate, t.live) }
@@ -171,9 +180,9 @@ export class RestoreTransaction {
   private async finishStaging() {
     if (this.journal.phase !== 'staging') return
     for (const t of this.journal.targets) {
-      if (t.original ? !await matches(t.live, t.original) : !!await present(t.live)) throw new Error(`Target changed during staging: ${t.live}`)
+      if (t.original ? !await matches(t.live, t.original, t.managedLinks) : !!await present(t.live)) throw new Error(`Target changed during staging: ${t.live}`)
       if (await present(t.rollback)) throw new Error(`Unexpected rollback during staging: ${t.rollback}`)
-      if (!t.replacement && await present(t.candidate)) t.replacement = await identity(t.candidate)
+      if (!t.replacement && await present(t.candidate)) t.replacement = await identity(t.candidate, t.managedLinks)
     }
   }
   private async rollback() {
@@ -184,17 +193,17 @@ export class RestoreTransaction {
       await assertAncestors(t.live)
       await this.fault?.('rollback-before', i)
       if (await present(t.rollback)) {
-        if (!await matches(t.rollback, t.original)) throw new Error(`Original identity mismatch: ${t.rollback}`)
+        if (!await matches(t.rollback, t.original, t.managedLinks)) throw new Error(`Original identity mismatch: ${t.rollback}`)
         if (await present(t.live)) {
-          if (!await matches(t.live, t.replacement)) throw new Error(`Live identity mismatch: ${t.live}`)
+          if (!await matches(t.live, t.replacement, t.managedLinks)) throw new Error(`Live identity mismatch: ${t.live}`)
           if (await present(t.candidate)) throw new Error(`Ambiguous candidate: ${t.candidate}`)
           await durableRename(t.live, t.candidate)
         }
         await durableRename(t.rollback, t.live)
       } else if (t.original) {
-        if (!await matches(t.live, t.original)) throw new Error(`Original missing: ${t.live}`)
+        if (!await matches(t.live, t.original, t.managedLinks)) throw new Error(`Original missing: ${t.live}`)
       } else if (await present(t.live)) {
-        if (!await matches(t.live, t.replacement) || await present(t.candidate)) throw new Error(`Ambiguous new target: ${t.live}`)
+        if (!await matches(t.live, t.replacement, t.managedLinks) || await present(t.candidate)) throw new Error(`Ambiguous new target: ${t.live}`)
         await durableRename(t.live, t.candidate)
       }
       await this.fault?.('rollback-after', i)
@@ -210,9 +219,9 @@ export class RestoreTransaction {
       for (const t of j.targets) {
         await assertAncestors(t.live)
         const expected = j.phase === 'committed' ? t.replacement : t.original
-        if (expected ? !await matches(t.live, expected) : !!await present(t.live)) throw new RestoreRecoveryError('Live target changed before transaction cleanup', this.journalPath)
+        if (expected ? !await matches(t.live, expected, t.managedLinks) : !!await present(t.live)) throw new RestoreRecoveryError('Live target changed before transaction cleanup', this.journalPath)
         for (const [path, artifact] of [[t.candidate, t.replacement], [t.rollback, t.original]] as const) {
-          if (await present(path) && !await matches(path, artifact)) throw new RestoreRecoveryError('Cleanup identity mismatch', this.journalPath)
+          if (await present(path) && !await matches(path, artifact, t.managedLinks)) throw new RestoreRecoveryError('Cleanup identity mismatch', this.journalPath)
         }
       }
       j.cleanupAuthorized = true

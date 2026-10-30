@@ -18,11 +18,12 @@ type ZipEntry = Awaited<ReturnType<typeof readAllEntries>>[number]
 import { createWriteStream } from 'fs'
 import { InstanceSchema } from '@xmcl/instance'
 import { Writable } from 'stream'
-import { copyFile, link, mkdir, mkdtemp, open as openFile, rm, writeFile } from 'fs/promises'
+import { copyFile, link, mkdir, mkdtemp, open as openFile, rm, symlink, writeFile } from 'fs/promises'
 import { safeBackupPath, validateInstanceFolder } from './safePath'
 import { backupByteLimiter, readBackupJSON, readBoundedBackupEntries, validateBackupEntries, validateBackupManifest } from './archiveValidation'
 import { RestoreRecoveryError, RestoreTransaction, syncRestoreDirectory } from './restoreTransaction'
 import { getE2ERestoreFault } from './e2eRestoreFault'
+import { readManagedRestoreLink, type ManagedRestoreLinks } from './managedLinks'
 import { recoverRestore } from '~/infra/recoverRestore'
 import { kRestoreMaintenance, type RestorePublishPlan } from './restoreMaintenance'
 import {
@@ -122,17 +123,23 @@ async function isSafeRegularFile(fullPath: string): Promise<boolean> {
   }
 }
 
-async function copyRestoreTree(source: string, destination: string, signal?: AbortSignal): Promise<void> {
+async function copyRestoreTree(source: string, destination: string, signal?: AbortSignal, managedLinks?: ManagedRestoreLinks, sourceRoot = source): Promise<void> {
   signal?.throwIfAborted()
   const info = await lstat(source).catch((e) => {
     if (e.code === 'ENOENT') return undefined
     throw e
   })
   if (!info) { await mkdir(destination, { recursive: true }); return }
-  if (info.isSymbolicLink() || (!info.isFile() && !info.isDirectory())) throw new Error(`Unsafe existing restore data: ${source}`)
+  if (info.isSymbolicLink()) {
+    const text = await readManagedRestoreLink(sourceRoot, source, managedLinks)
+    const target = process.platform === 'win32' ? managedLinks![basename(source) as keyof ManagedRestoreLinks]! : text
+    await symlink(target, destination, process.platform === 'win32' ? 'junction' : 'dir')
+    return
+  }
+  if (!info.isFile() && !info.isDirectory()) throw new Error(`Unsafe existing restore data: ${source}`)
   if (info.isDirectory()) {
     await mkdir(destination, { recursive: true })
-    for (const name of await readdir(source)) await copyRestoreTree(join(source, name), join(destination, name), signal)
+    for (const name of await readdir(source)) await copyRestoreTree(join(source, name), join(destination, name), signal, managedLinks, sourceRoot)
   } else {
     await copyFile(source, destination)
   }
@@ -140,6 +147,7 @@ async function copyRestoreTree(source: string, destination: string, signal?: Abo
 function allowedInstanceEntry(path: string, item: BackupManifestInstanceItem): boolean {
   if (path === 'instance.json') return true
   const dir = path.split('/')[0]
+  if (['libraries', 'versions', 'assets'].includes(dir)) return false
   if (dir === 'saves') return item.includesSaves
   if (dir === 'mods' || path === 'mods-list.json') return item.includesMods
   if (dir === 'resourcepacks') return item.includesResourcePacks
@@ -784,7 +792,7 @@ export class BackupService extends AbstractService implements IBackupService {
       for (const name of selected) if (!manifest.includes.instances.some(i => i.folderName === name)) throw new Error(`Unknown backup instance: ${name}`)
       const result: RestoreBackupResult = { restoredSettings: false, restoredCollections: false, restoredThemes: false, restoredInstances: [], skippedInstances: [] }
       const plan: RestorePublishPlan = { instances: [] }
-      const targets: { live: string; stage: (candidate: string) => Promise<void> }[] = []
+      const targets: { live: string; managedLinks?: ManagedRestoreLinks; stage: (candidate: string) => Promise<void> }[] = []
       const find = (...names: string[]) => {
         const found = entries.filter(e => names.includes(e.fileName))
         if (found.length !== 1) throw new Error(`Missing or ambiguous backup entry: ${names[0]}`)
@@ -852,8 +860,9 @@ export class BackupService extends AbstractService implements IBackupService {
           const rel = entry.fileName.substring(prefix.length)
           if (!allowedInstanceEntry(rel, item)) throw new Error(`Entry conflicts with manifest categories: ${entry.fileName}`)
         }
-        targets.push({ live, stage: async p => {
-          await copyRestoreTree(live, p, signal)
+        const managedLinks: ManagedRestoreLinks = { libraries: resolve(this.getPath('libraries')), versions: resolve(this.getPath('versions')) }
+        targets.push({ live, managedLinks, stage: async p => {
+          await copyRestoreTree(live, p, signal, managedLinks)
           for (const entry of instanceEntries) await extract(entry, await safeBackupPath(p, entry.fileName.substring(prefix.length)))
           const data = InstanceSchema.parse(await readJson(join(p, 'instance.json')))
           delete data.path

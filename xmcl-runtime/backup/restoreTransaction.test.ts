@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, readFile, readdir, realpath, rename, rm, writeFile } from 'fs/promises'
+import { mkdtemp, mkdir, readFile, readdir, readlink, realpath, rename, rm, symlink, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, expect, test } from 'vitest'
@@ -146,4 +146,44 @@ test('moving a file between directories while preserving root inode is not the s
   await expect(tx.commit(async () => {}, async () => {})).rejects.toBeInstanceOf(RestoreRecoveryError)
   expect(await readFile(join(live, 'a', 'z'), 'utf8')).toBe('Z')
   expect(await readFile(tx.journalPath, 'utf8')).toContain('rolling-back')
+})
+
+
+test('approved top-level cache links are hashed as link text, retained on commit and recovered without touching cache bytes', async () => {
+  const live = join(root, 'instance')
+  const libraries = join(root, 'libraries')
+  const versions = join(root, 'versions')
+  await mkdir(live); await mkdir(libraries); await mkdir(versions)
+  const managedLinks = { libraries, versions }
+  await writeFile(join(libraries, 'shared.jar'), 'SHARED LIBRARY')
+  await writeFile(join(versions, 'version.json'), 'SHARED VERSION')
+  for (const [name, path] of Object.entries(managedLinks)) await symlink(path, join(live, name), process.platform === 'win32' ? 'junction' : 'dir')
+  await writeFile(join(live, 'config'), 'ORIGINAL')
+  const tx = await RestoreTransaction.prepare(join(root, 'journals'), [{ live, managedLinks, stage: async p => {
+    await mkdir(p)
+    for (const [name, path] of Object.entries(managedLinks)) await symlink(path, join(p, name), process.platform === 'win32' ? 'junction' : 'dir')
+    await writeFile(join(p, 'config'), 'RESTORED')
+  } }], point => { if (point === 'new-after' || point === 'rollback-before') throw new Error('injected disk failure') })
+  await expect(tx.commit(async () => {}, async () => {})).rejects.toBeInstanceOf(RestoreRecoveryError)
+  // Shared cache changes are not changes to this transaction's instance tree.
+  await writeFile(join(libraries, 'shared.jar'), 'CACHE UPDATED BY OWNER')
+  await RestoreTransaction.recover(join(root, 'journals')); await RestoreTransaction.recover(join(root, 'journals'))
+  expect(await readFile(join(live, 'config'), 'utf8')).toBe('ORIGINAL')
+  for (const [name, path] of Object.entries(managedLinks)) expect(await readlink(join(live, name))).toBe(path)
+  expect(await readFile(join(libraries, 'shared.jar'), 'utf8')).toBe('CACHE UPDATED BY OWNER')
+  expect(await readFile(join(versions, 'version.json'), 'utf8')).toBe('SHARED VERSION')
+})
+
+for (const kind of ['unknown', 'nested', 'wrong-cache', 'linked-root']) test(`reject ${kind} links without altering their outside target`, async () => {
+  const live = join(root, 'instance')
+  const outside = join(root, 'outside')
+  await mkdir(live); await mkdir(outside)
+  await writeFile(join(outside, 'bytes'), 'UNTOUCHED')
+  let inputLive = live
+  if (kind === 'unknown') await symlink(outside, join(live, 'extra'), 'dir')
+  if (kind === 'nested') { await mkdir(join(live, 'config')); await symlink(outside, join(live, 'config', 'libraries'), 'dir') }
+  if (kind === 'wrong-cache') await symlink(outside, join(live, 'libraries'), 'dir')
+  if (kind === 'linked-root') { inputLive = join(root, 'linked-root'); await symlink(live, inputLive, 'dir') }
+  await expect(RestoreTransaction.prepare(join(root, 'journals'), [{ live: inputLive, managedLinks: { libraries: join(root, 'libraries') }, stage: async p => { await mkdir(p) } }])).rejects.toThrow()
+  expect(await readFile(join(outside, 'bytes'), 'utf8')).toBe('UNTOUCHED')
 })

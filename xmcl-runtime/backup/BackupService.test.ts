@@ -3,7 +3,7 @@ import {
   LocalCollectionState,
   Settings,
 } from '@xmcl/runtime-api'
-import { ensureDir, mkdtemp, realpath, readFile, readJson, rm, writeFile, writeJson } from 'fs-extra'
+import { ensureDir, mkdtemp, realpath, readFile, readJson, readlink, rm, symlink, writeFile, writeJson } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -326,6 +326,11 @@ describe('BackupService', () => {
     await ensureDir(join(inst, 'config'))
     await ensureDir(join(inst, 'saves', 'world'))
     await writeJson(join(inst, 'instance.json'), { name: 'Demo', runtime: { minecraft: '1.20.1' } })
+    for (const cache of ['libraries', 'versions']) {
+      await ensureDir(join(gameDataDir, cache))
+      await writeFile(join(gameDataDir, cache, 'shared.bin'), `SHARED ${cache}`)
+      await symlink(join(gameDataDir, cache), join(inst, cache), process.platform === 'win32' ? 'junction' : 'dir')
+    }
     await writeFile(join(inst, 'config', 'demo.cfg'), 'ARCHIVED')
     const archive = join(tempDir, 'overwrite.xmclbackup')
     await backupService.createBackup({ destinationPath: archive, instances: [{ instancePath: inst, includeConfigs: true }] })
@@ -340,9 +345,17 @@ describe('BackupService', () => {
     expect(await readFile(join(inst, 'config', 'demo.cfg'), 'utf8')).toBe('ORIGINAL')
     expect(await readFile(join(inst, 'instance.json'))).toEqual(originalJSON)
     expect(await readFile(join(inst, 'saves', 'world', 'level.dat'), 'utf8')).toBe('UNSELECTED WORLD')
+    for (const cache of ['libraries', 'versions']) {
+      expect(await readlink(join(inst, cache))).toBe(join(gameDataDir, cache))
+      expect(await readFile(join(gameDataDir, cache, 'shared.bin'), 'utf8')).toBe(`SHARED ${cache}`)
+    }
     spy.mockRestore()
     await backupService.restoreBackup({ backupPath: archive, instances: ['Demo'], instanceConflictStrategy: 'overwrite' })
     expect(await readFile(join(inst, 'config', 'demo.cfg'), 'utf8')).toBe('ARCHIVED')
+    for (const cache of ['libraries', 'versions']) {
+      expect(await readlink(join(inst, cache))).toBe(join(gameDataDir, cache))
+      expect(await readFile(join(gameDataDir, cache, 'shared.bin'), 'utf8')).toBe(`SHARED ${cache}`)
+    }
     expect(await readFile(join(inst, 'saves', 'world', 'level.dat'), 'utf8')).toBe('UNSELECTED WORLD')
   })
 
