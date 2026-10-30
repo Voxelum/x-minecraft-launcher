@@ -33,13 +33,17 @@ on:
       packaged_os:
         description: 'Platform for the packaged-boot group'
         type: choice
-        options: [all, ubuntu-latest, windows-latest, macos-latest]
+        options: [all, ubuntu-24.04, windows-latest, macos-latest]
         default: all
       locales:
         description: 'Comma-separated locales to capture (e.g. "en,zh-CN")'
         required: false
         default: 'en'
 
+# Playwright 1.59.1's FFmpeg registry supports Ubuntu 24.04, not 26.04.
+# Pin every Linux e2e entry point (including manual packaged/showcase runs).
+# Advance this pin only after the locked Playwright supports the new image and
+# recorder installation + all safety-net tests pass there; do not skip recording.
 jobs:
   # ---------------------------------------------------------------------------
   # 兜底 / safety-net group — deterministic, isolated, no live network installs.
@@ -52,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-24.04, windows-latest, macos-latest]
     timeout-minutes: 30
     env:
       # Electron tests use _electron.launch(), which doesn't need any
@@ -125,7 +129,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.packaged_os != '' && inputs.packaged_os != 'all' && format('["{0}"]', inputs.packaged_os) || '["ubuntu-latest","windows-latest","macos-latest"]') }}
+        os: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.packaged_os != '' && inputs.packaged_os != 'all' && format('["{0}"]', inputs.packaged_os) || '["ubuntu-24.04","windows-latest","macos-latest"]') }}
     timeout-minutes: 60
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
@@ -205,7 +209,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-24.04, windows-latest, macos-latest]
     timeout-minutes: 60
     env:
       XMCL_E2E_LOCALES: ${{ github.event.inputs.locales || 'en' }}
