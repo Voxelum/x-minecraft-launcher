@@ -5,9 +5,9 @@
     transition="fade-transition"
     content-class="elevation-0"
   >
-    <div class="select-none flex max-h-[90vh] flex-col overflow-hidden">
+    <v-card class="select-none flex max-h-[90vh] flex-col overflow-hidden rounded-2xl border border-white/10 bg-surface/95 backdrop-blur-xl">
       <!-- Header -->
-      <div class="flex items-center px-6 pt-6 pb-4">
+      <div class="flex items-center px-6 pt-6 pb-4 border-b border-white/5">
         <div class="flex items-center gap-3 flex-grow">
           <div
             class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -19,20 +19,38 @@
             {{ t('instanceUpdate.title') }}
           </div>
         </div>
-        <v-chip
-          v-if="!refreshing && upgrade"
-          size="small"
-          variant="tonal"
-          color="primary"
-          class="mr-2 font-medium"
-        >
-          <v-icon start size="small">summarize</v-icon>
-          {{ t('instanceUpdate.summary', {
-            add: counts.add,
-            remove: counts.remove,
-            keep: counts.keep,
-          }) }}
-        </v-chip>
+        <div v-if="!refreshing && upgrade" class="flex items-center gap-1.5 mr-2">
+          <v-chip
+            v-if="counts.add > 0"
+            size="small"
+            variant="tonal"
+            color="success"
+            class="font-semibold"
+          >
+            <v-icon start size="14">add</v-icon>
+            +{{ counts.add }}
+          </v-chip>
+          <v-chip
+            v-if="counts.remove > 0"
+            size="small"
+            variant="tonal"
+            color="error"
+            class="font-semibold"
+          >
+            <v-icon start size="14">delete</v-icon>
+            -{{ counts.remove }}
+          </v-chip>
+          <v-chip
+            v-if="counts.keep > 0"
+            size="small"
+            variant="tonal"
+            color="info"
+            class="font-semibold"
+          >
+            <v-icon start size="14">save</v-icon>
+            {{ counts.keep }}
+          </v-chip>
+        </div>
         <v-btn
           icon="close"
           variant="text"
@@ -208,28 +226,30 @@
           />
         </div>
 
-        <InstanceManifestFileTree
-          v-model="selected"
-          :selectable="selectable"
-          :multiple="false"
-          :scroll-element="scrollRef"
-        >
-          <template #default="{ item }">
-            <v-chip
-              v-if="item.data"
-              class="pointer-events-none"
-              size="small"
-              label
-              variant="tonal"
-              :color="cOperations[item.data.operation]"
-            >
-              <v-icon start size="small">
-                {{ iOperations[item.data.operation] }}
-              </v-icon>
-              {{ tOperations[item.data.operation] }}
-            </v-chip>
-          </template>
-        </InstanceManifestFileTree>
+        <div class="rounded-xl border border-white/5 bg-surface-variant/15 p-2 overflow-hidden">
+          <InstanceManifestFileTree
+            v-model="selected"
+            :selectable="selectable"
+            :multiple="false"
+            :scroll-element="scrollRef"
+          >
+            <template #default="{ item }">
+              <v-chip
+                v-if="item.data"
+                class="pointer-events-none"
+                size="small"
+                label
+                variant="tonal"
+                :color="cOperations[item.data.operation]"
+              >
+                <v-icon start size="small">
+                  {{ iOperations[item.data.operation] }}
+                </v-icon>
+                {{ tOperations[item.data.operation] }}
+              </v-chip>
+            </template>
+          </InstanceManifestFileTree>
+        </div>
 
         <Hint
           v-if="fileNodes.length === 0 && counts.hidden > 0"
@@ -254,7 +274,7 @@
 
       <v-divider class="mx-6 opacity-20" />
 
-      <div class="flex items-center px-6 py-4">
+      <div class="flex items-center px-6 py-4 border-t border-white/5 bg-surface-variant/5">
         <v-btn
           :disabled="refreshing"
           variant="text"
@@ -268,16 +288,17 @@
           color="primary"
           variant="flat"
           size="large"
-          rounded="pill"
+          rounded="lg"
+          class="font-semibold px-6"
           :loading="refreshing"
           :disabled="!upgrade"
-          prepend-icon="download"
+          prepend-icon="file_download"
           @click="confirm"
         >
           {{ t('instanceUpdate.update') }}
         </v-btn>
       </div>
-    </div>
+    </v-card>
   </v-dialog>
 </template>
 

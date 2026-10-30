@@ -104,6 +104,9 @@
         :items="item.projects"
         :height="itemHeight"
         :name="item.name"
+        :color="item.color"
+        :icon="item.icon"
+        :pinned="item.pinned"
         :expanded="!groupCollapsedState[item.name]"
         :dense="denseView"
         :count-label="shaderPackCountLabel"
@@ -111,7 +114,8 @@
         :group-rules="false"
         @ungroup="ungroup(item.name)"
         @expand="onGroupCollapse(item as ProjectGroup<InstanceShaderFile>, $event)"
-        @setting="renameGroup(item.name, $event.name)"
+        @setting="updateGroupSetting(item.name, $event)"
+        @toggle-pin="toggleGroupPin(item.name)"
       />
     </template>
     <template #content="{ selectedModrinthId, selectedCurseforgeId, selectedItem }">
@@ -367,6 +371,8 @@ const {
   localGroupedItems,
   groupCollapsedState,
   renameGroup,
+  updateGroupSetting,
+  toggleGroupPin,
   ungroup,
   group,
   addToGroup,

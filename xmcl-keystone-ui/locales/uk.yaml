@@ -680,6 +680,23 @@ mod:
   collapseAllGroups: Згорнути всі групи
   acceptVersion: Прийняти {version}
   applyGroupRules: Застосувати збережені правила групування
+  autoCategorize: Авто-сортування по папках
+  autoCategorizeHint: Автоматично групувати моди за папками категорій (Оптимізація, Бібліотеки, Світ, Геймплей тощо)
+  autoCategorizeSuccess: Моди успішно відсортовано у {count} папок
+  ungroupAll: Розгрупувати все
+  organization: Організація папок
+  collapseAll: Згорнути всі папки
+  expandAll: Розкрити всі папки
+  folderSetting: Налаштування папки
+  folderColor: Колір папки
+  folderIcon: Іконка папки
+  pinGroup: Закріпити нагорі
+  pinToTop: Закріпити нагорі
+  pinToTopHint: Папка відображатиметься першою у списку
+  pinned: Закріплено
+  unpinGroup: Відкріпити папку
+  customColor: Власний колір
+  preview: Попередній перегляд
   compatible: Сумісний мод.
   createGroup: Створити групу
   currentVersion: Поточна {current}
@@ -723,6 +740,14 @@ mod:
   toUpdate: '{count} оновлень'
   ungroup: Розгрупувати
   description: Опис
+modCategory:
+  optimization: Оптимізація та продуктивність
+  libraries: Бібліотеки та API
+  utilities: Інтерфейс та утиліти
+  world: Світ та біоми
+  visual: Візуал та аудіо
+  gameplay: Геймплей та контент
+  miscellaneous: Різне
 modFilter:
   clear: Очистити фільтр
   dependenciesInstallOnly: Показувати лише відсутні залежності модів
@@ -767,23 +792,45 @@ modified:
   save: Зберегти
   unsaved: Ваші зміни не збережено!
 modpack:
-  author: Ім'я автора
-  authorHint: Може використовуватися для підпису експортованого модпаку (Curseforge)
-  description: Опис
-  descriptionHint: Загальний опис вашого модпаку. Може використовуватися для експорту як модпак Curseforge.
+  author: Автор збірки
+  authorHint: Ім'я автора або назва команди розробників
+  description: Опис модпаку
+  descriptionHint: Короткий опис або анотація вашого модпаку
   dropHint: Перетягніть сюди zip-файл модпаку для імпорту
-  emitCurseforge: Експортувати модпак Curseforge
-  emitModrinth: Експортувати модпак Modrinth
-  emitModrinthStrict: Суворий формат Modrinth
-  emitModrinthStrictDescription: Дозволені лише URL-адреси з 4 доменів, перелічених у документації Modrinth
+  emitCurseforge: Експортувати CurseForge (.zip)
+  emitCurseforgeDescription: Стандартний архів збірки для CurseForge
+  emitModrinth: Експортувати Modrinth (.mrpack)
+  emitModrinthDescription: Офіційний швидкий та легкий формат Modrinth
+  emitModrinthStrict: Сувора політика доменів Modrinth
+  emitModrinthStrictDescription: Дозволяти завантаження лише з перевірених джерел (Modrinth, GitHub, GitLab)
+  emitPackwiz: Експортувати Packwiz (.zip)
+  emitPackwizDescription: Зручний формат для Git (pack.toml, index.toml та посилання на моди)
   export: Експортувати як модпак
-  exportDirectory: Експортний каталог
-  exportDirectoryDescription: Modpack буде експортований на завантаження папки за замовчуванням
+  exportSuccess: Модпак успішно експортовано!
+  exportSuccessWithWarnings: Модпак експортовано з попередженнями
+  exportSkippedFiles: "{count} недоступних або заблокованих файлів було пропущено"
+  exportFailed: Не вдалося експортувати модпак
+  skippedFilesDialogTitle: Деякі файли не вдалося експортувати
+  skippedFilesDialogDescription: Модпак створено, але {count} файлів було пропущено
+  skippedReasonEperm: Доступ заборонено (заблоковано системою або іншим процесом)
+  skippedReasonEbusy: Файл зайнятий іншою програмою
+  skippedReasonEnoent: Файл не знайдено або пошкоджено
+  skippedFilesNotice: Решта файлів успішно збережена до вашого модпаку. Зазначені файли не вдалося додати через системні обмеження Windows або відсутність прав доступу.
+  openExportFolder: Відкрити папку з модпаком
+  closeDialog: Зрозуміло
+  exportDirectory: Каталог для збереження
+  exportDirectoryDescription: Папка, в яку буде збережено готовий файл збірки
   includeAssets: Включити ресурси
   includes: Файли для включення
+  expandAll: Розгорнути всі папки
+  collapseAll: Згорнути всі папки
   modpackVersion: Версія модпаку
+  modpackVersionHint: Версія збірки (наприклад, 1.0.0). Кнопки + збільшують патч або мінорну версію
   name: Модпак | Модпаки
   overrides: Перевизначення
+  selectDefaultFiles: Обрати файли за замовчуванням
+  selectAllFiles: Обрати всі файли
+  deselectAllFiles: Зняти вибір з усіх файлів
   url: URL
   urlHint: URL-адреса домашньої сторінки вашого модпаку
 modpackImportConfirm:
@@ -1168,12 +1215,99 @@ save:
   searchSaves: Пошук збережень
   empty: Світів не знайдено
 screenshots:
+  title: Скріншоти та фото
+  gallery: Галерея скріншотів
+  manage: Менеджер скріншотів
   empty: У вас немає знімків екрана
+  emptyTitle: Скріншотів поки немає
+  emptyDescription: Натисніть F2 у грі, щоб зробити знімок екрана, або імпортуйте фотографії вручну.
+  hint: У грі натисніть F2 для скріншоту
+  dropHint: Перетягніть сюди фото або скріншоти для збереження
+  openFolder: Відкрити теку скріншотів
   playRandom: Перемішати
   playSequence: Відтворити по порядку
-  gallery: Галерея скріншотів
-  hint: У грі натисніть F2 для скріншоту
-  openFolder: Відкрити теку скріншотів
+  backToHome: На головну
+  import: Додати фото
+  images: Зображення
+  importSuccess: Успішно імпортовано {count} фото
+  copy: Копіювати зображення
+  copied: Скопійовано в буфер обміну!
+  setWallpaper: Встановити як фон
+  setWallpaperSuccess: Встановлено як фонове зображення збірки!
+  setIcon: Встановити як іконку
+  setIconSuccess: Встановлено як іконку збірки!
+  export: Зберегти файл
+  exportSuccess: Скріншот успішно збережено!
+  exportSelected: Експортувати обрані
+  exportSelectedTitle: Обрати теку для експорту
+  exportSelectedSuccess: Успішно експортовано {count} скріншотів
+  deleteConfirmTitle: Видалити скріншоти?
+  deleteConfirmMessage: Ви дійсно бажаєте видалити {count} скріншотів? Цю дію неможливо скасувати.
+  deleteSuccess: Скріншоти успішно видалено
+  selectedCount: "Обрано: {count}"
+  selectAll: Обрати всі
+  clearSelection: Зняти вибір
+  countLabel: "{count} скріншотів"
+  searchPlaceholder: Пошук за назвою або датою...
+  noSearchResults: Нічого не знайдено
+  noSearchResultsHint: Спробуйте змінити пошуковий запит
+  sort: Сортування
+  sortDateDesc: Спочатку нові
+  sortDateAsc: Спочатку старі
+  sortSizeDesc: Спочатку великі
+  sortSizeAsc: Спочатку малі
+  sortNameAsc: За назвою (А-Я)
+  sortNameDesc: За назвою (Я-А)
+  viewGrid: Велика сітка
+  viewGridCompact: Компактна сітка
+  viewList: Список
+  edit: Редагувати
+  editorTitle: Редактор скріншота
+  saveCopy: Зберегти копію
+  saveOverwrite: Перезаписати
+  saveSuccess: Скріншот збережено!
+  saveCopySuccess: Збережено як новий скріншот!
+  toolSelect: Переміщення
+  toolMove: Пересування та трансформація (Ctrl+T / V)
+  toolPan: Панорамування (Space+Drag)
+  layers: Шари
+  layerAdd: Додати шар
+  layerDuplicate: Дублювати шар
+  layerDelete: Видалити шар
+  layerOpacity: Непрозорість
+  transformLayer: Вільна трансформація
+  applyTransform: Застосувати (Enter)
+  cancelTransform: Скасувати (Esc)
+  layerBackground: Фон
+  layerPaint: Малюнок
+  layerText: Текст
+  layerBlur: Розмиття
+  toolPen: Олівець
+  toolArrow: Стрілка
+  toolRect: Прямокутник
+  toolCircle: Коло
+  toolLine: Лінія
+  toolText: Текст
+  toolHighlighter: Маркер
+  toolBlur: "Пікселізація / Розмиття"
+  toolCrop: Обрізати
+  applyCrop: Застосувати обрізку
+  cancelCrop: Скасувати обрізку
+  strokeWidth: Товщина лінії
+  fontSize: Розмір шрифту
+  color: Колір
+  undo: Скасувати
+  redo: Повторити
+  clear: Очистити все
+  textPlaceholder: Введіть текст...
+  fontFamily: Шрифт
+  fontBold: Жирний
+  fontItalic: Курсив
+  textApply: Залишити текст
+  textBg: Фон
+  zoomIn: Наблизити
+  zoomOut: Віддалити
+  resetZoom: Скинути масштаб
 search:
   favorate: Колекція
   local: Встановлені
@@ -1601,7 +1735,14 @@ shaderPack:
   search: Пошук шейдерпаків...
   'off': Вимкнено
 shared:
+  openFolder: Відкрити папку
+  reset: Скинути
+  missing: відсутні
+  healthy: Все гаразд
+  unused: невикористані
   close: Закрити
+  copyFailed: Не вдалося скопіювати
+  copyFailedHint: Не вдалося скопіювати в буфер обміну
   pressKeyCombination: Натисніть комбінацію клавіш...
   add: Додати
   author: Автор
@@ -1633,6 +1774,7 @@ shared:
   upgrade: Оновити
   'yes': Так
   delete: Видалити
+  view: Переглянути
 sidebar:
   pin: Закріпити
   unpin: Відкріпити
@@ -2182,3 +2324,37 @@ bigPicture:
   qaHelpDesc: Керування геймпадом та довідка
   qaFeedbackDesc: Повідомити про помилку або пропозицію
   qaExitDesc: Повернутися у стандартний режим
+localCollection:
+  title: Колекції лаунчера
+  newCollection: Нова колекція
+  namePlaceholder: Назва колекції
+  addToCollection: Додати до колекції
+  empty: Немає збережених колекцій
+  corrupted: Не вдалося прочитати колекції, їх скинуто. Резервну копію збережено поруч.
+  modrinthSection: Профіль Modrinth
+  installAll: Встановити все
+  incompatibleAlert: '1 проект несумісний з поточною версією та пропущений: | {count} проектів несумісні та пропущені:'
+  projects: Немає проектів | {count} проект | {count} проектів
+  saveCurrentMods: Зберегти моди як колекцію
+  saveCurrentModsSuccess: Збережено {count} модів у колекцію "{name}"
+  viewMods: Переглянути моди
+  editCollection: Редагувати колекцію
+  collectionDescription: Опис колекції
+  noModsInCollection: У цій колекції ще немає модів
+  exportCollection: Експортувати колекцію
+  importCollection: Імпортувати колекцію
+  removeEntryConfirm: Видалити з колекції
+  addMods: Додати моди
+  addModsTo: Додати моди до "{name}"
+  addModsHint: Додайте встановлені моди з поточної збірки або натисніть значок закладки в каталозі.
+  addModsDialogDesc: Оберіть моди з поточного екземпляра для додавання до цієї колекції.
+  addAllCurrent: Додати всі поточні
+  addedModsSuccess: Додано {count} модів до колекції
+  searchMods: Пошук модів...
+  selectAll: Обрати всі
+  deselectAll: Зняти вибір
+  selected: обрано
+  alreadyInCollection: Вже додано
+  noMatchingMods: Не знайдено модів за запитом
+  addSelectedMods: Додати {count} модів
+
