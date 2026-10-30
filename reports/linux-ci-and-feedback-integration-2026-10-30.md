@@ -21,7 +21,31 @@ https://github.com/Voxelum/x-minecraft-launcher/pull/1822
 - Linux log confirmsUbuntu24.04 image20261025.353.1, FFmpeg1011 download, renderer/main builds, actual safety-net **1test passed**. Not merely an installation smoke.
 - Normal exact-head merge refused on approval policy; rechecked REVIEW_REQUIRED and all checks success, then executed one explicitly authorized `--admin --squash --match-head-commit` merge. No self-review/protection edits or CI bypass.
 
-## Feedback PR1817 — integration candidate
+## Feedback PR1817 — MERGED
+
+- Exact final tested head: `9bb691f18def38c62dc411b526214e8945db8b44` (source integration88f8b5f5 plus report/manifest only).
+- Merge SHA: `1044d1b36eb3decbcec9aac76868166f272c8300`, GitHub MERGED2026-10-30T05:56:02Z.
+- Normal merge was blocked solely on approval policy; rechecked exact head/REVIEW_REQUIRED after all new CI and real-app validation, then used one explicitly authorized `--admin --squash --match-head-commit`. No self-approval, protection edits, CI skip or production release.
+
+### Final new-head CI — all applicable checks SUCCESS
+- Validate: https://github.com/Voxelum/x-minecraft-launcher/actions/runs/41010686674/job/123915624475
+- Core Node22: https://github.com/Voxelum/x-minecraft-launcher/actions/runs/41010686657/job/123915624283
+- Linux24.04: https://github.com/Voxelum/x-minecraft-launcher/actions/runs/41010686691/job/123915624501
+- Windows: https://github.com/Voxelum/x-minecraft-launcher/actions/runs/41010686691/job/123915624323
+- macOS: https://github.com/Voxelum/x-minecraft-launcher/actions/runs/41010686691/job/123915624450
+- Linux logs confirm FFmpeg1011 downloaded, builds completed and actual safety-net1test passed(3.5s). No historical pass substituted.
+- Packaged-boot/showcase intentionally SKIPPED by unchanged manual/release gating, not claimed executed.
+
+### Real development app — accepted bounded integration validation
+Unique renderer/main PIDs58015/58016, Electron58245, `HAS_DEV_SERVER=true`, `http://localhost:3000/index.html`, session-only appData/gameData, `XMCL_E2E=1`/NO_LAUNCH. No real login/game install/launch.
+
+Verified first-run→personal center; market25items and Fabulously Optimized detail; zh-CN→English immediate update; blueprints castle→bridge→house rapid search with final URL/input retained, mixed-source list and selected blueprint detail; virtual list scroll updates; Screenshots & Photos empty-state route/back.1200x720 and800x400 CLIviewport emulation,800px scrollWidth800/no document overflow (not physical resize).
+
+Observed UserContext injection warning and CurseForge403; other market/blueprint requests200, no observed uncaughtJS exception. Initial Vite optimization reload/bootstrap repeated onboarding resolved by completing onboarding/removing bootstrap query. Not all live integrations proved: no actual cancel→game-restart workflow, blueprint file install/3D local file preview/native screenshot import/login validation in this round; cancel/Java/other logic covered explicit automated tests, not misreported as real-app success.
+
+Cleanup: stopped first app, removed task-only profile then restarted Electron61953; confirmed localhost dev page with fresh language onboarding/no oldEnglish/teststate. Stopped own app/dev/CLI again, removed isolated data;3000/9222/5858 no listeners. No source/config/ref edits by UI validator.
+
+### Integration history
 https://github.com/Voxelum/x-minecraft-launcher/pull/1817
 
 Normal safegit merge of latestmasteraeb075b2 into feedback branch produced `88f8b5f5` without text conflicts; all original feedback fixes/report and master changes retained. Read-only independent semantic analysis checked cancellation/preflight, target-runtimeJava, translation lazytelemetry import, both search implementations, blueprint sourceVersion/API/layout, Sponge validation, symlink convenience vs screenshot confinement, latesti18n/compiler/lock. No confirmed extra integration defect found; lack of overlapping paths is not substituted for tests.
@@ -33,4 +57,7 @@ Normal safegit merge of latestmasteraeb075b2 into feedback branch produced `88f8
 - `pnpm check` SUCCESS; `pnpm lint` SUCCESS (2existing runtimewarnings,0errors).
 - Initial extra i18n-core invocation mistakenly used `node --test` on a Vitest test and failed runner initialization, not an app assertion; corrected Vitest invocation passed. This failure is recorded, not silently counted as success.
 - Historical98test handoff manifest was unavailable; the current explicit450-test result is fresh, broader evidence, not a claim that an undocumented historical command was reproduced verbatim.
-- Real isolated development-app workflow and final exact-head Linux/macOS/Windows/Core CI remain pending at this report revision. No merge is claimed yet; any true failure must be investigated before approval bypass.
+- At the initial report revision real-app/final CI were pending; the final results above supersede that pending status. All applicable final-head checks passed and bounded real-app validation completed before merge.
+
+## Final state
+Both requested PRs are merged, no remaining permission blocker. Earlier nightly report is preserved as historical evidence; its own-author1817 approval blocker was resolved by the new explicit human authorization, not silently overridden. No1820/1792/1815/1794 expansion in this follow-up. Final outcome report is committed/pushed on the existing feedback branch after merge; that documentation-only receipt does not change the tested source tree or retroactively substitute CI. No ongoing reminder or development app remains.
