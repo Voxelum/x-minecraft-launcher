@@ -25,6 +25,7 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { getSWRV } from '@/util/swrvGet'
 import { useDateString } from '@/composables/date'
 import { useI18nSearchFlights } from '@/composables/flights'
+import { watchCommunityTranslation } from '@/composables/watchCommunityTranslation'
 import { useAutoI18nCommunityContent } from '@/composables/i18n'
 import { useInCollection, useModrinthFollow } from '@/composables/modrinthAuthenticatedAPI'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
@@ -96,20 +97,11 @@ const { data: description, isValidating: isValidatingDescription } = useSWRVMode
 const i18nSearch = useI18nSearchFlights()
 
 const localizedBody = ref('')
+const { locale: contentLocale } = useI18n()
 
 if (i18nSearch) {
   const { getContent } = useAutoI18nCommunityContent(i18nSearch)
-  watch(
-    curseforgeModId,
-    async (id) => {
-      localizedBody.value = ''
-      const result = await getContent('curseforge', id)
-      if (id === curseforgeModId.value) {
-        localizedBody.value = result
-      }
-    },
-    { immediate: true },
-  )
+  watchCommunityTranslation(curseforgeModId, contentLocale, localizedBody, (id) => getContent('curseforge', id))
 }
 
 const model = computed(() => {

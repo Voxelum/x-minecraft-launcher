@@ -991,10 +991,25 @@ mod:
   collapseAllGroups: Collapse all groups
   acceptVersion: Accept {version}
   applyGroupRules: Apply saved grouping rules
+  autoCategorize: Auto-sort into folders
+  autoCategorizeHint: Automatically group mods into category folders (Optimization, Libraries, World, Gameplay, etc.)
+  autoCategorizeSuccess: Mods automatically sorted into {count} folders
   compatible: Compatible Mod.
   createGroup: Create Group
   currentVersion: Current {current}
   denseView: Dense View
+  collapseAll: Collapse All Folders
+  expandAll: Expand All Folders
+  folderSetting: Folder Settings
+  folderColor: Folder Color
+  folderIcon: Folder Icon
+  pinGroup: Pin to Top
+  pinToTop: Pin to Top
+  pinToTopHint: Folder will appear at the top of the list
+  pinned: Pinned
+  unpinGroup: Unpin Folder
+  customColor: Custom Color
+  preview: Preview
   description: Description
   disableAll: Disable All
   dropHint: Drop mod's .jar/.litemod here to import.
@@ -1034,6 +1049,16 @@ mod:
   syncGroupRules: Save grouping rules
   toUpdate: '{count} updates'
   ungroup: Ungroup
+  ungroupAll: Ungroup all
+  organization: Folder Organization
+modCategory:
+  optimization: Optimization & Performance
+  libraries: Libraries & APIs
+  utilities: UI & Utilities
+  world: World & Biomes
+  visual: Visual & Audio
+  gameplay: Gameplay & Content
+  miscellaneous: Miscellaneous
 modFilter:
   clear: Clear Filter
   dependenciesInstallOnly: Only show missed dependencies mods
@@ -1080,24 +1105,45 @@ modified:
   unsaved: Your modification is unsaved!
 modpack:
   author: Author Name
-  authorHint: This might be used to sign an exported modpack (Curseforge)
+  authorHint: The creator or team name for this modpack
   description: Description
-  descriptionHint: General description for you modpack. Might be used for exporting as curseforge modpack.
+  descriptionHint: Short summary or description of what this modpack includes
   dropHint: Drop modpack zip to here to import
-  emitCurseforge: Export Curseforge Modpack
-  emitModrinth: Export Modrinth Modpack
-  emitModrinthStrict: Strict Modrinth Format
-  emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
+  emitCurseforge: Export CurseForge (.zip)
+  emitCurseforgeDescription: Standard zip modpack archive for CurseForge
+  emitModrinth: Export Modrinth (.mrpack)
+  emitModrinthDescription: Lightweight official format with fast CDN downloads
+  emitModrinthStrict: Strict Modrinth Domain Policy
+  emitModrinthStrictDescription: Only allow download URLs from verified domains (Modrinth, GitHub, GitLab)
+  emitPackwiz: Export Packwiz Modpack
+  emitPackwizDescription: Lightweight git-friendly format (pack.toml, index.toml, and .pw.toml files)
   export: Export as Modpack
+  exportSuccess: Modpack exported successfully!
+  exportSuccessWithWarnings: Modpack exported with warnings
+  exportSkippedFiles: "{count} unreadable or locked files were skipped during export"
+  exportFailed: Failed to export modpack
+  skippedFilesDialogTitle: Some files could not be exported
+  skippedFilesDialogDescription: Modpack created, but {count} files were skipped
+  skippedReasonEperm: Access denied (locked by OS or another process)
+  skippedReasonEbusy: File is in use by another program
+  skippedReasonEnoent: File not found or broken
+  skippedFilesNotice: The rest of your files were successfully packaged into the modpack. The files above were skipped due to Windows system restrictions or missing access permissions.
+  openExportFolder: Open modpack folder
+  closeDialog: Got it
   exportDirectory: Export Directory
-  exportDirectoryDescription: The modpack will be exported to Downloads folder by default
+  exportDirectoryDescription: Destination folder where exported files will be saved
   includeAssets: Include Assets
   includes: Files to include
+  expandAll: Expand all folders
+  collapseAll: Collapse all folders
   modpackVersion: Modpack Version
+  modpackVersionHint: Semantic version string (e.g. 1.0.0). Use + to increment patch/minor
   modrinthProject: Modrinth project
   name: Modpack | Modpacks
   overrides: Overrides
   selectDefaultFiles: Select default files
+  selectAllFiles: Select all files
+  deselectAllFiles: Deselect all files
   bindProject: Bind project
   bindProjectHint: Select a Modrinth modpack project managed by the current account.
   bindProjectTypeImmutableHint: Modrinth fixes a project's type when its first version is uploaded, and it can't be changed afterwards. Draft projects without any version yet can still be bound here, but a project already published as a mod/resource pack/etc. can't be converted into a modpack — use "Create new project" instead.
@@ -1682,12 +1728,99 @@ save:
   world: World
   empty: No worlds found
 screenshots:
-  empty: You don't have any screenshots
+  title: Screenshots & Photos
   gallery: Screenshot Gallery
+  manage: Screenshot Manager
+  empty: You don't have any screenshots
+  emptyTitle: No screenshots yet
+  emptyDescription: Press F2 in game to capture screenshots, or import your photos manually.
   hint: Take screenshots in game by pressing F2
+  dropHint: Drop photos or screenshots here to add to gallery
   openFolder: Open Screenshots Folder
   playRandom: Shuffle
   playSequence: Play in order
+  backToHome: Back to Home
+  import: Add Photos
+  images: Images
+  importSuccess: Successfully imported {count} photos
+  copy: Copy Image
+  copied: Copied to clipboard!
+  setWallpaper: Set as Background
+  setWallpaperSuccess: Set as instance background image!
+  setIcon: Set as Icon
+  setIconSuccess: Set as instance icon!
+  export: Save File
+  exportSuccess: Screenshot saved successfully!
+  exportSelected: Export Selected
+  exportSelectedTitle: Select Export Folder
+  exportSelectedSuccess: Successfully exported {count} screenshots
+  deleteConfirmTitle: Delete screenshots?
+  deleteConfirmMessage: Are you sure you want to delete {count} screenshots? This cannot be undone.
+  deleteSuccess: Screenshots deleted successfully
+  selectedCount: "Selected: {count}"
+  selectAll: Select all
+  clearSelection: Deselect all
+  countLabel: "{count} screenshots"
+  searchPlaceholder: Search by name or date...
+  noSearchResults: No matching screenshots
+  noSearchResultsHint: Try adjusting your search query
+  sort: Sort
+  sortDateDesc: Newest first
+  sortDateAsc: Oldest first
+  sortSizeDesc: Largest first
+  sortSizeAsc: Smallest first
+  sortNameAsc: Name (A-Z)
+  sortNameDesc: Name (Z-A)
+  viewGrid: Large grid
+  viewGridCompact: Compact grid
+  viewList: List view
+  edit: Edit
+  editorTitle: Edit Screenshot
+  saveCopy: Save Copy
+  saveOverwrite: Overwrite
+  saveSuccess: Screenshot saved!
+  saveCopySuccess: Saved as new screenshot!
+  toolSelect: Select / Pan
+  toolMove: Move & Transform (Ctrl+T / V)
+  toolPan: Pan (Space+Drag)
+  layers: Layers
+  layerAdd: Add Layer
+  layerDuplicate: Duplicate Layer
+  layerDelete: Delete Layer
+  layerOpacity: Opacity
+  transformLayer: Free Transform
+  applyTransform: Apply Transform (Enter)
+  cancelTransform: Cancel (Esc)
+  layerBackground: Background
+  layerPaint: Drawing
+  layerText: Text
+  layerBlur: Blur
+  toolPen: Pen
+  toolArrow: Arrow
+  toolRect: Rectangle
+  toolCircle: Circle
+  toolLine: Line
+  toolText: Text
+  toolHighlighter: Highlighter
+  toolBlur: Pixelate / Blur
+  toolCrop: Crop
+  applyCrop: Apply Crop
+  cancelCrop: Cancel Crop
+  strokeWidth: Stroke width
+  fontSize: Font size
+  color: Color
+  undo: Undo
+  redo: Redo
+  clear: Clear all
+  textPlaceholder: Click to type text...
+  fontFamily: Font
+  fontBold: Bold
+  fontItalic: Italic
+  textApply: Place Text
+  textBg: Background
+  zoomIn: Zoom in
+  zoomOut: Zoom out
+  resetZoom: Reset zoom
 search:
   favorate: Collection
   local: Installed
@@ -1707,6 +1840,28 @@ localCollection:
   installAll: Install all
   incompatibleAlert: '1 project is not compatible with the current instance and was skipped: | {count} projects are not compatible with the current instance and were skipped:'
   projects: No projects | {count} project | {count} projects
+  saveCurrentMods: Save installed mods as collection
+  saveCurrentModsSuccess: Saved {count} mods to collection "{name}"
+  viewMods: View mods
+  editCollection: Edit collection
+  collectionDescription: Collection description
+  noModsInCollection: No mods in this collection yet
+  exportCollection: Export collection
+  importCollection: Import collection
+  removeEntryConfirm: Remove from collection
+  addMods: Add mods
+  addModsTo: Add mods to "{name}"
+  addModsHint: Add installed mods from your instance or click the bookmark button in the Market to add mods.
+  addModsDialogDesc: Select which installed mods from this instance to include in this collection.
+  addAllCurrent: Add all current mods
+  addedModsSuccess: Added {count} mods to collection
+  searchMods: Search mods...
+  selectAll: Select all
+  deselectAll: Deselect all
+  selected: selected
+  alreadyInCollection: Added
+  noMatchingMods: No mods match your search
+  addSelectedMods: Add {count} mods
 server:
   launch: Launch server
   stop: Stop server
@@ -2143,6 +2298,11 @@ shaderPack:
   showFile: Show this shader pack in folder
   'off': 'Off'
 shared:
+  openFolder: Open Folder
+  reset: Reset
+  missing: missing
+  healthy: OK
+  unused: unused
   pressKeyCombination: Press key combination...
   add: Add
   author: Author
@@ -2181,6 +2341,7 @@ shared:
   upgrade: Upgrade
   'yes': 'Yes'
   delete: Delete
+  view: View
 sidebar:
   pin: Pin
   unpin: Unpin

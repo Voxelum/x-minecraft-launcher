@@ -640,7 +640,10 @@ watch(() => [props.instancePath, props.fileName], () => {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 320px;
+  /* The split pane can be shorter than 320px at the supported 800×400 size.
+     Keep the canvas inside it so ResizeObserver frames the visible viewport. */
+  min-height: 0;
+  container-type: size;
 }
 
 .blueprint-preview__canvas {
@@ -693,5 +696,11 @@ watch(() => [props.instancePath, props.fileName], () => {
   padding: 2px 6px;
   border-radius: 4px;
   z-index: 2;
+}
+/* The fly-camera instructions must not overlap the model/count in a short pane. */
+@container (max-height: 160px) {
+  .blueprint-preview__controls {
+    display: none;
+  }
 }
 </style>

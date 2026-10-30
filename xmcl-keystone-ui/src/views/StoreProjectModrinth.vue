@@ -19,10 +19,11 @@ import useSWRV from 'swrv'
 import { useI18nSearchFlights } from '@/composables/flights'
 import { useAutoI18nCommunityContent } from '@/composables/i18n'
 import { useService } from '@/composables/service'
+import { watchCommunityTranslation } from '@/composables/watchCommunityTranslation'
 
 const props = defineProps<{ id: string }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const projectId = computed(() => props.id)
 
 const { categories: modrinthCategories } = injection(kModrinthTags)
@@ -44,13 +45,7 @@ const localizedBody = ref('')
 
 if (i18nSearch) {
   const { getContent } = useAutoI18nCommunityContent(i18nSearch)
-  watch(projectId, async (id) => {
-    localizedBody.value = ''
-    const result = await getContent('modrinth', id)
-    if (id === projectId.value) {
-      localizedBody.value = result
-    }
-  }, { immediate: true })
+  watchCommunityTranslation(projectId, locale, localizedBody, (id) => getContent('modrinth', id))
 }
 
 const project = computed(() => {

@@ -89,6 +89,10 @@ export interface ExportModpackOptions {
    */
   emitOffline?: boolean
   /**
+   * Emit the packwiz format (zip archive containing pack.toml, index.toml, and .pw.toml files).
+   */
+  emitPackwiz?: boolean
+  /**
    * Modrinth only. This will limit the download urls from allowed domains listed in modrinth document.
    * @see https://docs.modrinth.com/docs/modpacks/format_definition/#downloads
    */
@@ -102,6 +106,11 @@ export interface ExportModpackResult {
   curseforgeServer?: string
   modrinth?: string
   offline?: string
+  packwiz?: string
+  /**
+   * Files that were skipped during export due to read errors, access restrictions, or missing targets.
+   */
+  skippedFiles?: Array<{ path: string; reason: string }>
 }
 
 export interface ModrinthLinkagePreviewEntry {

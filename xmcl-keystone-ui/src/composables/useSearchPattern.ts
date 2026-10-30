@@ -1,5 +1,5 @@
 import { get, useDebounceFn } from '@vueuse/core'
-import type { MaybeRef } from 'vue'
+import { type MaybeRef, computed, ref } from 'vue'
 
 export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal) => Promise<{
   data: T[]
@@ -19,7 +19,7 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
 
   let abortController: AbortController | undefined
 
-  const doSearch = useDebounceFn(async (offset: number, append: boolean) => {
+  const executeSearch = async (offset: number, append: boolean) => {
     // Cancel any in-flight request so its (possibly out-of-order) response
     // cannot overwrite the result of this newer search.
     abortController?.abort()
@@ -31,48 +31,63 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
       error.value = undefined
       loading.value = false
       result.value = undefined
-      return
+      return false
     }
+
+    loading.value = true
     try {
       error.value = undefined
       const searchResult = await search(offset, signal)
-      if (signal.aborted) return
+      if (signal.aborted) return false
       if (!append || !result.value) {
         result.value = searchResult as any
       } else {
-        result.value.data.push(...searchResult.data as any)
-        result.value.total = searchResult.total
-        result.value.offset = searchResult.offset
-        result.value.limit = searchResult.limit
+        result.value = {
+          data: [...result.value.data, ...searchResult.data as any],
+          total: searchResult.total,
+          offset: searchResult.offset,
+          limit: searchResult.limit,
+        }
       }
+      return true
     } catch (e) {
-      if (signal.aborted) return
+      if (signal.aborted) return false
       error.value = e
+      return false
     } finally {
-      if (!signal.aborted) {
+      if (abortController === controller) {
         loading.value = false
       }
     }
-  }, 500)
+  }
+
+  const debouncedSearch = useDebounceFn(async (offset: number, append: boolean) => {
+    return executeSearch(offset, append)
+  }, 400)
 
   const loadMore = async () => {
     if (!result.value) return
     if (!hasMore.value) return
     if (loading.value) return
-    page.value += 1
-    loading.value = true
-    await doSearch(page.value * get(pageSize), true)
+    const nextPage = page.value + 1
+    const applied = await executeSearch(nextPage * get(pageSize), true)
+    if (applied) {
+      page.value = nextPage
+    }
   }
 
   const onSearch = async () => {
-    loading.value = true
+    // Invalidate immediately, not 400ms later when the debounce fires.
+    abortController?.abort()
+    abortController = undefined
     page.value = 0
     error.value = undefined
-    return doSearch(page.value * get(pageSize), false)
+    loading.value = true
+    return debouncedSearch(0, false)
   }
 
   const hasMore = computed(() => {
-    return result.value && result.value.total > (result.value.offset + result.value.limit)
+    return !!result.value && result.value.total > (result.value.offset + result.value.limit)
   })
 
   return {

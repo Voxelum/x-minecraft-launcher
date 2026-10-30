@@ -8,10 +8,22 @@
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
       'grid-template-columns': `repeat(${
-        isBedrock ? 2 : 3
+        isBedrock ? 2 : 4
       }, minmax(0, 1fr))`,
     }"
   >
+    <v-btn
+      v-if="!isBedrock"
+      data-testid="home-screenshots-action"
+      v-shared-tooltip="() => t('screenshots.manage')"
+      icon
+      variant="text"
+      density="comfortable"
+      :aria-label="t('screenshots.manage')"
+      to="/screenshots"
+    >
+      <v-icon> photo_camera </v-icon>
+    </v-btn>
     <v-btn
       data-testid="home-log-action"
       v-shared-tooltip="() => isBedrock ? t('instance.openLogFolder') : t('logsCrashes.title')"

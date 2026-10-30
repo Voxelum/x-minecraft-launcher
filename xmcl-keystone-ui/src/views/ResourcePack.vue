@@ -110,13 +110,17 @@
         :items="item.projects"
         :height="itemHeight"
         :name="item.name"
+        :color="item.color"
+        :icon="item.icon"
+        :pinned="item.pinned"
         :expanded="!groupCollapsedState[item.name]"
         :dense="denseView"
         :count-label="resourcePackCountLabel"
         :group-rules="false"
         @ungroup="ungroup(item.name)"
         @expand="onGroupCollapse(item as ProjectGroup<InstanceResourcePack>, $event)"
-        @setting="renameGroup(item.name, $event.name)"
+        @setting="updateGroupSetting(item.name, $event)"
+        @toggle-pin="toggleGroupPin(item.name)"
         @enable-all="enableAll(item as ProjectGroup<InstanceResourcePack>)"
         @disable-all="disableAll(item as ProjectGroup<InstanceResourcePack>)"
       />
@@ -253,6 +257,8 @@ const {
   localGroupedItems,
   groupCollapsedState,
   renameGroup,
+  updateGroupSetting,
+  toggleGroupPin,
   ungroup,
   group,
   addToGroup,
@@ -324,9 +330,10 @@ const onEnable = (f: ProjectFile) => {
 const onDisable = (f: ProjectFile) => {
   disable([f as InstanceResourcePack])
 }
-const onDrop = (item: ResourcePackProject, id: string) => {
+const onDrop = (item: ResourcePackProject, id: string | { id?: string; fileName?: string }) => {
+  const droppedId = typeof id === 'object' && id !== null ? id.id : id
   const target = enabled.value.findIndex(pack => pack.id === item.id)
-  const from = enabled.value.findIndex(pack => pack.id === id)
+  const from = enabled.value.findIndex(pack => pack.id === droppedId)
   if (target !== -1 && from !== -1) {
     insert(from, target)
   }

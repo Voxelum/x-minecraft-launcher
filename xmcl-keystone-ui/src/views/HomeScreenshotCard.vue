@@ -29,6 +29,17 @@
       </div>
       <div class="flex-grow no-drag" />
       <v-btn
+        v-shared-tooltip="() => t('screenshots.manage')"
+        variant="text"
+        icon
+        size="small"
+        color="white"
+        class="no-drag"
+        @click.stop="push('/screenshots')"
+      >
+        <v-icon>grid_view</v-icon>
+      </v-btn>
+      <v-btn
         v-if="display.length > 0"
         v-shared-tooltip="() => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
         variant="text"
@@ -120,6 +131,16 @@
               <div class="text-xs opacity-60">
                 {{ t('screenshots.hint') }}
               </div>
+              <v-btn
+                variant="tonal"
+                color="white"
+                size="small"
+                class="mt-1"
+                prepend-icon="photo_camera"
+                @click.stop="push('/screenshots')"
+              >
+                {{ t('screenshots.manage') }}
+              </v-btn>
             </div>
           </v-sheet>
         </v-carousel-item>
@@ -128,7 +149,10 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import { useRouter } from 'vue-router'
 import AppImageControls from '@/components/AppImageControls.vue'
+
+const { push } = useRouter()
 import { useIntervalFn, useLocalStorage } from '@vueuse/core'
 import { kImageDialog } from '@/composables/imageDialog'
 import { useInstanceScreenshots } from '@/composables/screenshot'

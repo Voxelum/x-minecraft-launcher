@@ -19,10 +19,11 @@ import { TaskState, ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runti
 import { useI18nSearchFlights } from '@/composables/flights'
 import { useAutoI18nCommunityContent } from '@/composables/i18n'
 import { useService } from '@/composables/service'
+import { watchCommunityTranslation } from '@/composables/watchCommunityTranslation'
 
 const props = defineProps<{ id: number }>()
 
-const { t, te } = useI18n()
+const { t, te, locale } = useI18n()
 const projectId = computed(() => props.id)
 
 const { data: proj, isValidating, mutate, error } = useSWRVModel(getCurseforgeProjectModel(projectId))
@@ -45,13 +46,7 @@ const localizedBody = ref('')
 
 if (i18nSearch) {
   const { getContent } = useAutoI18nCommunityContent(i18nSearch)
-  watch(projectId, async (id) => {
-    localizedBody.value = ''
-    const result = await getContent('curseforge', id)
-    if (id === projectId.value) {
-      localizedBody.value = result
-    }
-  }, { immediate: true })
+  watchCommunityTranslation(projectId, locale, localizedBody, (id) => getContent('curseforge', id))
 }
 
 const project = computed(() => {

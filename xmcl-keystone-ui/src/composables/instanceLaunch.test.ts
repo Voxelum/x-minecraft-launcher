@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
+vi.mock('@/composables', () => ({ useService: vi.fn() }))
+vi.mock('./setting', () => ({ useGlobalSettings: vi.fn() }))
 import { resolveLaunchId } from './instanceLaunch'
 
 describe('resolveLaunchId', () => {

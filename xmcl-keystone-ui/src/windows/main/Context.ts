@@ -46,6 +46,7 @@ import {
   useModrinthAuthenticatedAPI,
 } from '@/composables/modrinthAuthenticatedAPI'
 import { kLocalCollections, useLocalCollections } from '@/composables/localCollections'
+import { kScreenshotManager, useScreenshotManager } from '@/composables/screenshotManager'
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { kSearchModel, useSearchModel } from '@/composables/search'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
@@ -145,6 +146,7 @@ export default defineComponent({
       options.gameOptions,
     )
     const files = useInstanceFiles(instance.path)
+    const screenshots = useScreenshotManager(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionId)
     const instanceLaunch = useInstanceLaunch(
       instance.instance,
@@ -202,6 +204,7 @@ export default defineComponent({
     provide(kInstanceModsContext, instanceMods)
     provide(kInstanceBlueprints, blueprints)
     provide(kInstanceFiles, files)
+    provide(kScreenshotManager, screenshots)
     provide(kLaunchTask, task)
 
     provide(kInstanceVersionInstall, install)

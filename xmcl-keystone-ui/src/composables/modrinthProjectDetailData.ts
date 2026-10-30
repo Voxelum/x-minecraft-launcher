@@ -1,3 +1,4 @@
+import { watchCommunityTranslation } from './watchCommunityTranslation'
 import type { ExternalResource, Info, ModGallery, ProjectDetail } from '@/components/MarketProjectDetail.vue'
 import type { ProjectVersion as ModVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useMarkdown } from '@/composables/markdown'
@@ -18,15 +19,10 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
 
   const is18nSearch = useI18nSearchFlights()
   const localizedBody = ref('')
+  const { locale } = useI18n()
   if (is18nSearch) {
     const { getContent } = useAutoI18nCommunityContent(is18nSearch)
-    watch(projectId, async (id) => {
-      localizedBody.value = ''
-      const result = await getContent('modrinth', id)
-      if (id === projectId.value) {
-        localizedBody.value = result
-      }
-    }, { immediate: true })
+    watchCommunityTranslation(projectId, locale, localizedBody, (id) => getContent('modrinth', id))
   }
 
   const { t } = useI18n()
