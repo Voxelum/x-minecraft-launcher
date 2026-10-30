@@ -1,11 +1,16 @@
+import { createCommunityTranslator } from './communityTranslation'
 import { resolveXmclApiEndpoints, Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useLocale } from 'vuetify'
 import { kFlights, useI18nSearchFlights } from './flights'
 
 const locales = import.meta.glob('../../locales/*.yaml')
-const TRANSLATION_DEBOUNCE_MS = 250
-const pendingTranslations = new Map<string, Promise<string>>()
+const translateCommunityContent = createCommunityTranslator(fetch, (error) => {
+  console.warn(error)
+  // Keep the renderer telemetry/i18n bootstrap out of this composable's import graph.
+  // One sanitized diagnostic per failed key/cooldown, not one per watcher.
+  void import('@/telemetry').then(({ trackRendererException }) => trackRendererException(error)).catch(() => {})
+})
 
 export function useI18nSync(state: Ref<Settings | undefined>) {
   const { locale, setLocaleMessage } = useI18n()
@@ -70,43 +75,10 @@ export function useAutoI18nCommunityContent(allowLocale: string[] = []) {
       return ''
     }
 
-    const language = locale.value
-    const key = `${type}:${id}:${language}`
-    const pending = pendingTranslations.get(key)
-    if (pending) return pending
-
-    const url = new URL(
-      '/translation',
+    return translateCommunityContent(
       resolveXmclApiEndpoints(flights.xmclApiBaseUrl).common,
+      type, id, locale.value,
     )
-    url.searchParams.append('type', type)
-    url.searchParams.append('id', id.toString())
-    const request = new Promise<string>((resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const response = await fetch(url, {
-            headers: {
-              'Accept-Language': language,
-            },
-            cache: 'force-cache',
-          })
-
-          if (!response.ok) {
-            throw new Error(`Fail to get translation for ${type} ${id}`)
-          }
-
-          resolve(await response.text())
-        } catch (error) {
-          reject(error)
-        }
-      }, TRANSLATION_DEBOUNCE_MS)
-    })
-    pendingTranslations.set(key, request)
-    request.then(
-      () => pendingTranslations.delete(key),
-      () => pendingTranslations.delete(key),
-    )
-    return request
   }
 
   return {

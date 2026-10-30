@@ -12,22 +12,14 @@ import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kTasks, Tasks } from '~/infra'
+import { searchMcSchematic, mcSchematicDownloadUrl } from './mcschematic'
 import { LauncherApp } from '../app/LauncherApp'
 
-const MCS_PAGE_SIZE = 15
 const CMS_PAGE_SIZE = 20
 
 // minecraft-schematics.com sits behind a Cloudflare challenge that rejects
 // non-browser clients, so requests must present a realistic browser UA.
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
-
-const MCS_TYPE_EXT: Record<number, string> = {
-  0: 'nbt',
-  1: 'litematic',
-  2: 'json',
-  3: 'schem',
-  4: 'mcstruct',
-}
 
 /**
  * Browse and install blueprints from mcschematic.top,
@@ -53,39 +45,7 @@ export class BlueprintMarketService extends AbstractService implements IBlueprin
   }
 
   private async searchMcSchematic(options: BlueprintMarketSearchOptions): Promise<BlueprintMarketSearchResult> {
-    const page = options.page ?? 0
-    const url = new URL('https://www.mcschematic.top/api/schematics')
-    url.searchParams.append('begin', String(page * MCS_PAGE_SIZE))
-    url.searchParams.append('filter', options.keyword ?? '')
-    url.searchParams.append('heatSort', options.sort === 'heat' ? 'true' : 'false')
-    url.searchParams.append('type', '0')
-    url.searchParams.append('t', String(Date.now()))
-
-    const response = await this.app.fetch(url.toString(), { headers: { Accept: 'application/json' } })
-    if (!response.ok) {
-      throw new Error(`Failed to search mcschematic.top: ${response.status}`)
-    }
-    const json: any = await response.json()
-    const list: any[] = Array.isArray(json) ? json : (json?.data ?? [])
-
-    const items: BlueprintMarketItem[] = list.map((it) => ({
-      id: String(it.uuid),
-      provider: 'mcschematic' as const,
-      title: it.name ?? it.uuid,
-      author: it.nickName || it.author,
-      authorAvatar: typeof it.avatarUrl === 'string' && it.avatarUrl ? it.avatarUrl.replace(/^http:/, 'https:') : undefined,
-      description: it.description,
-      icon: `https://www.mcschematic.top/api/preview?uuid=${it.uuid}`,
-      size: formatSize(it.size),
-      downloadCount: typeof it.heat === 'number' ? it.heat : undefined,
-      tags: parseJsonStringArray(it.tags),
-      uploadTime: it.uploadTime || it.updateTime,
-      fileType: MCS_TYPE_EXT[it.type] ?? 'schem',
-      pageUrl: `https://www.mcschematic.top/home/${it.uuid}`,
-      installable: true,
-    }))
-
-    return { items, page, hasMore: items.length >= MCS_PAGE_SIZE }
+    return searchMcSchematic((url, init) => this.app.fetch(url, init), options)
   }
 
   private async searchCms(options: BlueprintMarketSearchOptions): Promise<BlueprintMarketSearchResult> {
@@ -169,7 +129,7 @@ export class BlueprintMarketService extends AbstractService implements IBlueprin
     })
 
     try {
-      const response = await this.app.fetch(`https://mcschematic.top/api/schematicFile?uuid=${item.id}`)
+      const response = await this.app.fetch(mcSchematicDownloadUrl(item.id, item.sourceVersion))
       if (!response.ok) {
         throw new Error(`Failed to download blueprint: ${response.status}`)
       }
@@ -212,18 +172,6 @@ export class BlueprintMarketService extends AbstractService implements IBlueprin
       throw e
     }
   }
-}
-
-function formatSize(size: unknown): string | undefined {
-  if (typeof size !== 'string') return undefined
-  try {
-    const arr = JSON.parse(size)
-    if (Array.isArray(arr) && arr.length >= 3) return `${arr[0]}×${arr[1]}×${arr[2]}`
-  } catch {
-    // CMS sizes use the form `10✖8✖12`.
-    return size.replaceAll('✖', '×')
-  }
-  return size
 }
 
 function sanitize(name: string) {
@@ -323,23 +271,6 @@ function matchAll(html: string, re: RegExp): string[] {
     result.push(m[1])
   }
   return result
-}
-
-/**
- * Parse a JSON-encoded string array (e.g. mcschematic's `tags` field).
- */
-function parseJsonStringArray(value: unknown): string[] | undefined {
-  if (typeof value !== 'string') return undefined
-  try {
-    const arr = JSON.parse(value)
-    if (Array.isArray(arr)) {
-      const tags = arr.filter((v): v is string => typeof v === 'string' && !!v.trim())
-      return tags.length ? tags : undefined
-    }
-  } catch {
-    // ignore malformed tag payloads
-  }
-  return undefined
 }
 
 function textOf(html: string, re: RegExp): string | undefined {

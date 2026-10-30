@@ -54,6 +54,8 @@ export interface BlueprintMarketItem {
    * The blueprint file extension, e.g. `litematic`, `schem`, `nbt`, `json`.
    */
   fileType?: string
+  /** Blueprint-scoped source version used by the MCS public download API. */
+  sourceVersion?: number
   /**
    * The website detail page url.
    */

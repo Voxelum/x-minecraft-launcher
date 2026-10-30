@@ -463,6 +463,7 @@
 
 <script lang="ts" setup>
 import MarketBase from '@/components/MarketBase.vue'
+import { useBlueprintMarketSearch } from '@/composables/blueprintMarketSearch'
 import BlueprintPreview from './BlueprintPreview.vue'
 import SplitPane from '@/components/SplitPane.vue'
 import Hint from '@/components/Hint.vue'
@@ -829,56 +830,15 @@ async function remove(bp: InstanceBlueprintFile) {
 
 // Market — results from every provider are searched together and mixed.
 const PROVIDERS: BlueprintMarketProvider[] = ['mcschematic', 'cms', 'minecraft-schematics']
-const marketItems = ref<BlueprintMarketItem[]>([])
-const marketState = ref<Record<string, { page: number; hasMore: boolean }>>({})
-const marketHasMore = computed(() => Object.values(marketState.value).some((s) => s.hasMore))
-const marketLoading = ref(false)
+const { items: marketItems, loading: marketLoading, load, reset } = useBlueprintMarketSearch(
+  PROVIDERS, marketSearch, (message) => { errorText.value = message },
+)
 const installing = ref('')
-
 function resetMarket() {
-  marketItems.value = []
-  marketState.value = Object.fromEntries(PROVIDERS.map((p) => [p, { page: 0, hasMore: true }]))
-  loadMoreMarket()
+  void reset(keyword.value)
 }
-async function loadMoreMarket() {
-  if (marketLoading.value || !isRemote.value) return
-  const toLoad = PROVIDERS.filter((p) => marketState.value[p]?.hasMore)
-  if (toLoad.length === 0) return
-  marketLoading.value = true
-  try {
-    const results = await Promise.allSettled(
-      toLoad.map((p) =>
-        marketSearch({ provider: p, keyword: keyword.value, page: marketState.value[p].page }),
-      ),
-    )
-    const lists: BlueprintMarketItem[][] = []
-    let failures = 0
-    results.forEach((res, i) => {
-      const p = toLoad[i]
-      const prev = marketState.value[p]
-      if (res.status === 'fulfilled') {
-        lists.push(res.value.items)
-        marketState.value[p] = { page: prev.page + 1, hasMore: res.value.hasMore }
-      } else {
-        failures += 1
-        marketState.value[p] = { page: prev.page, hasMore: false }
-      }
-    })
-    // Interleave provider results so the mixed list alternates between sources.
-    const mixed: BlueprintMarketItem[] = []
-    const maxLen = Math.max(0, ...lists.map((l) => l.length))
-    for (let i = 0; i < maxLen; i++) {
-      for (const l of lists) {
-        if (l[i]) mixed.push(l[i])
-      }
-    }
-    marketItems.value = [...marketItems.value, ...mixed]
-    if (failures === toLoad.length && marketItems.value.length === 0) {
-      errorText.value = 'Failed to search blueprint market.'
-    }
-  } finally {
-    marketLoading.value = false
-  }
+function loadMoreMarket() {
+  if (isRemote.value) return load()
 }
 watch(
   [isRemote, keyword],
