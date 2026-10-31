@@ -16,7 +16,8 @@ import { AnyError } from '@xmcl/utils'
 import { writeFile } from 'atomically'
 import { randomUUID } from 'crypto'
 import { readFile, rename } from 'fs-extra'
-import debounce from 'lodash.debounce'
+import { getRestoreGate, RestoreWriter } from '~/infra/restoreGate'
+import { recoverRestore } from '~/infra/recoverRestore'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 
@@ -31,32 +32,31 @@ const CollectionLoadError = AnyError.make('CollectionLoadError')
 export class CollectionService extends StatefulService<LocalCollectionState> implements ICollectionService {
   private collectionsJsonPath: string
 
-  private save = debounce(async () => {
-    try {
-      const data = CollectionsFileSchema.parse({
-        schemaVersion: CURRENT_COLLECTION_SCHEMA_VERSION,
-        collections: this.state.collections,
-      })
-      // atomically.writeFile writes to a temp file then renames, giving us the
-      // "either the old valid file or the new valid file" guarantee. It never
-      // leaves a half-written collections.json behind.
-      await writeFile(this.collectionsJsonPath, JSON.stringify(data, null, 2))
-    } catch (e) {
-      // Best-effort: never turn a persistence hiccup (locked file, read-only
-      // mount) into an unhandled rejection. The next mutation retries.
-      this.warn(`Fail to save ${this.collectionsJsonPath}`)
-      this.warn(e as Error)
-    }
-  }, 500)
+  private saver: RestoreWriter
+  private save() { this.saver.schedule() }
+
+  publishRestore(data: ReturnType<typeof CollectionsFileSchema.parse>) {
+    this.state.collectionsState(data.collections)
+    this.state.collectionCorrupted(false)
+  }
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
   ) {
     super(app, () => store.registerStatic(new LocalCollectionState(), CollectionServiceKey), async () => {
+      await recoverRestore(app)
       await this.load()
     })
 
     this.collectionsJsonPath = this.getAppDataPath('collections.json')
+    const gate = getRestoreGate(app)
+    gate.guardState(this.state)
+    gate.guardMethods(this, ['createCollection', 'updateCollection', 'deleteCollection', 'addEntry', 'removeEntry'])
+    this.saver = gate.writer(async () => {
+      const data = CollectionsFileSchema.parse({ schemaVersion: CURRENT_COLLECTION_SCHEMA_VERSION, collections: this.state.collections })
+      await writeFile(this.collectionsJsonPath, JSON.stringify(data, null, 2))
+    }, 500)
+    app.registryDisposer(() => this.saver.flush())
   }
 
   private async load() {

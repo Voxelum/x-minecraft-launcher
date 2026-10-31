@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { InstanceLogServiceKey, type InstanceLogService as IInstanceLogService } from '@xmcl/runtime-api'
 import { readFile, unlink } from 'fs-extra'
 import { isAbsolute, join } from 'path'
@@ -22,6 +23,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
     @Inject(kEncodingWorker) private encoder: EncodingWorker,
   ) {
     super(app)
+    getRestoreGate(app).guardMethods(this, ['removeLog', 'removeServerLog', 'removeCrashReport'])
     this.launchHistory = new LaunchHistoryStore(this.getAppDataPath('launch-history'))
   }
 

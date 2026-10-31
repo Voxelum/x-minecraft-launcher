@@ -1,0 +1,192 @@
+/** Run explicitly: pnpm --prefix=e2e exec playwright test specs/06-backup-restore.spec.ts */
+import { cp, readFile, readdir, rm } from 'node:fs/promises'
+import { join } from 'node:path'
+import { test, expect, INSTANCE, ORIGINAL, CHANGED } from '../helpers/backup'
+
+test('06 backup restore — real filesystem transaction and scheduled backup', async ({ backup: h }, info) => {
+  test.setTimeout(300_000)
+  const config = join(h.instance, 'config', 'fixture.bin')
+  const saves = join(h.instance, 'saves', 'world', 'level.dat')
+  const archive = join(h.root, 'manual.xmclbackup')
+  await h.settings()
+  await h.picker(archive)
+  await h.main.getByTestId('create-backup-btn').click()
+  await expect(h.main.getByTestId('backup-create-instance-row')).toHaveCount(1)
+  await h.shot('01-create-options', 'Create an archive from the isolated instance and launcher data.')
+  await h.main.getByTestId('backup-create-submit').click()
+  await expect(h.main.getByTestId('backup-create-result')).toBeVisible({ timeout: 60_000 })
+  const archiveHash = await h.hash(archive)
+  await h.shot('02-created', 'The real backup service writes a complete archive.')
+  await h.main.getByTestId('backup-create-done').click()
+
+  // Mutate only stopped, test-owned data, then reload services from disk.
+  await h.stop()
+  await h.put(config, CHANGED)
+  await h.put(saves, CHANGED)
+  await h.put(join(h.profile, 'setting.json'), JSON.stringify({ locale: 'en', theme: 'light', maxSockets: 91 }))
+  await h.put(join(h.profile, 'collections.json'), JSON.stringify({ schemaVersion: 1, collections: [{ id: 'backup-fixture', name: 'Changed collection', createdAt: 1, updatedAt: 2 }] }))
+  await h.put(join(h.profile, 'theme.css'), '/* changed */\n')
+  await h.put(join(h.profile, 'theme-media', 'fixture.bin'), CHANGED)
+  await h.start()
+  await h.settings()
+  await h.selectArchive(archive)
+  await h.restore('rename')
+  await expect(readFile(config)).resolves.toEqual(CHANGED)
+  await expect(readFile(join(h.data, 'instances', `${INSTANCE}-restored`, 'config', 'fixture.bin'))).resolves.toEqual(ORIGINAL)
+  await h.shot('03-rename', 'Rename preserves the conflicting original and restores a separate instance.')
+  await h.main.getByTestId('backup-restore-done').click()
+  const beforeSkip = (await readdir(join(h.data, 'instances'))).sort()
+  await h.selectArchive(archive)
+  await h.restore('skip')
+  expect((await readdir(join(h.data, 'instances'))).sort()).toEqual(beforeSkip)
+  await expect(readFile(config)).resolves.toEqual(CHANGED)
+  await h.shot('04-skip', 'Skip leaves the conflicting instance bytes untouched.')
+  await h.main.getByTestId('backup-restore-done').click()
+
+  // Deterministically cancel during real staging, not a post-commit no-op.
+  const pauseFault = join(h.profile, '.xmcl-restore-fault.json')
+  const readyMarker = join(h.profile, '.xmcl-restore-staging-ready')
+  await h.put(pauseFault, JSON.stringify({ point: 'staging-after', target: 0, pauseMs: 5000 }))
+  const cancelBefore = { config: await h.hash(config), saves: await h.hash(saves), settings: await h.hash(join(h.profile, 'setting.json')), css: await h.hash(join(h.profile, 'theme.css')) }
+  await h.selectArchive(archive)
+  const overwriteRadio = h.main.getByTestId('backup-restore-conflict-overwrite').locator('input[type="radio"]')
+  await overwriteRadio.check()
+  await expect(overwriteRadio).toBeChecked()
+  await h.main.getByTestId('backup-restore-submit').click()
+  await expect.poll(async () => readFile(readyMarker, 'utf8').then(JSON.parse).catch(() => null), { timeout: 15_000, intervals: [50, 100] }).toEqual({ point: 'staging-after', target: 0 })
+  const cancelButton = h.main.getByTestId('backup-restore-working-cancel')
+  await expect(cancelButton).toBeEnabled()
+  // pending can be shorter than a Playwright roundtrip. Observe the actual
+  // button attribute before clicking, rather than sleeping or mocking IPC.
+  await cancelButton.evaluate(button => {
+    const states: Array<string | null> = []
+    ;(window as unknown as { __backupCancelStates: Array<string | null> }).__backupCancelStates = states
+    new MutationObserver(records => {
+      for (const record of records) {
+        states.push(record.oldValue, button.getAttribute('data-cancel-status'))
+      }
+    }).observe(button, { attributes: true, attributeFilter: ['data-cancel-status'], attributeOldValue: true })
+  })
+  await cancelButton.click()
+  await expect(h.main.getByTestId('backup-restore-error')).toBeVisible({ timeout: 15_000 })
+  const cancelStates = await h.main.evaluate(() => (window as unknown as { __backupCancelStates: Array<string | null> }).__backupCancelStates)
+  expect(cancelStates).toContain('pending')
+  expect(cancelStates).not.toContain('unavailable')
+  await expect(h.main.getByTestId('backup-restore-result')).toHaveCount(0)
+  expect({ config: await h.hash(config), saves: await h.hash(saves), settings: await h.hash(join(h.profile, 'setting.json')), css: await h.hash(join(h.profile, 'theme.css')) }).toEqual(cancelBefore)
+  await expect.poll(async () => readFile(readyMarker).then(() => true).catch((e: NodeJS.ErrnoException) => { if (e.code === 'ENOENT') return false; throw e })).toBe(false)
+  await h.shot('04b-cancel-staging', 'Cancel the marker-confirmed staging operation; live files remain unchanged and no success is reported.')
+  await info.attach('cancel-evidence.json', { body: JSON.stringify({ marker: { point: 'staging-after', target: 0 }, cancelStates, hashes: cancelBefore }), contentType: 'application/json' })
+  await rm(pauseFault)
+  await h.main.getByTestId('backup-restore-cancel').click()
+
+  // Failure after first live publication must roll back every affected target.
+  const fault = join(h.profile, '.xmcl-restore-fault.json')
+  await h.put(fault, JSON.stringify({ point: 'new-after', target: 0 }))
+  const beforeFailure = await h.hash(config)
+  const beforeSettings = await h.hash(join(h.profile, 'setting.json'))
+  await h.selectArchive(archive)
+  await h.restore('overwrite', false)
+  expect(await h.hash(config)).toBe(beforeFailure)
+  expect(await h.hash(join(h.profile, 'setting.json'))).toBe(beforeSettings)
+  await h.shot('05-rollback-error', 'Injected transaction failure is visible and original data is rolled back.')
+  await rm(fault)
+  await h.main.getByTestId('backup-restore-cancel').click()
+
+  // A bad new file must invalidate, not retain, the previous selection.
+  await h.selectArchive(archive)
+  const corrupt = join(h.root, 'corrupt.xmclbackup')
+  await h.put(corrupt, 'not a zip')
+  await h.picker(corrupt)
+  await h.main.getByTestId('backup-restore-change-file').click()
+  await expect(h.main.getByTestId('backup-restore-instance-row')).toHaveCount(0)
+  await h.main.getByTestId('backup-restore-select-file').click()
+  await expect(h.main.getByTestId('backup-restore-error')).toBeVisible()
+  await expect(h.main.getByTestId('backup-restore-instance-row')).toHaveCount(0)
+  await expect(h.main.getByTestId('backup-restore-submit')).toHaveCount(0)
+  await h.shot('06-corrupt-selection', 'A corrupt replacement archive clears the old restore selection.')
+  await h.main.getByTestId('backup-restore-cancel').click()
+
+  await h.selectArchive(archive)
+  await h.restore('overwrite')
+  await h.shot('07-overwrite', 'Overwrite restores the original instance and launcher payloads.')
+  await h.main.getByTestId('backup-restore-done').click()
+  await h.restart()
+  await expect(readFile(config)).resolves.toEqual(ORIGINAL)
+  await expect(readFile(saves)).resolves.toEqual(ORIGINAL)
+  await expect(readFile(join(h.profile, 'theme-media', 'fixture.bin'))).resolves.toEqual(ORIGINAL)
+  expect(await readFile(join(h.profile, 'theme.css'), 'utf8')).toBe('/* backup fixture */\n')
+  expect(JSON.parse(await readFile(join(h.profile, 'setting.json'), 'utf8'))).toMatchObject({ theme: 'dark', maxSockets: 37 })
+  expect(JSON.parse(await readFile(join(h.profile, 'collections.json'), 'utf8'))).toMatchObject({ schemaVersion: 1, collections: [{ id: 'backup-fixture', name: 'Original collection' }] })
+  expect(await h.hash(archive)).toBe(archiveHash)
+
+  // Background timer must initialize without entering Settings. No clock/service mocks.
+  await h.stop()
+  await h.put(join(h.profile, 'auto-backup.json'), JSON.stringify({ enabled: true, instancePaths: [h.instance], intervalMinutes: 5, maxBackups: 2, destinationDir: join(h.root, 'automatic'), includeSettings: true, includeConfigs: true, includeSaves: true, includeMods: false, lastBackupAt: 0 }))
+  await h.put(join(h.root, 'automatic', 'manual-do-not-rotate.zip'), ORIGINAL)
+  await h.put(join(h.root, 'outside-delete-boundary.zip'), ORIGINAL)
+  await h.start()
+  await expect.poll(() => h.archives(), { timeout: 55_000 }).toHaveLength(1)
+  await h.shot('08-background', 'Automatic backup starts without opening the settings page.')
+  await h.settings()
+  for (let i = 0; i < 2; i++) {
+    const previous = await h.archives()
+    await h.main.getByTestId('auto-backup-run-now-btn').click()
+    await expect.poll(async () => JSON.stringify(await h.archives()), { timeout: 30_000 }).not.toBe(JSON.stringify(previous))
+  }
+  expect(await h.archives()).toHaveLength(2)
+  await expect(readFile(join(h.root, 'automatic', 'manual-do-not-rotate.zip'))).resolves.toEqual(ORIGINAL)
+  await expect(readFile(join(h.root, 'outside-delete-boundary.zip'))).resolves.toEqual(ORIGINAL)
+  await h.shot('09-rotation', 'Run now uses the real service and retains only two automatic archives.')
+  // Select an exact generated history entry, never the manual archive or an
+  // arbitrary filesystem path. The UI invokes the real deletion service.
+  const victim = (await h.archives())[0]
+  const victimRow = h.main.locator(`[data-testid="auto-backup-history-row"][data-file-name="${victim}"]`)
+  await expect(victimRow).toHaveCount(1)
+  await victimRow.getByTestId('auto-backup-delete').click()
+  await expect.poll(() => h.archives()).toHaveLength(1)
+  expect(await h.archives()).not.toContain(victim)
+  await expect(victimRow).toHaveCount(0)
+  await expect(h.main.locator('[data-testid="auto-backup-history-row"][data-file-name="outside-delete-boundary.zip"]')).toHaveCount(0)
+  await expect(readFile(join(h.root, 'automatic', 'manual-do-not-rotate.zip'))).resolves.toEqual(ORIGINAL)
+  await expect(readFile(join(h.root, 'outside-delete-boundary.zip'))).resolves.toEqual(ORIGINAL)
+  await h.shot('09b-delete-boundary', 'Delete one automatic history entry; the manual archive and outside sentinel remain unchanged.')
+  await info.attach('backup-hashes.json', { body: JSON.stringify({ archive: archiveHash, config: await h.hash(config), saves: await h.hash(saves), automatic: await h.archives() }, null, 2), contentType: 'application/json' })
+
+  // Remove only this fixture's resources while stopped; reload cleaned state once.
+  await h.stop()
+  await h.put(join(h.profile, 'auto-backup.json'), JSON.stringify({ enabled: false }))
+  await rm(join(h.data, 'instances'), { recursive: true })
+  await h.put(join(h.profile, 'instances.json'), JSON.stringify({ instances: [], selectedInstance: '' }))
+  await h.start()
+  await h.settings()
+  await h.main.getByTestId('create-backup-btn').click()
+  await expect(h.main.getByTestId('backup-create-instance-row')).toHaveCount(0)
+  await h.shot('10-cleaned-reloaded', 'Restart confirms the isolated fixture instances have been removed.')
+})
+
+test('06 recovery-required — UI exposes retained transaction evidence', async ({ backup: h }, info) => {
+  const archive = join(h.root, 'recovery.xmclbackup')
+  await h.settings()
+  await h.picker(archive)
+  await h.main.getByTestId('create-backup-btn').click()
+  await h.main.getByTestId('backup-create-submit').click()
+  await expect(h.main.getByTestId('backup-create-result')).toBeVisible({ timeout: 60_000 })
+  await h.main.getByTestId('backup-create-done').click()
+  await h.put(join(h.profile, '.xmcl-restore-fault.json'), JSON.stringify({ point: 'publish-after', target: -1, rollbackFailure: true }))
+  await h.selectArchive(archive)
+  await h.restore('overwrite', false)
+  const recovery = h.main.getByTestId('backup-recovery-path')
+  await expect(recovery).toBeVisible()
+  const path = (await recovery.innerText()).trim()
+  expect(path.startsWith(join(h.profile, 'restore-transactions') + '/')).toBe(true)
+  const journal = JSON.parse(await readFile(path, 'utf8'))
+  expect(journal.targets.length).toBeGreaterThan(0)
+  await h.shot('11-recovery-required', 'Failed rollback exposes the retained recovery directory instead of reporting success.')
+  await info.attach('recovery-evidence.json', { body: JSON.stringify({ path, journal, archive: await h.hash(archive) }), contentType: 'application/json' })
+  // The application stays fenced for this session; no further writes are attempted.
+  // Copy the transaction evidence before the harness removes its temporary root.
+  await cp(h.root, info.outputPath('recovery-profile'), { recursive: true })
+  await h.stop()
+  await rm(join(h.profile, '.xmcl-restore-fault.json'))
+})

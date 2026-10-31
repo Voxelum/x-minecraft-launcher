@@ -461,7 +461,7 @@
           <v-list density="compact" class="bg-transparent pa-0" style="max-height: 210px; overflow-y: auto;">
             <template v-for="(entry, idx) in autoBackupFiles" :key="entry.filePath">
               <v-divider v-if="idx > 0" />
-              <v-list-item class="py-1.5 px-3">
+              <v-list-item data-testid="auto-backup-history-row" :data-file-name="entry.fileName" class="py-1.5 px-3">
                 <template #prepend>
                   <v-avatar size="30" color="primary" variant="tonal" rounded="md" class="mr-3">
                     <v-icon size="16" color="primary">inventory_2</v-icon>
@@ -500,6 +500,7 @@
                       size="x-small"
                       color="error"
                       :title="t('shared.delete')"
+                      data-testid="auto-backup-delete"
                       @click="removeAutoBackupFile(entry.filePath)"
                     >
                       <v-icon size="16">delete_outline</v-icon>

@@ -1,10 +1,11 @@
 import { SettingSchema, Settings } from '@xmcl/runtime-api'
-import { AggregateExecutor } from '@xmcl/utils'
 import { readJson, writeJson } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 import { ServiceStateManager } from '~/service'
 import { kSettings } from './settings'
+import { getRestoreGate } from '~/infra/restoreGate'
+import { recoverRestore } from '~/infra/recoverRestore'
 
 export const pluginSettings: LauncherAppPlugin = async (app) => {
   const stateManager = await app.registry.get(ServiceStateManager)
@@ -12,26 +13,21 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Settings')
   const settingJsonPath = join(app.appDataPath, 'setting.json')
 
-  const saver = new AggregateExecutor<void, void>(() => { }, async () => {
-    const data = SettingSchema.parse(state)
+  const gate = getRestoreGate(app)
+  const saver = gate.writer(async () => {
     try {
-      await writeJson(settingJsonPath, data, { spaces: 2 })
+      await writeJson(settingJsonPath, SettingSchema.parse(state), { spaces: 2 })
     } catch (e) {
-      // Best-effort: do NOT propagate as an unhandled rejection.
-      // This saver runs on every state change; if writeJson fails
-      // (EPERM/EBUSY/EROFS because of OneDrive sync, antivirus,
-      // read-only mount on Linux, ...), reporting every retry as a
-      // trackException creates a per-user storm and we still cannot
-      // recover from the underlying environment issue. The next state
-      // change re-triggers the saver, so transient locks self-heal.
       logger.warn(`Fail to save ${settingJsonPath}`)
       logger.warn(e as Error)
+      throw e
     }
   }, 1000)
-
-  app.registryDisposer(async () => {
-    return saver.flush()
-  })
+  app.registryDisposer(() => saver.flush())
+  // Runtime status updates are not configuration and must remain usable by
+  // network/update/background callbacks while persistent config is frozen.
+  const runtimeMutations = ['localesSet', 'updateCapabilitySet', 'updateStatusSet', 'updateInfoSet', 'onlineSet', 'diskFullErrorSet', 'databaseReadySet', 'corruptedResourceCountSet', 'invalidGameDataPathSet']
+  gate.guardState(state, runtimeMutations)
 
   const normalizeLocale = (locale: string) => {
     locale = locale || app.host.getLocale()
@@ -41,7 +37,8 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
     return locale
   }
 
-  readJson(settingJsonPath).catch(() => ({})).then((rawData) => {
+  await recoverRestore(app)
+  await readJson(settingJsonPath).catch(() => ({})).then((rawData) => {
     // SettingSchema uses .catch() for each field, so invalid fields fallback to defaults automatically
     const data = SettingSchema.parse(rawData)
     data.locale = normalizeLocale(data.locale)
@@ -54,8 +51,9 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
     state.config(data)
   }).finally(() => {
     app.registry.register(kSettings, state)
-    state.subscribeAll(() => {
-      saver.push()
+    state.subscribeAll((mutation: string) => {
+      if (runtimeMutations.includes(mutation)) return
+      saver.schedule()
     })
   })
 }

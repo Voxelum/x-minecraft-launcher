@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { type Frame, parse, encodeUnicodeEscapes, decodeUnicodeEscapes } from '@xmcl/gamesetting'
 import {
   type EditGameSettingOptions,
@@ -52,6 +53,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app)
+    getRestoreGate(app).guardMethods(this, ['setServerProperties', 'setServerFile', 'setInstanceConfig', 'removeInstanceConfig', 'setEULA', 'linkGameOptions', 'unlinkGameOptions', 'editIrisShaderOptions', 'editOculusShaderOptions', 'editShaderOptions', 'editGameSetting'])
   }
 
   getServerProperties(instancePath: string): Promise<Record<string, string>> {
@@ -288,7 +290,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
           !existsSync(join(instancePath, 'config', 'yosbr', 'options.txt')) &&
           !existsSync(join(instancePath, 'config', 'defaultoptions'))
         ) {
-          await writeFile(optionsPath, `lang:${this.app.host.getLocale().replace('-', '_')}\n`)
+          await getRestoreGate(this.app).run(() => writeFile(optionsPath, `lang:${this.app.host.getLocale().replace('-', '_')}\n`))
         }
       }
       return {} as Frame

@@ -3,6 +3,8 @@ import { AppManifest, SettingSchema, Settings, SharedState } from '@xmcl/runtime
 import { join } from 'path'
 import * as fsExtra from 'fs-extra'
 
+vi.mock('~/infra/recoverRestore', () => ({ recoverRestore: vi.fn().mockResolvedValue(undefined) }))
+
 vi.mock('fs-extra', () => ({
   readJson: vi.fn(),
   writeJson: vi.fn(),
@@ -69,6 +71,31 @@ describe('pluginSettings', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  test('maintenance rejects direct persistent config and retains saver errors for explicit drain', async () => {
+    vi.useFakeTimers()
+    vi.mocked(fsExtra.readJson).mockResolvedValue({})
+    vi.mocked(fsExtra.writeJson).mockRejectedValue(new Error('disk busy'))
+    const { pluginSettings } = await import('./pluginSettings')
+    const { getRestoreGate } = await import('~/infra/restoreGate')
+    await pluginSettings(mockApp, mockManifest)
+    subscribeCallback!()
+    await vi.advanceTimersByTimeAsync(1000)
+    const gate = getRestoreGate(mockApp)
+    await expect(gate.enter(() => {})).rejects.toThrow('disk busy')
+    vi.mocked(fsExtra.writeJson).mockResolvedValue(undefined)
+    subscribeCallback!()
+    await gate.enter(() => {})
+    expect(() => mockState.localeSet('de')).toThrow('maintenance')
+    expect(() => mockState.onlineSet(true)).not.toThrow()
+    expect(mockState.online).toBe(true)
+    const before = vi.mocked(fsExtra.writeJson).mock.calls.length
+    gate.publish(() => mockState.config(SettingSchema.parse({ locale: 'zh-CN' })))
+    await registeredDisposer!()
+    expect(fsExtra.writeJson).toHaveBeenCalledTimes(before)
+    gate.release(true)
+    expect(() => mockState.localeSet('de')).toThrow('maintenance')
   })
 
   test('should load settings from setting.json', async () => {

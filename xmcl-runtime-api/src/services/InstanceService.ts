@@ -53,6 +53,13 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
     }
   }
 
+  /** Replace the published snapshot without firing add/remove migration hooks.
+   * Restore has already installed these directories transactionally. */
+  instanceRestore(instances: Instance[]) {
+    this.instances = instances.map(instance => ({ ...instance }))
+    this.all = Object.fromEntries(this.instances.map(instance => [instance.path, instance]))
+  }
+
   instanceRemove(path: string) {
     delete this.all[path]
     this.instances = this.instances.filter((i) => i.path !== path)

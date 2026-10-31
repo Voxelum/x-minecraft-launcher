@@ -8,13 +8,13 @@
   >
     <v-card class="rounded-xl overflow-hidden backup-card">
       <v-toolbar color="surface" density="comfortable" class="px-5 border-b">
-        <v-avatar size="32" :color="dialogMode === 'done' ? 'success' : 'primary'" class="mr-3" variant="tonal">
+        <v-avatar size="32" :color="dialogMode === 'done' ? (isRestoreSuccessful ? 'success' : isRestorePartial ? 'warning' : 'error') : 'primary'" class="mr-3" variant="tonal">
           <v-icon size="20">
-            {{ dialogMode === 'done' ? 'check_circle' : dialogMode === 'working' ? 'sync' : 'unarchive' }}
+            {{ dialogMode === 'done' ? (isRestoreSuccessful ? 'check_circle' : 'warning_amber') : dialogMode === 'working' ? 'sync' : 'unarchive' }}
           </v-icon>
         </v-avatar>
         <v-toolbar-title class="text-subtitle-1 font-weight-bold">
-          {{ dialogMode === 'done' ? t('backup.restoreDone') : dialogMode === 'working' ? t('backup.restoringTitle') : t('backup.restoreTitle') }}
+          {{ dialogMode === 'done' ? (isRestoreSuccessful ? t('backup.restoreDone') : isRestorePartial ? t('backup.restorePartialTitle') : t('backup.restoreError')) : dialogMode === 'working' ? t('backup.restoringTitle') : t('backup.restoreTitle') }}
         </v-toolbar-title>
         <v-spacer />
         <v-btn
@@ -22,12 +22,17 @@
           icon
           variant="text"
           size="small"
+          data-testid="backup-restore-close"
           @click="hide"
         >
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar>
 
+      <v-alert v-if="operationError" data-testid="backup-restore-error" type="error" variant="tonal" class="ma-4" role="alert">
+        <div>{{ operationError }}</div>
+        <div v-if="recoveryPath" data-testid="backup-recovery-path" class="text-break">{{ recoveryPath }}</div>
+      </v-alert>
       <!-- MODE 1: CONFIGURATION / FILE PICKING -->
       <v-card-text v-if="dialogMode === 'config'" class="pa-5 overflow-y-auto">
         <!-- Step 1: Pick File -->
@@ -47,6 +52,7 @@
             variant="flat"
             class="px-8 font-weight-bold"
             :loading="isLoadingManifest"
+            data-testid="backup-restore-select-file"
             @click="browseBackupFile"
           >
             <v-icon start>file_open</v-icon>
@@ -76,6 +82,8 @@
                 variant="outlined"
                 size="small"
                 class="text-none"
+                :disabled="!!recoveryPath"
+                data-testid="backup-restore-change-file"
                 @click="resetSelection"
               >
                 <v-icon start size="small">swap_horiz</v-icon>
@@ -106,6 +114,7 @@
               </div>
               <v-switch
                 v-model="restoreSettings"
+                data-testid="backup-restore-settings-switch"
                 color="primary"
                 density="compact"
                 hide-details
@@ -133,6 +142,7 @@
               </div>
               <v-switch
                 v-model="restoreCollections"
+                data-testid="backup-restore-collections-switch"
                 color="primary"
                 density="compact"
                 hide-details
@@ -160,6 +170,7 @@
               </div>
               <v-switch
                 v-model="restoreThemes"
+                data-testid="backup-restore-themes-switch"
                 color="primary"
                 density="compact"
                 hide-details
@@ -188,7 +199,8 @@
                   size="x-small"
                   color="primary"
                   class="text-none font-weight-medium"
-                  @click="selectAllInstances"
+                  data-testid="backup-restore-select-all"
+              @click="selectAllInstances"
                 >
                   {{ t('backup.selectAll') }}
                 </v-btn>
@@ -196,7 +208,8 @@
                   variant="text"
                   size="x-small"
                   class="text-none"
-                  @click="deselectAllInstances"
+                  data-testid="backup-restore-deselect-all"
+              @click="deselectAllInstances"
                 >
                   {{ t('backup.deselectAll') }}
                 </v-btn>
@@ -212,6 +225,9 @@
               <v-list-item
                 v-for="inst in manifest.includes.instances"
                 :key="inst.folderName"
+                data-testid="backup-restore-instance-row"
+                :data-instance-name="inst.name"
+                :data-instance-folder="inst.folderName"
                 density="comfortable"
                 class="rounded-lg mb-1 px-3 cursor-pointer"
                 :class="{ 'selected-instance-row': selectedInstances.includes(inst.folderName) }"
@@ -219,6 +235,7 @@
               >
                 <template #prepend>
                   <v-checkbox-btn
+                    data-testid="backup-restore-instance-checkbox"
                     :model-value="selectedInstances.includes(inst.folderName)"
                     color="primary"
                     class="mr-2"
@@ -256,24 +273,28 @@
             <v-card variant="outlined" class="pa-3 mb-2 rounded-xl setting-group-card">
               <v-radio-group
                 v-model="conflictStrategy"
+                data-testid="backup-restore-conflict-strategy"
                 density="compact"
                 class="mt-0"
                 hide-details
               >
                 <v-radio
                   value="rename"
+                  data-testid="backup-restore-conflict-rename"
                   :label="t('backup.conflictRename')"
                   color="primary"
                   density="compact"
                 />
                 <v-radio
                   value="overwrite"
+                  data-testid="backup-restore-conflict-overwrite"
                   :label="t('backup.conflictOverwrite')"
                   color="primary"
                   density="compact"
                 />
                 <v-radio
                   value="skip"
+                  data-testid="backup-restore-conflict-skip"
                   :label="t('backup.conflictSkip')"
                   color="primary"
                   density="compact"
@@ -285,7 +306,7 @@
       </v-card-text>
 
       <!-- MODE 2: ACTIVE WORKING / PROGRESS SCREEN -->
-      <v-card-text v-else-if="dialogMode === 'working'" class="pa-6 overflow-y-auto">
+      <v-card-text v-else-if="dialogMode === 'working'" data-testid="backup-restore-progress" class="pa-6 overflow-y-auto">
         <v-card variant="tonal" color="primary" class="pa-5 mb-5 rounded-xl border-primary">
           <div class="d-flex align-center justify-space-between mb-3">
             <div class="d-flex align-center gap-3">
@@ -366,7 +387,7 @@
       </v-card-text>
 
       <!-- MODE 3: COMPLETION / SUMMARY SCREEN -->
-      <v-card-text v-else-if="dialogMode === 'done'" class="pa-6 overflow-y-auto">
+      <v-card-text v-else-if="dialogMode === 'done'" data-testid="backup-restore-result" class="pa-6 overflow-y-auto">
         <div class="d-flex flex-column align-center justify-center py-4 mb-4">
           <v-avatar
             size="72"
@@ -444,7 +465,7 @@
       <v-card-actions class="pa-4 px-5">
         <!-- Mode: Config Buttons -->
         <template v-if="dialogMode === 'config'">
-          <v-btn variant="text" :disabled="isRestoring" @click="hide">
+          <v-btn data-testid="backup-restore-cancel" variant="text" :disabled="isRestoring" @click="hide">
             {{ t('shared.cancel') }}
           </v-btn>
           <v-spacer />
@@ -454,6 +475,7 @@
             variant="flat"
             class="px-6 font-weight-bold"
             :disabled="!canRestore"
+            data-testid="backup-restore-submit"
             @click="startRestore"
           >
             <template #prepend>
@@ -467,9 +489,15 @@
         <template v-else-if="dialogMode === 'working'">
           <div class="text-caption text-medium-emphasis d-flex align-center gap-2">
             <v-progress-circular indeterminate size="16" width="2" color="primary" />
-            <span>{{ t('backup.restoringTitle') }}</span>
+            <span>{{ currentStageLabel }}</span>
           </div>
           <v-spacer />
+          <v-btn data-testid="backup-restore-working-cancel" variant="outlined"
+            :data-cancel-status="cancellationState"
+            :disabled="cancellationState !== 'idle' || ['committing', 'rolling-back', 'recovery-required', 'complete'].includes(restoreProgress?.phase || '')"
+            :loading="cancellationState === 'pending'" @click="requestCancellation">
+            {{ t('shared.cancel') }}
+          </v-btn>
         </template>
 
         <!-- Mode: Done Buttons -->
@@ -479,6 +507,7 @@
             color="primary"
             variant="flat"
             class="px-6 font-weight-bold"
+            data-testid="backup-restore-done"
             @click="hide"
           >
             {{ t('backup.done') }}
@@ -492,11 +521,13 @@
 <script lang="ts" setup>
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useBackupSelection } from '@/composables/backupSelection'
+import { formatBackupError } from '@/composables/backupError'
 import { useBackup } from '@/composables/backup'
 import { useDialog } from '@/composables/dialog'
 import { BuiltinImages } from '@/constant'
 import { useNotifier } from '@/composables/notifier'
-import type { BackupManifest, RestoreBackupOptions, RestoreBackupResult } from '@xmcl/runtime-api'
+import type { RestoreBackupOptions, RestoreBackupResult } from '@xmcl/runtime-api'
 
 interface LogEntry {
   id: number
@@ -507,19 +538,25 @@ interface LogEntry {
 
 const { t } = useI18n()
 const { isShown, hide, parameter } = useDialog<string>('backup-restore')
-const { restoreBackup, loadBackupManifest, isRestoring, isLoadingManifest, restoreProgress } = useBackup()
+const { cancelBackupOperation, restoreBackup, loadBackupManifest, isRestoring, isLoadingManifest, restoreProgress } = useBackup()
 const { notify } = useNotifier()
 
 const dialogMode = ref<'config' | 'working' | 'done'>('config')
+const cancellationState = ref<'idle' | 'pending' | 'unavailable'>('idle')
+async function requestCancellation() {
+  try { cancellationState.value = await cancelBackupOperation() ? 'pending' : 'unavailable' }
+  catch (error) { operationError.value = error instanceof Error ? error.message : String(error) }
+}
 
-const backupFilePath = ref('')
-const manifest = ref<BackupManifest | null>(null)
+const operationError = ref('')
+const recoveryPath = ref('')
+const selection = useBackupSelection()
+const { path: backupFilePath, manifest, instances: selectedInstances } = selection
 const lastRestoreResult = ref<RestoreBackupResult | null>(null)
 
 const restoreSettings = ref(true)
 const restoreCollections = ref(true)
 const restoreThemes = ref(true)
-const selectedInstances = ref<string[]>([])
 const conflictStrategy = ref<'rename' | 'overwrite' | 'skip'>('rename')
 
 // Progress & Timer state
@@ -564,6 +601,7 @@ const remainingFormatted = computed(() => {
 
 const currentStageLabel = computed(() => {
   const phase = restoreProgress.value?.phase
+  if (phase === 'committing' || phase === 'rolling-back' || phase === 'recovery-required') return restoreProgress.value?.message || t('backup.restoreError')
   if (phase === 'settings') return t('backup.stageSettings')
   if (phase === 'collections') return t('backup.stageCollections')
   if (phase === 'themes') return t('backup.stageThemes')
@@ -581,6 +619,10 @@ const currentInstanceIndexLabel = computed(() => {
 
 // Listen to progress updates to log messages
 watch(() => restoreProgress.value?.message, (msg) => {
+  if (dialogMode.value === 'working' && restoreProgress.value?.phase === 'recovery-required') {
+    recoveryPath.value = restoreProgress.value.recoveryPath || ''
+    operationError.value = msg || t('backup.restoreError')
+  }
   if (msg && dialogMode.value === 'working') {
     const isComplete = restoreProgress.value?.phase === 'complete'
     addLog(msg, isComplete ? 'success' : 'info')
@@ -600,21 +642,21 @@ const formattedDate = computed(() => {
 
 async function loadFileFromPath(path: string) {
   resetSelection()
+  const generation = selection.token()
   try {
     const loadedManifest = await loadBackupManifest(path)
-    backupFilePath.value = path
-    manifest.value = loadedManifest
+    if (!selection.isCurrent(generation) || !isShown.value) return
+    selection.accept(generation, path, loadedManifest)
 
     restoreSettings.value = !!loadedManifest.includes.settings
     restoreCollections.value = !!loadedManifest.includes.collections
     restoreThemes.value = !!loadedManifest.includes.themes
-    selectedInstances.value = loadedManifest.includes.instances.map((i) => i.folderName)
-  } catch {
-    // Error is toasted by composable
+  } catch (error) {
+    if (selection.isCurrent(generation) && isShown.value) operationError.value = formatBackupError(error).message
   }
 }
 
-watch(isShown, async (shown) => {
+watch([isShown, parameter], async ([shown]) => {
   if (shown) {
     dialogMode.value = 'config'
     logEntries.value = []
@@ -625,11 +667,13 @@ watch(isShown, async (shown) => {
       resetSelection()
     }
   } else {
+    resetSelection()
     stopTimer()
   }
-})
+}, { immediate: true, flush: 'sync' })
 
 onUnmounted(() => {
+  selection.reset()
   stopTimer()
 })
 
@@ -649,26 +693,37 @@ function stopTimer() {
 }
 
 function resetSelection() {
-  manifest.value = null
-  backupFilePath.value = ''
-  selectedInstances.value = []
+  selection.reset()
+  operationError.value = ''
+  recoveryPath.value = ''
+  restoreSettings.value = false
+  restoreCollections.value = false
+  restoreThemes.value = false
+  conflictStrategy.value = 'rename'
   lastRestoreResult.value = null
 }
 
 async function browseBackupFile() {
-  const { filePaths, canceled } = await windowController.showOpenDialog({
-    title: t('backup.selectBackupFileTitle'),
-    filters: [
-      {
-        name: t('backup.fileFilterName'),
-        extensions: ['xmclbackup', 'zip'],
-      },
-    ],
-  })
+  resetSelection()
+  const generation = selection.token()
+  try {
+    const { filePaths, canceled } = await windowController.showOpenDialog({
+      title: t('backup.selectBackupFileTitle'),
+      filters: [
+        {
+          name: t('backup.fileFilterName'),
+          extensions: ['xmclbackup', 'zip'],
+        },
+      ],
+    })
 
-  if (canceled || !filePaths || filePaths.length === 0) return
+    if (!selection.isCurrent(generation) || !isShown.value) return
+    if (canceled || !filePaths || filePaths.length === 0) return
 
-  await loadFileFromPath(filePaths[0])
+    await loadFileFromPath(filePaths[0])
+  } catch (error) {
+    if (selection.isCurrent(generation) && isShown.value) operationError.value = formatBackupError(error).message
+  }
 }
 
 function selectAllInstances() {
@@ -690,7 +745,7 @@ function toggleInstance(folderName: string) {
 }
 
 const canRestore = computed(() => {
-  if (!manifest.value) return false
+  if (!manifest.value || isLoadingManifest.value || isRestoring.value || recoveryPath.value) return false
   return (
     (restoreSettings.value && manifest.value.includes.settings) ||
     (restoreCollections.value && manifest.value.includes.collections) ||
@@ -739,7 +794,9 @@ const isRestorePartial = computed(() => {
 })
 
 async function startRestore() {
-  if (!backupFilePath.value || !manifest.value) return
+  cancellationState.value = 'idle'
+  if (!canRestore.value || dialogMode.value !== 'config' || !backupFilePath.value || !manifest.value) return
+  operationError.value = ''
 
   dialogMode.value = 'working'
   logEntries.value = []
@@ -796,7 +853,10 @@ async function startRestore() {
     dialogMode.value = 'done'
   } catch (err: any) {
     stopTimer()
-    addLog(err?.message || String(err), 'warn')
+    const error = formatBackupError(err)
+    operationError.value = error.message
+    recoveryPath.value = error.recoveryPath || restoreProgress.value?.recoveryPath || ''
+    addLog([error.message, recoveryPath.value].filter(Boolean).join('\n'), 'warn')
     dialogMode.value = 'config'
   }
 }

@@ -1,3 +1,5 @@
+import { recoverRestore } from '~/infra/recoverRestore'
+import { getRestoreGate } from '~/infra/restoreGate'
 import { isMissingVersionJsonError, MinecraftFolder, ResolvedVersion, Version, type JavaVersion } from '@xmcl/core'
 import {
   AnyTracker,
@@ -130,6 +132,7 @@ export class InstallCoordinator {
     @Inject(InstallManifestService) private manifestInstaller: InstallManifestService,
   ) {
     this.logger = app.getLogger('InstallCoordinator')
+    getRestoreGate(app).guardMethods(this, ['install'])
   }
 
   private runForgeInstall<T>(minecraft: string, action: () => Promise<T>) {
@@ -579,6 +582,7 @@ export class InstallCoordinator {
   }
 
   async install(request: VersionInstallRequest) {
+    await recoverRestore(this.app)
     if (request.type === 'java') {
       return this.ensureJava(request.target, request.forceZulu)
     }

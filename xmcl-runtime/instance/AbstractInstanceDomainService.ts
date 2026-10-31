@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import type { InstanceFile } from '@xmcl/instance'
 import { InstallMarketOptionWithInstance, LockKey, ResourceState, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
 import { ensureDir, mkdir, readdir, rename, rm, stat, unlink } from 'fs-extra'
@@ -18,6 +19,7 @@ import { pathToFileURL } from 'url'
 export abstract class AbstractInstanceDomainService extends AbstractService {
   constructor(app: LauncherApp, protected domain: ResourceDomain) {
     super(app)
+    getRestoreGate(app).guardMethods(this, ['onMigrateLegacy', 'linkShared', 'unlinkShared', 'install', 'uninstall', 'installFromMarket'])
   }
 
   /**

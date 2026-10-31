@@ -23,12 +23,14 @@
           icon
           variant="text"
           size="small"
+          data-testid="backup-create-close"
           @click="hide"
         >
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar>
 
+      <v-alert v-if="operationError" data-testid="backup-create-error" type="error" variant="tonal" class="ma-4" role="alert">{{ operationError }}</v-alert>
       <!-- MODE 1: CONFIGURATION -->
       <v-card-text v-if="dialogMode === 'config'" class="pa-5 overflow-y-auto">
         <!-- Informational Notice Banner -->
@@ -65,6 +67,7 @@
             </div>
             <v-switch
               v-model="includeSettings"
+                data-testid="backup-create-settings-switch"
               color="primary"
               density="compact"
               hide-details
@@ -91,6 +94,7 @@
             </div>
             <v-switch
               v-model="includeCollections"
+                data-testid="backup-create-collections-switch"
               color="primary"
               density="compact"
               hide-details
@@ -117,6 +121,7 @@
             </div>
             <v-switch
               v-model="includeThemes"
+                data-testid="backup-create-themes-switch"
               color="primary"
               density="compact"
               hide-details
@@ -137,6 +142,7 @@
               size="x-small"
               color="primary"
               class="text-none font-weight-medium"
+              data-testid="backup-create-select-all"
               @click="selectAllInstances"
             >
               {{ t('backup.selectAll') }}
@@ -145,6 +151,7 @@
               variant="text"
               size="x-small"
               class="text-none"
+              data-testid="backup-create-deselect-all"
               @click="deselectAllInstances"
             >
               {{ t('backup.deselectAll') }}
@@ -212,6 +219,7 @@
         <v-text-field
           v-if="validInstances.length > 4"
           v-model="searchQuery"
+          data-testid="backup-create-instance-search"
           variant="outlined"
           density="compact"
           prepend-inner-icon="search"
@@ -229,6 +237,8 @@
           <v-list-item
             v-for="inst in filteredInstances"
             :key="inst.path"
+                data-testid="backup-create-instance-row"
+                :data-instance-name="inst.name"
             density="comfortable"
             class="rounded-lg mb-1 px-3 cursor-pointer"
             :class="{ 'selected-instance-row': selectedInstancePaths.includes(inst.path) }"
@@ -236,6 +246,7 @@
           >
             <template #prepend>
               <v-checkbox-btn
+                    data-testid="backup-create-instance-checkbox"
                 :model-value="selectedInstancePaths.includes(inst.path)"
                 color="primary"
                 class="mr-2"
@@ -298,7 +309,7 @@
       </v-card-text>
 
       <!-- MODE 2: ACTIVE WORKING / PROGRESS SCREEN -->
-      <v-card-text v-else-if="dialogMode === 'working'" class="pa-6 overflow-y-auto">
+      <v-card-text v-else-if="dialogMode === 'working'" data-testid="backup-create-progress" class="pa-6 overflow-y-auto">
         <!-- Main Progress Hero Card -->
         <v-card variant="tonal" color="primary" class="pa-5 mb-5 rounded-xl border-primary">
           <div class="d-flex align-center justify-space-between mb-3">
@@ -503,7 +514,7 @@
       </v-card-text>
 
       <!-- MODE 3: COMPLETION / SUMMARY SCREEN -->
-      <v-card-text v-else-if="dialogMode === 'done'" class="pa-6 overflow-y-auto">
+      <v-card-text v-else-if="dialogMode === 'done'" data-testid="backup-create-result" class="pa-6 overflow-y-auto">
         <div class="d-flex flex-column align-center justify-center py-4 mb-4">
           <v-avatar size="72" color="success" variant="tonal" class="mb-3">
             <v-icon size="42">check_circle</v-icon>
@@ -574,7 +585,7 @@
       <v-card-actions class="pa-4 px-5">
         <!-- Mode: Config Buttons -->
         <template v-if="dialogMode === 'config'">
-          <v-btn variant="text" :disabled="isCreating" @click="hide">
+          <v-btn data-testid="backup-create-cancel" variant="text" :disabled="isCreating || isChoosingDestination" @click="hide">
             {{ t('shared.cancel') }}
           </v-btn>
           <v-spacer />
@@ -583,6 +594,8 @@
             variant="flat"
             class="px-6 font-weight-bold"
             :disabled="!canCreate"
+            :loading="isChoosingDestination"
+            data-testid="backup-create-submit"
             @click="startBackup"
           >
             <template #prepend>
@@ -599,7 +612,11 @@
             <span>{{ t('backup.workingTitle') }}</span>
           </div>
           <v-spacer />
-          <!-- We do not allow cancellation midway through yazl zip streaming to prevent truncated corrupted files -->
+          <v-btn data-testid="backup-create-working-cancel" variant="outlined"
+            :data-cancel-status="cancellationState" :disabled="cancellationState !== 'idle'"
+            :loading="cancellationState === 'pending'" @click="requestCancellation">
+            {{ t('shared.cancel') }}
+          </v-btn>
         </template>
 
         <!-- Mode: Done Buttons -->
@@ -618,6 +635,7 @@
             color="primary"
             variant="flat"
             class="px-6 font-weight-bold"
+            data-testid="backup-create-done"
             @click="hide"
           >
             {{ t('backup.done') }}
@@ -648,12 +666,19 @@ interface LogEntry {
 
 const { t } = useI18n()
 const { isShown, hide } = useDialog('backup-create')
-const { createBackup, isCreating, backupProgress } = useBackup()
+const { cancelBackupOperation, createBackup, isCreating, backupProgress } = useBackup()
+const operationError = ref('')
+const isChoosingDestination = ref(false)
 const { instances } = useInstances()
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { notify } = useNotifier()
 
 const dialogMode = ref<'config' | 'working' | 'done'>('config')
+const cancellationState = ref<'idle' | 'pending' | 'unavailable'>('idle')
+async function requestCancellation() {
+  try { cancellationState.value = await cancelBackupOperation() ? 'pending' : 'unavailable' }
+  catch (error) { operationError.value = error instanceof Error ? error.message : String(error) }
+}
 
 const includeSettings = ref(true)
 const includeCollections = ref(true)
@@ -807,6 +832,7 @@ const filteredInstances = computed(() => {
 watch(isShown, (shown) => {
   if (shown) {
     dialogMode.value = 'config'
+    operationError.value = ''
     logEntries.value = []
     elapsedSeconds.value = 0
     destinationFilePath.value = ''
@@ -887,60 +913,72 @@ function openInDirectory() {
 }
 
 async function startBackup() {
-  const dateStr = new Date().toISOString().slice(0, 10)
-  const defaultFileName = `xmcl-backup-${dateStr}.xmclbackup`
-
-  const { filePath, canceled } = await windowController.showSaveDialog({
-    title: t('backup.saveDialogTitle'),
-    defaultPath: defaultFileName,
-    filters: [
-      {
-        name: t('backup.fileFilterName'),
-        extensions: ['xmclbackup', 'zip'],
-      },
-    ],
-  })
-
-  if (canceled || !filePath) return
-
-  // Transition to dedicated working screen!
-  dialogMode.value = 'working'
-  destinationFilePath.value = filePath
-  logEntries.value = []
-  startTimer()
-  addLog(t('backup.preparing'), 'info')
-  addLog(`${t('backup.destinationFile')}: ${filePath}`, 'info')
-
-  const backupInstances: BackupInstanceOptions[] = selectedInstancePaths.value.map((instPath) => ({
-    instancePath: instPath,
-    includeConfigs: includeConfigs.value,
-    includeSaves: includeSaves.value,
-    includeResourcePacks: includeResourcePacks.value,
-    includeShaderPacks: includeShaderPacks.value,
-    includeMods: modsMode.value !== 'none',
-    modListOnly: modsMode.value === 'listOnly',
-  }))
-
-  const options: BackupOptions = {
-    destinationPath: filePath,
-    includeSettings: includeSettings.value,
-    includeCollections: includeCollections.value,
-    includeThemes: includeThemes.value,
-    instances: backupInstances,
-  }
-
+  if (!canCreate.value || isCreating.value || isChoosingDestination.value || dialogMode.value !== 'config') return
+  isChoosingDestination.value = true
+  operationError.value = ''
   try {
-    const dest = await createBackup(options)
-    stopTimer()
-    if (dest) {
-      destinationFilePath.value = dest
+    const dateStr = new Date().toISOString().slice(0, 10)
+    const defaultFileName = `xmcl-backup-${dateStr}.xmclbackup`
+
+    const { filePath, canceled } = await windowController.showSaveDialog({
+      title: t('backup.saveDialogTitle'),
+      defaultPath: defaultFileName,
+      filters: [
+        {
+          name: t('backup.fileFilterName'),
+          extensions: ['xmclbackup', 'zip'],
+        },
+      ],
+    })
+
+    if (canceled || !filePath || !isShown.value) return
+
+    // Transition to dedicated working screen!
+    cancellationState.value = 'idle'
+    dialogMode.value = 'working'
+    destinationFilePath.value = filePath
+    logEntries.value = []
+    startTimer()
+    addLog(t('backup.preparing'), 'info')
+    addLog(`${t('backup.destinationFile')}: ${filePath}`, 'info')
+
+    const backupInstances: BackupInstanceOptions[] = selectedInstancePaths.value.map((instPath) => ({
+      instancePath: instPath,
+      includeConfigs: includeConfigs.value,
+      includeSaves: includeSaves.value,
+      includeResourcePacks: includeResourcePacks.value,
+      includeShaderPacks: includeShaderPacks.value,
+      includeMods: modsMode.value !== 'none',
+      modListOnly: modsMode.value === 'listOnly',
+    }))
+
+    const options: BackupOptions = {
+      destinationPath: filePath,
+      includeSettings: includeSettings.value,
+      includeCollections: includeCollections.value,
+      includeThemes: includeThemes.value,
+      instances: backupInstances,
     }
-    addLog(t('backup.backupDone'), 'success')
-    dialogMode.value = 'done'
+
+    try {
+      const dest = await createBackup(options)
+      stopTimer()
+      if (!dest) throw new Error(t('backup.createError'))
+      if (dest) {
+        destinationFilePath.value = dest
+      }
+      addLog(t('backup.backupDone'), 'success')
+      dialogMode.value = 'done'
+    } catch (err: any) {
+      stopTimer()
+      operationError.value = err?.message || String(err)
+      addLog(operationError.value, 'warn')
+      dialogMode.value = 'config'
+    }
   } catch (err: any) {
-    stopTimer()
-    addLog(err?.message || String(err), 'warn')
-    dialogMode.value = 'config'
+    operationError.value = err?.message || String(err)
+  } finally {
+    isChoosingDestination.value = false
   }
 }
 </script>

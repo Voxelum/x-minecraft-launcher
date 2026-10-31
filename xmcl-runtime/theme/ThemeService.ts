@@ -1,3 +1,5 @@
+import { getRestoreGate } from '~/infra/restoreGate'
+import { recoverRestore } from '~/infra/recoverRestore'
 import { ThemeService as IThemeService, MediaData, StoredTheme, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { fileTypeFromFile as fromFile } from 'file-type'
@@ -23,7 +25,11 @@ const CUSTOM_CSS_FILE = 'theme.css'
 @ExposeServiceKey(ThemeServiceKey)
 export class ThemeService extends AbstractService implements IThemeService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, () => this.migrateThemeFolder())
+    super(app, async () => {
+      await recoverRestore(app)
+      await this.migrateThemeFolder()
+    })
+    getRestoreGate(app).guardMethods(this, ['addMedia', 'removeMedia', 'setCurrentTheme', 'saveThemeToStore', 'loadThemeFromStore', 'deleteStoredTheme', 'importTheme', 'setCustomCss'])
   }
 
   /**
@@ -184,6 +190,7 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async addMedia(filePath: string): Promise<MediaData> {
+    await recoverRestore(this.app)
     const fileType = await fromFile(filePath)
     if (fileType?.mime.startsWith('audio') || fileType?.mime.startsWith('video') || fileType?.mime.startsWith('image') || fileType?.mime.startsWith('font')) {
       const targetPath = this.getAppDataPath('theme-media', basename(filePath))
@@ -200,6 +207,7 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async removeMedia(url: string): Promise<void> {
+    await recoverRestore(this.app)
     const path = this.getAppDataPath('theme-media', url.substring('http://launcher/theme-media/'.length))
     // path should be under appdata/theme-media
     if (!path.startsWith(this.getAppDataPath('theme-media'))) {
@@ -212,16 +220,19 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async getCurrentTheme(): Promise<ThemeData | undefined> {
+    await recoverRestore(this.app)
     const themeFile = this.getAppDataPath('theme.json')
     return readJSON(themeFile).catch(() => undefined) as Promise<ThemeData | undefined>
   }
 
   async setCurrentTheme(data: ThemeData): Promise<void> {
+    await recoverRestore(this.app)
     const themeFile = this.getAppDataPath('theme.json')
     await writeJson(themeFile, data, { spaces: 2 })
   }
 
   async getStoredThemes(): Promise<StoredTheme[]> {
+    await recoverRestore(this.app)
     const themesPath = this.getAppDataPath('themes')
     if (!existsSync(themesPath)) {
       return []
@@ -239,6 +250,7 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async saveThemeToStore(name: string): Promise<void> {
+    await recoverRestore(this.app)
     const currentTheme = await this.getCurrentTheme()
     if (!currentTheme) {
       throw new Error('No current theme to save')
@@ -254,6 +266,7 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async loadThemeFromStore(name: string): Promise<ThemeData> {
+    await recoverRestore(this.app)
     const themesPath = this.getAppDataPath('themes')
     const themeFile = join(themesPath, `${name}.xtheme`)
 
@@ -266,6 +279,7 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async deleteStoredTheme(name: string): Promise<void> {
+    await recoverRestore(this.app)
     const themesPath = this.getAppDataPath('themes')
     const themeFile = join(themesPath, `${name}.xtheme`)
 
@@ -277,6 +291,7 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async exportTheme(destinationFile: string): Promise<string> {
+    await recoverRestore(this.app)
     const currentTheme = await this.getCurrentTheme()
     if (!currentTheme) {
       throw new Error('No current theme to export')
@@ -293,6 +308,7 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async importTheme(zipFilePath: string): Promise<ThemeData> {
+    await recoverRestore(this.app)
     const zipFile = await open(zipFilePath)
     const entries = await readAllEntries(zipFile)
     const themeEntry = entries.find(e => e.fileName === 'theme.json')
@@ -365,10 +381,12 @@ export class ThemeService extends AbstractService implements IThemeService {
   }
 
   async getCustomCss(): Promise<string> {
+    await recoverRestore(this.app)
     return readFile(this.getCustomCssPath(), 'utf-8').catch(() => '')
   }
 
   async setCustomCss(css: string): Promise<void> {
+    await recoverRestore(this.app)
     if (css.length > MAX_CSS_SIZE) {
       throw new Error('CSS content exceeds maximum size of 1 MB')
     }

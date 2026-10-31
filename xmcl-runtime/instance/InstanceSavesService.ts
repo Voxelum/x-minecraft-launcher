@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { ResourceManager } from '@xmcl/resource'
 import {
   ImportSaveException,
@@ -78,6 +79,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         this.error(e as any)
       }
     })
+    getRestoreGate(app).guardMethods(this, ['linkSaveAsServerWorld', 'cloneSave', 'deleteSave', 'updateSave', 'importSave', 'linkSharedSave', 'unlinkSharedSave', 'installFromMarket', 'deleteSaveChunks', 'pasteSaveChunks', 'importDatapack', 'deleteDatapack', 'installDatapackFromMarket'])
   }
 
   async getLinkedSaveWorld(instancePath: string): Promise<string | undefined> {

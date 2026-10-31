@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 279 (in 327 Vue files)
+**Total anchors:** 319 (in 327 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -52,8 +52,48 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `agent-tool-call` | [`xmcl-keystone-ui/src/components/AgentToolCall.vue#L2`](../xmcl-keystone-ui/src/components/AgentToolCall.vue#L2) |
 | `agent-transcript` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L31`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L31) |
 | `app-sidebar` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4) |
+| `auto-backup-delete` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L503`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L503) |
 | `auto-backup-enable-switch` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L134`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L134) |
+| `auto-backup-history-row` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L464`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L464) |
 | `auto-backup-run-now-btn` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L121`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L121) |
+| `backup-create-cancel` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L588`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L588) |
+| `backup-create-close` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L26`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L26) |
+| `backup-create-collections-switch` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L97`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L97) |
+| `backup-create-deselect-all` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L154`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L154) |
+| `backup-create-done` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L638`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L638) |
+| `backup-create-error` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L33`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L33) |
+| `backup-create-instance-checkbox` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L249`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L249) |
+| `backup-create-instance-row` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L240`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L240) |
+| `backup-create-instance-search` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L222`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L222) |
+| `backup-create-progress` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L312`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L312) |
+| `backup-create-result` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L517`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L517) |
+| `backup-create-select-all` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L145`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L145) |
+| `backup-create-settings-switch` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L70`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L70) |
+| `backup-create-submit` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L598`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L598) |
+| `backup-create-themes-switch` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L124`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L124) |
+| `backup-create-working-cancel` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L615`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L615) |
+| `backup-recovery-path` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L34`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L34) |
+| `backup-restore-cancel` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L468`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L468) |
+| `backup-restore-change-file` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L86`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L86) |
+| `backup-restore-close` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L25`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L25) |
+| `backup-restore-collections-switch` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L145`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L145) |
+| `backup-restore-conflict-overwrite` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L290`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L290) |
+| `backup-restore-conflict-rename` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L283`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L283) |
+| `backup-restore-conflict-skip` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L297`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L297) |
+| `backup-restore-conflict-strategy` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L276`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L276) |
+| `backup-restore-deselect-all` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L211`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L211) |
+| `backup-restore-done` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L510`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L510) |
+| `backup-restore-error` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L32`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L32) |
+| `backup-restore-instance-checkbox` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L238`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L238) |
+| `backup-restore-instance-row` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L228`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L228) |
+| `backup-restore-progress` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L309`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L309) |
+| `backup-restore-result` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L390`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L390) |
+| `backup-restore-select-all` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L202`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L202) |
+| `backup-restore-select-file` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L55`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L55) |
+| `backup-restore-settings-switch` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L117`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L117) |
+| `backup-restore-submit` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L478`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L478) |
+| `backup-restore-themes-switch` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L173`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L173) |
+| `backup-restore-working-cancel` | [`xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L495`](../xmcl-keystone-ui/src/views/BackupRestoreDialog.vue#L495) |
 | `base-setting-bedrock-available` | [`xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L100`](../xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L100) |
 | `base-setting-bedrock-devmode` | [`xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L22`](../xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L22) |
 | `base-setting-bedrock-installed` | [`xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L42`](../xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L42) |

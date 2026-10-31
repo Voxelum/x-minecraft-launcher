@@ -12,12 +12,14 @@ import {
 } from '@xmcl/runtime-api'
 import { onScopeDispose, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { formatBackupError } from './backupError'
 import { useNotifier } from './notifier'
 import { useService } from './service'
 
 export function useBackup() {
   const service = useService(BackupServiceKey)
   const {
+    cancelBackupOperation: cancelBackupOperationApi,
     createBackup: createBackupApi,
     loadBackupManifest: loadManifestApi,
     restoreBackup: restoreBackupApi,
@@ -31,6 +33,8 @@ export function useBackup() {
   const { notify } = useNotifier()
   const { t } = useI18n()
 
+  let manifestGeneration = 0
+  let disposed = false
   const isCreating = ref(false)
   const isRestoring = ref(false)
   const isLoadingManifest = ref(false)
@@ -42,14 +46,15 @@ export function useBackup() {
   const autoBackupFiles = ref<AutoBackupFileEntry[]>([])
 
   const onBackupProgress = (progress: BackupProgress) => {
-    backupProgress.value = progress
+    if (!disposed) backupProgress.value = progress
   }
 
   const onRestoreProgress = (progress: RestoreProgress) => {
-    restoreProgress.value = progress
+    if (!disposed) restoreProgress.value = progress
   }
 
   const onAutoBackupStatus = async (status: AutoBackupStatusEvent) => {
+    if (disposed) return
     isAutoBackupRunning.value = status.running
     autoBackupConfig.value = status.config
     if (!status.running) {
@@ -62,6 +67,8 @@ export function useBackup() {
   on('auto-backup-status', onAutoBackupStatus)
 
   onScopeDispose(() => {
+    disposed = true
+    manifestGeneration++
     service.removeListener('backup-progress', onBackupProgress)
     service.removeListener('restore-progress', onRestoreProgress)
     service.removeListener('auto-backup-status', onAutoBackupStatus)
@@ -69,7 +76,8 @@ export function useBackup() {
 
   async function refreshAutoBackupFiles() {
     try {
-      autoBackupFiles.value = await listAutoBackupsApi()
+      const files = await listAutoBackupsApi()
+      if (!disposed) autoBackupFiles.value = files
     } catch {
       // Ignore error loading file list
     }
@@ -77,7 +85,9 @@ export function useBackup() {
 
   async function loadAutoBackupState() {
     try {
-      autoBackupConfig.value = await getAutoBackupConfigApi()
+      const config = await getAutoBackupConfigApi()
+      if (disposed) return
+      autoBackupConfig.value = config
       await refreshAutoBackupFiles()
     } catch (e: any) {
       notify({
@@ -105,6 +115,7 @@ export function useBackup() {
   }
 
   async function triggerAutoBackupNow() {
+    if (isAutoBackupRunning.value || isCreating.value || isRestoring.value) return
     isAutoBackupRunning.value = true
     try {
       const created = await runAutoBackupNowApi()
@@ -135,7 +146,8 @@ export function useBackup() {
     }
   }
 
-  async function createBackup(options: BackupOptions): Promise<string | undefined> {
+  async function createBackup(options: BackupOptions): Promise<string> {
+    if (isCreating.value || isRestoring.value || isAutoBackupRunning.value) throw new Error(t('backup.preparing'))
     isCreating.value = true
     backupProgress.value = {
       phase: 'preparing',
@@ -158,22 +170,24 @@ export function useBackup() {
   }
 
   async function loadBackupManifest(path: string): Promise<BackupManifest> {
+    const generation = ++manifestGeneration
     isLoadingManifest.value = true
     try {
       return await loadManifestApi(path)
     } catch (e: any) {
-      notify({
+      if (!disposed && generation === manifestGeneration) notify({
         level: 'error',
         title: t('backup.loadManifestError'),
         body: e?.message || String(e),
       })
       throw e
     } finally {
-      isLoadingManifest.value = false
+      if (generation === manifestGeneration) isLoadingManifest.value = false
     }
   }
 
   async function restoreBackup(options: RestoreBackupOptions): Promise<RestoreBackupResult> {
+    if (isRestoring.value || isCreating.value || isAutoBackupRunning.value) throw new Error(t('backup.preparing'))
     isRestoring.value = true
     restoreProgress.value = {
       phase: 'reading',
@@ -187,7 +201,7 @@ export function useBackup() {
       notify({
         level: 'error',
         title: t('backup.restoreError'),
-        body: e?.message || String(e),
+        body: [formatBackupError(e).message, formatBackupError(e).recoveryPath].filter(Boolean).join('\n'),
       })
       throw e
     } finally {
@@ -204,6 +218,7 @@ export function useBackup() {
     autoBackupConfig,
     isAutoBackupRunning,
     autoBackupFiles,
+    cancelBackupOperation: cancelBackupOperationApi,
     createBackup,
     loadBackupManifest,
     restoreBackup,

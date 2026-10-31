@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { type AddInstanceServerOptions, InstanceServerInfoServiceKey, type RemoveInstanceServerOptions, ServerInfoState, type UpdateInstanceServerOptions, getServerInfoKey, type InstanceServerInfoService as IInstanceServerInfoService, SharedState } from '@xmcl/runtime-api'
 import { readServerInfo, writeServerInfo, ServerInfo } from '@xmcl/game-data'
 import { FSWatcher } from 'chokidar'
@@ -14,6 +15,7 @@ export class InstanceServerInfoService extends AbstractService implements IInsta
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app)
+    getRestoreGate(app).guardMethods(this, ['link', 'unlink', 'addServer', 'updateServer', 'removeServer'])
   }
 
   async isLinked(instancePath: string): Promise<boolean> {
