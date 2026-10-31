@@ -41,6 +41,12 @@ function createController(): WindowController {
   ipcRenderer.on('navigate', (_, route: string) => {
     emitter.emit('navigate', route)
   })
+  ipcRenderer.on('instance-select', (_, path: string) => {
+    emitter.emit('instance-select', path)
+  })
+  ipcRenderer.on('instance-launch', (_, path: string) => {
+    emitter.emit('instance-launch', path)
+  })
   const emitter = new EventEmitter()
 
   const writeClipboard =
@@ -101,6 +107,9 @@ function createController(): WindowController {
     },
     stopProfiling() {
       return ipcRenderer.invoke('stop-profiling')
+    },
+    syncPinnedInstances(paths: string[]) {
+      return ipcRenderer.invoke('sync-pinned-instances', paths)
     },
   }
 }

@@ -86,6 +86,8 @@ interface WindowControllerEventMap {
   maximize: boolean
   minimize: boolean
   navigate: string
+  'instance-select': string
+  'instance-launch': string
 }
 
 export interface MonitorInfo {
@@ -196,4 +198,5 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
   }>
 
   setTranslucent(enable: boolean): void
+  syncPinnedInstances(paths: string[]): Promise<void>
 }
