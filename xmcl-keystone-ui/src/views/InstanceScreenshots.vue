@@ -1,12 +1,12 @@
 <template>
   <div>
     <v-dialog
-      :model-value="true"
+      v-model="isShown"
       max-width="1080"
-      @update:model-value="onDialogUpdate"
+      :aria-label="t('screenshots.title')"
     >
     <v-card class="flex max-h-[85vh] flex-col overflow-hidden">
-      <v-card-title class="flex items-center gap-2 px-4 py-2">
+      <v-card-title class="flex flex-shrink-0 items-center gap-2 px-6 py-4">
         <v-icon color="primary">photo_library</v-icon>
         <span>{{ t('screenshots.title') }}</span>
         <v-spacer />
@@ -396,15 +396,23 @@ import { useDateString } from '@/composables/date'
 import { useService } from '@/composables/service'
 import { injection } from '@/util/inject'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
+import { getDropFilePaths, kDropHandler } from '@/composables/dropHandler'
 import ScreenshotLightbox from '@/components/ScreenshotLightbox.vue'
 import ScreenshotEditorModal from '@/components/ScreenshotEditorModal.vue'
 import InstanceScreenshotsActions from './InstanceScreenshotsActions.vue'
 import InstanceScreenshotsExtension from './InstanceScreenshotsExtension.vue'
 import { inject, ref } from 'vue'
+import { useDialog } from '@/composables/dialog'
 
 const { path: instancePath } = injection(kInstance)
-const router = useRouter()
+let returnFocus: HTMLElement | undefined
+const { isShown } = useDialog('screenshots', () => {
+  returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : undefined
+}, () => {
+  nextTick(() => {
+    if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true })
+  })
+})
 const { t } = useI18n()
 const { getDateString } = useDateString()
 const { openDirectory } = useService(BaseServiceKey)
@@ -440,21 +448,21 @@ const {
   closePreview,
 } = useScreenshotManagerContext()
 
-function onDialogUpdate(open: boolean) {
-  if (!open) {
-    void router.push('/')
-  }
-}
 
 // Drop handler
-const { dragover } = useGlobalDrop({
-  onDrop: async (dataTransfer) => {
-    const paths = getDropFilePaths(dataTransfer.files)
-    if (paths.length > 0) {
-      await importFiles(paths)
-    }
-  },
-})
+const { dragover, registerHandler } = injection(kDropHandler)
+watch(isShown, (shown, _, onCleanup) => {
+  if (!shown) return
+  const dispose = registerHandler({
+    onDrop: async (dataTransfer) => {
+      const paths = getDropFilePaths(dataTransfer.files)
+      if (paths.length > 0) {
+        await importFiles(paths)
+      }
+    },
+  })
+  onCleanup(dispose)
+}, { immediate: true })
 
 // Picking files to import
 async function onPickImport() {

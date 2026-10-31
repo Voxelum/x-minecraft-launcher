@@ -29,6 +29,7 @@
     <AppUnauthenticatedWarningDialog />
     <AppMultiplayerLoginDialog />
     <AppImageDialog />
+    <InstanceScreenshots />
     <AppSharedTooltip />
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <component :is="lazyDialogComponent" v-if="lazyDialogComponent" />
@@ -52,6 +53,7 @@
 <script lang=ts setup>
 import '@/assets/common.css'
 import AppImageDialog from '@/components/AppImageDialog.vue'
+import InstanceScreenshots from '@/views/InstanceScreenshots.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useAgentChatHotkey } from '@/composables/agentChat'

@@ -4,6 +4,7 @@
     fullscreen
     transition="fade-transition"
     content-class="screenshot-lightbox"
+    :content-props="{ style: { '--surface-dialog-radius': '0px' } }"
   >
     <div
       v-if="currentItem"

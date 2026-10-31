@@ -270,7 +270,7 @@
           </div>
 
           <div v-if="activeLayer" class="flex items-center gap-2 bg-black/40 px-2 py-1 rounded border border-white/10">
-            <span class="text-white/60">Layer:</span>
+            <span class="text-white/60">{{ t('screenshots.layer') }}:</span>
             <span class="font-medium text-white flex items-center gap-1">
               <v-icon size="14" color="primary">{{ getLayerIcon(activeLayer) }}</v-icon>
               {{ activeLayer.name }}
@@ -278,7 +278,7 @@
           </div>
 
           <span class="text-white/40 text-[11px] hidden md:inline">
-            Drag selection to move • Drag handles to resize • Enter to commit
+            {{ t('screenshots.transformHint') }}
           </span>
 
           <div class="flex items-center gap-1">
@@ -319,7 +319,7 @@
                   @click="strokeColor = c"
                 />
                 <!-- Native Color Swatch / Button without 3D border -->
-                <label class="relative w-6 h-6 rounded-full overflow-hidden border border-white/30 cursor-pointer hover:border-primary transition shrink-0 block" title="Custom color">
+                <label class="relative w-6 h-6 rounded-full overflow-hidden border border-white/30 cursor-pointer hover:border-primary transition shrink-0 block" :title="t('screenshots.customColor')">
                   <input
                     type="color"
                     v-model="strokeColor"
@@ -338,7 +338,7 @@
                 v-model="fillShape"
                 class="cursor-pointer rounded accent-primary"
               />
-              <label for="fillShape" class="cursor-pointer text-white/80 select-none">Fill</label>
+              <label for="fillShape" class="cursor-pointer text-white/80 select-none">{{ t('screenshots.fill') }}</label>
             </div>
           </div>
 
@@ -367,11 +367,11 @@
                   v-model.number="strokeWidth"
                   class="w-10 text-center bg-transparent border-0 outline-none font-mono text-xs text-white p-0"
                 />
-                <span class="text-white/40 text-[10px] ml-0.5">px</span>
+                <span class="text-white/40 text-[10px] ml-0.5">{{ t('screenshots.pixels') }}</span>
               </div>
 
               <!-- Visual Brush Preview Dot/Circle in Toolbar -->
-              <div class="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center bg-black/40 overflow-hidden ml-1" title="Brush Size Preview">
+              <div class="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center bg-black/40 overflow-hidden ml-1" :title="t('screenshots.brushPreview')">
                 <div
                   class="rounded-full flex-shrink-0 transition-all duration-75"
                   :style="{
@@ -425,11 +425,11 @@
                     v-model.number="fontSize"
                     class="w-10 text-center bg-transparent border-0 outline-none font-mono text-xs text-white p-0"
                   />
-                  <span class="text-white/40 text-[10px] ml-0.5">px</span>
+                  <span class="text-white/40 text-[10px] ml-0.5">{{ t('screenshots.pixels') }}</span>
                 </div>
 
                 <!-- Visual Font Size Preview in Toolbar -->
-                <div class="flex items-center gap-1 ml-1" title="Font Size Preview">
+                <div class="flex items-center gap-1 ml-1" :title="t('screenshots.fontPreview')">
                   <div class="h-6 px-2 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center overflow-hidden">
                     <span
                       class="font-bold flex-shrink-0"
@@ -478,7 +478,7 @@
                     class="text-[11px]"
                     @click="textBgMode = 'none'"
                   >
-                    None
+                    {{ t('screenshots.textBgNone') }}
                   </v-btn>
                   <v-btn
                     size="x-small"
@@ -487,7 +487,7 @@
                     class="text-[11px]"
                     @click="textBgMode = 'shadow'"
                   >
-                    Shadow
+                    {{ t('screenshots.textBgShadow') }}
                   </v-btn>
                   <v-btn
                     size="x-small"
@@ -496,7 +496,7 @@
                     class="text-[11px]"
                     @click="textBgMode = 'box'"
                   >
-                    Box
+                    {{ t('screenshots.textBgBox') }}
                   </v-btn>
                 </div>
               </div>
@@ -555,7 +555,7 @@
       >
         <div class="flex items-center gap-2 text-yellow-300">
           <v-icon size="18">crop</v-icon>
-          <span>Drag bounding box to select crop area.</span>
+          <span>{{ t('screenshots.cropHint') }}</span>
         </div>
         <div class="flex items-center gap-2">
           <v-btn
@@ -635,7 +635,7 @@
               <!-- Floating Move Pill at top center (always accessible, especially when box is small!) -->
               <div
                 class="transform-pill"
-                v-shared-tooltip.top="() => 'Drag to move'"
+                v-shared-tooltip.top="() => t('screenshots.dragToMove')"
                 @mousedown.stop="onStartMoveTransform"
               >
                 <v-icon size="11" color="white" class="mr-1">open_with</v-icon>
@@ -684,7 +684,7 @@
               >
                 <div class="flex items-center gap-1 text-[11px] text-white/60">
                   <v-icon size="14">drag_indicator</v-icon>
-                  <span>{{ fontFamily.split(',')[0].replace(/['"]/g, '') }} • {{ fontSize }}px</span>
+                  <span>{{ fontFamily.split(',')[0].replace(/['"]/g, '') }} • {{ fontSize }} {{ t('screenshots.pixels') }}</span>
                 </div>
                 <div class="flex items-center gap-1">
                   <v-btn
@@ -728,7 +728,7 @@
                 @keydown.esc.prevent="cancelText"
               />
               <div class="text-[10px] text-white/40 pt-1 text-right">
-                Enter to place • Esc to cancel
+                {{ t('screenshots.textPlacementHint') }}
               </div>
             </div>
 
@@ -874,7 +874,7 @@
                   size="x-small"
                   variant="text"
                   :disabled="index === 0"
-                  title="Move Up"
+                  :title="t('screenshots.layerMoveUp')"
                   @click.stop="moveLayerUp(layer.id)"
                 >
                   <v-icon size="16">keyboard_arrow_up</v-icon>
@@ -884,7 +884,7 @@
                   size="x-small"
                   variant="text"
                   :disabled="index === reversedLayers.length - 1 || layer.type === 'base'"
-                  title="Move Down"
+                  :title="t('screenshots.layerMoveDown')"
                   @click.stop="moveLayerDown(layer.id)"
                 >
                   <v-icon size="16">keyboard_arrow_down</v-icon>
@@ -1505,7 +1505,7 @@ function duplicateActiveLayer() {
   const dup: EditorLayer = {
     ...cur,
     id: `layer-${Date.now()}`,
-    name: `${cur.name} (Copy)`,
+    name: t('screenshots.layerCopy', { name: cur.name }),
     canvas: copyCanvas,
     textData: cur.textData ? { ...cur.textData } : undefined,
     blurData: cur.blurData ? { ...cur.blurData } : undefined,
