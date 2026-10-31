@@ -1,6 +1,6 @@
 <template>
   <div
-    class="z-5 flex flex-shrink flex-grow-0 items-center justify-between gap-2 px-2"
+    class="z-5 flex flex-wrap flex-shrink-0 flex-grow-0 items-center justify-between gap-2 px-6"
     :class="{
       'mb-3': !compact,
       'mb-2': compact,
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Center: Search input -->
-    <div class="flex-grow max-w-sm mx-2">
+    <div class="flex-grow min-w-[160px] max-w-sm">
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"

@@ -1657,6 +1657,109 @@ screenshots:
   openFolder: 打开截图文件夹
   playRandom: 随机播放
   playSequence: 顺序播放
+  title: 截图与照片
+  manage: 截图管理器
+  emptyTitle: 暂无截图
+  emptyDescription: 在游戏中按 F2 截图，或手动导入照片。
+  dropHint: 将照片或截图拖到此处，添加到画廊
+  backToHome: 返回主页
+  import: 添加照片
+  images: 图片
+  importSuccess: 已成功导入 {count} 张照片
+  copy: 复制图片
+  copied: 已复制到剪贴板！
+  setWallpaper: 设为背景
+  setWallpaperSuccess: 已设为实例背景图片！
+  setIcon: 设为图标
+  setIconSuccess: 已设为实例图标！
+  export: 保存文件
+  exportSuccess: 截图保存成功！
+  exportSelected: 导出所选截图
+  exportSelectedTitle: 选择导出文件夹
+  exportSelectedSuccess: 已成功导出 {count} 张截图
+  deleteConfirmTitle: 删除截图？
+  deleteConfirmMessage: 确定要删除 {count} 张截图吗？此操作无法撤销。
+  deleteSuccess: 截图已删除
+  selectedCount: '已选择：{count}'
+  selectAll: 全选
+  clearSelection: 取消全选
+  countLabel: '{count} 张截图'
+  searchPlaceholder: 按名称搜索……
+  noSearchResults: 没有匹配的截图
+  noSearchResultsHint: 请尝试调整搜索内容
+  sort: 排序
+  sortDateDesc: 最新优先
+  sortDateAsc: 最早优先
+  sortSizeDesc: 最大优先
+  sortSizeAsc: 最小优先
+  sortNameAsc: 名称（A-Z）
+  sortNameDesc: 名称（Z-A）
+  viewGrid: 大网格
+  viewGridCompact: 紧凑网格
+  viewList: 列表视图
+  edit: 编辑
+  editorTitle: 编辑截图
+  saveCopy: 保存副本
+  saveOverwrite: 覆盖原图
+  saveSuccess: 截图已保存！
+  saveCopySuccess: 已保存为新截图！
+  toolSelect: 选择 / 平移
+  toolMove: 移动与变换（Ctrl+T / V）
+  toolPan: 平移（空格+拖动）
+  layers: 图层
+  layerAdd: 添加图层
+  layerDuplicate: 复制图层
+  layerDelete: 删除图层
+  layerOpacity: 不透明度
+  transformLayer: 自由变换
+  applyTransform: 应用变换（Enter）
+  cancelTransform: 取消（Esc）
+  layerBackground: 背景
+  layerPaint: 绘画
+  layerText: 文字
+  layerBlur: 模糊
+  toolPen: 画笔
+  toolArrow: 箭头
+  toolRect: 矩形
+  toolCircle: 圆形
+  toolLine: 直线
+  toolText: 文字
+  toolHighlighter: 荧光笔
+  toolBlur: 像素化 / 模糊
+  toolCrop: 裁剪
+  applyCrop: 应用裁剪
+  cancelCrop: 取消裁剪
+  strokeWidth: 线条宽度
+  fontSize: 字号
+  color: 颜色
+  undo: 撤销
+  redo: 重做
+  clear: 清空全部
+  textPlaceholder: 点击输入文字……
+  fontFamily: 字体
+  fontBold: 粗体
+  fontItalic: 斜体
+  textApply: 放置文字
+  textBg: 背景
+  zoomIn: 放大
+  zoomOut: 缩小
+  resetZoom: 重置缩放
+  layer: 图层
+  dragToMove: 拖动以移动
+  transformHint: 拖动选区以移动，拖动控制点以缩放，按 Enter 应用
+  customColor: 自定义颜色
+  fill: 填充
+  brushPreview: 画笔大小预览
+  fontPreview: 字号预览
+  textBgNone: 无
+  textBgShadow: 阴影
+  textBgBox: 方框
+  cropHint: 拖动边框选择裁剪区域。
+  textPlacementHint: 按 Enter 放置，按 Esc 取消
+  layerMoveUp: 上移图层
+  layerMoveDown: 下移图层
+  layerCopy: '{name} 副本'
+  pixels: 像素
 search:
   favorate: 收藏
   local: 已安装

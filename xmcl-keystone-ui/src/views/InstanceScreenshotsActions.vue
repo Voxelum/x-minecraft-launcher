@@ -29,18 +29,20 @@
     </v-btn>
 
     <v-btn
-      v-shared-tooltip.bottom="() => t('screenshots.backToHome')"
+      v-shared-tooltip.bottom="() => t('shared.close')"
       icon
       variant="text"
       density="comfortable"
-      to="/"
+      :aria-label="t('shared.close')"
+      @click="hide()"
     >
-      <v-icon>arrow_back</v-icon>
+      <v-icon>close</v-icon>
     </v-btn>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useDialog } from '@/composables/dialog'
 import { useService } from '@/composables/service'
 import { kInstance } from '@/composables/instance'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
@@ -49,6 +51,7 @@ import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useScreenshotManagerContext } from '@/composables/screenshotManager'
 
+const { hide } = useDialog('screenshots')
 const { path: instancePath } = injection(kInstance)
 const { openDirectory } = useService(BaseServiceKey)
 const { t } = useI18n()

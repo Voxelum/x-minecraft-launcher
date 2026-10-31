@@ -20,7 +20,7 @@
       variant="text"
       density="comfortable"
       :aria-label="t('screenshots.manage')"
-      to="/screenshots"
+      @click="showScreenshots()"
     >
       <v-icon> photo_camera </v-icon>
     </v-btn>
@@ -76,6 +76,7 @@ import { BaseServiceKey, BedrockServiceKey, BedrockStoragePaths } from "@xmcl/ru
 import { isBedrockInstance } from "@xmcl/instance";
 import { useDialog } from "../composables/dialog";
 
+const { show: showScreenshots } = useDialog('screenshots')
 const { path, instance } = injection(kInstance);
 const { isValidating } = injection(kInstances);
 const isBedrock = computed(() => isBedrockInstance(instance.value));

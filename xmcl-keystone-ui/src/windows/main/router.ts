@@ -10,7 +10,6 @@ import Mod from '@/views/Mod.vue'
 import ModActions from '@/views/ModActions.vue'
 import ModExtension from '@/views/ModExtension.vue'
 import MultiplayerDesktop from '@/views/MultiplayerDesktop.vue'
-import InstanceScreenshots from '@/views/InstanceScreenshots.vue'
 import ResourcePack from '@/views/ResourcePack.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
 import ResourcePackExtension from '@/views/ResourcePackExtension.vue'
@@ -82,9 +81,7 @@ export const router = createRouter({
         },
         {
           path: 'screenshots',
-          components: {
-            default: InstanceScreenshots,
-          },
+          redirect: '/',
         },
         {
           path: 'base-setting',

@@ -35,7 +35,7 @@
         size="small"
         color="white"
         class="no-drag"
-        @click.stop="push('/screenshots')"
+        @click.stop="showScreenshots()"
       >
         <v-icon>grid_view</v-icon>
       </v-btn>
@@ -137,7 +137,7 @@
                 size="small"
                 class="mt-1"
                 prepend-icon="photo_camera"
-                @click.stop="push('/screenshots')"
+                @click.stop="showScreenshots()"
               >
                 {{ t('screenshots.manage') }}
               </v-btn>
@@ -149,10 +149,10 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
+import { useDialog } from '@/composables/dialog'
 import AppImageControls from '@/components/AppImageControls.vue'
 
-const { push } = useRouter()
+const { show: showScreenshots } = useDialog('screenshots')
 import { useIntervalFn, useLocalStorage } from '@vueuse/core'
 import { kImageDialog } from '@/composables/imageDialog'
 import { useInstanceScreenshots } from '@/composables/screenshot'

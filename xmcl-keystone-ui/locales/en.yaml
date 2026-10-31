@@ -1761,7 +1761,7 @@ screenshots:
   selectAll: Select all
   clearSelection: Deselect all
   countLabel: "{count} screenshots"
-  searchPlaceholder: Search by name or date...
+  searchPlaceholder: Search by name...
   noSearchResults: No matching screenshots
   noSearchResultsHint: Try adjusting your search query
   sort: Sort
@@ -1776,6 +1776,22 @@ screenshots:
   viewList: List view
   edit: Edit
   editorTitle: Edit Screenshot
+  layer: Layer
+  dragToMove: Drag to move
+  transformHint: Drag selection to move • Drag handles to resize • Enter to commit
+  customColor: Custom color
+  fill: Fill
+  brushPreview: Brush Size Preview
+  fontPreview: Font Size Preview
+  textBgNone: None
+  textBgShadow: Shadow
+  textBgBox: Box
+  cropHint: Drag bounding box to select crop area.
+  textPlacementHint: Enter to place • Esc to cancel
+  layerMoveUp: Move Up
+  layerMoveDown: Move Down
+  layerCopy: '{name} Copy'
+  pixels: px
   saveCopy: Save Copy
   saveOverwrite: Overwrite
   saveSuccess: Screenshot saved!
