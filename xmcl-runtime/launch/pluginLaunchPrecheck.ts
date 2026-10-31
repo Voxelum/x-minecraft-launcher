@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { LaunchPrecheck, MinecraftFolder } from '@xmcl/core'
 import {
   LaunchException,
@@ -223,8 +224,10 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   app.registry.get(InstanceService).then((serv) => {
     serv.state.subscribe('instanceAdd', (instance) => {
       if (instance.edition === 'bedrock') return
-      ensureLinkFolderFromRoot(instance.path, 'libraries')
-      ensureLinkFolderFromRoot(instance.path, 'versions')
+      void getRestoreGate(app).run(() => Promise.all([
+        ensureLinkFolderFromRoot(instance.path, 'libraries'),
+        ensureLinkFolderFromRoot(instance.path, 'versions'),
+      ])).catch(e => logger.error(e))
     })
   })
   launchService.registerMiddleware({

@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { Resource, ResourceDomain, ResourceManager } from '@xmcl/resource'
 import { InstanceModsService as IInstanceModsService, InstanceModsServiceKey, UpdateInstanceResourcesOptions } from '@xmcl/runtime-api'
 import { emptyDir, ensureDir, rename, stat } from 'fs-extra'
@@ -18,6 +19,7 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
     @Inject(kResourceManager) private resourceManager: ResourceManager,
   ) {
     super(app, ResourceDomain.Mods)
+    getRestoreGate(app).guardMethods(this, ['enable', 'disable', 'installToServerInstance'])
   }
 
   async enable({ files: mods, path }: UpdateInstanceResourcesOptions): Promise<void> {

@@ -15,7 +15,7 @@
  *    so scripts/build-tutorial.ts can compile docs.
  */
 import { _electron, ElectronApplication, Page, test as base } from '@playwright/test'
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -178,7 +178,7 @@ export const test = base.extend<{
     const persistent = isShowcase(testInfo.file) && !launcherOptions.bootstrap
     const tempRoot = persistent
       ? SHOWCASE_ROOT
-      : await mkdtemp(join(tmpdir(), 'xmcl-e2e-'))
+      : await realpath(await mkdtemp(join(tmpdir(), 'xmcl-e2e-')))
     const appDataPath = join(tempRoot, 'appData')
     const gameDataPath = join(tempRoot, 'gameData')
     await mkdir(appDataPath, { recursive: true })

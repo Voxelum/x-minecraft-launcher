@@ -92,6 +92,133 @@ bedrock:
   downloadFailed: Không tải được Bedrock {version}
   launchFailed: Không thể khởi chạy phiên bản Bedrock này
   removeFailed: Không thể xóa Bedrock {version}
+backup:
+  title: 'Sao lưu & Khôi phục'
+  description: Sao lưu và khôi phục cài đặt, bộ sưu tập, giao diện và các phiên bản trò chơi của bạn
+  launcherData: Dữ liệu trình khởi chạy
+  includeSettingsTitle: Cài đặt trình khởi chạy
+  includeSettingsHint: Tùy chọn chung, ngôn ngữ, chế độ nhà phát triển và giao diện
+  includeCollectionsTitle: Bộ sưu tập đã lưu
+  includeCollectionsHint: Bộ sưu tập mod và tài nguyên do trình khởi chạy quản lý
+  includeThemesTitle: 'Giao diện & Phương tiện tùy chỉnh'
+  includeThemesHint: Màu chủ đề, CSS tùy chỉnh và hình nền
+  instances: Phiên bản (Instances)
+  selectAll: Chọn tất cả
+  deselectAll: Bỏ chọn tất cả
+  instanceDataOptions: Tùy chọn dữ liệu phiên bản
+  includeConfigs: 'Cấu hình & Tùy chọn'
+  includeSaves: Thế giới đã lưu (Saves)
+  includeResourcePacks: Gói tài nguyên
+  includeShaderPacks: Gói Shader
+  modsMode: Mods
+  modsFull: Tệp đầy đủ (.jar)
+  modsListOnly: Chỉ danh sách mod (nhẹ)
+  modsNone: Không bao gồm mod
+  noInstancesFound: Không tìm thấy phiên bản nào trong trình khởi chạy.
+  excludeLibrariesNotice: Các tệp thư viện cốt lõi, tài nguyên Minecraft và bộ nhớ đệm tạm thời được tự động loại trừ để giữ tệp sao lưu nhỏ gọn.
+  create: Tạo bản sao lưu
+  createTitle: Tạo tệp sao lưu XMCL
+  saveDialogTitle: Lưu tệp sao lưu XMCL
+  fileFilterName: 'Tệp sao lưu XMCL (*.xmclbackup, *.zip)'
+  createError: Không thể tạo bản sao lưu
+  loadManifestError: Không thể đọc tệp sao lưu
+  restore: Khôi phục
+  restoreTitle: Khôi phục từ bản sao lưu
+  preparing: Đang chuẩn bị...
+  workingTitle: Đang tạo tệp sao lưu...
+  restoringTitle: Đang khôi phục từ bản sao lưu...
+  elapsedTime: Thời gian đã trôi qua
+  remainingTime: Thời gian còn lại dự kiến
+  calculatingRemaining: Đang tính toán...
+  lessThanMinute: '< 1 phút'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Thế giới
+  modsCategory: Mods
+  resourcePacksCategory: Gói tài nguyên
+  shaderPacksCategory: Gói Shader
+  configsCategory: Cấu hình
+  activityLog: Nhật ký hoạt động
+  copyLog: Sao chép nhật ký
+  copiedLog: Đã sao chép nhật ký vào bộ nhớ tạm
+  openFolder: Hiển thị trong thư mục
+  done: Hoàn tất
+  backupDone: 'Sao lưu hoàn tất!'
+  backupDoneHint: Tệp sao lưu của bạn đã được tạo và xác minh.
+  restoreDone: 'Khôi phục hoàn tất!'
+  restoreDoneHint: Tất cả dữ liệu và phiên bản đã chọn đã được khôi phục thành công.
+  timeTaken: 'Thời gian thực hiện: {time}'
+  destinationFile: 'Đã lưu tại: {path}'
+  stagePreparing: Đang chuẩn bị
+  stageSettings: Cài đặt trình khởi chạy
+  stageCollections: Bộ sưu tập đã lưu
+  stageThemes: 'Giao diện & Phương tiện'
+  stageInstances: Phiên bản trò chơi
+  stageCompressing: Đang nén tệp lưu trữ
+  stageComplete: Hoàn tất
+  stageLabel: 'Giai đoạn: {stage}'
+  searchInstancesPlaceholder: Tìm kiếm phiên bản theo tên hoặc phiên bản...
+  selectBackupFilePrompt: Chọn tệp sao lưu để khôi phục
+  selectBackupFileDescription: Chọn tệp .xmclbackup hoặc .zip chứa dữ liệu và phiên bản XMCL của bạn.
+  selectFile: Chọn tệp
+  selectBackupFileTitle: Mở tệp sao lưu XMCL
+  createdOn: 'Được tạo vào {date}'
+  changeFile: Đổi tệp
+  dataToRestore: Dữ liệu cần khôi phục
+  restoreSettings: Khôi phục cài đặt
+  restoreSettingsHint: Ghi đè tùy chọn hiện tại bằng bản sao lưu
+  restoreCollections: Khôi phục bộ sưu tập
+  restoreCollectionsHint: Nhập và hợp nhất các bộ sưu tập đã lưu
+  restoreThemes: 'Khôi phục giao diện & phương tiện'
+  restoreThemesHint: Cài đặt lại giao diện, CSS tùy chỉnh và phương tiện nền
+  noLauncherDataInBackup: Không tìm thấy cài đặt hoặc giao diện trong bản sao lưu này.
+  conflictStrategyTitle: Xử lý trùng tên phiên bản
+  conflictRename: 'Giữ bản hiện có và đổi tên bản khôi phục (ví dụ: name-restored)'
+  conflictOverwrite: Ghi đè các tệp phiên bản hiện có
+  conflictSkip: Bỏ qua các phiên bản đã tồn tại trên ổ đĩa
+  restoreError: Không thể khôi phục bản sao lưu
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
+  createBackupTitle: Tạo bản sao lưu
+  createBackupDescription: Lưu cài đặt, bộ sưu tập, giao diện tùy chỉnh và các phiên bản vào một tệp lưu trữ di động duy nhất.
+  restoreBackupTitle: Khôi phục bản sao lưu
+  restoreBackupDescription: Khôi phục cài đặt, giao diện, bộ sưu tập hoặc phiên bản từ tệp sao lưu đã lưu trước đó.
+  portableArchiveNoticeTitle: Sao lưu một tệp di động
+  portableArchiveNoticeDescription: Bản sao lưu được lưu dưới dạng tệp .xmclbackup duy nhất, dễ dàng sao chép sang USB hoặc đồng bộ đám mây.
+  autoBackupTitle: Tự động sao lưu dưới nền
+  autoBackupDescription: Tự động sao lưu một hoặc nhiều phiên bản đã chọn trong nền theo lịch trình
+  autoBackupStatusRunning: Đang sao lưu...
+  autoBackupStatusEnabled: Đang bật
+  autoBackupStatusDisabled: Đã tắt
+  autoBackupRunNow: Chạy ngay
+  autoBackupLastRun: Lần tự động sao lưu cuối
+  autoBackupNeverRun: Chưa từng
+  selectedCount: 'Đã chọn {selected} / {total}'
+  autoBackupSelectInstances: Phiên bản tự động sao lưu (Chọn một hoặc nhiều)
+  searchInstances: Tìm kiếm phiên bản...
+  autoBackupInterval: Tần suất sao lưu
+  autoBackupRetention: Lưu giữ bản sao lưu
+  autoBackupDestination: Thư mục tự động sao lưu
+  browse: Duyệt
+  autoBackupContentLabel: Nội dung bao gồm trong sao lưu nền
+  instanceSaves: 'Thế giới & Lưu trữ'
+  instanceConfigs: 'Cấu hình & Tùy chọn'
+  instanceMods: Mods
+  instanceResourcePacks: Gói tài nguyên
+  instanceShaderPacks: Gói Shader
+  launcherSettings: Cài đặt trình khởi chạy
+  autoBackupHistoryTitle: Bản sao lưu tự động gần đây
+  autoBackupError: Tự động sao lưu thất bại
+  interval30m: Mỗi 30 phút
+  interval1h: Mỗi 1 giờ
+  interval2h: Mỗi 2 giờ
+  interval4h: Mỗi 4 giờ
+  interval6h: Mỗi 6 giờ
+  interval12h: Mỗi 12 giờ
+  interval24h: Mỗi 24 giờ
+  keepCount: 'Giữ {count} bản sao lưu gần nhất'
 baseSetting:
   title: Cài đặt phiên bản
 browseApp:

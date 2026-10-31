@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { getInstanceGroupFileName, InstanceContentGroupType, InstanceModsGroupService as IInstanceModsGroupService, InstanceModsGroupState, InstanceGroupStateKey, InstanceModsGroupServiceKey, ModGroupRules, SharedState, ModGroupData } from '@xmcl/runtime-api'
 import { FSWatcher } from 'chokidar'
 import { ensureFile, pathExists, readFile, writeFile } from 'fs-extra'
@@ -14,6 +15,7 @@ import { LauncherApp } from '../app/LauncherApp'
 export class InstanceModsGroupService extends AbstractService implements IInstanceModsGroupService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app)
+    getRestoreGate(app).guardMethods(this, ['updateModsGroups', 'updateSharedGroupRules'])
   }
 
   /**

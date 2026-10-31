@@ -92,6 +92,133 @@ bedrock:
   downloadFailed: Gagal mengunduh Bedrock {version}
   launchFailed: Gagal meluncurkan versi Bedrock ini
   removeFailed: Gagal menghapus Bedrock {version}
+backup:
+  title: 'Cadangan & Pemulihan'
+  description: Cadangkan dan pulihkan pengaturan, koleksi, tema, dan instance game Anda
+  launcherData: Data Peluncur
+  includeSettingsTitle: Pengaturan Peluncur
+  includeSettingsHint: Preferensi umum, bahasa, mode pengembang, dan pengaturan tampilan
+  includeCollectionsTitle: Koleksi Tersimpan
+  includeCollectionsHint: Koleksi mod dan resource yang dikelola peluncur
+  includeThemesTitle: 'Tema & Media Kustom'
+  includeThemesHint: Warna tema, gaya CSS kustom, dan media latar belakang
+  instances: Instance
+  selectAll: Pilih Semua
+  deselectAll: Batalkan Pilihan
+  instanceDataOptions: Opsi Data Instance
+  includeConfigs: 'Konfigurasi & Opsi'
+  includeSaves: Dunia (Saves)
+  includeResourcePacks: Paket Resource
+  includeShaderPacks: Paket Shader
+  modsMode: Mod
+  modsFull: File lengkap (.jar)
+  modsListOnly: Hanya daftar mod (ringan)
+  modsNone: Kecualikan mod
+  noInstancesFound: Tidak ada instance yang ditemukan di peluncur.
+  excludeLibrariesNotice: File pustaka inti, aset Minecraft, dan cache sementara dikecualikan secara otomatis agar ukuran arsip tetap ringkas.
+  create: Buat Cadangan
+  createTitle: Buat Arsip Cadangan XMCL
+  saveDialogTitle: Simpan Arsip Cadangan XMCL
+  fileFilterName: 'Arsip Cadangan XMCL (*.xmclbackup, *.zip)'
+  createError: Gagal membuat cadangan
+  loadManifestError: Gagal membaca arsip cadangan
+  restore: Pulihkan
+  restoreTitle: Pulihkan dari Cadangan
+  preparing: Menyiapkan...
+  workingTitle: Membuat Arsip Cadangan...
+  restoringTitle: Memulihkan dari Cadangan...
+  elapsedTime: Waktu berlalu
+  remainingTime: Perkiraan sisa waktu
+  calculatingRemaining: Menghitung...
+  lessThanMinute: '< 1 mnt'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Dunia
+  modsCategory: Mod
+  resourcePacksCategory: Paket Resource
+  shaderPacksCategory: Paket Shader
+  configsCategory: Konfigurasi
+  activityLog: Log Aktivitas
+  copyLog: Salin Log
+  copiedLog: Log disalin ke papan klip
+  openFolder: Tampilkan di Folder
+  done: Selesai
+  backupDone: 'Cadangan Selesai!'
+  backupDoneHint: Arsip cadangan Anda telah dibuat dan diverifikasi.
+  restoreDone: 'Pemulihan Selesai!'
+  restoreDoneHint: Semua data dan instance yang dipilih berhasil dipulihkan.
+  timeTaken: 'Waktu yang dibutuhkan: {time}'
+  destinationFile: 'Disimpan ke: {path}'
+  stagePreparing: Menyiapkan
+  stageSettings: Pengaturan Peluncur
+  stageCollections: Koleksi Tersimpan
+  stageThemes: 'Tema & Media'
+  stageInstances: Instance Game
+  stageCompressing: Mengompresi Arsip
+  stageComplete: Selesai
+  stageLabel: 'Tahap: {stage}'
+  searchInstancesPlaceholder: Cari instance berdasarkan nama atau versi...
+  selectBackupFilePrompt: Pilih arsip cadangan untuk dipulihkan
+  selectBackupFileDescription: Pilih file .xmclbackup atau .zip yang berisi data dan instance XMCL Anda.
+  selectFile: Pilih File
+  selectBackupFileTitle: Buka Arsip Cadangan XMCL
+  createdOn: 'Dibuat pada {date}'
+  changeFile: Ganti File
+  dataToRestore: Data untuk Dipulihkan
+  restoreSettings: Pulihkan Pengaturan
+  restoreSettingsHint: Timpa preferensi peluncur saat ini dengan salinan cadangan
+  restoreCollections: Pulihkan Koleksi
+  restoreCollectionsHint: Impor dan gabungkan koleksi tersimpan ke peluncur
+  restoreThemes: 'Pulihkan Tema & Media'
+  restoreThemesHint: Instal ulang tema, CSS kustom, dan media latar belakang
+  noLauncherDataInBackup: Tidak ada pengaturan atau tema peluncur dalam arsip cadangan ini.
+  conflictStrategyTitle: Penanganan Konflik Nama Instance
+  conflictRename: Pertahankan yang ada dan ganti nama instance yang dipulihkan (mis. name-restored)
+  conflictOverwrite: Timpa file instance yang ada
+  conflictSkip: Lewati instance yang sudah ada di disk
+  restoreError: Gagal memulihkan cadangan
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
+  createBackupTitle: Buat Cadangan
+  createBackupDescription: Simpan pengaturan peluncur, koleksi, tema kustom, dan instance ke satu file arsip portabel.
+  restoreBackupTitle: Pulihkan Cadangan
+  restoreBackupDescription: Pulihkan pengaturan, tema, koleksi, atau instance dari arsip cadangan yang disimpan sebelumnya.
+  portableArchiveNoticeTitle: Cadangan Satu File Portabel
+  portableArchiveNoticeDescription: Cadangan disimpan sebagai arsip .xmclbackup tunggal yang mudah disalin ke USB atau disinkronkan ke cloud.
+  autoBackupTitle: Cadangan Otomatis Latar Belakang
+  autoBackupDescription: Cadangkan satu atau beberapa instance yang dipilih secara otomatis di latar belakang sesuai jadwal
+  autoBackupStatusRunning: Mencadangkan...
+  autoBackupStatusEnabled: Aktif
+  autoBackupStatusDisabled: Nonaktif
+  autoBackupRunNow: Jalankan Sekarang
+  autoBackupLastRun: Cadangan otomatis terakhir
+  autoBackupNeverRun: Belum pernah
+  selectedCount: '{selected} / {total} dipilih'
+  autoBackupSelectInstances: Instance untuk Cadangan Otomatis (Pilih satu atau lebih)
+  searchInstances: Cari instance...
+  autoBackupInterval: Frekuensi Cadangan
+  autoBackupRetention: Retensi Cadangan
+  autoBackupDestination: Folder Cadangan Otomatis
+  browse: Telusuri
+  autoBackupContentLabel: Konten yang Disertakan dalam Cadangan Latar Belakang
+  instanceSaves: 'Dunia & Saves'
+  instanceConfigs: 'Konfigurasi & Opsi'
+  instanceMods: Mod
+  instanceResourcePacks: Paket Resource
+  instanceShaderPacks: Paket Shader
+  launcherSettings: Pengaturan Peluncur
+  autoBackupHistoryTitle: Cadangan Otomatis Terbaru
+  autoBackupError: Cadangan otomatis gagal
+  interval30m: Setiap 30 menit
+  interval1h: Setiap 1 jam
+  interval2h: Setiap 2 jam
+  interval4h: Setiap 4 jam
+  interval6h: Setiap 6 jam
+  interval12h: Setiap 12 jam
+  interval24h: Setiap 24 jam
+  keepCount: 'Simpan {count} cadangan terakhir'
 baseSetting:
   title: Pengaturan Instansi
 browseApp:

@@ -62,6 +62,133 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: バックアップと復元
+  description: 設定、コレクション、テーマ、およびゲームインスタンスをバックアップ・復元します
+  launcherData: ランチャーデータ
+  includeSettingsTitle: ランチャー設定
+  includeSettingsHint: 一般設定、言語、開発者モード、外観設定
+  includeCollectionsTitle: 保存済みコレクション
+  includeCollectionsHint: ランチャーで管理されているModおよびリソースコレクション
+  includeThemesTitle: カスタムテーマとメディア
+  includeThemesHint: テーマカラー、カスタムCSS、背景メディア
+  instances: インスタンス
+  selectAll: すべて選択
+  deselectAll: 選択解除
+  instanceDataOptions: インスタンスデータのオプション
+  includeConfigs: 設定とオプション
+  includeSaves: セーブデータ (ワールド)
+  includeResourcePacks: リソースパック
+  includeShaderPacks: シェーダーパック
+  modsMode: Mod
+  modsFull: 完全なファイル (.jar)
+  modsListOnly: Modリストのみ (軽量)
+  modsNone: Modを除外
+  noInstancesFound: インスタンスが見つかりません。
+  excludeLibrariesNotice: コアライブラリ、Minecraftアセット、一時キャッシュはアーカイブを軽量に保つため自動的に除外されます（起動時に自動再ダウンロードされます）。
+  create: バックアップ作成
+  createTitle: XMCL バックアップアーカイブの作成
+  saveDialogTitle: XMCL バックアップアーカイブを保存
+  fileFilterName: 'XMCL バックアップアーカイブ (*.xmclbackup, *.zip)'
+  createError: バックアップの作成に失敗しました
+  loadManifestError: バックアップアーカイブの読み込みに失敗しました
+  restore: 復元
+  restoreTitle: バックアップから復元
+  preparing: 準備中...
+  workingTitle: バックアップアーカイブを作成中...
+  restoringTitle: バックアップから復元中...
+  elapsedTime: 経過時間
+  remainingTime: 推定残り時間
+  calculatingRemaining: 計算中...
+  lessThanMinute: 1分未満
+  itemsProgress: '{current}/{total}'
+  savesCategory: セーブデータ
+  modsCategory: Mod
+  resourcePacksCategory: リソースパック
+  shaderPacksCategory: シェーダーパック
+  configsCategory: 設定
+  activityLog: アクティビティログ
+  copyLog: ログをコピー
+  copiedLog: ログをクリップボードにコピーしました
+  openFolder: フォルダで表示
+  done: 完了
+  backupDone: バックアップ完了！
+  backupDoneHint: バックアップアーカイブが作成され、検証されました。
+  restoreDone: 復元完了！
+  restoreDoneHint: 選択したすべてのデータとインスタンスが正常に復元されました。
+  timeTaken: '所要時間: {time}'
+  destinationFile: '保存先: {path}'
+  stagePreparing: 準備中
+  stageSettings: ランチャー設定
+  stageCollections: 保存済みコレクション
+  stageThemes: テーマとメディア
+  stageInstances: ゲームインスタンス
+  stageCompressing: アーカイブ圧縮中
+  stageComplete: 完了
+  stageLabel: 'ステージ: {stage}'
+  searchInstancesPlaceholder: 名前またはバージョンでインスタンスを検索...
+  selectBackupFilePrompt: 復元するバックアップアーカイブを選択
+  selectBackupFileDescription: XMCLのデータとインスタンスが含まれる .xmclbackup または .zip ファイルを選択してください。
+  selectFile: ファイルを選択
+  selectBackupFileTitle: XMCL バックアップアーカイブを開く
+  createdOn: '{date} に作成'
+  changeFile: ファイルを変更
+  dataToRestore: 復元するデータ
+  restoreSettings: 設定を復元
+  restoreSettingsHint: 現在のランチャー設定をバックアップで上書きします
+  restoreCollections: コレクションを復元
+  restoreCollectionsHint: 保存済みコレクションをインポートして結合します
+  restoreThemes: テーマとメディアを復元
+  restoreThemesHint: テーマ、カスタムCSS、背景メディアを再インストールします
+  noLauncherDataInBackup: このバックアップにはランチャー設定やテーマが含まれていません。
+  conflictStrategyTitle: インスタンス名の競合処理
+  conflictRename: '既存を維持し、復元インスタンスの名前を変更 (例: name-restored)'
+  conflictOverwrite: 既存のインスタンスファイルを上書き
+  conflictSkip: 既に存在するインスタンスをスキップ
+  restoreError: バックアップの復元に失敗しました
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
+  createBackupTitle: バックアップを作成
+  createBackupDescription: 設定、コレクション、カスタムテーマ、インスタンスを単一のポータブルアーカイブに保存します。
+  restoreBackupTitle: バックアップを復元
+  restoreBackupDescription: 保存されたバックアップアーカイブから設定、テーマ、コレクション、インスタンスを復元します。
+  portableArchiveNoticeTitle: ポータブルな単一ファイルバックアップ
+  portableArchiveNoticeDescription: バックアップは単一の .xmclbackup ファイルとして保存されます。USBメモリへのコピーやクラウド同期が簡単に行えます。
+  autoBackupTitle: バックグラウンド自動バックアップ
+  autoBackupDescription: 選択した1つまたは複数のインスタンスをスケジュールに従ってバックグラウンドで自動バックアップします
+  autoBackupStatusRunning: バックアップ中...
+  autoBackupStatusEnabled: 有効
+  autoBackupStatusDisabled: 無効
+  autoBackupRunNow: 今すぐ実行
+  autoBackupLastRun: 前回の自動バックアップ
+  autoBackupNeverRun: 未実行
+  selectedCount: '{selected} / {total} 選択中'
+  autoBackupSelectInstances: 自動バックアップ対象のインスタンス（1つ以上選択）
+  searchInstances: インスタンスを検索...
+  autoBackupInterval: バックアップ頻度
+  autoBackupRetention: バックアップ保持数
+  autoBackupDestination: 自動バックアップ保存先フォルダ
+  browse: 参照
+  autoBackupContentLabel: バックグラウンドバックアップに含める内容
+  instanceSaves: ワールドとセーブデータ
+  instanceConfigs: 設定とオプション
+  instanceMods: Mod
+  instanceResourcePacks: リソースパック
+  instanceShaderPacks: シェーダーパック
+  launcherSettings: ランチャー設定
+  autoBackupHistoryTitle: 最近の自動バックアップ
+  autoBackupError: 自動バックアップに失敗しました
+  interval30m: 30分ごと
+  interval1h: 1時間ごと
+  interval2h: 2時間ごと
+  interval4h: 4時間ごと
+  interval6h: 6時間ごと
+  interval12h: 12時間ごと
+  interval24h: 24時間ごと
+  keepCount: '最新 {count} 件を保持'
 baseSetting:
   title: 基本設定
 browseApp:

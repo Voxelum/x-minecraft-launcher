@@ -1,3 +1,6 @@
+import { getRestoreGate, RestoreWriter } from '~/infra/restoreGate'
+import { recoverRestore } from '~/infra/recoverRestore'
+import type { RestoreInstancePlan } from '~/backup/restoreMaintenance'
 import {
   CreateInstanceOptions,
   duplicateInstance,
@@ -23,7 +26,7 @@ import filenamify from 'filenamify'
 import { fileTypeFromBuffer, fileTypeFromFile } from 'file-type'
 import { existsSync } from 'fs'
 import { ensureDir, readdir, readlink, readJson, rename, rm, writeFile, writeJson } from 'fs-extra'
-import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path'
+import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { ImageStorage, kTasks, Tasks } from '~/infra'
 import { VersionMetadataService } from '~/install/VersionMetadataService'
@@ -49,6 +52,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   // by InstanceInstallService) eligible for GC mid-install and break
   // the install/delete cancellation handshake.
   #removeHandlers: Record<string, Array<() => Promise<void> | void>> = {}
+  private selectedInstance = ''
   #onRenamedInstancePath?: (oldPath: string, newPath: string) => void
 
   constructor(
@@ -68,6 +72,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         // are stored relative to the (movable) instances folder, so they still
         // resolve after a root change. Fall back once to the legacy game-root
         // copy so groups/selection survive the move of this file into appData.
+        await recoverRestore(app)
         const instancesPath = join(this.app.appDataPath, 'instances.json')
         const legacyInstancesPath = this.getPath('instances.json')
         const instanceConfig = await readJson(instancesPath)
@@ -107,6 +112,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         }
 
         const selectedInstance = instanceConfig.selectedInstance || ''
+        this.selectedInstance = selectedInstance
 
         const groups = instanceConfig.groups.map((g) =>
           typeof g === 'string'
@@ -166,26 +172,64 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           })
         }
 
-        this.state.subscribe('instanceGroupsSet', async () => {
-          await writeJson(instancesPath, {
-            selectedInstance,
-            instances: this.state.instances.map((s) => s.path).map(normalizeInstancePath),
-            groups: this.state.groups.map((g) =>
-              typeof g === 'string'
-                ? normalizeInstancePath(g)
-                : { ...g, instances: g.instances.map(normalizeInstancePath) },
-            ),
-          })
+        const gate = getRestoreGate(app)
+        const metadataWriter = gate.writer(async () => {
+          await writeFile(instancesPath, this.prepareRestoreInstances([]))
         })
-
-        this.state.subscribe('instanceEdit', async ({ path }) => {
-          const inst = this.state.all[path]
-          const persisted = { ...inst, icon: serializeInstanceIcon(inst.icon, path) }
-          await writeFile(join(path, 'instance.json'), JSON.stringify(persisted, null, 2))
-          this.log(`Saved instance ${path}`)
+        this.state.subscribe('instanceGroupsSet', () => metadataWriter.schedule())
+        this.state.subscribe('instanceAdd', () => metadataWriter.schedule())
+        this.state.subscribe('instanceRemove', () => metadataWriter.schedule())
+        const instanceWriters = new Map<string, RestoreWriter>()
+        this.state.subscribe('instanceEdit', ({ path }) => {
+          if (gate.suppressPersistence) return
+          let writer = instanceWriters.get(path)
+          if (!writer) {
+            writer = gate.writer(async () => {
+              const inst = this.state.all[path]
+              if (!inst) return
+              const persisted = { ...inst, icon: serializeInstanceIcon(inst.icon, path) }
+              await writeFile(join(path, 'instance.json'), JSON.stringify(persisted, null, 2))
+              this.log(`Saved instance ${path}`)
+            })
+            instanceWriters.set(path, writer)
+          }
+          writer.schedule()
+        })
+        app.registryDisposer(async () => {
+          await metadataWriter.flush()
+          await Promise.all([...instanceWriters.values()].map(w => w.flush()))
         })
       },
     )
+    const gate = getRestoreGate(app)
+    gate.guardState(this.state)
+    gate.guardMethods(this, ['loadInstance', 'createInstance', 'duplicateInstance', 'deleteInstance', 'editInstance', 'setInstanceModpackMetadata', 'acquireInstanceById'])
+  }
+
+  /** Pure prospective launcher metadata; never loads, renames, or writes. */
+  prepareRestoreInstances(incoming: RestoreInstancePlan[]): Buffer {
+    const root = resolve(this.getPathUnder())
+    const normalize = (path: string) => {
+      const full = resolve(path)
+      return full === root || full.startsWith(root + sep) ? relative(root, full) : path
+    }
+    const data = InstancesSchema.parse({
+      selectedInstance: normalize(this.selectedInstance),
+      instances: [...new Set([...this.state.instances.map(i => i.path), ...incoming.map(i => i.path)])].map(normalize),
+      groups: this.state.groups.map(g => typeof g === 'string' ? normalize(g) : { ...g, instances: g.instances.map(normalize) }),
+    })
+    return Buffer.from(JSON.stringify(data, null, 2))
+  }
+
+  publishRestoreInstances(incoming: RestoreInstancePlan[]) {
+    const restored = incoming.map(({ path, data }) => {
+      const instance = createInstance(data, () => path, this.versionMetadataService.getLatestRelease, false)
+      instance.path = path
+      instance.icon = resolveInstanceIcon(instance.icon, path)
+      return instance
+    })
+    const paths = new Set(restored.map(instance => instance.path))
+    this.state.instanceRestore([...this.state.instances.filter(instance => !paths.has(instance.path)), ...restored])
   }
 
   getInstanceModpackMetadata(path: string): Promise<InstanceModpackMetadataSchema | undefined> {

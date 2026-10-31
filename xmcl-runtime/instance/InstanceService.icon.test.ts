@@ -1,6 +1,6 @@
 import { Instance } from '@xmcl/instance'
 import { InstanceState } from '@xmcl/runtime-api'
-import { ensureDir, mkdtemp, pathExists, readFile, readJson, rm, writeFile } from 'fs-extra'
+import { ensureDir, mkdtemp, pathExists, readFile, readJson, realpath, rm, writeFile } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -60,7 +60,7 @@ describe('InstanceService icon storage', () => {
   let instancePath: string
 
   beforeEach(async () => {
-    appDataPath = await mkdtemp(join(tmpdir(), 'xmcl-instance-icon-'))
+    appDataPath = await realpath(await mkdtemp(join(tmpdir(), 'xmcl-instance-icon-')))
     instancePath = join(appDataPath, 'instances', 'test')
     await ensureDir(instancePath)
   })
@@ -74,6 +74,7 @@ describe('InstanceService icon storage', () => {
     const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
     const app = {
       appDataPath,
+      registryDisposer: vi.fn(),
       minecraftDataPath: appDataPath,
       getLogger: () => logger,
       controller: { broadcast: vi.fn() },

@@ -15,6 +15,7 @@ import { pluginCommandHost } from '@xmcl/runtime/commands/pluginCommandHost'
 import { pluginExternalCredentialLifecycle } from '@xmcl/runtime/credential/pluginExternalCredentialLifecycle'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
+import { pluginBackup } from '@xmcl/runtime/backup'
 import {
   pluginClientToken,
   pluginFlights,
@@ -35,6 +36,7 @@ import { pluginResourceWorker } from '@xmcl/runtime/resource/pluginResourceWorke
 import { pluginResourcePackLink } from '@xmcl/runtime/resourcePack/pluginResourcePackLink'
 import { pluginSaveWorker } from '@xmcl/runtime/save/pluginSaveWorker'
 import { pluginServicesHandler } from '@xmcl/runtime/service/pluginServicesHandler'
+import { pluginRestoreMaintenance } from '@xmcl/runtime/infra/pluginRestoreMaintenance'
 import { pluginSettings } from '@xmcl/runtime/settings/pluginSettings'
 import { pluginSetup } from '@xmcl/runtime/setup/pluginSetup'
 import { pluginModrinthAccess } from '@xmcl/runtime/user/pluginModrinthAccess'
@@ -72,12 +74,14 @@ export const definedPlugins: LauncherAppPlugin[] = [
 
   pluginMediaProtocol,
   pluginResourcePackLink,
+  pluginBackup,
   pluginUserPlaytime,
   pluginYggdrasilHandler,
   pluginClientToken,
   pluginServicesHandler(definedServices),
   pluginTelemetry,
   pluginLogConsumer,
+  pluginRestoreMaintenance,
   pluginSettings,
   pluginGFW,
   pluginTasks,

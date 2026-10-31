@@ -92,6 +92,133 @@ bedrock:
   downloadFailed: பெட்ராக் {version} ஐப் பதிவிறக்க முடியவில்லை
   launchFailed: இந்த பெட்ராக் பதிப்பைத் தொடங்க முடியவில்லை
   removeFailed: பெட்ராக் {version} ஐ நீக்க முடியவில்லை
+backup:
+  title: 'காப்புப்பிரதி & மீட்டமைப்பு'
+  description: உங்கள் அமைப்புகள், தொகுப்புகள், தீம்கள் மற்றும் கேம் இன்ஸ்டன்ஸ்களை காப்புப்பிரதி எடுத்து மீட்டமைக்கவும்
+  launcherData: Launcher Data
+  includeSettingsTitle: Launcher Settings
+  includeSettingsHint: General preferences, language, developer mode, and appearance settings
+  includeCollectionsTitle: Saved Collections
+  includeCollectionsHint: Launcher-managed mod and resource collections
+  includeThemesTitle: 'Custom Themes & Media'
+  includeThemesHint: Theme colors, custom CSS styles, and background media
+  instances: Instances
+  selectAll: Select All
+  deselectAll: Deselect All
+  instanceDataOptions: Instance Data Options
+  includeConfigs: 'Configs & Options'
+  includeSaves: Saves (Worlds)
+  includeResourcePacks: Resource Packs
+  includeShaderPacks: Shader Packs
+  modsMode: Mods
+  modsFull: Full files (.jar)
+  modsListOnly: Mod list only (lightweight)
+  modsNone: Exclude mods
+  noInstancesFound: No instances found in launcher.
+  excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
+  create: காப்புப்பிரதியை உருவாக்கு
+  createTitle: Create XMCL Backup Archive
+  saveDialogTitle: Save XMCL Backup Archive
+  fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
+  createError: Failed to create backup
+  loadManifestError: Failed to read backup archive
+  restore: மீட்டமை
+  restoreTitle: Restore from Backup
+  preparing: Preparing...
+  workingTitle: Creating Backup Archive...
+  restoringTitle: Restoring from Backup...
+  elapsedTime: Elapsed
+  remainingTime: Estimated remaining
+  calculatingRemaining: Calculating...
+  lessThanMinute: '< 1 min'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Saves
+  modsCategory: Mods
+  resourcePacksCategory: Resource Packs
+  shaderPacksCategory: Shader Packs
+  configsCategory: Configs
+  activityLog: Activity Log
+  copyLog: Copy Log
+  copiedLog: Log copied to clipboard
+  openFolder: Show in Folder
+  done: முடிந்தது
+  backupDone: 'Backup Complete!'
+  backupDoneHint: Your backup archive has been created and verified.
+  restoreDone: 'Restore Complete!'
+  restoreDoneHint: All selected data and instances have been restored successfully.
+  timeTaken: 'Time taken: {time}'
+  destinationFile: 'Saved to: {path}'
+  stagePreparing: Preparing
+  stageSettings: Launcher Settings
+  stageCollections: Saved Collections
+  stageThemes: 'Themes & Media'
+  stageInstances: Game Instances
+  stageCompressing: Compressing Archive
+  stageComplete: Complete
+  stageLabel: 'Stage: {stage}'
+  searchInstancesPlaceholder: Search instances by name or version...
+  selectBackupFilePrompt: Select a backup archive to restore
+  selectBackupFileDescription: Choose a .xmclbackup or .zip file containing your saved XMCL data and instances.
+  selectFile: Choose File
+  selectBackupFileTitle: Open XMCL Backup Archive
+  createdOn: 'Created on {date}'
+  changeFile: Change File
+  dataToRestore: Data to Restore
+  restoreSettings: Restore Settings
+  restoreSettingsHint: Overwrite current launcher preferences with the backup copy
+  restoreCollections: Restore Collections
+  restoreCollectionsHint: Import and merge saved collections into the launcher
+  restoreThemes: 'Restore Themes & Media'
+  restoreThemesHint: Reinstall themes, custom CSS, and background media
+  noLauncherDataInBackup: No launcher settings or themes found in this backup archive.
+  conflictStrategyTitle: Instance Name Conflict Handling
+  conflictRename: Keep existing and rename restored instance (e.g. name-restored)
+  conflictOverwrite: Overwrite existing instance files
+  conflictSkip: Skip instances that already exist on disk
+  restoreError: Failed to restore backup
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
+  createBackupTitle: Create Backup
+  createBackupDescription: Save your launcher settings, collections, custom themes, and instances to a single portable archive file.
+  restoreBackupTitle: Restore Backup
+  restoreBackupDescription: Restore settings, themes, collections, or game instances from a previously saved backup archive.
+  portableArchiveNoticeTitle: Portable Single-File Backups
+  portableArchiveNoticeDescription: Backups are saved as single .xmclbackup archives. You can easily keep them safe, copy them to a USB drive, or sync them with cloud services like Google Drive or OneDrive.
+  autoBackupTitle: பின்னணி தானியங்கி காப்புப்பிரதி
+  autoBackupDescription: தேர்ந்தெடுக்கப்பட்ட ஒன்று বা அதற்கு மேற்பட்ட இன்ஸ்டன்ஸ்களை பின்னணியில் தானாகவே காப்புப்பிரதி எடுக்கவும்
+  autoBackupStatusRunning: காப்புப்பிரதி எடுக்கிறது...
+  autoBackupStatusEnabled: செயலில்
+  autoBackupStatusDisabled: முடக்கப்பட்டது
+  autoBackupRunNow: இப்போது இயக்கு
+  autoBackupLastRun: கடைசி தானியங்கி காப்புப்பிரதி
+  autoBackupNeverRun: ஒருபோதும் இல்லை
+  selectedCount: '{selected} / {total} தேர்ந்தெடுக்கப்பட்டது'
+  autoBackupSelectInstances: தானியங்கி காப்புப்பிரதிக்கான இன்ஸ்டன்ஸ்கள்
+  searchInstances: இன்ஸ்டன்ஸ்களைத் தேடு...
+  autoBackupInterval: காப்புப்பிரதி இடைவெளி
+  autoBackupRetention: காப்புப்பிரதி தக்கவைப்பு
+  autoBackupDestination: தானியங்கி காப்புப்பிரதி கோப்புறை
+  browse: உலாவு
+  autoBackupContentLabel: பின்னணி காப்புப்பிரதியில் சேர்க்க வேண்டியவை
+  instanceSaves: 'உலகங்கள் & சேமிப்புகள்'
+  instanceConfigs: 'கட்டமைப்புகள் & விருப்பங்கள்'
+  instanceMods: மோட்கள்
+  instanceResourcePacks: ரிசோர்ஸ் பேக்குகள்
+  instanceShaderPacks: ஷேடர் பேக்குகள்
+  launcherSettings: லான்ச்சர் அமைப்புகள்
+  autoBackupHistoryTitle: சமீபத்திய தானியங்கி காப்புப்பிரதிகள்
+  autoBackupError: தானியங்கி காப்புப்பிரதி தோல்வியடைந்தது
+  interval30m: ஒவ்வொரு 30 நிமிடங்களுக்கும்
+  interval1h: ஒவ்வொரு 1 மணி நேரத்திற்கும்
+  interval2h: ஒவ்வொரு 2 மணி நேரத்திற்கும்
+  interval4h: ஒவ்வொரு 4 மணி நேரத்திற்கும்
+  interval6h: ஒவ்வொரு 6 மணி நேரத்திற்கும்
+  interval12h: ஒவ்வொரு 12 மணி நேரத்திற்கும்
+  interval24h: ஒவ்வொரு 24 மணி நேரத்திற்கும்
+  keepCount: 'கடைசி {count} காப்புப்பிரதிகளை வைத்திரு'
 baseSetting:
   title: நிகழ்வு அமைப்புகள்
 browseApp:

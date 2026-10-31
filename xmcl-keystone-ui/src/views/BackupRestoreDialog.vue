@@ -1,0 +1,915 @@
+<template>
+  <v-dialog
+    v-model="isShown"
+    max-width="780"
+    scrollable
+    persistent
+    transition="dialog-transition"
+  >
+    <v-card class="rounded-xl overflow-hidden backup-card">
+      <v-toolbar color="surface" density="comfortable" class="px-5 border-b">
+        <v-avatar size="32" :color="dialogMode === 'done' ? (isRestoreSuccessful ? 'success' : isRestorePartial ? 'warning' : 'error') : 'primary'" class="mr-3" variant="tonal">
+          <v-icon size="20">
+            {{ dialogMode === 'done' ? (isRestoreSuccessful ? 'check_circle' : 'warning_amber') : dialogMode === 'working' ? 'sync' : 'unarchive' }}
+          </v-icon>
+        </v-avatar>
+        <v-toolbar-title class="text-subtitle-1 font-weight-bold">
+          {{ dialogMode === 'done' ? (isRestoreSuccessful ? t('backup.restoreDone') : isRestorePartial ? t('backup.restorePartialTitle') : t('backup.restoreError')) : dialogMode === 'working' ? t('backup.restoringTitle') : t('backup.restoreTitle') }}
+        </v-toolbar-title>
+        <v-spacer />
+        <v-btn
+          v-if="dialogMode !== 'working'"
+          icon
+          variant="text"
+          size="small"
+          data-testid="backup-restore-close"
+          @click="hide"
+        >
+          <v-icon>close</v-icon>
+        </v-btn>
+      </v-toolbar>
+
+      <v-alert v-if="operationError" data-testid="backup-restore-error" type="error" variant="tonal" class="ma-4" role="alert">
+        <div>{{ operationError }}</div>
+        <div v-if="recoveryPath" data-testid="backup-recovery-path" class="text-break">{{ recoveryPath }}</div>
+      </v-alert>
+      <!-- MODE 1: CONFIGURATION / FILE PICKING -->
+      <v-card-text v-if="dialogMode === 'config'" class="pa-5 overflow-y-auto">
+        <!-- Step 1: Pick File -->
+        <div v-if="!manifest" class="d-flex flex-column align-center justify-center py-10 px-4">
+          <v-avatar size="80" color="primary" variant="tonal" class="mb-4">
+            <v-icon size="40">inventory_2</v-icon>
+          </v-avatar>
+          <div class="text-h6 font-weight-bold mb-1 text-center">
+            {{ t('backup.selectBackupFilePrompt') }}
+          </div>
+          <div class="text-body-2 text-medium-emphasis mb-6 text-center" style="max-width: 480px;">
+            {{ t('backup.selectBackupFileDescription') }}
+          </div>
+          <v-btn
+            color="primary"
+            size="large"
+            variant="flat"
+            class="px-8 font-weight-bold"
+            :loading="isLoadingManifest"
+            data-testid="backup-restore-select-file"
+            @click="browseBackupFile"
+          >
+            <v-icon start>file_open</v-icon>
+            {{ t('backup.selectFile') }}
+          </v-btn>
+        </div>
+
+        <!-- Step 2: Manifest Loaded -->
+        <div v-else>
+          <!-- Backup file details banner -->
+          <v-card variant="tonal" color="primary" class="pa-4 mb-5 rounded-xl">
+            <div class="d-flex align-center justify-space-between flex-wrap gap-2">
+              <div class="d-flex align-center gap-3">
+                <v-avatar size="38" color="primary" variant="tonal" rounded="lg">
+                  <v-icon size="22">archive</v-icon>
+                </v-avatar>
+                <div>
+                  <div class="text-subtitle-2 font-weight-bold">
+                    {{ backupFileName }}
+                  </div>
+                  <div class="text-caption text-medium-emphasis">
+                    {{ t('backup.createdOn', { date: formattedDate }) }} · XMCL v{{ manifest.appVersion }}
+                  </div>
+                </div>
+              </div>
+              <v-btn
+                variant="outlined"
+                size="small"
+                class="text-none"
+                :disabled="!!recoveryPath"
+                data-testid="backup-restore-change-file"
+                @click="resetSelection"
+              >
+                <v-icon start size="small">swap_horiz</v-icon>
+                {{ t('backup.changeFile') }}
+              </v-btn>
+            </div>
+          </v-card>
+
+          <!-- App Data to Restore -->
+          <div class="text-caption font-weight-bold text-uppercase text-medium-emphasis mb-2 ml-1">
+            {{ t('backup.dataToRestore') }}
+          </div>
+          <v-card variant="outlined" class="pa-3 mb-5 rounded-xl setting-group-card">
+            <!-- Settings Tile -->
+            <div
+              v-if="manifest.includes.settings"
+              class="d-flex align-center justify-space-between pa-2 rounded-lg cursor-pointer hover-surface"
+              @click="restoreSettings = !restoreSettings"
+            >
+              <div class="d-flex align-center gap-3">
+                <v-avatar size="36" color="indigo" variant="tonal" rounded="lg">
+                  <v-icon size="20">settings</v-icon>
+                </v-avatar>
+                <div>
+                  <div class="text-subtitle-2 font-weight-medium">{{ t('backup.restoreSettings') }}</div>
+                  <div class="text-caption text-medium-emphasis">{{ t('backup.restoreSettingsHint') }}</div>
+                </div>
+              </div>
+              <v-switch
+                v-model="restoreSettings"
+                data-testid="backup-restore-settings-switch"
+                color="primary"
+                density="compact"
+                hide-details
+                class="ma-0"
+                @click.stop
+              />
+            </div>
+
+            <v-divider v-if="manifest.includes.settings && manifest.includes.collections" class="my-2" />
+
+            <!-- Collections Tile -->
+            <div
+              v-if="manifest.includes.collections"
+              class="d-flex align-center justify-space-between pa-2 rounded-lg cursor-pointer hover-surface"
+              @click="restoreCollections = !restoreCollections"
+            >
+              <div class="d-flex align-center gap-3">
+                <v-avatar size="36" color="amber-darken-2" variant="tonal" rounded="lg">
+                  <v-icon size="20">folder_special</v-icon>
+                </v-avatar>
+                <div>
+                  <div class="text-subtitle-2 font-weight-medium">{{ t('backup.restoreCollections') }}</div>
+                  <div class="text-caption text-medium-emphasis">{{ t('backup.restoreCollectionsHint') }}</div>
+                </div>
+              </div>
+              <v-switch
+                v-model="restoreCollections"
+                data-testid="backup-restore-collections-switch"
+                color="primary"
+                density="compact"
+                hide-details
+                class="ma-0"
+                @click.stop
+              />
+            </div>
+
+            <v-divider v-if="manifest.includes.themes && (manifest.includes.settings || manifest.includes.collections)" class="my-2" />
+
+            <!-- Themes Tile -->
+            <div
+              v-if="manifest.includes.themes"
+              class="d-flex align-center justify-space-between pa-2 rounded-lg cursor-pointer hover-surface"
+              @click="restoreThemes = !restoreThemes"
+            >
+              <div class="d-flex align-center gap-3">
+                <v-avatar size="36" color="purple" variant="tonal" rounded="lg">
+                  <v-icon size="20">palette</v-icon>
+                </v-avatar>
+                <div>
+                  <div class="text-subtitle-2 font-weight-medium">{{ t('backup.restoreThemes') }}</div>
+                  <div class="text-caption text-medium-emphasis">{{ t('backup.restoreThemesHint') }}</div>
+                </div>
+              </div>
+              <v-switch
+                v-model="restoreThemes"
+                data-testid="backup-restore-themes-switch"
+                color="primary"
+                density="compact"
+                hide-details
+                class="ma-0"
+                @click.stop
+              />
+            </div>
+
+            <div
+              v-if="!manifest.includes.settings && !manifest.includes.collections && !manifest.includes.themes"
+              class="text-caption text-medium-emphasis py-2 px-1"
+            >
+              {{ t('backup.noLauncherDataInBackup') }}
+            </div>
+          </v-card>
+
+          <!-- Instances to Restore -->
+          <div v-if="manifest.includes.instances.length > 0">
+            <div class="d-flex align-center justify-space-between mb-2 ml-1">
+              <div class="text-caption font-weight-bold text-uppercase text-medium-emphasis">
+                {{ t('backup.instances') }} ({{ selectedInstances.length }}/{{ manifest.includes.instances.length }})
+              </div>
+              <div class="d-flex gap-2">
+                <v-btn
+                  variant="text"
+                  size="x-small"
+                  color="primary"
+                  class="text-none font-weight-medium"
+                  data-testid="backup-restore-select-all"
+              @click="selectAllInstances"
+                >
+                  {{ t('backup.selectAll') }}
+                </v-btn>
+                <v-btn
+                  variant="text"
+                  size="x-small"
+                  class="text-none"
+                  data-testid="backup-restore-deselect-all"
+              @click="deselectAllInstances"
+                >
+                  {{ t('backup.deselectAll') }}
+                </v-btn>
+              </div>
+            </div>
+
+            <!-- Instances List -->
+            <v-list
+              density="compact"
+              class="border rounded-xl pa-1 mb-4 overflow-y-auto instance-list-container"
+              max-height="220"
+            >
+              <v-list-item
+                v-for="inst in manifest.includes.instances"
+                :key="inst.folderName"
+                data-testid="backup-restore-instance-row"
+                :data-instance-name="inst.name"
+                :data-instance-folder="inst.folderName"
+                density="comfortable"
+                class="rounded-lg mb-1 px-3 cursor-pointer"
+                :class="{ 'selected-instance-row': selectedInstances.includes(inst.folderName) }"
+                @click="toggleInstance(inst.folderName)"
+              >
+                <template #prepend>
+                  <v-checkbox-btn
+                    data-testid="backup-restore-instance-checkbox"
+                    :model-value="selectedInstances.includes(inst.folderName)"
+                    color="primary"
+                    class="mr-2"
+                    @click.stop="toggleInstance(inst.folderName)"
+                  />
+                  <v-avatar size="32" rounded="md" class="mr-3 border">
+                    <v-img :src="BuiltinImages.craftingTable" cover />
+                  </v-avatar>
+                </template>
+
+                <v-list-item-title class="text-body-2 font-weight-medium">
+                  {{ inst.name }}
+                </v-list-item-title>
+                <v-list-item-subtitle class="text-caption d-flex align-center gap-1 mt-1">
+                  <v-chip v-if="inst.mcVersion" size="x-small" variant="flat" color="surface-variant" class="px-2 font-weight-medium">
+                    {{ inst.mcVersion }}
+                  </v-chip>
+                  <v-chip v-if="inst.loader" size="x-small" variant="tonal" color="blue" class="px-2">
+                    {{ inst.loader }}
+                  </v-chip>
+                  <v-chip v-if="inst.modsCount" size="x-small" variant="tonal" color="teal" class="px-2">
+                    {{ inst.modsCount }} mods
+                  </v-chip>
+                  <v-chip v-if="inst.modListOnly" size="x-small" variant="outlined" color="medium-emphasis" class="px-2">
+                    {{ t('backup.modsListOnly') }}
+                  </v-chip>
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-list>
+
+            <!-- Conflict Strategy -->
+            <div class="text-caption font-weight-bold text-uppercase text-medium-emphasis mb-2 ml-1">
+              {{ t('backup.conflictStrategyTitle') }}
+            </div>
+            <v-card variant="outlined" class="pa-3 mb-2 rounded-xl setting-group-card">
+              <v-radio-group
+                v-model="conflictStrategy"
+                data-testid="backup-restore-conflict-strategy"
+                density="compact"
+                class="mt-0"
+                hide-details
+              >
+                <v-radio
+                  value="rename"
+                  data-testid="backup-restore-conflict-rename"
+                  :label="t('backup.conflictRename')"
+                  color="primary"
+                  density="compact"
+                />
+                <v-radio
+                  value="overwrite"
+                  data-testid="backup-restore-conflict-overwrite"
+                  :label="t('backup.conflictOverwrite')"
+                  color="primary"
+                  density="compact"
+                />
+                <v-radio
+                  value="skip"
+                  data-testid="backup-restore-conflict-skip"
+                  :label="t('backup.conflictSkip')"
+                  color="primary"
+                  density="compact"
+                />
+              </v-radio-group>
+            </v-card>
+          </div>
+        </div>
+      </v-card-text>
+
+      <!-- MODE 2: ACTIVE WORKING / PROGRESS SCREEN -->
+      <v-card-text v-else-if="dialogMode === 'working'" data-testid="backup-restore-progress" class="pa-6 overflow-y-auto">
+        <v-card variant="tonal" color="primary" class="pa-5 mb-5 rounded-xl border-primary">
+          <div class="d-flex align-center justify-space-between mb-3">
+            <div class="d-flex align-center gap-3">
+              <v-progress-circular indeterminate size="24" width="3" color="primary" />
+              <div>
+                <div class="text-subtitle-1 font-weight-bold">
+                  {{ restoreProgress?.message || t('backup.preparing') }}
+                </div>
+                <div class="text-caption text-medium-emphasis">
+                  {{ t('backup.stageLabel', { stage: currentStageLabel }) }}
+                </div>
+              </div>
+            </div>
+            <div class="text-h4 font-weight-black text-primary">
+              {{ restoreProgress?.percent ?? 0 }}%
+            </div>
+          </div>
+
+          <v-progress-linear
+            :model-value="restoreProgress?.percent ?? 0"
+            color="primary"
+            height="10"
+            rounded
+            stream
+            class="rounded-pill mb-4"
+          />
+
+          <!-- Statistics Row -->
+          <div class="d-flex justify-space-between flex-wrap gap-4 pt-2 border-t text-caption">
+            <div class="d-flex align-center gap-2">
+              <v-icon size="small" color="primary">schedule</v-icon>
+              <span>{{ t('backup.elapsedTime') }}: <strong>{{ elapsedFormatted }}</strong></span>
+            </div>
+            <div class="d-flex align-center gap-2">
+              <v-icon size="small" color="secondary">hourglass_top</v-icon>
+              <span>{{ t('backup.remainingTime') }}: <strong>{{ remainingFormatted }}</strong></span>
+            </div>
+            <div class="d-flex align-center gap-2">
+              <v-icon size="small" color="info">layers</v-icon>
+              <span>{{ t('backup.instances') }}: <strong>{{ currentInstanceIndexLabel }}</strong></span>
+            </div>
+          </div>
+        </v-card>
+
+        <!-- Live Activity Log Console -->
+        <div class="d-flex align-center justify-space-between mb-2">
+          <div class="text-caption font-weight-bold text-uppercase text-medium-emphasis d-flex align-center gap-2">
+            <v-icon size="small">terminal</v-icon>
+            {{ t('backup.activityLog') }} ({{ logEntries.length }})
+          </div>
+          <v-btn
+            variant="text"
+            size="x-small"
+            class="text-none"
+            prepend-icon="content_copy"
+            @click="copyLogToClipboard"
+          >
+            {{ t('backup.copyLog') }}
+          </v-btn>
+        </div>
+
+        <v-card
+          ref="logContainerRef"
+          variant="outlined"
+          class="pa-3 rounded-xl terminal-card overflow-y-auto"
+          max-height="240"
+        >
+          <div
+            v-for="entry in logEntries"
+            :key="entry.id"
+            class="terminal-line mb-1"
+            :class="`terminal-${entry.level}`"
+          >
+            <span class="terminal-time opacity-50 mr-2">[{{ entry.time }}]</span>
+            <span class="terminal-text">{{ entry.message }}</span>
+          </div>
+        </v-card>
+      </v-card-text>
+
+      <!-- MODE 3: COMPLETION / SUMMARY SCREEN -->
+      <v-card-text v-else-if="dialogMode === 'done'" data-testid="backup-restore-result" class="pa-6 overflow-y-auto">
+        <div class="d-flex flex-column align-center justify-center py-4 mb-4">
+          <v-avatar
+            size="72"
+            :color="isRestoreSuccessful ? 'success' : isRestorePartial ? 'warning' : 'error'"
+            variant="tonal"
+            class="mb-3"
+          >
+            <v-icon size="42">
+              {{ isRestoreSuccessful ? 'check_circle' : isRestorePartial ? 'warning_amber' : 'error_outline' }}
+            </v-icon>
+          </v-avatar>
+          <div class="text-h6 font-weight-bold text-center mb-1">
+            {{ isRestoreSuccessful ? t('backup.restoreDone') : isRestorePartial ? t('backup.restorePartialTitle') : t('backup.restoreError') }}
+          </div>
+          <div class="text-body-2 text-medium-emphasis text-center" style="max-width: 480px;">
+            {{ isRestoreSuccessful ? t('backup.restoreDoneHint') : t('backup.restorePartialHint') }}
+          </div>
+        </div>
+
+        <!-- Summary Details Card -->
+        <v-card variant="outlined" class="pa-4 mb-5 rounded-xl setting-group-card">
+          <div class="d-flex align-center justify-space-between py-1 border-b">
+            <span class="text-caption text-medium-emphasis">{{ t('backup.timeTaken', { time: '' }) }}</span>
+            <span class="text-caption font-weight-bold">{{ elapsedFormatted }}</span>
+          </div>
+          <div class="d-flex align-center justify-space-between py-1" :class="{ 'border-b': (lastRestoreResult?.skippedInstances?.length ?? 0) > 0 }">
+            <span class="text-caption text-medium-emphasis">{{ t('backup.instances') }}</span>
+            <span class="text-caption font-weight-bold">
+              {{ lastRestoreResult?.restoredInstances.length ?? 0 }} / {{ selectedInstances.length }}
+            </span>
+          </div>
+          <div v-if="(lastRestoreResult?.skippedInstances?.length ?? 0) > 0" class="d-flex align-center justify-space-between py-1">
+            <span class="text-caption text-medium-emphasis">{{ t('backup.conflictSkip') }}</span>
+            <span class="text-caption font-weight-bold">{{ lastRestoreResult?.skippedInstances?.length }}</span>
+          </div>
+        </v-card>
+
+        <!-- Collapsible Activity Log -->
+        <div class="d-flex align-center justify-space-between mb-2">
+          <div class="text-caption font-weight-bold text-uppercase text-medium-emphasis d-flex align-center gap-2">
+            <v-icon size="small">terminal</v-icon>
+            {{ t('backup.activityLog') }}
+          </div>
+          <v-btn
+            variant="text"
+            size="x-small"
+            class="text-none"
+            prepend-icon="content_copy"
+            @click="copyLogToClipboard"
+          >
+            {{ t('backup.copyLog') }}
+          </v-btn>
+        </div>
+
+        <v-card
+          variant="outlined"
+          class="pa-3 rounded-xl terminal-card overflow-y-auto"
+          max-height="160"
+        >
+          <div
+            v-for="entry in logEntries"
+            :key="entry.id"
+            class="terminal-line mb-1"
+            :class="`terminal-${entry.level}`"
+          >
+            <span class="terminal-time opacity-50 mr-2">[{{ entry.time }}]</span>
+            <span class="terminal-text">{{ entry.message }}</span>
+          </div>
+        </v-card>
+      </v-card-text>
+
+      <v-divider />
+
+      <!-- Action Buttons Footer -->
+      <v-card-actions class="pa-4 px-5">
+        <!-- Mode: Config Buttons -->
+        <template v-if="dialogMode === 'config'">
+          <v-btn data-testid="backup-restore-cancel" variant="text" :disabled="isRestoring" @click="hide">
+            {{ t('shared.cancel') }}
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            v-if="manifest"
+            color="primary"
+            variant="flat"
+            class="px-6 font-weight-bold"
+            :disabled="!canRestore"
+            data-testid="backup-restore-submit"
+            @click="startRestore"
+          >
+            <template #prepend>
+              <v-icon>unarchive</v-icon>
+            </template>
+            {{ t('backup.restore') }}
+          </v-btn>
+        </template>
+
+        <!-- Mode: Working Buttons -->
+        <template v-else-if="dialogMode === 'working'">
+          <div class="text-caption text-medium-emphasis d-flex align-center gap-2">
+            <v-progress-circular indeterminate size="16" width="2" color="primary" />
+            <span>{{ currentStageLabel }}</span>
+          </div>
+          <v-spacer />
+          <v-btn data-testid="backup-restore-working-cancel" variant="outlined"
+            :data-cancel-status="cancellationState"
+            :disabled="cancellationState !== 'idle' || ['committing', 'rolling-back', 'recovery-required', 'complete'].includes(restoreProgress?.phase || '')"
+            :loading="cancellationState === 'pending'" @click="requestCancellation">
+            {{ t('shared.cancel') }}
+          </v-btn>
+        </template>
+
+        <!-- Mode: Done Buttons -->
+        <template v-else-if="dialogMode === 'done'">
+          <v-spacer />
+          <v-btn
+            color="primary"
+            variant="flat"
+            class="px-6 font-weight-bold"
+            data-testid="backup-restore-done"
+            @click="hide"
+          >
+            {{ t('backup.done') }}
+          </v-btn>
+        </template>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script lang="ts" setup>
+import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useBackupSelection } from '@/composables/backupSelection'
+import { formatBackupError } from '@/composables/backupError'
+import { useBackup } from '@/composables/backup'
+import { useDialog } from '@/composables/dialog'
+import { BuiltinImages } from '@/constant'
+import { useNotifier } from '@/composables/notifier'
+import type { RestoreBackupOptions, RestoreBackupResult } from '@xmcl/runtime-api'
+
+interface LogEntry {
+  id: number
+  time: string
+  message: string
+  level: 'info' | 'success' | 'warn'
+}
+
+const { t } = useI18n()
+const { isShown, hide, parameter } = useDialog<string>('backup-restore')
+const { cancelBackupOperation, restoreBackup, loadBackupManifest, isRestoring, isLoadingManifest, restoreProgress } = useBackup()
+const { notify } = useNotifier()
+
+const dialogMode = ref<'config' | 'working' | 'done'>('config')
+const cancellationState = ref<'idle' | 'pending' | 'unavailable'>('idle')
+async function requestCancellation() {
+  try { cancellationState.value = await cancelBackupOperation() ? 'pending' : 'unavailable' }
+  catch (error) { operationError.value = error instanceof Error ? error.message : String(error) }
+}
+
+const operationError = ref('')
+const recoveryPath = ref('')
+const selection = useBackupSelection()
+const { path: backupFilePath, manifest, instances: selectedInstances } = selection
+const lastRestoreResult = ref<RestoreBackupResult | null>(null)
+
+const restoreSettings = ref(true)
+const restoreCollections = ref(true)
+const restoreThemes = ref(true)
+const conflictStrategy = ref<'rename' | 'overwrite' | 'skip'>('rename')
+
+// Progress & Timer state
+const elapsedSeconds = ref(0)
+let timerInterval: ReturnType<typeof setInterval> | null = null
+
+const logEntries = ref<LogEntry[]>([])
+let logSeq = 0
+const logContainerRef = ref<any>(null)
+
+function addLog(message: string, level: 'info' | 'success' | 'warn' = 'info') {
+  const time = new Date().toLocaleTimeString()
+  logEntries.value.push({
+    id: ++logSeq,
+    time,
+    message,
+    level,
+  })
+  nextTick(() => {
+    if (logContainerRef.value?.$el) {
+      logContainerRef.value.$el.scrollTop = logContainerRef.value.$el.scrollHeight
+    }
+  })
+}
+
+function formatDuration(sec: number): string {
+  const m = Math.floor(sec / 60)
+  const s = Math.floor(sec % 60)
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+}
+
+const elapsedFormatted = computed(() => formatDuration(elapsedSeconds.value))
+
+const remainingFormatted = computed(() => {
+  const p = restoreProgress.value?.percent ?? 0
+  if (p <= 4) return t('backup.calculatingRemaining')
+  if (p >= 100) return '00:00'
+  const totalSec = elapsedSeconds.value / (p / 100)
+  const remain = Math.max(0, Math.round(totalSec - elapsedSeconds.value))
+  return formatDuration(remain)
+})
+
+const currentStageLabel = computed(() => {
+  const phase = restoreProgress.value?.phase
+  if (phase === 'committing' || phase === 'rolling-back' || phase === 'recovery-required') return restoreProgress.value?.message || t('backup.restoreError')
+  if (phase === 'settings') return t('backup.stageSettings')
+  if (phase === 'collections') return t('backup.stageCollections')
+  if (phase === 'themes') return t('backup.stageThemes')
+  if (phase === 'instances') return t('backup.stageInstances')
+  if (phase === 'complete') return t('backup.stageComplete')
+  return t('backup.stagePreparing')
+})
+
+const currentInstanceIndexLabel = computed(() => {
+  if (restoreProgress.value?.currentInstanceIndex && restoreProgress.value?.totalInstances) {
+    return `${restoreProgress.value.currentInstanceIndex}/${restoreProgress.value.totalInstances}`
+  }
+  return `${selectedInstances.value.length}`
+})
+
+// Listen to progress updates to log messages
+watch(() => restoreProgress.value?.message, (msg) => {
+  if (dialogMode.value === 'working' && restoreProgress.value?.phase === 'recovery-required') {
+    recoveryPath.value = restoreProgress.value.recoveryPath || ''
+    operationError.value = msg || t('backup.restoreError')
+  }
+  if (msg && dialogMode.value === 'working') {
+    const isComplete = restoreProgress.value?.phase === 'complete'
+    addLog(msg, isComplete ? 'success' : 'info')
+  }
+})
+
+const backupFileName = computed(() => {
+  if (!backupFilePath.value) return ''
+  const parts = backupFilePath.value.replace(/\\/g, '/').split('/')
+  return parts[parts.length - 1]
+})
+
+const formattedDate = computed(() => {
+  if (!manifest.value?.createdAt) return ''
+  return new Date(manifest.value.createdAt).toLocaleString()
+})
+
+async function loadFileFromPath(path: string) {
+  resetSelection()
+  const generation = selection.token()
+  try {
+    const loadedManifest = await loadBackupManifest(path)
+    if (!selection.isCurrent(generation) || !isShown.value) return
+    selection.accept(generation, path, loadedManifest)
+
+    restoreSettings.value = !!loadedManifest.includes.settings
+    restoreCollections.value = !!loadedManifest.includes.collections
+    restoreThemes.value = !!loadedManifest.includes.themes
+  } catch (error) {
+    if (selection.isCurrent(generation) && isShown.value) operationError.value = formatBackupError(error).message
+  }
+}
+
+watch([isShown, parameter], async ([shown]) => {
+  if (shown) {
+    dialogMode.value = 'config'
+    logEntries.value = []
+    elapsedSeconds.value = 0
+    if (typeof parameter.value === 'string' && parameter.value.trim()) {
+      await loadFileFromPath(parameter.value.trim())
+    } else {
+      resetSelection()
+    }
+  } else {
+    resetSelection()
+    stopTimer()
+  }
+}, { immediate: true, flush: 'sync' })
+
+onUnmounted(() => {
+  selection.reset()
+  stopTimer()
+})
+
+function startTimer() {
+  stopTimer()
+  elapsedSeconds.value = 0
+  timerInterval = setInterval(() => {
+    elapsedSeconds.value++
+  }, 1000)
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
+
+function resetSelection() {
+  selection.reset()
+  operationError.value = ''
+  recoveryPath.value = ''
+  restoreSettings.value = false
+  restoreCollections.value = false
+  restoreThemes.value = false
+  conflictStrategy.value = 'rename'
+  lastRestoreResult.value = null
+}
+
+async function browseBackupFile() {
+  resetSelection()
+  const generation = selection.token()
+  try {
+    const { filePaths, canceled } = await windowController.showOpenDialog({
+      title: t('backup.selectBackupFileTitle'),
+      filters: [
+        {
+          name: t('backup.fileFilterName'),
+          extensions: ['xmclbackup', 'zip'],
+        },
+      ],
+    })
+
+    if (!selection.isCurrent(generation) || !isShown.value) return
+    if (canceled || !filePaths || filePaths.length === 0) return
+
+    await loadFileFromPath(filePaths[0])
+  } catch (error) {
+    if (selection.isCurrent(generation) && isShown.value) operationError.value = formatBackupError(error).message
+  }
+}
+
+function selectAllInstances() {
+  if (!manifest.value) return
+  selectedInstances.value = manifest.value.includes.instances.map((i) => i.folderName)
+}
+
+function deselectAllInstances() {
+  selectedInstances.value = []
+}
+
+function toggleInstance(folderName: string) {
+  const idx = selectedInstances.value.indexOf(folderName)
+  if (idx === -1) {
+    selectedInstances.value.push(folderName)
+  } else {
+    selectedInstances.value.splice(idx, 1)
+  }
+}
+
+const canRestore = computed(() => {
+  if (!manifest.value || isLoadingManifest.value || isRestoring.value || recoveryPath.value) return false
+  return (
+    (restoreSettings.value && manifest.value.includes.settings) ||
+    (restoreCollections.value && manifest.value.includes.collections) ||
+    (restoreThemes.value && manifest.value.includes.themes) ||
+    selectedInstances.value.length > 0
+  )
+})
+
+function copyLogToClipboard() {
+  const text = logEntries.value.map((e) => `[${e.time}] ${e.message}`).join('\n')
+  navigator.clipboard.writeText(text).then(() => {
+    notify({
+      level: 'info',
+      title: t('backup.copiedLog'),
+    })
+  })
+}
+
+const isRestoreSuccessful = computed(() => {
+  if (!lastRestoreResult.value) return false
+  const r = lastRestoreResult.value
+  const failedSettings = (restoreSettings.value && !!manifest.value?.includes.settings) && !r.restoredSettings
+  const failedCollections = (restoreCollections.value && !!manifest.value?.includes.collections) && !r.restoredCollections
+  const failedThemes = (restoreThemes.value && !!manifest.value?.includes.themes) && !r.restoredThemes
+  const totalRequestedInst = selectedInstances.value.length
+  const restoredInstCount = r.restoredInstances.length
+  const skippedInstCount = r.skippedInstances?.length ?? 0
+  const failedInstCount = totalRequestedInst - (restoredInstCount + skippedInstCount)
+  return !failedSettings && !failedCollections && !failedThemes && failedInstCount === 0
+})
+
+const isRestorePartial = computed(() => {
+  if (!lastRestoreResult.value) return false
+  const r = lastRestoreResult.value
+  const hasSettings = restoreSettings.value && !!manifest.value?.includes.settings
+  const hasCollections = restoreCollections.value && !!manifest.value?.includes.collections
+  const hasThemes = restoreThemes.value && !!manifest.value?.includes.themes
+  const anyRequested = hasSettings || hasCollections || hasThemes || selectedInstances.value.length > 0
+  if (!anyRequested) return false
+  const anySucceeded = (hasSettings && r.restoredSettings) ||
+    (hasCollections && r.restoredCollections) ||
+    (hasThemes && r.restoredThemes) ||
+    r.restoredInstances.length > 0 ||
+    (r.skippedInstances?.length ?? 0) > 0
+  return !isRestoreSuccessful.value && anySucceeded
+})
+
+async function startRestore() {
+  cancellationState.value = 'idle'
+  if (!canRestore.value || dialogMode.value !== 'config' || !backupFilePath.value || !manifest.value) return
+  operationError.value = ''
+
+  dialogMode.value = 'working'
+  logEntries.value = []
+  lastRestoreResult.value = null
+  startTimer()
+  addLog(t('backup.preparing'), 'info')
+  addLog(`Reading ${backupFilePath.value}`, 'info')
+
+  const options: RestoreBackupOptions = {
+    backupPath: backupFilePath.value,
+    restoreSettings: restoreSettings.value && manifest.value.includes.settings,
+    restoreCollections: restoreCollections.value && manifest.value.includes.collections,
+    restoreThemes: restoreThemes.value && manifest.value.includes.themes,
+    instances: selectedInstances.value,
+    instanceConflictStrategy: conflictStrategy.value,
+  }
+
+  try {
+    const result = await restoreBackup(options)
+    lastRestoreResult.value = result
+    stopTimer()
+
+    const hasFailedSettings = options.restoreSettings && !result.restoredSettings
+    const hasFailedCollections = options.restoreCollections && !result.restoredCollections
+    const hasFailedThemes = options.restoreThemes && !result.restoredThemes
+    const totalRequestedInst = selectedInstances.value.length
+    const restoredInstCount = result.restoredInstances.length
+    const skippedInstCount = result.skippedInstances?.length ?? 0
+    const failedInstCount = totalRequestedInst - (restoredInstCount + skippedInstCount)
+
+    if (hasFailedSettings) {
+      addLog(t('backup.restoreFailedCategory', { category: t('backup.stageSettings') }), 'warn')
+    }
+    if (hasFailedCollections) {
+      addLog(t('backup.restoreFailedCategory', { category: t('backup.stageCollections') }), 'warn')
+    }
+    if (hasFailedThemes) {
+      addLog(t('backup.restoreFailedCategory', { category: t('backup.stageThemes') }), 'warn')
+    }
+    if (skippedInstCount > 0) {
+      addLog(t('backup.instancesSkipped', { count: skippedInstCount }), 'info')
+    }
+    if (failedInstCount > 0) {
+      addLog(t('backup.instancesFailed', { count: failedInstCount }), 'warn')
+    }
+
+    const hasAnyFailure = hasFailedSettings || hasFailedCollections || hasFailedThemes || failedInstCount > 0
+    if (hasAnyFailure) {
+      addLog(t('backup.restorePartialTitle'), 'warn')
+    } else {
+      addLog(t('backup.restoreDone'), 'success')
+    }
+
+    dialogMode.value = 'done'
+  } catch (err: any) {
+    stopTimer()
+    const error = formatBackupError(err)
+    operationError.value = error.message
+    recoveryPath.value = error.recoveryPath || restoreProgress.value?.recoveryPath || ''
+    addLog([error.message, recoveryPath.value].filter(Boolean).join('\n'), 'warn')
+    dialogMode.value = 'config'
+  }
+}
+</script>
+
+<style scoped>
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
+.hover-surface {
+  transition: background-color 0.2s ease;
+}
+.hover-surface:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+.setting-group-card {
+  background-color: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.instance-list-container {
+  background-color: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.selected-instance-row {
+  background-color: rgba(var(--v-theme-primary), 0.06);
+}
+.terminal-card {
+  background-color: #0d1117 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.terminal-line {
+  word-break: break-all;
+}
+.terminal-info .terminal-text {
+  color: #c9d1d9;
+}
+.terminal-success .terminal-text {
+  color: #3fb950;
+  font-weight: 600;
+}
+.terminal-warn .terminal-text {
+  color: #f85149;
+}
+</style>

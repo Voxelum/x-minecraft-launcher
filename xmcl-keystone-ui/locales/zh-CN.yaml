@@ -115,6 +115,133 @@ bedrock:
   downloadFailed: 下载基岩版 {version} 失败
   launchFailed: 启动此基岩版失败
   removeFailed: 移除基岩版 {version} 失败
+backup:
+  title: 备份与恢复
+  description: 备份和恢复您的启动器设置、收藏夹、主题以及游戏实例
+  launcherData: 启动器数据
+  includeSettingsTitle: 启动器设置
+  includeSettingsHint: 常规偏好、语言、开发者模式和外观设置
+  includeCollectionsTitle: 已保存收藏夹
+  includeCollectionsHint: 启动器管理的模组与资源收藏夹
+  includeThemesTitle: 自定义主题与媒体
+  includeThemesHint: 主题颜色、自定义 CSS 样式和背景媒体
+  instances: 游戏实例
+  selectAll: 全选
+  deselectAll: 取消全选
+  instanceDataOptions: 实例数据选项
+  includeConfigs: 配置与选项
+  includeSaves: 存档 (世界)
+  includeResourcePacks: 资源包
+  includeShaderPacks: 光影包
+  modsMode: 模组
+  modsFull: 完整文件 (.jar)
+  modsListOnly: 仅模组列表 (轻量)
+  modsNone: 不包含模组
+  noInstancesFound: 启动器中未找到任何实例。
+  excludeLibrariesNotice: 核心库文件、Minecraft 资源和临时缓存会自动排除以保持备份包精简，启动游戏时会自动重新下载。
+  create: 创建备份
+  createTitle: 创建 XMCL 备份归档
+  saveDialogTitle: 保存 XMCL 备份归档
+  fileFilterName: 'XMCL 备份归档 (*.xmclbackup, *.zip)'
+  createError: 创建备份失败
+  loadManifestError: 读取备份归档失败
+  restore: 恢复
+  restoreTitle: 从备份恢复
+  preparing: 准备中...
+  workingTitle: 正在创建备份归档...
+  restoringTitle: 正在从备份恢复...
+  elapsedTime: 已用时间
+  remainingTime: 预计剩余
+  calculatingRemaining: 计算中...
+  lessThanMinute: '< 1 分钟'
+  itemsProgress: '{current}/{total}'
+  savesCategory: 存档
+  modsCategory: 模组
+  resourcePacksCategory: 资源包
+  shaderPacksCategory: 光影包
+  configsCategory: 配置
+  activityLog: 活动日志
+  copyLog: 复制日志
+  copiedLog: 日志已复制到剪贴板
+  openFolder: 在文件夹中显示
+  done: 完成
+  backupDone: 备份完成！
+  backupDoneHint: 您的备份归档已创建并校验完成。
+  restoreDone: 恢复完成！
+  restoreDoneHint: 所有选中的数据与实例已成功恢复。
+  timeTaken: '耗时：{time}'
+  destinationFile: '保存至：{path}'
+  stagePreparing: 准备中
+  stageSettings: 启动器设置
+  stageCollections: 已保存收藏夹
+  stageThemes: 主题与媒体
+  stageInstances: 游戏实例
+  stageCompressing: 压缩归档
+  stageComplete: 完成
+  stageLabel: '阶段：{stage}'
+  searchInstancesPlaceholder: 按名称或版本搜索实例...
+  selectBackupFilePrompt: 选择要恢复的备份归档
+  selectBackupFileDescription: 包含已保存 XMCL 数据和实例的 .xmclbackup 或 .zip 文件。
+  selectFile: 选择文件
+  selectBackupFileTitle: 打开 XMCL 备份归档
+  createdOn: '创建于 {date}'
+  changeFile: 更换文件
+  dataToRestore: 要恢复的数据
+  restoreSettings: 恢复设置
+  restoreSettingsHint: 用备份副本覆盖当前启动器偏好设置
+  restoreCollections: 恢复收藏夹
+  restoreCollectionsHint: 导入并合并已保存的收藏夹到启动器
+  restoreThemes: 恢复主题与媒体
+  restoreThemesHint: 重新安装主题、自定义 CSS 和背景媒体
+  noLauncherDataInBackup: 此备份归档中未包含启动器设置或主题。
+  conflictStrategyTitle: 实例名称冲突处理
+  conflictRename: 保留现有实例并重命名恢复的实例 (如 name-restored)
+  conflictOverwrite: 覆盖现有实例文件
+  conflictSkip: 跳过磁盘上已存在的实例
+  restoreError: 恢复备份失败
+  restorePartialTitle: 恢复完成，存在警告
+  restorePartialHint: 部分组件或实例未能完全恢复。请查看活动日志了解详情。
+  restoreFailedCategory: '恢复 {category} 失败'
+  instancesSkipped: '已跳过 {count} 个已存在的实例'
+  instancesFailed: '{count} 个实例恢复失败'
+  createBackupTitle: 创建备份
+  createBackupDescription: 将启动器设置、收藏夹、自定义主题和实例保存为单个便携归档文件。
+  restoreBackupTitle: 恢复备份
+  restoreBackupDescription: 从以前保存的备份归档中恢复设置、主题、收藏夹或游戏实例。
+  portableArchiveNoticeTitle: 便携式单文件备份
+  portableArchiveNoticeDescription: 备份以单个 .xmclbackup 归档文件保存。您可以妥善保管、复制到 U 盘或通过云盘同步。
+  autoBackupTitle: 后台自动备份
+  autoBackupDescription: 按计划在后台自动备份一个或多个选定的实例
+  autoBackupStatusRunning: 备份中...
+  autoBackupStatusEnabled: 已启用
+  autoBackupStatusDisabled: 已禁用
+  autoBackupRunNow: 立即备份
+  autoBackupLastRun: 上次自动备份
+  autoBackupNeverRun: 从未
+  selectedCount: '已选 {selected} / {total}'
+  autoBackupSelectInstances: 要自动备份的实例（可选择一个或多个）
+  searchInstances: 搜索实例...
+  autoBackupInterval: 备份频率
+  autoBackupRetention: 备份保留数量
+  autoBackupDestination: 自动备份文件夹
+  browse: 浏览
+  autoBackupContentLabel: 后台备份包含内容
+  instanceSaves: 世界与存档
+  instanceConfigs: 配置与选项
+  instanceMods: 模组
+  instanceResourcePacks: 资源包
+  instanceShaderPacks: 光影包
+  launcherSettings: 启动器设置
+  autoBackupHistoryTitle: 最近自动备份
+  autoBackupError: 自动备份失败
+  interval30m: 每 30 分钟
+  interval1h: 每 1 小时
+  interval2h: 每 2 小时
+  interval4h: 每 4 小时
+  interval6h: 每 6 小时
+  interval12h: 每 12 小时
+  interval24h: 每 24 小时
+  keepCount: '保留最近 {count} 个备份'
 baseSetting:
   info:
     address: 地址

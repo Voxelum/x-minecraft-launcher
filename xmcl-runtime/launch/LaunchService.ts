@@ -1,3 +1,5 @@
+import { recoverRestore } from '~/infra/recoverRestore'
+import { getRestoreGate } from '~/infra/restoreGate'
 import { MinecraftFolder, type LaunchOption as ResolvedLaunchOptions, type ResolvedVersion, type ServerOptions, type ResolvedServerVersion, createMinecraftProcessWatcher, generateArguments, generateArgumentsServer, launch, launchServer } from '@xmcl/core'
 import { AUTHORITY_DEV, type CreateLaunchShortcutOptions, type GameProcess, type LaunchService as ILaunchService, LaunchException, type LaunchOptions, LaunchServiceKey } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
@@ -51,6 +53,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
   ) {
     super(app)
     this.launchHistory = new LaunchHistoryStore(this.getAppDataPath('launch-history'))
+    getRestoreGate(app).guardMethods(this, ['launch'])
   }
 
   registerMiddleware(plugin: LaunchMiddleware) {
@@ -363,6 +366,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
    * @returns Does this launch request success?
    */
   async launch(options: LaunchOptions) {
+    await recoverRestore(this.app)
     // E2E hook: when XMCL_E2E_NO_LAUNCH is set, never spawn a real Java
     // process. Emit synthetic minecraft-start / window-ready events so the
     // renderer reflects a "launched" state, then return a fake pid. The

@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import {
   InstanceScreenshotService as IInstanceScreenshotService,
   InstanceScreenshotServiceKey,
@@ -30,6 +31,7 @@ export class InstanceScreenshotService
 {
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app);
+    getRestoreGate(app).guardMethods(this, ['deleteScreenshot', 'deleteScreenshots', 'importScreenshots', 'setAsInstanceIcon', 'saveEditedScreenshot'])
   }
 
   async getScreenshotItems(instancePath: string): Promise<ScreenshotItem[]> {

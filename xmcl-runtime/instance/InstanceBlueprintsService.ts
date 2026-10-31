@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { ResourceDomain } from '@xmcl/resource'
 import {
   convertBlueprint,
@@ -64,6 +65,7 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app, ResourceDomain.Blueprints)
+    getRestoreGate(app).guardMethods(this, ['convertBlueprint', 'replaceBlueprintBlocks'])
 
     // Serve block textures over a cacheable URL so the renderer leverages the
     // browser HTTP cache. When an instance is specified, textures are prioritized

@@ -69,6 +69,133 @@ bedrock:
   downloadFailed: 下載基岩版 {version} 失敗
   launchFailed: 啟動此基岩版失敗
   removeFailed: 移除基岩版 {version} 失敗
+backup:
+  title: 備份與還原
+  description: 備份與還原您的啟動器設定、收藏夾、主題與遊戲實例
+  launcherData: 啟動器資料
+  includeSettingsTitle: 啟動器設定
+  includeSettingsHint: 一般偏好、語言、開發者模式與外觀設定
+  includeCollectionsTitle: 已儲存收藏夾
+  includeCollectionsHint: 啟動器管理的模組與資源收藏夾
+  includeThemesTitle: 自訂主題與媒體
+  includeThemesHint: 主題色彩、自訂 CSS 樣式與背景媒體
+  instances: 遊戲實例
+  selectAll: 全選
+  deselectAll: 取消全選
+  instanceDataOptions: 實例資料選項
+  includeConfigs: 設定與選項
+  includeSaves: 存檔 (世界)
+  includeResourcePacks: 資源包
+  includeShaderPacks: 光影包
+  modsMode: 模組
+  modsFull: 完整檔案 (.jar)
+  modsListOnly: 僅模組清單 (輕量)
+  modsNone: 不包含模組
+  noInstancesFound: 啟動器中找不到任何實例。
+  excludeLibrariesNotice: 核心程式庫、Minecraft 資源與暫存快取會自動排除以保持備份精簡，啟動遊戲時會自動下載。
+  create: 建立備份
+  createTitle: 建立 XMCL 備份封存檔
+  saveDialogTitle: 儲存 XMCL 備份封存檔
+  fileFilterName: 'XMCL 備份封存檔 (*.xmclbackup, *.zip)'
+  createError: 建立備份失敗
+  loadManifestError: 讀取備份封存檔失敗
+  restore: 還原
+  restoreTitle: 從備份還原
+  preparing: 準備中...
+  workingTitle: 正在建立備份封存檔...
+  restoringTitle: 正在從備份還原...
+  elapsedTime: 經過時間
+  remainingTime: 預計剩餘
+  calculatingRemaining: 計算中...
+  lessThanMinute: '< 1 分鐘'
+  itemsProgress: '{current}/{total}'
+  savesCategory: 存檔
+  modsCategory: 模組
+  resourcePacksCategory: 資源包
+  shaderPacksCategory: 光影包
+  configsCategory: 設定
+  activityLog: 活動紀錄
+  copyLog: 複製紀錄
+  copiedLog: 紀錄已複製到剪貼簿
+  openFolder: 在資料夾中顯示
+  done: 完成
+  backupDone: 備份完成！
+  backupDoneHint: 您的備份封存檔已建立並驗證完成。
+  restoreDone: 還原完成！
+  restoreDoneHint: 所有選取的資料與實例已成功還原。
+  timeTaken: '耗時：{time}'
+  destinationFile: '儲存至：{path}'
+  stagePreparing: 準備中
+  stageSettings: 啟動器設定
+  stageCollections: 已儲存收藏夾
+  stageThemes: 主題與媒體
+  stageInstances: 遊戲實例
+  stageCompressing: 壓縮封存檔
+  stageComplete: 完成
+  stageLabel: '階段：{stage}'
+  searchInstancesPlaceholder: 依名稱或版本搜尋實例...
+  selectBackupFilePrompt: 選擇要還原的備份封存檔
+  selectBackupFileDescription: 選擇包含已儲存 XMCL 資料與實例的 .xmclbackup 或 .zip 檔案。
+  selectFile: 選擇檔案
+  selectBackupFileTitle: 開啟 XMCL 備份封存檔
+  createdOn: '建立於 {date}'
+  changeFile: 更換檔案
+  dataToRestore: 要還原的資料
+  restoreSettings: 還原設定
+  restoreSettingsHint: 使用備份副本覆寫目前啟動器偏好設定
+  restoreCollections: 還原收藏夾
+  restoreCollectionsHint: 匯入並合併已儲存的收藏夾至啟動器
+  restoreThemes: 還原主題與媒體
+  restoreThemesHint: 重新安裝主題、自訂 CSS 與背景媒體
+  noLauncherDataInBackup: 此備份封存檔中未包含啟動器設定或主題。
+  conflictStrategyTitle: 實例名稱衝突處理
+  conflictRename: 保留現有實例並重新命名還原的實例 (例如 name-restored)
+  conflictOverwrite: 覆寫現有實例檔案
+  conflictSkip: 略過磁碟上已存在的實例
+  restoreError: 還原備份失敗
+  restorePartialTitle: 還原完成，存在警告
+  restorePartialHint: 部分元件或實例未能完全還原。請查看活動紀錄了解詳情。
+  restoreFailedCategory: '還原 {category} 失敗'
+  instancesSkipped: '已略過 {count} 個已存在的實例'
+  instancesFailed: '{count} 個實例還原失敗'
+  createBackupTitle: 建立備份
+  createBackupDescription: 將啟動器設定、收藏夾、自訂主題與實例儲存為單一可攜式封存檔。
+  restoreBackupTitle: 還原備份
+  restoreBackupDescription: 從先前儲存的備份封存檔還原設定、主題、收藏夾或遊戲實例。
+  portableArchiveNoticeTitle: 可攜式單檔備份
+  portableArchiveNoticeDescription: 備份會儲存為單一 .xmclbackup 封存檔。您可以安全保存、複製到隨身碟，或透過 Google Drive、OneDrive 等雲端服務同步。
+  autoBackupTitle: 背景自動備份
+  autoBackupDescription: 依排程在背景自動備份一個或多個選取的實例
+  autoBackupStatusRunning: 備份中...
+  autoBackupStatusEnabled: 已啟用
+  autoBackupStatusDisabled: 已停用
+  autoBackupRunNow: 立即備份
+  autoBackupLastRun: 上次自動備份
+  autoBackupNeverRun: 從未
+  selectedCount: '已選 {selected} / {total}'
+  autoBackupSelectInstances: 要自動備份的實例（可選取一個或多個）
+  searchInstances: 搜尋實例...
+  autoBackupInterval: 備份頻率
+  autoBackupRetention: 備份保留數量
+  autoBackupDestination: 自動備份資料夾
+  browse: 瀏覽
+  autoBackupContentLabel: 背景備份包含內容
+  instanceSaves: 世界與存檔
+  instanceConfigs: 設定與選項
+  instanceMods: 模組
+  instanceResourcePacks: 資源包
+  instanceShaderPacks: 光影包
+  launcherSettings: 啟動器設定
+  autoBackupHistoryTitle: 最近自動備份
+  autoBackupError: 自動備份失敗
+  interval30m: 每 30 分鐘
+  interval1h: 每 1 小時
+  interval2h: 每 2 小時
+  interval4h: 每 4 小時
+  interval6h: 每 6 小時
+  interval12h: 每 12 小時
+  interval24h: 每 24 小時
+  keepCount: '保留最近 {count} 個備份'
 baseSetting:
   title: 一般設定
 browseApp:

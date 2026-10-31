@@ -92,6 +92,133 @@ bedrock:
   downloadFailed: বেডরক {version} ডাউনলোড করতে ব্যর্থ হয়েছে
   launchFailed: এই বেডরক সংস্করণটি চালু করতে ব্যর্থ হয়েছে
   removeFailed: Bedrock {version} অপসারণ করতে ব্যর্থ হয়েছে
+backup:
+  title: ব্যাকআপ এবং পুনরুদ্ধার
+  description: আপনার সেটিংস, কালেকশন, থিম এবং গেম ইনস্ট্যান্স ব্যাকআপ ও পুনরুদ্ধার করুন
+  launcherData: Launcher Data
+  includeSettingsTitle: Launcher Settings
+  includeSettingsHint: General preferences, language, developer mode, and appearance settings
+  includeCollectionsTitle: Saved Collections
+  includeCollectionsHint: Launcher-managed mod and resource collections
+  includeThemesTitle: 'Custom Themes & Media'
+  includeThemesHint: Theme colors, custom CSS styles, and background media
+  instances: Instances
+  selectAll: Select All
+  deselectAll: Deselect All
+  instanceDataOptions: Instance Data Options
+  includeConfigs: 'Configs & Options'
+  includeSaves: Saves (Worlds)
+  includeResourcePacks: Resource Packs
+  includeShaderPacks: Shader Packs
+  modsMode: Mods
+  modsFull: Full files (.jar)
+  modsListOnly: Mod list only (lightweight)
+  modsNone: Exclude mods
+  noInstancesFound: No instances found in launcher.
+  excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
+  create: ব্যাকআপ তৈরি করুন
+  createTitle: Create XMCL Backup Archive
+  saveDialogTitle: Save XMCL Backup Archive
+  fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
+  createError: Failed to create backup
+  loadManifestError: Failed to read backup archive
+  restore: পুনরুদ্ধার করুন
+  restoreTitle: Restore from Backup
+  preparing: Preparing...
+  workingTitle: Creating Backup Archive...
+  restoringTitle: Restoring from Backup...
+  elapsedTime: Elapsed
+  remainingTime: Estimated remaining
+  calculatingRemaining: Calculating...
+  lessThanMinute: '< 1 min'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Saves
+  modsCategory: Mods
+  resourcePacksCategory: Resource Packs
+  shaderPacksCategory: Shader Packs
+  configsCategory: Configs
+  activityLog: Activity Log
+  copyLog: Copy Log
+  copiedLog: Log copied to clipboard
+  openFolder: Show in Folder
+  done: সম্পন্ন
+  backupDone: 'Backup Complete!'
+  backupDoneHint: Your backup archive has been created and verified.
+  restoreDone: 'Restore Complete!'
+  restoreDoneHint: All selected data and instances have been restored successfully.
+  timeTaken: 'Time taken: {time}'
+  destinationFile: 'Saved to: {path}'
+  stagePreparing: Preparing
+  stageSettings: Launcher Settings
+  stageCollections: Saved Collections
+  stageThemes: 'Themes & Media'
+  stageInstances: Game Instances
+  stageCompressing: Compressing Archive
+  stageComplete: Complete
+  stageLabel: 'Stage: {stage}'
+  searchInstancesPlaceholder: Search instances by name or version...
+  selectBackupFilePrompt: Select a backup archive to restore
+  selectBackupFileDescription: Choose a .xmclbackup or .zip file containing your saved XMCL data and instances.
+  selectFile: Choose File
+  selectBackupFileTitle: Open XMCL Backup Archive
+  createdOn: 'Created on {date}'
+  changeFile: Change File
+  dataToRestore: Data to Restore
+  restoreSettings: Restore Settings
+  restoreSettingsHint: Overwrite current launcher preferences with the backup copy
+  restoreCollections: Restore Collections
+  restoreCollectionsHint: Import and merge saved collections into the launcher
+  restoreThemes: 'Restore Themes & Media'
+  restoreThemesHint: Reinstall themes, custom CSS, and background media
+  noLauncherDataInBackup: No launcher settings or themes found in this backup archive.
+  conflictStrategyTitle: Instance Name Conflict Handling
+  conflictRename: Keep existing and rename restored instance (e.g. name-restored)
+  conflictOverwrite: Overwrite existing instance files
+  conflictSkip: Skip instances that already exist on disk
+  restoreError: Failed to restore backup
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
+  createBackupTitle: Create Backup
+  createBackupDescription: Save your launcher settings, collections, custom themes, and instances to a single portable archive file.
+  restoreBackupTitle: Restore Backup
+  restoreBackupDescription: Restore settings, themes, collections, or game instances from a previously saved backup archive.
+  portableArchiveNoticeTitle: Portable Single-File Backups
+  portableArchiveNoticeDescription: Backups are saved as single .xmclbackup archives. You can easily keep them safe, copy them to a USB drive, or sync them with cloud services like Google Drive or OneDrive.
+  autoBackupTitle: ব্যাকগ্রাউন্ড অটো-ব্যাকআপ
+  autoBackupDescription: নির্ধারিত সময় অনুযায়ী ব্যাকগ্রাউন্ডে এক বা একাধিক নির্বাচিত ইনস্ট্যান্স স্বয়ংক্রিয়ভাবে ব্যাকআপ করুন
+  autoBackupStatusRunning: ব্যাকআপ হচ্ছে...
+  autoBackupStatusEnabled: সক্রিয়
+  autoBackupStatusDisabled: নিষ্ক্রিয়
+  autoBackupRunNow: এখনই চালান
+  autoBackupLastRun: সর্বশেষ অটো-ব্যাকআপ
+  autoBackupNeverRun: কখনই না
+  selectedCount: '{selected} / {total} নির্বাচিত'
+  autoBackupSelectInstances: অটো-ব্যাকআপের জন্য ইনস্ট্যান্স (এক বা একাধিক নির্বাচন করুন)
+  searchInstances: ইনস্ট্যান্স খুঁজুন...
+  autoBackupInterval: ব্যাকআপের সময়কাল
+  autoBackupRetention: ব্যাকআপ সংরক্ষণ
+  autoBackupDestination: অটো-ব্যাকআপ ফোল্ডার
+  browse: ব্রাউজ করুন
+  autoBackupContentLabel: ব্যাকগ্রাউন্ড ব্যাকআপে অন্তর্ভুক্ত করার বিষয়বস্তু
+  instanceSaves: ওয়ার্ল্ড ও সেভ
+  instanceConfigs: কনফিগ ও অপশন
+  instanceMods: মড
+  instanceResourcePacks: রিসোর্স প্যাক
+  instanceShaderPacks: শেডার প্যাক
+  launcherSettings: লঞ্চার সেটিংস
+  autoBackupHistoryTitle: সাম্প্রতিক অটো-ব্যাকআপ
+  autoBackupError: অটো-ব্যাকআপ ব্যর্থ হয়েছে
+  interval30m: প্রতি ৩০ মিনিটে
+  interval1h: প্রতি ১ ঘণ্টায়
+  interval2h: প্রতি ২ ঘণ্টায়
+  interval4h: প্রতি ৪ ঘণ্টায়
+  interval6h: প্রতি ৬ ঘণ্টায়
+  interval12h: প্রতি ১২ ঘণ্টায়
+  interval24h: প্রতি ২৪ ঘণ্টায়
+  keepCount: 'শেষ {count}টি ব্যাকআপ রাখুন'
 baseSetting:
   title: ইনস্ট্যান্স সেটিংস
 browseApp:

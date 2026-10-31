@@ -64,6 +64,133 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+backup:
+  title: Backup e Restauração
+  description: Faça backup e restaure suas configurações, coleções, temas e instâncias do jogo
+  launcherData: Dados do Launcher
+  includeSettingsTitle: Configurações do Launcher
+  includeSettingsHint: Preferências gerais, idioma, modo desenvolvedor e aparência
+  includeCollectionsTitle: Coleções Salvas
+  includeCollectionsHint: Coleções de mods e recursos gerenciadas pelo launcher
+  includeThemesTitle: Temas e Mídia Personalizados
+  includeThemesHint: Cores do tema, estilos CSS personalizados e mídia de fundo
+  instances: Instâncias
+  selectAll: Selecionar Tudo
+  deselectAll: Desmarcar Tudo
+  instanceDataOptions: Opções de Dados da Instância
+  includeConfigs: Configurações e Opções
+  includeSaves: Mundos (Saves)
+  includeResourcePacks: Pacotes de Recursos
+  includeShaderPacks: Pacotes de Shaders
+  modsMode: Mods
+  modsFull: Arquivos completos (.jar)
+  modsListOnly: Apenas lista de mods (leve)
+  modsNone: Excluir mods
+  noInstancesFound: Nenhuma instância encontrada no launcher.
+  excludeLibrariesNotice: Bibliotecas principais, assets do Minecraft e caches temporários são excluídos automaticamente para manter o arquivo compacto. Eles serão baixados ao iniciar o jogo.
+  create: Criar Backup
+  createTitle: Criar Arquivo de Backup XMCL
+  saveDialogTitle: Salvar Arquivo de Backup XMCL
+  fileFilterName: 'Arquivo de Backup XMCL (*.xmclbackup, *.zip)'
+  createError: Falha ao criar backup
+  loadManifestError: Falha ao ler arquivo de backup
+  restore: Restaurar
+  restoreTitle: Restaurar a partir de Backup
+  preparing: Preparando...
+  workingTitle: Criando Arquivo de Backup...
+  restoringTitle: Restaurando do Backup...
+  elapsedTime: Tempo decorrido
+  remainingTime: Tempo restante estimado
+  calculatingRemaining: Calculando...
+  lessThanMinute: '< 1 min'
+  itemsProgress: '{current}/{total}'
+  savesCategory: Mundos
+  modsCategory: Mods
+  resourcePacksCategory: Pacotes de Recursos
+  shaderPacksCategory: Shaders
+  configsCategory: Configurações
+  activityLog: Registro de Atividades
+  copyLog: Copiar Registro
+  copiedLog: Registro copiado para a área de transferência
+  openFolder: Mostrar na Pasta
+  done: Concluído
+  backupDone: 'Backup Concluído!'
+  backupDoneHint: Seu arquivo de backup foi criado e verificado.
+  restoreDone: 'Restauração Concluída!'
+  restoreDoneHint: Todos os dados e instâncias selecionados foram restaurados com sucesso.
+  timeTaken: 'Tempo gasto: {time}'
+  destinationFile: 'Salvo em: {path}'
+  stagePreparing: Preparando
+  stageSettings: Configurações do Launcher
+  stageCollections: Coleções Salvas
+  stageThemes: Temas e Mídia
+  stageInstances: Instâncias do Jogo
+  stageCompressing: Compactando Arquivo
+  stageComplete: Concluído
+  stageLabel: 'Etapa: {stage}'
+  searchInstancesPlaceholder: Pesquisar instâncias por nome ou versão...
+  selectBackupFilePrompt: Selecione um arquivo de backup para restaurar
+  selectBackupFileDescription: Escolha um arquivo .xmclbackup ou .zip contendo seus dados e instâncias do XMCL.
+  selectFile: Escolher Arquivo
+  selectBackupFileTitle: Abrir Arquivo de Backup XMCL
+  createdOn: 'Criado em {date}'
+  changeFile: Alterar Arquivo
+  dataToRestore: Dados para Restaurar
+  restoreSettings: Restaurar Configurações
+  restoreSettingsHint: Substituir preferências atuais pela cópia de backup
+  restoreCollections: Restaurar Coleções
+  restoreCollectionsHint: Importar e mesclar coleções salvas no launcher
+  restoreThemes: Restaurar Temas e Mídia
+  restoreThemesHint: Reinstalar temas, CSS personalizado e mídia de fundo
+  noLauncherDataInBackup: Nenhuma configuração ou tema encontrado neste backup.
+  conflictStrategyTitle: Conflito de Nomes de Instância
+  conflictRename: 'Manter existente e renomear a instância restaurada (ex: name-restored)'
+  conflictOverwrite: Substituir arquivos da instância existente
+  conflictSkip: Ignorar instâncias que já existem no disco
+  restoreError: Falha ao restaurar backup
+  restorePartialTitle: Restore Completed with Warnings
+  restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
+  restoreFailedCategory: 'Failed to restore {category}'
+  instancesSkipped: 'Skipped {count} already existing instance(s)'
+  instancesFailed: 'Failed to restore {count} instance(s)'
+  createBackupTitle: Criar Backup
+  createBackupDescription: Salve configurações, coleções, temas personalizados e instâncias em um único arquivo portátil.
+  restoreBackupTitle: Restaurar Backup
+  restoreBackupDescription: Restaure configurações, temas, coleções ou instâncias a partir de um backup salvo.
+  portableArchiveNoticeTitle: Backups Portáteis em Arquivo Único
+  portableArchiveNoticeDescription: Os backups são salvos como arquivos .xmclbackup únicos. Você pode copiá-los para um pendrive ou sincronizá-los com Google Drive ou OneDrive.
+  autoBackupTitle: Backup Automático em Segundo Plano
+  autoBackupDescription: Faça backup automático de uma ou mais instâncias selecionadas em segundo plano de forma agendada
+  autoBackupStatusRunning: Fazendo backup...
+  autoBackupStatusEnabled: Ativo
+  autoBackupStatusDisabled: Desativado
+  autoBackupRunNow: Executar Agora
+  autoBackupLastRun: Último backup automático
+  autoBackupNeverRun: Nunca
+  selectedCount: '{selected} / {total} selecionadas'
+  autoBackupSelectInstances: Instâncias para Backup Automático (Selecione uma ou mais)
+  searchInstances: Pesquisar instâncias...
+  autoBackupInterval: Frequência de Backup
+  autoBackupRetention: Retenção de Backups
+  autoBackupDestination: Pasta de Backup Automático
+  browse: Procurar
+  autoBackupContentLabel: Conteúdo a Incluir nos Backups em Segundo Plano
+  instanceSaves: Mundos e Saves
+  instanceConfigs: Configurações e Opções
+  instanceMods: Mods
+  instanceResourcePacks: Pacotes de Recursos
+  instanceShaderPacks: Pacotes de Shaders
+  launcherSettings: Configurações do Launcher
+  autoBackupHistoryTitle: Backups Automáticos Recentes
+  autoBackupError: Falha no backup automático
+  interval30m: A cada 30 minutos
+  interval1h: A cada 1 hora
+  interval2h: A cada 2 horas
+  interval4h: A cada 4 horas
+  interval6h: A cada 6 horas
+  interval12h: A cada 12 horas
+  interval24h: A cada 24 horas
+  keepCount: 'Manter os últimos {count} backups'
 baseSetting:
   title: Configurações básicas
 browseApp:

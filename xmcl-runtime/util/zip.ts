@@ -40,12 +40,14 @@ export async function includeAs(zipFile: ZipFile, realPath: string, zipPath = ''
  * @param destination The destination file path
  * @param signal Optional AbortSignal for cancellation
  * @param tracker Optional tracker for progress reporting
+ * @param onBytes Optional callback for bytes written
  */
 export async function writeZipFile(
   zipFile: ZipFile,
   destination: string,
   signal?: AbortSignal,
   tracker?: Tracker<ZipTrackerEvents>,
+  onBytes?: (written: number) => void,
 ): Promise<void> {
   if (signal?.aborted) {
     throw new Error('Operation aborted')
@@ -66,16 +68,28 @@ export async function writeZipFile(
   try {
     zipFile.outputStream.on('data', (buffer) => {
       progress.progress += buffer.length
+      if (onBytes) {
+        onBytes(progress.progress)
+      }
     })
     const pipelinePromise = pipeline(zipFile.outputStream, writeStream)
     const fileClose = new Promise<void>((resolve, reject) => {
       writeStream.on('close', resolve)
       writeStream.on('error', reject)
     })
-    zipFile.end({ forceZip64Format: false }, (...args: any[]) => {
+    const zipError = new Promise<never>((_, reject) => {
+      ;(zipFile as any).once('error', (err: any) => {
+        writeStream.destroy(err)
+        reject(err)
+      })
+    })
+    zipFile.end({ forceZip64Format: true }, (...args: any[]) => {
       progress.total = args[0]
     })
-    await Promise.all([fileClose, pipelinePromise])
+    await Promise.race([
+      Promise.all([fileClose, pipelinePromise]),
+      zipError,
+    ])
   } finally {
     signal?.removeEventListener('abort', abortHandler)
   }

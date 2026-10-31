@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { InstanceThemeService as IInstanceThemeService, InstanceThemeServiceKey, MediaData, ThemeData } from '@xmcl/runtime-api'
 import { fileTypeFromFile as fromFile } from 'file-type'
 import { copyFile, ensureDir, existsSync, readFile, readJson, rm, unlink, writeFile, writeJSON } from 'fs-extra'
@@ -13,6 +14,7 @@ export class InstanceThemeService extends AbstractService implements IInstanceTh
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app)
+    getRestoreGate(app).guardMethods(this, ['setInstanceTheme', 'setInstanceCustomCss', 'addMedia', 'removeMedia', 'copyMediaFromGlobal'])
   }
 
   async getInstanceTheme(instancePath: string): Promise<ThemeData | undefined> {

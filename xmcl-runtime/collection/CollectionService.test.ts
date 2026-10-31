@@ -1,5 +1,5 @@
 import { CURRENT_COLLECTION_SCHEMA_VERSION, LocalCollectionState } from '@xmcl/runtime-api'
-import { mkdtemp, readFile, rm, writeFile } from 'fs-extra'
+import { mkdtemp, readFile, realpath, rm, writeFile } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -51,6 +51,7 @@ function createMockApp(appDataPath: string) {
   const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
   return {
     appDataPath,
+    registryDisposer: vi.fn(),
     minecraftDataPath: appDataPath,
     getLogger: () => logger,
     controller: { broadcast: vi.fn() },
@@ -71,14 +72,14 @@ function newService(appDataPath: string) {
 
 async function flush(service: CollectionService) {
   // The saver is a debounced function; flush pending writes.
-  await (service as any).save.flush()
+  await (service as any).saver.flush()
 }
 
 describe('CollectionService', () => {
   let dir: string
 
   beforeEach(async () => {
-    dir = await mkdtemp(join(tmpdir(), 'xmcl-collection-'))
+    dir = await realpath(await mkdtemp(join(tmpdir(), 'xmcl-collection-')))
   })
 
   afterEach(async () => {

@@ -1,3 +1,4 @@
+import { getRestoreGate } from '~/infra/restoreGate'
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import {
   InstanceFileOperationHandler as InstanceFileOperationHandlerV2,
@@ -76,6 +77,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     @Inject(ModrinthV2Client) private modrinthClient: ModrinthV2Client,
   ) {
     super(app)
+    getRestoreGate(app).guardMethods(this, ['stageInstanceFiles', 'setInstanceInstallManifest', 'applyInstanceInstallManifest', 'discardInstanceInstallManifest', 'resumeInstanceInstall', 'installInstanceFiles', 'dismissUnresolvedFiles'])
   }
 
   async getLegacyLock(instancePath: string) {
