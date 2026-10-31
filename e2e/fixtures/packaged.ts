@@ -19,7 +19,7 @@
  */
 import { _electron, ElectronApplication, test as base } from '@playwright/test'
 import { existsSync } from 'node:fs'
-import { cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { cp, mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, extname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -116,7 +116,7 @@ export const test = base.extend<{ packaged: PackagedFixture }>({
       )
     }
 
-    const tempRoot = await mkdtemp(join(tmpdir(), 'xmcl-e2e-pkg-'))
+    const tempRoot = await realpath(await mkdtemp(join(tmpdir(), 'xmcl-e2e-pkg-')))
     const appDataPath = join(tempRoot, 'appData')
     const gameDataPath = join(tempRoot, 'gameData')
     const xmclDir = join(appDataPath, 'xmcl')
