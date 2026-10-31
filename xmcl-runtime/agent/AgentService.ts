@@ -73,6 +73,16 @@ export class AgentService extends AbstractService implements IAgentService {
   async setProviderSettings(input: UpdateAgentProviderSettings) {
     const settings = await this.app.registry.get(kSettings)
     const endpoint = input.endpoint.trim()
+    if (input.apiKey !== undefined && !endpoint && input.apiKey.trim()) {
+      throw new Error('Enter an Agent URL before saving an API key.')
+    }
+    if (endpoint) {
+      let url: URL
+      try { url = new URL(endpoint) } catch { throw new Error('Enter a valid HTTP or HTTPS Agent URL.') }
+      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
+        throw new Error('Enter a valid HTTP or HTTPS Agent URL without embedded credentials.')
+      }
+    }
     this.logAgent(`[provider.settings] ${sanitizeAgentLog({
       endpoint: sanitizeAgentEndpoint(endpoint),
       model: input.model,
