@@ -523,7 +523,8 @@ import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import { useBackup } from '@/composables/backup'
 import { useDialog } from '@/composables/dialog'
-import { useInstances } from '@/composables/instances'
+import { kInstances } from '@/composables/instances'
+import { injection } from '@/util/inject'
 import { useService } from '@/composables/service'
 import { BuiltinImages } from '@/constant'
 import { BaseServiceKey, type AutoBackupConfig } from '@xmcl/runtime-api'
@@ -531,7 +532,9 @@ import { BaseServiceKey, type AutoBackupConfig } from '@xmcl/runtime-api'
 const { t } = useI18n()
 const { show: showCreate } = useDialog('backup-create')
 const { show: showRestore } = useDialog<string>('backup-restore')
-const { instances, selectedInstance } = useInstances()
+// Reuse the root subscription: a page-owned useInstances would unref the
+// window's shared instance state when leaving Settings.
+const { instances, selectedInstance } = injection(kInstances)
 const { openDirectory, showItemInDirectory } = useService(BaseServiceKey)
 
 const {
