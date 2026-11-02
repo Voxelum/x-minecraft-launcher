@@ -1,4 +1,4 @@
-import { HAS_DEV_SERVER } from '@/constant'
+import { HAS_DEV_SERVER } from '../constant'
 import {
   DownloadBaseOptions,
   ProgressTracker,
@@ -30,8 +30,9 @@ import { createGunzip } from 'zlib'
 import { Logger, kGFW } from '~/infra'
 import { kSettings } from '~/settings'
 import { checksum } from '~/util/fs'
-import ElectronLauncherApp from '../ElectronLauncherApp'
+import type ElectronLauncherApp from '../ElectronLauncherApp'
 import { ensureElevateExe } from './elevate'
+import { isExternallyUpdatedAppImage } from './appImageUpdatePolicy'
 
 const kPatched = Symbol('Patched')
 
@@ -479,8 +480,16 @@ export class ElectronUpdater implements LauncherAppUpdater {
     }
   }
 
+  private async externallyUpdatedAppImage(): Promise<boolean> {
+    if (this.app.env !== 'appimage') return false
+    const settings = await this.app.registry.get(kSettings)
+    return isExternallyUpdatedAppImage(this.app.env, settings.appImageUpdateMode)
+  }
+
   async checkUpdateTask(): Promise<ReleaseInfo> {
-    if (this.app.platform.os === 'windows' || this.app.platform.os === 'osx') {
+    // External or unstable-path AppImages only discover release metadata:
+    // checkForUpdates can start a download and register install-on-quit hooks.
+    if (await this.externallyUpdatedAppImage() || this.app.platform.os === 'windows' || this.app.platform.os === 'osx') {
       return this.#getUpdateFromSelfHost()
     }
     try {
@@ -495,6 +504,12 @@ export class ElectronUpdater implements LauncherAppUpdater {
   }
 
   async downloadUpdate(updateInfo: ReleaseInfo, options?: DownloadUpdateOptions): Promise<void> {
+    // Also guard stale/persisted AutoUpdater or Asar release information.
+    if (await this.externallyUpdatedAppImage()
+      || (this.app.env === 'appimage' && updateInfo.operation !== ElectronUpdateOperation.AutoUpdater)) {
+      await hintUserDownload()
+      return
+    }
     const tracker = options?.tracker
     const abortSignal = options?.abortSignal
 
@@ -521,6 +536,12 @@ export class ElectronUpdater implements LauncherAppUpdater {
   }
 
   async installUpdateAndQuit(updateInfo: ReleaseInfo): Promise<void> {
+    if (await this.externallyUpdatedAppImage()
+      || (this.app.env === 'appimage' && updateInfo.operation !== ElectronUpdateOperation.AutoUpdater)) {
+      // Never invoke quitAndInstall, even with cached release metadata.
+      await hintUserDownload()
+      return
+    }
     if (HAS_DEV_SERVER) {
       this.logger.log('Currently is development environment. Skip to install update')
       return

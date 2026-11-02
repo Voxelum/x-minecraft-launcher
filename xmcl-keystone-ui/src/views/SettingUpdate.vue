@@ -4,6 +4,7 @@
     :title="t('setting.update')"
     icon="rocket_launch"
   >
+    <AppImageUpdateSettings />
     <v-progress-linear v-if="!updateStateReady" indeterminate />
     <template v-else-if="updateUnavailable">
       <v-alert type="info" variant="tonal" class="ma-4" role="status">
@@ -86,6 +87,7 @@ import { useDialog } from '../composables/dialog'
 import { kUpdateSettings } from '../composables/setting'
 import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
+import AppImageUpdateSettings from './AppImageUpdateSettings.vue'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'

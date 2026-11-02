@@ -2035,6 +2035,13 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  appImageUpdateMode: AppImage update ownership
+  appImageExternalMode: External manager / manual replacement (default)
+  appImageSelfMode: XMCL self-managed (I own this AppImage)
+  appImageAutoDownload: Automatically download updates
+  appImageAutoInstall: Install downloaded updates when quitting
+  appImageExternalUpdateHint: If installed through Shelly or another manager, update there and keep external mode. Otherwise replace the AppImage yourself at its existing path. XMCL does not download or install updates in external mode, and does not change manager records or desktop entries.
+  appImageSelfUpdateHint: Only choose self-managed for an AppImage you manage yourself, not one owned by Shelly or another manager. Built-in updates require an absolute AppImage path with no version number in the filename (for example xmcl.AppImage). If the name contains a version such as 0.73.0, quit XMCL, rename the file yourself, update your own desktop entry to that stable path, then launch it again. Until then updates remain manual. XMCL will not rename files for you. After changing modes, check for updates again.
   multiplayerTransport: Together transport
   multiplayerTransportDescription: Choose the WebRTC implementation used by Together. Changing transport disconnects active peers.
   about: About

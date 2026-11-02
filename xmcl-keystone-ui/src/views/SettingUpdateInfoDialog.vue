@@ -32,7 +32,7 @@
         variant="tonal"
         type="warning"
       >
-        {{ t('setting.maunalUpdateHint') }}
+        {{ t(isAppImage ? (state?.appImageUpdateMode === 'self-managed' ? 'setting.appImageSelfUpdateHint' : 'setting.appImageExternalUpdateHint') : 'setting.maunalUpdateHint') }}
       </v-alert>
       <v-card-actions>
         <v-btn
