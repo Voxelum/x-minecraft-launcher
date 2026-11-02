@@ -27,6 +27,8 @@ export const GlobalResolutionSchema = z.object({
 export const SettingSchema = z.object({
   /** The display language of the launcher */
   locale: z.string().catch(''),
+  /** AppImages are externally managed unless the user explicitly takes ownership. */
+  appImageUpdateMode: z.enum(['external', 'self-managed']).catch('external'),
   /** Should launcher auto download new update */
   autoDownload: z.boolean().catch(false),
   /** Should launcher auto install new update after app quit */

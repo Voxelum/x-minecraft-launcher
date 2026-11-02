@@ -98,6 +98,23 @@ describe('pluginSettings', () => {
     expect(() => mockState.localeSet('de')).toThrow('maintenance')
   })
 
+  test('loads and persists explicit AppImage ownership through the settings saver', async () => {
+    vi.useFakeTimers()
+    vi.mocked(fsExtra.readJson).mockResolvedValue({ appImageUpdateMode: 'self-managed' })
+    vi.mocked(fsExtra.writeJson).mockResolvedValue(undefined)
+    const { pluginSettings } = await import('./pluginSettings')
+    await pluginSettings(mockApp, mockManifest)
+    expect(mockState.appImageUpdateMode).toBe('self-managed')
+    mockState.appImageUpdateModeSet('external')
+    subscribeCallback!()
+    await vi.advanceTimersByTimeAsync(1100)
+    expect(fsExtra.writeJson).toHaveBeenLastCalledWith(
+      join('/mock/app/data', 'setting.json'),
+      expect.objectContaining({ appImageUpdateMode: 'external' }),
+      { spaces: 2 },
+    )
+  })
+
   test('should load settings from setting.json', async () => {
     const mockSettings: SettingSchema = SettingSchema.parse({
       locale: 'zh-CN',
@@ -362,6 +379,7 @@ describe('pluginSettings', () => {
       join('/mock/app/data', 'setting.json'),
       {
         locale: 'en',
+        appImageUpdateMode: 'external',
         autoDownload: false,
         autoInstallOnAppQuit: false,
         allowPrerelease: false,
@@ -434,6 +452,7 @@ describe('pluginSettings', () => {
       join('/mock/app/data', 'setting.json'),
       {
         locale: 'en',
+        appImageUpdateMode: 'external',
         autoDownload: false,
         autoInstallOnAppQuit: false,
         allowPrerelease: false,

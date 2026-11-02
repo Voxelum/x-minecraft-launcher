@@ -1936,6 +1936,13 @@ serverStatus:
   refuse: 服务器断开了连接！
   timeout: 服务器响应超时！
 setting:
+  appImageUpdateMode: AppImage 更新管理方式
+  appImageExternalMode: 外部管理器或手动替换（默认）
+  appImageSelfMode: XMCL 自维护（此 AppImage 由我自行管理）
+  appImageAutoDownload: 自动下载更新
+  appImageAutoInstall: 退出时安装已下载的更新
+  appImageExternalUpdateHint: 如果通过 Shelly 等管理器安装，请保留外部管理模式并使用该管理器更新；否则请自行替换原路径上的 AppImage。外部管理模式下 XMCL 不下载或安装更新，也不修改管理器记录或桌面入口。
+  appImageSelfUpdateHint: 仅对自行管理、而非 Shelly 等管理器维护的 AppImage 选择自维护。内置更新要求 AppImage 使用绝对路径且文件名不含版本号（例如 xmcl.AppImage）。如果文件名含 0.73.0 等版本号，请先退出 XMCL，自行重命名文件，将自己的桌面入口改为该稳定路径，再重新启动。在此之前仅允许手动更新。XMCL 不会代为重命名。切换模式后请重新检查更新。
   multiplayerTransport: Together 传输核心
   multiplayerTransportDescription: 选择 Together 使用的 WebRTC 实现。切换核心会断开当前连接。
   themeStore:

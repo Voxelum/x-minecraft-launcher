@@ -59,6 +59,7 @@ export class Settings implements SettingSchema {
   allowPrerelease = false
   autoInstallOnAppQuit = false
   autoDownload = false
+  appImageUpdateMode: 'external' | 'self-managed' = 'external'
   enableDedicatedGPUOptimization = true
   apiSetsPreference: 'mojang' | 'bmcl' | '' = ''
   apiSets = [{ name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }]
@@ -93,6 +94,7 @@ export class Settings implements SettingSchema {
 
   config(config: SettingSchema) {
     this.locale = config.locale
+    this.appImageUpdateMode = config.appImageUpdateMode === 'self-managed' ? 'self-managed' : 'external'
     this.autoDownload = config.autoDownload || false
     this.autoInstallOnAppQuit = config.autoInstallOnAppQuit || false
     this.allowPrerelease = config.allowPrerelease || false
@@ -190,6 +192,10 @@ export class Settings implements SettingSchema {
 
   updateStatusSet(updateStatus: 'ready' | 'none' | 'pending') {
     this.updateStatus = updateStatus
+  }
+
+  appImageUpdateModeSet(mode: 'external' | 'self-managed') {
+    if (mode === 'external' || mode === 'self-managed') this.appImageUpdateMode = mode
   }
 
   autoDownloadSet(autoDownload: boolean) {
