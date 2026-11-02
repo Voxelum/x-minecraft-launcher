@@ -1,6 +1,6 @@
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import { BrowserWindow, screen } from 'electron'
-import { readFile, writeFile } from 'fs-extra'
+import { readFile, writeFileSync } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import { join } from 'path'
 import { LauncherApp } from '~/app'
@@ -24,13 +24,22 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
     },
   }
   function isInsideScreen(x: number, y: number, width: number, height: number) {
-    const displays = screen.getAllDisplays()
-    for (const display of displays) {
-      if (x >= display.bounds.x && y >= display.bounds.y && x + width <= display.bounds.x + display.bounds.width && y + height <= display.bounds.y + display.bounds.height) {
-        return true
+    const displays = screen.getAllDisplays().map(display => display.bounds)
+    // Check coverage by the union of displays, not just one monitor. A window
+    // spanning adjacent monitors is valid, but one spanning a desktop gap isn't.
+    const edges = [...new Set([x, x + width, ...displays.flatMap(bounds => [bounds.x, bounds.x + bounds.width])])]
+      .filter(edge => edge >= x && edge <= x + width).sort((a, b) => a - b)
+    for (let i = 1; i < edges.length; i++) {
+      const intervals = displays.filter(bounds => bounds.x <= edges[i - 1] && bounds.x + bounds.width >= edges[i])
+        .sort((a, b) => a.y - b.y)
+      let coveredY = y
+      for (const bounds of intervals) {
+        if (bounds.y > coveredY) break
+        coveredY = Math.max(coveredY, bounds.y + bounds.height)
       }
+      if (coveredY < y + height) return false
     }
-    return false
+    return true
   }
   async function getConfig() {
     const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
@@ -41,53 +50,68 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
       maximized: false,
     }))
     const newConfig = {
-      width: typeof configData.width === 'number' ? configData.width as number : -1,
-      height: typeof configData.height === 'number' ? configData.height as number : -1,
-      x: typeof configData.x === 'number' ? configData.x as number : null,
-      y: typeof configData.y === 'number' ? configData.y as number : null,
-      maximized: !!configData.maximized,
+      width: Number.isFinite(configData?.width) && configData.width > 0 ? configData.width as number : -1,
+      height: Number.isFinite(configData?.height) && configData.height > 0 ? configData.height as number : -1,
+      x: Number.isFinite(configData?.x) ? configData.x as number : undefined,
+      y: Number.isFinite(configData?.y) ? configData.y as number : undefined,
+      maximized: !!configData?.maximized,
     }
-    if (newConfig.x !== null && newConfig.y !== null && !isInsideScreen(newConfig.x, newConfig.y, newConfig.width, newConfig.height)) {
-      newConfig.x = null
-      newConfig.y = null
+    if (newConfig.x === undefined || newConfig.y === undefined || newConfig.width <= 0 || newConfig.height <= 0 || !isInsideScreen(newConfig.x, newConfig.y, newConfig.width, newConfig.height)) {
+      newConfig.x = undefined
+      newConfig.y = undefined
     }
     Object.assign(config, newConfig)
     return config
   }
-  async function track(browserWindow: BrowserWindow) {
+  function track(browserWindow: BrowserWindow) {
+    // Keep writes ordered and finish before Electron can quit on the last close.
+    // This tiny file is debounced during dragging, but synchronously flushed on close.
+    const writeToFile = debounce(() => {
+      try {
+        writeFileSync(configPath, JSON.stringify(config))
+      } catch (e) {
+        console.warn(`Failed to save window state to ${configPath}`, e)
+      }
+    }, 1000)
     const update = () => {
       if (browserWindow.isDestroyed()) return
-      if (browserWindow.isMaximized()) return
-      const [width, height] = browserWindow.getSize()
-      const [x, y] = browserWindow.getPosition()
+      // Windows can report minimized coordinates such as (-32000, -32000).
+      // Fullscreen bounds are not the user's normal window bounds either.
+      if (browserWindow.isMinimized() || browserWindow.isFullScreen()) return
+      const { width, height, x, y } = browserWindow.getNormalBounds()
       config.width = width
       config.height = height
       config.x = x
       config.y = y
       writeToFile()
     }
-    const updateViaMaximized = () => {
-      if (browserWindow.isDestroyed()) return
+    const updateMaximized = () => {
+      if (browserWindow.isDestroyed() || browserWindow.isMinimized() || browserWindow.isFullScreen()) return
       config.maximized = browserWindow.isMaximized()
-      writeToFile()
+      update()
     }
-    const writeToFile = debounce(() => {
-      writeFile(configPath, JSON.stringify(config))
-    }, 1000)
+    const close = () => {
+      updateMaximized()
+      writeToFile.flush()
+    }
     browserWindow.on('resize', update)
     browserWindow.on('moved', update)
     browserWindow.on('move', update)
-    browserWindow.on('maximize', updateViaMaximized)
-    browserWindow.on('unmaximize', updateViaMaximized)
-    browserWindow.on('will-move', update)
-    browserWindow.on('closed', () => {
+    browserWindow.on('maximize', updateMaximized)
+    browserWindow.on('unmaximize', updateMaximized)
+    browserWindow.on('close', close)
+    browserWindow.once('closed', () => {
+      // Also flush an already captured state if the window was destroyed directly.
+      writeToFile.flush()
       browserWindow.removeListener('resize', update)
       browserWindow.removeListener('moved', update)
       browserWindow.removeListener('move', update)
-      browserWindow.removeListener('will-move', update)
-      browserWindow.removeListener('closed', update)
+      browserWindow.removeListener('maximize', updateMaximized)
+      browserWindow.removeListener('unmaximize', updateMaximized)
+      browserWindow.removeListener('close', close)
     })
   }
+
   return {
     getConfig,
     track,
