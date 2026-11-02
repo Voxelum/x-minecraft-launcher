@@ -651,7 +651,8 @@ import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useBackup } from '@/composables/backup'
 import { useDialog } from '@/composables/dialog'
-import { useInstances } from '@/composables/instances'
+import { kInstances } from '@/composables/instances'
+import { injection } from '@/util/inject'
 import { useService } from '@/composables/service'
 import { BuiltinImages } from '@/constant'
 import { useNotifier } from '@/composables/notifier'
@@ -669,7 +670,8 @@ const { isShown, hide } = useDialog('backup-create')
 const { cancelBackupOperation, createBackup, isCreating, backupProgress } = useBackup()
 const operationError = ref('')
 const isChoosingDestination = ref(false)
-const { instances } = useInstances()
+// The root context owns the shared instance subscription, not this dialog.
+const { instances } = injection(kInstances)
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { notify } = useNotifier()
 
