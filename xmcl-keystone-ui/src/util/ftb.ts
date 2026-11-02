@@ -1,22 +1,24 @@
 import type { InstanceFile } from '@xmcl/instance'
-import { CachedFTBModpackVersionManifest, FTBFile, JavaRecord } from '@xmcl/runtime-api'
+import type { CachedFTBModpackVersionManifest, FTBFile, JavaRecord } from '@xmcl/runtime-api'
+import { markRaw } from 'vue'
 
 export function getFTBPath(file: FTBFile) {
   const name = file.name.startsWith('/') ? file.name.substring(1) : file.name
-  const path = file.path.replace('./', '') + name
-  return path
+  // FTB manifests use directory paths both with and without a trailing slash.
+  const directory = file.path.replace(/^\.\//, '').replace(/\/+$/, '')
+  return directory ? `${directory}/${name}` : name
 }
 
 export function getFTBTemplateAndFile(man: CachedFTBModpackVersionManifest, javas: JavaRecord[]) {
   const getVersion = (str?: string) => {
     if (!str) { return undefined }
-    const match = /(\d+)\.(\d)+\.(\d+)(_\d+)?/.exec(str)
+    const match = /(\d+)\.(\d+)\.(\d+)(?:_(\d+))?/.exec(str)
     if (match === null) { return undefined }
     if (match[1] === '1') {
       return {
         version: str,
         majorVersion: Number.parseInt(match[2]),
-        patch: Number.parseInt(match[4].substring(1)),
+        patch: Number.parseInt(match[4] ?? match[3]),
       }
     }
     return {
@@ -38,7 +40,7 @@ export function getFTBTemplateAndFile(man: CachedFTBModpackVersionManifest, java
       for (const v of majorMatched.slice(1)) {
         const currentPatch = getVersion(v.version)?.patch
         const selectedPatch = getVersion(selectedRecord.version)?.patch
-        if (!currentPatch || !selectedPatch) continue
+        if (currentPatch === undefined || selectedPatch === undefined) continue
         const diff = Math.abs(currentPatch - parsedVersion.patch)
         const selectedDiff = Math.abs(selectedPatch - parsedVersion.patch)
         if (diff < selectedDiff) {
@@ -59,7 +61,7 @@ export function getFTBTemplateAndFile(man: CachedFTBModpackVersionManifest, java
     optifine: '',
     labyMod: '',
   } 
-  const files: InstanceFile[] = markRaw(man.files.map(f => ({
+  const files: InstanceFile[] = markRaw(man.files.filter(f => !f.serveronly).map(f => ({
     path: getFTBPath(f),
     hashes: {
       sha1: f.sha1,
