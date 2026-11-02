@@ -5,6 +5,7 @@ import { TeamMember } from '@/components/StoreProjectMembers.vue'
 import { getFeedTheBeastProjectModel, getFeedTheBeastVersionModel, useFeedTheBeastModpackInstall } from '@/composables/ftb'
 import { kInstances } from '@/composables/instances'
 import { useMarkdown } from '@/composables/markdown'
+import { useNotifier } from '@/composables/notifier'
 import { useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { clientCurseforgeV1 } from '@/util/clients'
@@ -87,6 +88,7 @@ const members = computed(() => {
 })
 
 const _installing = ref(false)
+const { notify } = useNotifier()
 const { installModpack } = useFeedTheBeastModpackInstall()
 const onInstall = (v: StoreProjectVersion) => {
   if (!proj.value) return
@@ -94,7 +96,9 @@ const onInstall = (v: StoreProjectVersion) => {
   const ver = versions.find(f => f.id.toString() === v.id)
   if (!ver) return
   _installing.value = true
-  installModpack(ver, proj.value).finally(() => {
+  installModpack(ver, proj.value).catch((e) => {
+    notify({ level: 'error', title: e.message })
+  }).finally(() => {
     _installing.value = false
   })
 }

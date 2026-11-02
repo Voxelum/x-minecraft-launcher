@@ -1,0 +1,100 @@
+{
+  "creeperhostVersionId": 526038,
+  "status": "success",
+  "installs": 294,
+  "plays": 1396,
+  "refreshed": 1793596412,
+  "parent": 8,
+  "notification": "",
+  "links": [],
+  "targets": [
+    {
+      "version": "14.23.5.2857",
+      "id": 737,
+      "name": "forge",
+      "type": "modloader",
+      "updated": 1660755990
+    },
+    {
+      "version": "1.12.2",
+      "id": 2,
+      "name": "minecraft",
+      "type": "game",
+      "updated": 1585685146
+    },
+    {
+      "version": "8.0.302+8",
+      "id": 643,
+      "name": "java",
+      "type": "runtime",
+      "updated": 1653342466
+    }
+  ],
+  "specs": {
+    "id": 883,
+    "minimum": 4096,
+    "recommended": 6144
+  },
+  "files": [
+    {
+      "version": "1.12.2-r152",
+      "path": "./mods",
+      "url": "https://edge.forgecdn.net/files/3117/927/ActuallyAdditions-1.12.2-r152.jar",
+      "mirrors": [],
+      "sha1": "6e5f7deda0d3cf196b38f57eb60ef18a85b0ca2d",
+      "size": 2958699,
+      "tags": [],
+      "clientonly": false,
+      "serveronly": false,
+      "optional": false,
+      "curseforge": {
+        "project": "228404",
+        "file": "3117927"
+      },
+      "id": 272428,
+      "name": "ActuallyAdditions-1.12.2-r152.jar",
+      "type": "mod",
+      "updated": 1620406425
+    },
+    {
+      "version": "1",
+      "path": "./config",
+      "url": "https://dist.modpacks.ch/modpacks/1/FTB%20Sky%20Odyssey-1.5.1/config/afa4f8f3af20a4f9252440c0ed9c8957e730ece7",
+      "mirrors": [],
+      "sha1": "afa4f8f3af20a4f9252440c0ed9c8957e730ece7",
+      "size": 2247,
+      "tags": [],
+      "clientonly": false,
+      "serveronly": false,
+      "optional": false,
+      "id": 357859,
+      "name": "teamislands.cfg",
+      "type": "config",
+      "updated": 1721120166
+    },
+    {
+      "version": "0",
+      "path": "",
+      "url": "https://dist.modpacks.ch/modpacks/0/FTB%20Sky%20Odyssey-1.5.1/817c19294a87f2186b762603d7d9e2cbda43d921",
+      "mirrors": [],
+      "sha1": "817c19294a87f2186b762603d7d9e2cbda43d921",
+      "size": 661,
+      "tags": [],
+      "clientonly": false,
+      "serveronly": true,
+      "optional": false,
+      "id": 357858,
+      "name": "SERVER_OWNER_README.md",
+      "type": "resource",
+      "updated": 1721120165
+    }
+  ],
+  "private": false,
+  "id": 12268,
+  "name": "1.5.1",
+  "type": "beta",
+  "updated": 1721120166,
+  "projectName": "FTB Sky Odyssey",
+  "iconUrl": "",
+  "authors": []
+}

@@ -132,7 +132,7 @@ export function useFeedTheBeastModpackInstall() {
       push('/')
     }
 
-    installInstanceFiles({
+    const filesInstall = installInstanceFiles({
       path: path,
       upstream: {
         type: 'ftb-modpack',
@@ -143,11 +143,13 @@ export function useFeedTheBeastModpackInstall() {
     })
 
     const lock = getInstanceLock(path)
-    lock.runExclusive(async () => {
+    const runtimeInstall = lock.runExclusive(async () => {
       const resolved = existed ? await getResolvedVersion(existed) : undefined
       const instruction = await getInstallInstruction(path, config.runtime, options.version || '', resolved, all.value)
       await handleInstallInstruction(instruction)
     })
+    // Keep progress and errors attached to the initiating install action.
+    await Promise.all([filesInstall, runtimeInstall])
   }
   return {
     installModpack,
