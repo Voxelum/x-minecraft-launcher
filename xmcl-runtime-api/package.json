@@ -25,7 +25,7 @@
         "lint:fix": "pnpm lint fix"
     },
     "dependencies": {
-        "zod": "^4.1.13",
+        "zod": "^4.6.6",
         "@xmcl/client": "workspace:*",
         "@xmcl/instance": "workspace:*",
         "@xmcl/resource": "workspace:*",
