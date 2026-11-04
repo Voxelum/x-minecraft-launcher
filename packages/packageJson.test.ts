@@ -14,7 +14,7 @@ function sourceFiles(directory: string): string[] {
     if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === '__mocks__') return []
     const path = join(directory, entry.name)
     if (entry.isDirectory()) return sourceFiles(path)
-    return /\.ts$/.test(entry.name) && !/\.(test|d)\.ts$/.test(entry.name) ? [path] : []
+    return entry.name.endsWith('.ts') && !/\.(test|d)\.ts$/.test(entry.name) ? [path] : []
   })
 }
 

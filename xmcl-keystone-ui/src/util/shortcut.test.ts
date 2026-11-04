@@ -37,6 +37,7 @@ describe('shortcut', () => {
   })
 
   test('formats the plus key for display', () => {
+    vi.stubGlobal('navigator', { platform: 'Win32' })
     expect(formatShortcutDisplay('Ctrl+Shift+Plus')).toBe('Ctrl+Shift++')
   })
 

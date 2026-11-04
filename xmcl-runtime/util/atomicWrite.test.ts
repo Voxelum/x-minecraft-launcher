@@ -1,5 +1,5 @@
 import { execFile } from 'child_process'
-import { mkdtemp, readFile, readdir, rm, writeFile } from 'fs/promises'
+import { mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'fs/promises'
 import { createRequire } from 'module'
 import { tmpdir } from 'os'
 import { join } from 'path'
@@ -111,7 +111,7 @@ describe('atomically EXDEV dependency patch', () => {
   let target: string
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'xmcl-atomic-exdev-'))
+    root = await realpath(await mkdtemp(join(tmpdir(), 'xmcl-atomic-exdev-')))
     target = join(root, 'index.json')
   })
 

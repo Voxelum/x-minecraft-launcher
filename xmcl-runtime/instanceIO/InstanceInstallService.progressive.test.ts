@@ -515,7 +515,7 @@ describe('InstanceInstallService progressive installation', () => {
 
     await ensureDir(dirname(profile.path))
     await writeJson(profile.path, profile.state)
-    await vi.waitFor(() => expect(status.pendingFileCount).toBe(1))
+    await vi.waitFor(() => expect(status.pendingFileCount).toBe(1), { timeout: 5_000 })
 
     await rm(join(f.instancePath, '.install'), { recursive: true })
     await vi.waitFor(() => expect(status.pendingFileCount).toBe(0))

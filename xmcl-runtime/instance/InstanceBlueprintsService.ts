@@ -286,7 +286,7 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
     if (modelBytes) {
       try {
         let model = JSON.parse(modelBytes.toString('utf-8'))
-        let mergedTextures: Record<string, string> = { ...(model.textures ?? {}) }
+        let mergedTextures: Record<string, string> = { ...model.textures }
         let depth = 0
         let currentModel = model
         while (currentModel.parent && depth < 3) {
@@ -296,7 +296,7 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
           const parentBytes = await read(parentNs, `assets/${parentNs}/models/${normParent}.json`)
           if (!parentBytes) break
           currentModel = JSON.parse(parentBytes.toString('utf-8'))
-          mergedTextures = { ...(currentModel.textures ?? {}), ...mergedTextures }
+          mergedTextures = { ...currentModel.textures, ...mergedTextures }
         }
 
         let ref: string | undefined
