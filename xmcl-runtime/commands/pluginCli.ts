@@ -58,7 +58,7 @@ export const pluginCli: LauncherAppPlugin = async (app) => {
     try {
       const host = await hostPromise
       const result = await runCli(host, { logger, enrichInput })
-      if (result.handled && app.deferredWindowOpen) {
+      if (result.handled && app.deferredWindowOpen && !result.parsed.globals.noWindow) {
         app.controller.requireFocus()
       }
     } catch (e) {
@@ -69,7 +69,10 @@ export const pluginCli: LauncherAppPlugin = async (app) => {
   app.on('second-instance', async (argv) => {
     try {
       const host = await hostPromise
-      await runCli(host, { argv, logger, enrichInput })
+      const result = await runCli(host, { argv, logger, enrichInput })
+      if (result.parsed.globals.noWindow && app.controller.mainWin && !app.controller.mainWin.isDestroyed()) {
+        app.controller.mainWin.hide()
+      }
     } catch (e) {
       logger.error(e as Error)
     }
