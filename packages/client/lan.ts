@@ -34,14 +34,6 @@ export class MinecraftLanDiscover extends EventEmitter {
 
     this.#group = type === 'udp4' ? LAN_MULTICAST_ADDR : LAN_MULTICAST_ADDR_V6
 
-    sock.on('listening', () => {
-      const address = sock.address()
-      sock.addMembership(this.#group, type === 'udp4' ? address.address : undefined)
-      sock.setMulticastTTL(128)
-      sock.setBroadcast(true)
-      this.#ready = true
-    })
-
     sock.on('message', (buf, remote) => {
       const content = buf.toString('utf-8')
 
@@ -77,13 +69,25 @@ export class MinecraftLanDiscover extends EventEmitter {
 
   bind(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.socket
-        .bind(LAN_MULTICAST_PORT, () => {
+      const onError = (error: Error) => {
+        this.socket.off('error', onError)
+        reject(error)
+      }
+      this.socket.once('error', onError)
+      this.socket.bind(LAN_MULTICAST_PORT, () => {
+        this.socket.off('error', onError)
+        try {
+          // A wildcard bind reports 0.0.0.0, which is not a usable
+          // multicast interface on macOS. Let the OS choose one.
+          this.socket.addMembership(this.#group)
+          this.socket.setMulticastTTL(128)
+          this.socket.setBroadcast(true)
+          this.#ready = true
           resolve()
-        })
-        .once('error', (e) => {
-          reject(e)
-        })
+        } catch (error) {
+          reject(error)
+        }
+      })
     })
   }
 

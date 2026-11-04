@@ -214,6 +214,9 @@ watch(dark, (newVal) => {
 const tutor = injection(kTutorial)
 // Set theme and start tutorial
 const onReady = async (data: any) => {
+  const url = new URL(window.location.href)
+  url.searchParams.delete('bootstrap')
+  window.history.replaceState(window.history.state, '', url)
   await nextTick()
   showSetup.value = false
   await nextTick()
