@@ -29,7 +29,13 @@ Only `.dmg` (macOS) and `.deb` (Linux) are offered as updates. Windows is exclud
 
 ## Serving a release
 
-`GET /v1/releases/latest` returns `latest.json` from the R2 bucket bound to the Worker as `RELEASES`, unchanged and with `cache-control: no-store`. With no binding or no object it returns 404, which the launcher treats as no release. A failed read or an object that is not `v1` returns 503. Use a separate bucket for each environment. Upload the packages first and `release.json` last, as `latest.json`, so a client never sees a manifest whose files are missing.
+Releases live in the S3 buckets `vardrynn-releases-dev` and `vardrynn-releases-prod` at `https://s3.olaveapi.com` (credentials and layout: `LiveNetwork/minio/vardrynn/README.md`). The buckets are private, so the Worker reads them with the **read-only** pair and the launcher never holds credentials.
+
+`GET /v1/releases/latest` fetches `latest.json` from the bucket with a 60 s presigned URL (no redirects). Every asset URL inside that bucket is replaced by a presigned GET URL (default 1 h, `DOWNLOAD_URL_TTL_SECONDS`, 60 s to 24 h). The release signature does not cover URLs, so the launcher's verification is unaffected; the download hash and signature still are. URLs outside the bucket pass through unchanged. The response is `no-store`. A missing object returns 404 (the launcher treats it as no release); any other storage failure or a manifest that is not `v1` returns 503.
+
+Worker settings: `S3_ENDPOINT`, `S3_BUCKET`, `S3_REGION`, `S3_READ_ACCESS_KEY_ID`, `S3_READ_SECRET_ACCESS_KEY` (the last two as secrets). Use the dev bucket for the dev Worker and the prod bucket for production. The older R2 `RELEASES` binding still works when the S3 settings are absent.
+
+Publishing: generate the manifest with `--download-base https://s3.olaveapi.com/<bucket>/<x.y.z>`, upload the packages with the publishing pair (multipart for large installers), and upload `release.json` last as `latest.json`, so a client never sees a manifest whose files are missing.
 
 ## Removed upstream release paths
 
@@ -37,7 +43,7 @@ Deleted workflows: `deploy-release.yml` (Azure AppInstaller, `xmcl-page`, `@xmcl
 
 ## Not done
 
-- Hosting: the release route is deployed to development only, with no bucket bound, so it returns 404. Production has not been updated, and nothing hosts the package files.
+- Hosting: the S3 buckets exist and the Worker code reads them, but the Worker with S3 support is not deployed, its secrets are not set, and no release has been uploaded. The presigner matches AWS's published test vector and is unit tested with a stubbed fetch; it has not run against s3.olaveapi.com. The CI `release` job does not upload to the bucket yet.
 - A production key pair has not been generated; the key custody decision is open.
 - Not exercised: the CI job, a packaged and code-signed build, Linux, Windows, and an upgrade that actually replaces the app.
 - Install is a hand-off to the OS opener; it is not silent. On macOS it mounts the dmg and quits, and the user still drags the app into Applications.
