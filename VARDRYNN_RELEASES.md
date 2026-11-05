@@ -9,7 +9,15 @@ Updates come only from the Vardrynn service and are accepted only when an Ed2551
 | Discovery | `GET /v1/releases/latest` on the compiled-in origin (no redirects, 10 s timeout). Only an asset for this OS and architecture whose signature verifies is offered. |
 | Signature | Ed25519 over `vardrynn-release-v1\n<version>\n<platform>\n<arch>\n<sha256>`. Binding the version, platform and architecture stops a signed file being replayed as another release or target. |
 | Download | URL must be `https` and not an upstream host. The whole file is hashed while it streams to a `.partial` file; a mismatch deletes it. |
-| Install | Stored update info is re-verified (it lives in a writable settings file), the staged file is hashed again, then the OS opens the package and the launcher quits. A failed open does not quit. Any failure returns the status to `pending`, so the download can be retried. |
+| Install | Stored update info is re-verified (it lives in a writable settings file) and the staged file is hashed again. Then it is installed in place (below), or, where that is not possible, the OS opens the package and the launcher quits. A failed install or open does not quit. Any failure returns the status to `pending`, so the download can be retried. |
+
+### Installing in place
+
+`xmcl-electron-app/main/utils/updateInstaller.ts`. Only packaged builds are replaced; a development Electron never is.
+
+- **macOS:** a detached `/bin/sh` helper waits for the launcher to exit, mounts the verified dmg read-only, refuses an `.app` whose `CFBundleIdentifier` differs from the running one, copies it beside the current bundle, then swaps the two. Any failure puts the old bundle back. Either way it reopens the launcher. Its output goes to `<appData>/vardrynn/update-install.log`. A translocated, read-only or non-bundle install falls back to opening the dmg.
+- **Linux:** `pkexec /usr/bin/dpkg -i <deb>` shows the system password prompt; on success the launcher relaunches into the new version. A dismissed prompt or a failed install leaves the old version running and reports the error. Without `pkexec`, or for a non-deb install, the package is opened instead.
+- Staged packages that are not newer than the running version are deleted at the next update check.
 
 These releases use the `verified` update operation. `manual` keeps its existing meaning in the UI: the launcher cannot update itself and the user must redownload. Download and install failures are shown in the update dialog.
 
@@ -17,13 +25,28 @@ The public key is compiled in as `VARDRYNN_RELEASE_PUBLIC_KEY` (base64, raw 32 b
 
 ## Producing a release
 
-```sh
-pnpm tsx scripts/vardrynn-release.ts keygen          # once; prints both keys
-pnpm tsx scripts/vardrynn-release.ts manifest --version <x.y.z> --channel stable --dir <packages> \
-  --download-base https://<host>/<x.y.z> --notes-url https://<url> --out release.json
-```
+The `release` job in `.github/workflows/build.yml` signs and publishes:
 
-Store `VARDRYNN_RELEASE_SIGNING_KEY` as a CI secret and the public key, API origin, download base and notes URL as repository variables (`VARDRYNN_RELEASE_PUBLIC_KEY`, `VARDRYNN_API_BASE_URL`, `VARDRYNN_RELEASE_DOWNLOAD_BASE`, `VARDRYNN_RELEASE_NOTES_URL`). Signing refuses a key that does not match the embedded public key. The `release` job in `.github/workflows/build.yml` runs this on `chore(release)` commits and uploads `release.json`, `SHA256SUMS` and the packages as the `vardrynn-release` workflow artifact. It publishes nothing.
+| Trigger | Bucket | Builds check |
+| --- | --- | --- |
+| `chore(release)` commit on `master` | `vardrynn-releases-prod` | `VARDRYNN_API_BASE_URL` |
+| Manual run with `publish: dev` | `vardrynn-releases-dev` | `VARDRYNN_DEV_API_BASE_URL` |
+
+The job runs in the GitHub environment `release`, which requires the repository owner's approval before it starts. Its secrets are `VARDRYNN_RELEASE_SIGNING_KEY` and the publishing pairs `VARDRYNN_S3_{DEV,PROD}_{ACCESS_KEY_ID,SECRET_ACCESS_KEY}`. Repository variables: `VARDRYNN_RELEASE_PUBLIC_KEY`, `VARDRYNN_S3_ENDPOINT`, `VARDRYNN_S3_{DEV,PROD}_BUCKET`, `VARDRYNN_DEV_API_BASE_URL`, and optionally `VARDRYNN_RELEASE_NOTES_URL` (defaults to the commit page). Signing refuses a key that does not match the public key. The packages, `release.json` and `SHA256SUMS` are also kept as the `vardrynn-release` workflow artifact.
+
+`VARDRYNN_API_BASE_URL` is deliberately unset (see `VARDRYNN_SERVICE_API.md`), so production builds report updates as `not-configured` until it is set to `https://api.olaveapi.com`.
+
+**Key custody.** The production key pair was generated on 2026-11-05 in one process: the private half went straight into the `release` environment secret and was never written to disk or shown, so it cannot be recovered. Public key: `0mTr54fkHvFea8E+o+KDBZanknCmyrvH8QTFov6LQwQ=`. If the secret is lost or exposed, generate a new pair, replace the secret and variable, and ship a build with the new key through a channel users already trust; builds holding only the old key cannot verify releases signed by the new one.
+
+By hand:
+
+```sh
+pnpm tsx scripts/vardrynn-release.ts keygen          # test keys only
+pnpm tsx scripts/vardrynn-release.ts manifest --version <x.y.z> --channel stable --dir <packages> \
+  --download-base https://s3.olaveapi.com/<bucket>/<x.y.z> --notes-url https://<url> --out <packages>/release.json
+S3_ENDPOINT=https://s3.olaveapi.com S3_BUCKET=<bucket> AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... \
+  scripts/vardrynn-publish.sh <packages>
+```
 
 Only `.dmg` (macOS) and `.deb` (Linux) are offered as updates. Windows is excluded until packages carry an Authenticode signature the OS will accept.
 
@@ -35,7 +58,17 @@ Releases live in the S3 buckets `vardrynn-releases-dev` and `vardrynn-releases-p
 
 Worker settings: `S3_ENDPOINT`, `S3_BUCKET`, `S3_REGION`, `S3_READ_ACCESS_KEY_ID`, `S3_READ_SECRET_ACCESS_KEY` (the last two as secrets). Use the dev bucket for the dev Worker and the prod bucket for production. The older R2 `RELEASES` binding still works when the S3 settings are absent.
 
-Publishing: generate the manifest with `--download-base https://s3.olaveapi.com/<bucket>/<x.y.z>`, upload the packages with the publishing pair (multipart for large installers), and upload `release.json` last as `latest.json`, so a client never sees a manifest whose files are missing.
+`scripts/vardrynn-publish.sh` checks that every asset URL is under `<endpoint>/<bucket>/<version>/` and that each local package matches its signed hash. It refuses to overwrite a version that already exists unless `ALLOW_REPUBLISH=1` (CI sets it only for dev). It uploads the packages (multipart above 8 MB) and confirms their sizes, then `SHA256SUMS` and `<version>/release.json`. It copies the current `latest.json` to `previous.json` and uploads the new manifest as `latest.json` last, so a client never sees a manifest whose files are missing.
+
+### Rolling back
+
+The updater never downgrades. To stop a bad release reaching more users, restore the previous manifest; clients that already updated stay on it until a fixed, higher version ships:
+
+```sh
+aws --endpoint-url https://s3.olaveapi.com s3 cp s3://<bucket>/previous.json s3://<bucket>/latest.json
+```
+
+Any `<version>/release.json` can be restored the same way. On an individual Mac, a failed in-place swap restores the old bundle by itself.
 
 ## Removed upstream release paths
 
@@ -43,14 +76,30 @@ Deleted workflows: `deploy-release.yml` (Azure AppInstaller, `xmcl-page`, `@xmcl
 
 ## Not done
 
-- Hosting: both Workers serve their buckets. The CI `release` job does not upload to a bucket, and no real release has been published.
-- A production key pair has not been generated; the key custody decision is open.
-- Not exercised: the CI job, a packaged and code-signed build, Linux, Windows, and an upgrade that actually replaces the app.
-- Install is a hand-off to the OS opener; it is not silent. On macOS it mounts the dmg and quits, and the user still drags the app into Applications.
-- The launcher's user agent is still `voxelum/x_minecraft_launcher/<version> (xmcl.app)` (`xmcl-runtime/app/LauncherApp.ts`), including on Vardrynn service and release requests. It goes to every provider, so changing it belongs with phase 9.
-- `xmcl-asar/README.md` still describes the deleted `deploy-release.yml`.
-- Windows updates, `appinstaller-builder.ts` (still disabled), `sign-release.yml` (upstream SignPath project, still present), `deploy-ui.yml`, the Windows `deskgap-app` build steps (pull Voxelum/DeskGap, pinned by its tests), and the disabled `build-arch` job (xmcl names) belong to Windows signing and phase 9.
-- No rollback mechanism beyond installing an older signed package manually; the updater never downgrades.
+These need something this repository cannot supply on its own:
+
+- **The CI job has not run.** This branch is not on GitHub yet (`origin/master` is still the upstream history), so the `release` job needs the work merged to `master`, then a `chore(release)` commit or a manual `publish: dev` run. Its publish script and every step it runs were exercised by hand (below).
+- **No production release is published.** It waits on the first CI run, and on `VARDRYNN_API_BASE_URL` being set; until then, production builds cannot check for updates.
+- **Code signing.** macOS builds are ad-hoc signed and not notarized, because there is no Apple Developer ID. They update in place (below), but a first install from a browser download meets Gatekeeper. Windows updates stay excluded until Authenticode signing exists.
+- **Windows and x64.** Only arm64 was exercised on macOS and Linux. Windows has no update path.
+- **Out of phase 5:** the user agent (`voxelum/x_minecraft_launcher/...` in `xmcl-runtime/app/LauncherApp.ts`) and the About page's XMCL and Afdian links (phase 9); `appinstaller-builder.ts`, `sign-release.yml`, `deploy-ui.yml`, the Windows `deskgap-app` steps and the disabled `build-arch` job (Windows signing and phase 9).
+
+## Packaged upgrades on 2026-11-05
+
+Two packaged builds per platform, 0.73.1 and 0.73.2, compiled against `https://dev-api.olaveapi.com` with a throwaway key. 0.73.2 was signed and uploaded to `vardrynn-releases-dev` with `scripts/vardrynn-publish.sh`, and 0.73.1 updated itself through Settings › About › update dialog, driven over DevTools. Each used an isolated app-data folder and data root.
+
+| | macOS 26 arm64 (ad-hoc signed dmg) | Ubuntu 24.04 arm64 VM (deb) |
+| --- | --- | --- |
+| Discovery at startup | `v0.73.1 -> 0.73.2` | `v0.73.1 -> 0.73.2` |
+| Download (presigned, hashed) | 133 MB in 26 s | 95 MB in 19 s |
+| Install | Launcher exited in 1 s; helper swapped the bundle in about 5 s; no mounts or backup left | `pkexec /usr/bin/dpkg -i` (password prompt answered by a test-only polkit rule); dpkg at 0.73.2 in 6 s |
+| Relaunch | Reopened by the helper; log: `core version is 0.73.2` | `app.relaunch()` with the same arguments; log: `core version is 0.73.2` |
+
+The publish script also passed against the dev bucket: a 20 MB multipart upload, a dmg and a deb in one manifest, refusal of a tampered package, of an asset URL outside the bucket and of a second publish of the same version.
+
+Defects found and fixed: every deb failed its post-install check because `postinstall.ts` still rewrote electron-builder's install path to `/opt/xmcl` (the scripts expect `/opt/Vardrynn`); the staged 133 MB package stayed in app data after a successful update; and `HeadObject` right after a multipart upload can briefly return 403, so the publish script retries it. Unit tests run the macOS swap helper against real dmgs made with `hdiutil`, including one whose bundle identifier differs (the old app is kept and reopened).
+
+Isolation: the first-run screen of the macOS test briefly probed the default data root `~/.vardrynn` (its directory timestamp changed; no file in it did) before the test seeded its own root. The real `~/Library/Application Support/vardrynn` profile was not touched. The VM, test keys, packages, bucket objects and `launchctl` variable were removed afterwards; the dev route returns 404 again.
 
 ## Hosted route on 2026-11-05
 

@@ -72,9 +72,9 @@ Relevant code: `xmcl-runtime-api/src/services/VardrynnApi.ts`, `xmcl-runtime/app
 
 Acceptance: each platform discovers, downloads, verifies, and installs a Vardrynn test release, with no upstream release path.
 
-Implementation and open work: see `VARDRYNN_RELEASES.md`. The launcher discovers, downloads, verifies and opens signed packages, and CI produces the signed manifest. The flow passed against a local stub in a macOS production bundle. No release has been hosted or signed with a production key, and no packaged upgrade has run on any platform.
+Implementation and open work: see `VARDRYNN_RELEASES.md`. Signed releases are hosted on Vardrynn's S3 buckets behind `api.olaveapi.com` and `dev-api.olaveapi.com`. CI signs with the production key and publishes. Packaged arm64 builds on macOS and Linux discovered, downloaded, verified and installed a test release in place. Open: the first CI run (needs this branch on `master`), production builds need `VARDRYNN_API_BASE_URL`, macOS notarization, and Windows signing.
 
-Relevant code: `xmcl-electron-app/main/utils/updater.ts`, `xmcl-runtime/app/vardrynnRelease.ts`, `scripts/vardrynn-release.ts`, `xmcl-electron-app/build/appinstaller-builder.ts`, `.github/workflows/build.yml`.
+Relevant code: `xmcl-electron-app/main/utils/updater.ts`, `xmcl-electron-app/main/utils/updateInstaller.ts`, `xmcl-runtime/app/vardrynnRelease.ts`, `scripts/vardrynn-release.ts`, `scripts/vardrynn-publish.sh`, `xmcl-electron-app/build/appinstaller-builder.ts`, `.github/workflows/build.yml`.
 
 ### 6. Own accounts and integrations
 
