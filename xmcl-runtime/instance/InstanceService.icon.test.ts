@@ -73,6 +73,7 @@ describe('InstanceService icon storage', () => {
   function createService(state: InstanceState, fetch = vi.fn()) {
     const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
     const app = {
+      host: { requestSingleInstanceLock: () => false },
       appDataPath,
       registryDisposer: vi.fn(),
       minecraftDataPath: appDataPath,

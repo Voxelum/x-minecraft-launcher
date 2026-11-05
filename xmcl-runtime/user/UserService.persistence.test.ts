@@ -6,6 +6,7 @@ import { kGameDataPath } from '~/app'
 import { UserService } from './UserService'
 import { kUserTokenStorage } from './userTokenStore'
 
+vi.mock('~/infra/recoverRestore', () => ({ recoverRestore: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('~/app', () => ({
   LauncherApp: class LauncherApp {},
   Inject: () => () => undefined,

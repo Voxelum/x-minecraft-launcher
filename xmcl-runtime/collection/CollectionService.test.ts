@@ -50,6 +50,7 @@ type CollectionService = InstanceType<typeof CollectionService>
 function createMockApp(appDataPath: string) {
   const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
   return {
+    host: { requestSingleInstanceLock: () => false },
     appDataPath,
     registryDisposer: vi.fn(),
     minecraftDataPath: appDataPath,

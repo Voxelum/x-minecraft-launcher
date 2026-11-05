@@ -2035,6 +2035,31 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  xmclImport:
+    activate: Activate and restart
+    applied: Imported data is active. Undo restores the previous Vardrynn settings, instances and accounts; copied game files are kept.
+    cancel: Cancel
+    cancelled: The copy stopped before finishing. Nothing is active yet, and retrying continues where it left off.
+    choose: Choose folder
+    close: Close
+    closeXmcl: Close XMCL before copying. Your XMCL data is only read, never changed.
+    copying: Copying {files} of {total} files
+    description: Copy settings, instances and game files from an existing XMCL install. XMCL keeps working as before.
+    destination: Copy to
+    failed: The copy stopped. Check available disk space and close XMCL, then retry.
+    gameRoot: Game data
+    notFound: No XMCL data was found in the usual location. Choose its data folder instead.
+    pending: A change is waiting for a restart.
+    preview: Preview import
+    ready: The copy is complete. Activating restarts Vardrynn with the imported data. Accounts need to sign in again.
+    restart: Restart now
+    retry: Retry
+    rolledBack: The import was undone. The copied game files are kept in the import folder.
+    source: XMCL profile
+    start: Start copying
+    summary: 'Instances: {instances} · Accounts: {accounts} · Files: {files} ({size})'
+    title: Import from XMCL
+    undo: Undo import
   appImageUpdateMode: AppImage update ownership
   appImageExternalMode: External manager / manual replacement (default)
   appImageSelfMode: Vardrynn self-managed (I own this AppImage)

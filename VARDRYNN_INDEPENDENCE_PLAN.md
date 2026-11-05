@@ -1,6 +1,6 @@
 # Vardrynn independence plan
 
-Status: phases 1 and 2 implemented with macOS validation on 2026-11-04; Windows/Linux installation qualification remains open and later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
+Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open and later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
 
 ## Goal
 
@@ -46,7 +46,9 @@ Relevant code: `xmcl-electron-app/build/electron-builder.config.ts`, `xmcl-elect
 
 Acceptance: cancel, import, retry, and rollback preserve the XMCL source; both launchers open independently and imported instances work.
 
-Relevant code: `xmcl-runtime/constant.ts`, `xmcl-runtime/app/LauncherApp.ts`, `xmcl-runtime/app/migrate.ts`, `xmcl-electron-app/main/ElectronLauncherApp.ts`.
+Implementation, evidence and open qualification: see `VARDRYNN_DATA_MIGRATION.md`. Fixture-based validation only; real-profile rehearsal belongs to phase 10.
+
+Relevant code: `xmcl-runtime/constant.ts`, `xmcl-runtime/app/LauncherApp.ts`, `xmcl-runtime/setup/xmclImport.ts`, `xmcl-electron-app/main/ElectronLauncherApp.ts`.
 
 ### 4. Build Vardrynn's service base
 

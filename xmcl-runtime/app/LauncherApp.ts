@@ -12,6 +12,7 @@ import { Logger } from '~/infra'
 import { IS_DEV, LAUNCHER_NAME, LAUNCHER_PROTOCOL } from '../constant'
 import { isSystemError } from '@xmcl/utils'
 import { handleMigrateRoot } from './migrate'
+import { recoverRestore } from '~/infra/recoverRestore'
 import { listen } from '../util/server'
 import { createDummyLogger } from './DummyLogger'
 import { Host } from './Host'
@@ -342,6 +343,7 @@ export class LauncherApp extends EventEmitter {
     }
 
     await ensureDir(this.appDataPath)
+    await recoverRestore(this)
 
     let gameDataPath: string
     try {

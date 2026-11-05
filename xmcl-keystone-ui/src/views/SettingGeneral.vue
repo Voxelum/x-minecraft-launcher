@@ -37,6 +37,11 @@
 
     <v-divider class="my-3" />
 
+    <!-- XMCL Import -->
+    <XmclImportPanel />
+
+    <v-divider class="my-3" />
+
     <!-- Privacy & Telemetry -->
     <v-alert type="info" variant="tonal" class="my-3" role="status">
       Diagnostics remain on this device. Vardrynn does not send launcher telemetry.
@@ -245,6 +250,7 @@ import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
 import { formatShortcutDisplay } from '@/util/shortcut'
 import { useDialog } from '../composables/dialog'
+import XmclImportPanel from './XmclImportPanel.vue'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
 import { useBigPicture } from '@/composables/bigPicture'

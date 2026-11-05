@@ -98,6 +98,9 @@
                 :drives="data.drives"
               />
             </AppMoodSurface>
+            <AppMoodSurface class="mt-3">
+              <XmclImportPanel class="px-4 py-3" />
+            </AppMoodSurface>
           </div>
         </v-stepper-window-item>
         <v-stepper-window-item
@@ -152,6 +155,7 @@ import SetupAppearance from './SetupAppearance.vue'
 import SetDataRoot from './SetupDataRoot.vue'
 import SetupFooter from './SetupFooter.vue'
 import SetLocale from './SetupLocale.vue'
+import XmclImportPanel from './XmclImportPanel.vue'
 
 const emit = defineEmits(['ready'])
 const { validateDataDictionary, getEnvironment } = useService(BaseServiceKey)

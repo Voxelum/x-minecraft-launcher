@@ -30,6 +30,7 @@ import { kUserTokenStorage, type UserTokenStorage } from './userTokenStore'
 import { getModrinthAccessToken, loginModrinth } from './utils/loginModrinth'
 import { ensureLauncherProfile, preprocessUserData } from './utils/userData'
 import { UserPersistence, type UserPersistenceIntent } from './UserPersistence'
+import { recoverRestore } from '~/infra/recoverRestore'
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {
@@ -64,6 +65,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   ) {
     super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
       const tokenStorage = await this.getTokenStorage()
+      await recoverRestore(app)
       const persisted = await this.userPersistence.load()
       const data = persisted.users
       const userData = {

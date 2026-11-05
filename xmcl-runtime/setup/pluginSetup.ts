@@ -9,6 +9,7 @@ import { SetupWorker } from './setupWorker'
 // eslint-disable-next-line import/default
 import createSetupWorker from './setupWorkerEntry?worker'
 import { Exception } from '@xmcl/runtime-api'
+import { XmclImport } from './xmclImport'
 
 /**
  * Returns true if the drive is a real user-accessible filesystem suitable as
@@ -84,6 +85,15 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
       throw Object.assign(new Error(), e)
     }
   }
+
+  const xmclImport = new XmclImport(app.appDataPath)
+  app.controller.handle('xmcl-import-preview', (_, source?: string) => xmclImport.preview(source))
+  app.controller.handle('xmcl-import-status', () => xmclImport.status())
+  app.controller.handle('xmcl-import-copy', () => xmclImport.copy())
+  app.controller.handle('xmcl-import-cancel', () => xmclImport.cancel())
+  app.controller.handle('xmcl-import-activate', () => xmclImport.activate())
+  app.controller.handle('xmcl-import-rollback', () => xmclImport.rollback())
+  app.controller.handle('xmcl-import-restart', () => app.relaunch())
 
   app.controller.handle('preset', async () => {
     // E2E isolation: when the harness provides a game-data root, use it as the
