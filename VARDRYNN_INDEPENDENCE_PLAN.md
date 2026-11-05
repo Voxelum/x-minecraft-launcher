@@ -1,6 +1,6 @@
 # Vardrynn independence plan
 
-Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, and a development status service is deployed; production is not. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
+Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, and development and production status services are deployed. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
 
 ## Goal
 
@@ -59,7 +59,7 @@ Relevant code: `xmcl-runtime/constant.ts`, `xmcl-runtime/app/LauncherApp.ts`, `x
 
 Acceptance: development and production builds resolve only approved Vardrynn service destinations; offline behavior is predictable.
 
-Implementation and open work: see `VARDRYNN_SERVICE_API.md`. Launcher contract, endpoint selection and offline behavior are done, and `dev-api.olaveapi.com` serves the status route. Production, monitoring and backups remain open.
+Implementation and open work: see `VARDRYNN_SERVICE_API.md`. Launcher contract, endpoint selection and offline behavior are done, and `api.olaveapi.com` and `dev-api.olaveapi.com` serve the status route. Monitoring, backups and the remaining routes are open.
 
 Relevant code: `xmcl-runtime-api/src/services/VardrynnApi.ts`, `xmcl-runtime/app/vardrynnApiOrigin.ts`, `xmcl-runtime/app/pluginApiFallback.ts`.
 
@@ -123,7 +123,7 @@ Acceptance: the endpoint audit shows no XMCL connections; install, migration, fe
 
 ## Decisions needed before service implementation
 
-1. Vardrynn domain and infrastructure owner. Domain chosen: `olaveapi.com` on Cloudflare (2026-11-04). Production hostname still open.
+1. Vardrynn domain and infrastructure owner. Decided: `olaveapi.com` on Cloudflare (2026-11-04).
 2. First-release platforms and package formats.
 3. Whether paid relay and a hosted Agent are in scope.
 4. Diagnostics policy: local only or opt-in Vardrynn telemetry.

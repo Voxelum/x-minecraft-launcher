@@ -1,6 +1,13 @@
 # Vardrynn service API (phase 4)
 
-This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. The development service runs at `https://dev-api.olaveapi.com` as the Cloudflare Worker `vardrynn-api-dev`, from `vardrynn-service/worker.js`, and implements `GET /v1/status` only. There is no production service yet, and builds are unconfigured unless `VARDRYNN_API_BASE_URL` is set.
+This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. Both services run from `vardrynn-service/worker.js` and implement `GET /v1/status` only:
+
+| Environment | Origin | Cloudflare Worker |
+| --- | --- | --- |
+| Production | `https://api.olaveapi.com` | `vardrynn-api` |
+| Development | `https://dev-api.olaveapi.com` | `vardrynn-api-dev` |
+
+Builds are unconfigured unless `VARDRYNN_API_BASE_URL` is set. Production is deliberately not the default yet: account calls, Modrinth sign-in and community translation would then reach routes that return 404, instead of failing predictably as unconfigured. Make it the default once those routes exist.
 
 ## Endpoint selection
 
@@ -44,7 +51,7 @@ The status request times out after five seconds and refuses redirects, so a resp
 
 ## Not covered here
 
-Production deployment, monitoring and backups do not exist yet. The Worker has no stored data and only the status route; every other contract route returns 404. Remaining hard-coded XMCL origins are assigned to later phases and stay blocked by the phase 1 guard: `BUILTIN_AGENT_ENDPOINT` (phase 8), and the Ely.by helper and metadata database proxy (phase 9).
+Monitoring and backups do not exist yet. The Worker has no stored data and only the status route; every other contract route returns 404. Remaining hard-coded XMCL origins are assigned to later phases and stay blocked by the phase 1 guard: `BUILTIN_AGENT_ENDPOINT` (phase 8), and the Ely.by helper and metadata database proxy (phase 9).
 
 ## Verification on 2026-11-04
 
@@ -55,4 +62,7 @@ Production deployment, monitoring and backups do not exist yet. The Worker has n
 - Deployed development service: `/v1/status` returned the contract body over TLS 1.3 with `cache-control: no-store`; unknown paths returned 404 and `POST` returned 405. Plain `http://` is also served, but the launcher only accepts `https://` origins outside loopback.
 - Real development app built with `https://dev-api.olaveapi.com`: About showed `Available`. The app was then restored to unconfigured.
 
-Not verified: a production service, an origin set in a packaged build, Windows and Linux.
+- Deployed production service: the same route checks passed over TLS 1.3, pinned to Cloudflare's address because a local resolver still held a cached NXDOMAIN (zone negative TTL is 1800 seconds).
+- Real development app built with `https://api.olaveapi.com`, with `--host-resolver-rules` for the same reason: About showed `Available`. The app was then restored to unconfigured.
+
+Not verified: an origin set in a packaged build, Windows and Linux.
