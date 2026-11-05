@@ -1,6 +1,6 @@
 # Vardrynn independence plan
 
-Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open and later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
+Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, with no service deployed. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
 
 ## Goal
 
@@ -59,7 +59,9 @@ Relevant code: `xmcl-runtime/constant.ts`, `xmcl-runtime/app/LauncherApp.ts`, `x
 
 Acceptance: development and production builds resolve only approved Vardrynn service destinations; offline behavior is predictable.
 
-Relevant code: `xmcl-runtime-api/src/services/XmclApiEndpoints.ts`, `xmcl-runtime/app/xmclApiBaseUrl.ts`, `xmcl-runtime/app/pluginApiFallback.ts`.
+Implementation and open work: see `VARDRYNN_SERVICE_API.md`. Launcher contract, endpoint selection and offline behavior are done; no development or production service exists until decisions 1 and 2 below are made.
+
+Relevant code: `xmcl-runtime-api/src/services/VardrynnApi.ts`, `xmcl-runtime/app/vardrynnApiOrigin.ts`, `xmcl-runtime/app/pluginApiFallback.ts`.
 
 ### 5. Own releases and updates
 

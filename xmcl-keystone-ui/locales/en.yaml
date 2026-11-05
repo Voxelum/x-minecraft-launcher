@@ -2076,6 +2076,15 @@ setting:
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Free code signing on Windows provided by SignPath.io, certificate by SignPath Foundation
   aboutSponsors: XMCL upstream sponsors
+  vardrynnService:
+    label: Vardrynn services
+    checking: Checking
+    ok: Available
+    degraded: Degraded
+    maintenance: Under maintenance
+    unconfigured: Not configured
+    unreachable: Unreachable
+    incompatible: Update required
   advancedJavaOptions: Advanced Java Options
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data

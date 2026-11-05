@@ -1,5 +1,5 @@
 import { createCommunityTranslator } from './communityTranslation'
-import { resolveXmclApiEndpoints, Settings } from '@xmcl/runtime-api'
+import { Settings, VARDRYNN_API_ORIGIN_FLIGHT } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useLocale } from 'vuetify'
 import { kFlights, useI18nSearchFlights } from './flights'
@@ -71,14 +71,12 @@ export function useAutoI18nCommunityContent(allowLocale: string[] = []) {
   const flights = inject(kFlights, {})
 
   async function getContent(type: 'modrinth' | 'curseforge', id: string | number) {
-    if (!allowLocale.includes(locale.value)) {
+    const origin = flights[VARDRYNN_API_ORIGIN_FLIGHT]
+    if (!origin || !allowLocale.includes(locale.value)) {
       return ''
     }
 
-    return translateCommunityContent(
-      resolveXmclApiEndpoints(flights.xmclApiBaseUrl).common,
-      type, id, locale.value,
-    )
+    return translateCommunityContent(origin as string, type, id, locale.value)
   }
 
   return {

@@ -14,7 +14,7 @@ import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 import { kPeerFacade } from './PeerServiceFacade'
 import { kClientToken, kFlights, launcherSessionId } from '~/infra'
-import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
+import { requireVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import { kSettings } from '~/settings'
 import { XmclAccountService } from '~/xmclAccount'
 import { kMultiplayerHostFactory, type MultiplayerHost } from './MultiplayerHost'
@@ -191,11 +191,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     const resourcePath = (await this.app.registry.get(kGameDataPath))()
     const sessionId = await this.app.registry.get(kClientToken)
     const flights = await this.app.registry.get(kFlights)
-    const signalingBaseUrl = resolveXmclApiEndpoints(flights.xmclApiBaseUrl, () =>
-      this.app
-        .getLogger('MultiplayerApi')
-        .warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
-    ).signaling
+    const signalingBaseUrl = requireVardrynnApiOrigin(flights)
     return {
       appDataPath: this.app.appDataPath,
       resourcePath,

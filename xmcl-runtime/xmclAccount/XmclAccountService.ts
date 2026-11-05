@@ -9,7 +9,7 @@ import {
 } from '@xmcl/runtime-api'
 import { createHash, randomBytes } from 'crypto'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
+import { requireVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { kFlights } from '~/infra'
@@ -110,25 +110,8 @@ export class XmclAccountService
     )
     this.api = new XmclAccountApi(
       (input, init) => app.fetch(input, init),
-      async () => {
-        const flights = await app.registry.get(kFlights)
-        return resolveXmclApiEndpoints(flights.xmclApiBaseUrl, () =>
-          app
-            .getLogger('ApiBaseUrl')
-            .warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
-        ).common
-      },
+      async () => requireVardrynnApiOrigin(await app.registry.get(kFlights)),
       () => this.getDpopKey(),
-      async () => {
-        const flights = await app.registry.get(kFlights)
-        return resolveXmclApiEndpoints(flights.xmclBillingApiBaseUrl, () =>
-          app
-            .getLogger('BillingApiBaseUrl')
-            .warn(
-              'Ignoring invalid xmclBillingApiBaseUrl flight; using the default XMCL API origin.',
-            ),
-        ).common
-      },
     )
 
     app.protocol.registerHandler(LAUNCHER_PROTOCOL, ({ request, response }) => {

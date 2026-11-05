@@ -22,7 +22,7 @@ describe('XmclAccountApi', () => {
     const fetch = vi.fn(async (_input: string | URL, _init?: RequestInit) =>
       Response.json(M1_LOCAL_AUTH_FIXTURE),
     )
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const result = await api.launcherExchange('modrinth', 'provider-secret')
 
@@ -202,7 +202,7 @@ describe('XmclAccountApi', () => {
         expiresAt: '2026-07-22T01:00:00.000Z',
       })
     })
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const authorization = await api.beginBrowserAuthorization('google', {
       state: 'state-1',
@@ -234,7 +234,7 @@ describe('XmclAccountApi', () => {
         ]),
       )
       .mockResolvedValueOnce(Response.json(M1_SHARED_V1_POLICY_FIXTURE))
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const snapshot = await api.getSnapshot(M1_LOCAL_AUTH_FIXTURE.session)
 
@@ -247,7 +247,7 @@ describe('XmclAccountApi', () => {
 
   it('consumes only the published D1/D4 storage policy, not M6 accounting', async () => {
     const fetch = vi.fn(async () => Response.json(M1_SHARED_V1_POLICY_FIXTURE))
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const policy = await api.getBackupStoragePolicy(M1_LOCAL_AUTH_FIXTURE.session)
 
@@ -263,6 +263,7 @@ describe('XmclAccountApi', () => {
         ...M1_SHARED_V1_POLICY_FIXTURE,
         usedBytes: 1,
       }),
+      'https://edge.example.test/',
     )
 
     await expect(api.getBackupStoragePolicy(M1_LOCAL_AUTH_FIXTURE.session)).rejects.toThrow(
@@ -285,7 +286,7 @@ describe('XmclAccountApi', () => {
         { status: 409 },
       ),
     )
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const error = await api.launcherExchange('modrinth', 'provider-secret').catch((e) => e)
 
@@ -305,6 +306,7 @@ describe('XmclAccountApi', () => {
           status: 429,
           headers: { 'content-type': 'text/plain; charset=UTF-8' },
         }),
+      'https://edge.example.test/',
     )
 
     const error = await api.refreshSession(M1_LOCAL_AUTH_FIXTURE.session).catch((e) => e)
@@ -326,7 +328,7 @@ describe('XmclAccountApi', () => {
         }),
       )
       .mockResolvedValueOnce(Response.json({ taskId: 'task-1' }, { status: 202 }))
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const preview = await api.prepareMerge(M1_LOCAL_AUTH_FIXTURE.session, {
       provider: 'modrinth',

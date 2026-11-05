@@ -5,6 +5,7 @@ import { Platform } from '../entities/platform'
 import { Settings } from '../entities/setting'
 import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
+import type { VardrynnServiceStatus } from './VardrynnApi'
 
 export interface MigrateOptions {
   destination: string
@@ -96,6 +97,8 @@ export interface BaseServiceEventMap {
 
 export interface BaseService extends GenericEventEmitter<BaseServiceEventMap> {
   getNetworkStatus(): Promise<NetworkStatus>
+
+  getVardrynnServiceStatus(): Promise<VardrynnServiceStatus>
 
   destroyPool(origin: string): Promise<void>
 

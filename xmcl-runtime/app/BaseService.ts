@@ -12,6 +12,7 @@ import {
   type SharedState,
   DownloadUpdateTask,
   NetworkStatus,
+  type VardrynnServiceStatus,
 } from '@xmcl/runtime-api'
 import { readFile, readdir, stat, pathExists } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
@@ -24,6 +25,7 @@ import {
   getActiveRendererActionId,
   getActiveTraceparent,
   kClientToken,
+  kFlights,
   kGFW,
   kLogRoot,
   launcherSessionId,
@@ -40,6 +42,7 @@ import { HAS_DEV_SERVER } from '../constant'
 import { ZipFile } from 'yazl'
 import { getTracker } from '~/util/taskHelper'
 import { addSteamShortcutToVdf } from './steamShortcut'
+import { fetchVardrynnServiceStatus, getVardrynnApiOrigin } from './vardrynnApiOrigin'
 import { writeFile as writeAtomically } from 'atomically'
 
 @ExposeServiceKey(BaseServiceKey)
@@ -63,6 +66,11 @@ export class BaseService extends AbstractService implements IBaseService {
 
   getNetworkStatus(): Promise<NetworkStatus> {
     return this.app.registry.get(kNetworkInterface).then((s) => s.getNetworkStatus())
+  }
+
+  async getVardrynnServiceStatus(): Promise<VardrynnServiceStatus> {
+    const flights = await this.app.registry.get(kFlights)
+    return fetchVardrynnServiceStatus((url, init) => this.app.fetch(url, init), getVardrynnApiOrigin(flights))
   }
 
   async getSessionId() {

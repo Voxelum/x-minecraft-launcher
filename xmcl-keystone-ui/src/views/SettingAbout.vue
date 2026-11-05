@@ -47,6 +47,10 @@
           NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
         </div>
 
+        <div class="text-caption mb-6" data-testid="vardrynn-service-status">
+          {{ t('setting.vardrynnService.label') }}: {{ t(`setting.vardrynnService.${serviceStatus}`) }}
+        </div>
+
         <!-- Debug Info Box -->
         <div class="mb-8">
           <div class="text-subtitle-2 font-weight-bold mb-2 opacity-80">
@@ -171,11 +175,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { BaseServiceKey, type VardrynnServiceState } from '@xmcl/runtime-api'
 import SettingCard from '@/components/SettingCard.vue'
 import { kEnvironment } from '@/composables/environment'
 import { kFlights } from '@/composables/flights'
+import { useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { useId } from 'vue'
 import kofi from '../assets/kofi.webp'
@@ -192,6 +198,13 @@ const debugInfo = computed(() => {
 
 const { t } = useI18n()
 const version = computed(() => env.value?.version ?? '')
+
+const { getVardrynnServiceStatus } = useService(BaseServiceKey)
+const serviceStatus = ref<VardrynnServiceState | 'checking'>('checking')
+onMounted(async () => {
+  serviceStatus.value = await getVardrynnServiceStatus()
+    .then(status => status.state, () => 'unreachable' as const)
+})
 
 </script>
 
