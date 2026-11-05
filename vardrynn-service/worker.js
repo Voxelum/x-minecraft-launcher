@@ -1,4 +1,6 @@
-// Minimal Vardrynn service. Implements the status and release routes of VARDRYNN_SERVICE_API.md.
+import { handleAccountRoute } from './accounts.js'
+
+// Minimal Vardrynn service. Accounts: accounts.js. Implements the status and release routes of VARDRYNN_SERVICE_API.md.
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -84,6 +86,8 @@ async function latestRelease(env) {
 export default {
   async fetch(request, env = {}) {
     const { pathname } = new URL(request.url)
+    const account = await handleAccountRoute(request, env, pathname)
+    if (account) return account
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       return json({ error: 'method_not_allowed' }, 405)
     }

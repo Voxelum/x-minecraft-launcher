@@ -34,7 +34,10 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `GET /v1/config` | Remote `flags` | Not consumed; needs an allowlist first (see below) |
 | `GET /v1/news` | `items`; query carries `version`, `os`, `arch`, `env`, `build`, `locale` | `useLauncherNews`, not yet shown in the UI |
 | `GET /v1/releases/latest` | Version, channel, assets with `sha256` and `signature` | Launcher updater (see `VARDRYNN_RELEASES.md`); deployed to development only |
-| `POST /v1/sessions`, `GET /v1/sessions/current`, `DELETE /v1/sessions/current` | Launcher account session | Phase 6 |
+| `GET /v1/auth/{google,discord}/authorize`, `POST /v1/auth/{google,discord}/exchange` | Browser PKCE sign-in; redirect must be `http://127.0.0.1:<port>/commercial-auth` | Account sign-in |
+| `POST /v1/auth/microsoft/launcher-exchange` | Exchanges a Graph token for a session; links when called with a session | Account sign-in |
+| `POST /v1/sessions/refresh`, `POST /v1/sessions/revoke`, `GET /v1/sessions/current` | Rotating refresh, sign-out (one or all devices) | Account session |
+| `GET /v1/account`, `DELETE /v1/account`, `GET /v1/account/identities`, `POST /v1/account/identities/{google,discord}/{authorize,complete}` | Account, deletion, identity linking | Account settings |
 
 Remote flags are not applied yet. `kFlights` also holds security-relevant values such as `safeStorageEncryption`, so `/v1/config` needs an explicit allowlist before anything merges into it.
 
@@ -68,3 +71,18 @@ Monitoring and backups do not exist yet. The Worker stores nothing itself; the r
 Not verified: an origin set in a packaged build, Windows and Linux.
 
 - Release route deployed to `vardrynn-api-dev` by direct Scripts API upload. The deployed script matched the committed source. `/v1/status` returned 200; `/v1/releases/latest` returned 404 with no binding and 405 for `POST`, both `no-store`. The 200 and 503 release responses have not run on Cloudflare. Production's script and both domain bindings were unchanged.
+
+## Accounts (phase 6)
+
+Code: `vardrynn-service/accounts.js`; storage: `vardrynn-service/schema.sql` on a D1 database bound as `DB`. Without `DB` every account route returns 503 `accounts_unconfigured`.
+
+Worker settings: secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, and `MICROSOFT_CLIENT_ID` (the same value the launcher builds in as `VARDRYNN_MICROSOFT_CLIENT_ID`). An unset provider returns 503 `provider_unconfigured`. Register `http://127.0.0.1` loopback redirects (`/commercial-auth`) with Google and Discord.
+
+Behavior:
+- Sessions are opaque Bearer tokens (15 minute access, 30 day rotating refresh), stored as SHA-256 hashes. Replaying a rotated refresh token revokes the session. The launcher's DPoP binding is not used yet.
+- One provider identity belongs to one account. Signing in with a linked identity restores the account; a new identity creates one.
+- Linking an identity that belongs to another account returns 409 `identity_conflict`. Account merge routes do not exist, and old XMCL accounts are not imported.
+- `DELETE /v1/account` erases identities and revokes all sessions at once. Recovery is signing in again with any linked provider; there are no passwords.
+- Billing and subscription routes (`/v1/xmcl-plus/*`, `/v1/billing/*`) do not exist; the launcher refuses them locally with `billing_unavailable`.
+
+Open: Microsoft Graph tokens for personal accounts are often opaque, so the application check only applies when the token is a readable JWT (a different issuer design, such as an ID token, would close this); no rate limiting on unauthenticated routes (add Cloudflare rules before enabling); Modrinth identity is not supported; deploying the database and secrets, and registering the three OAuth applications, are manual steps not yet done.

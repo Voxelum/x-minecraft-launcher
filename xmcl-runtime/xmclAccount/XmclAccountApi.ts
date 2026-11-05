@@ -489,6 +489,10 @@ export class XmclAccountApi {
     idempotencyKey?: string,
     baseUrlProvider: BaseUrlProvider = this.baseUrl,
   ): Promise<T> {
+    // Vardrynn has no subscription or billing service yet (plan decision 3); never send these anywhere.
+    if (/^\/v1\/(xmcl-plus|billing)(\/|$)/.test(path)) {
+      throw new XmclAccountApiError(404, 'billing_unavailable')
+    }
     const headers = new Headers(init.headers)
     headers.set('Accept', 'application/json')
     if (init.body) headers.set('Content-Type', 'application/json')
