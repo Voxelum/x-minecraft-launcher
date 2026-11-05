@@ -96,8 +96,8 @@ backup:
   noInstancesFound: Başlatıcıda örnek bulunamadı.
   excludeLibrariesNotice: Temel kütüphaneler, Minecraft varlıkları ve geçici önbellekler arşivi küçük tutmak için otomatik olarak hariç tutulur. Oyun başlatıldığında otomatik indirilirler.
   create: Yedek Oluştur
-  createTitle: XMCL Yedek Arşivi Oluştur
-  saveDialogTitle: XMCL Yedek Arşivini Kaydet
+  createTitle: Vardrynn Yedek Arşivi Oluştur
+  saveDialogTitle: Vardrynn Yedek Arşivini Kaydet
   fileFilterName: 'XMCL Yedek Arşivi (*.xmclbackup, *.zip)'
   createError: Yedek oluşturulamadı
   loadManifestError: Yedek arşivi okunamadı
@@ -473,7 +473,7 @@ importModpack:
   selectVersionDescription: '{name} için yüklenecek sürümü seçin:'
   pmcProtected: Planet Minecraft, Cloudflare tarafından korunuyor. Sayfadan doğrudan indirme veya yansı bağlantısını kopyalayın.
   netdiskTitle: Bulut depolamadan indirme
-  netdiskDescription: Bu mod paketi sürümü harici bir bulut depolama hizmetinde barındırılıyor. İndirme sayfasını tarayıcınızda açmak için aşağıya tıklayın, ardından indirilen .zip veya .mrpack dosyasını XMCL’ye sürükleyip bırakın.
+  netdiskDescription: Bu mod paketi sürümü harici bir bulut depolama hizmetinde barındırılıyor. İndirme sayfasını tarayıcınızda açmak için aşağıya tıklayın, ardından indirilen .zip veya .mrpack dosyasını Vardrynn’ye sürükleyip bırakın.
   openNetdisk: Bulut depolamayı aç
   netdiskOpened: Bulut depolama bağlantısı tarayıcınızda açıldı ve panoya kopyalandı.
   noReleasesFound: Bu depoda .mrpack veya .zip mod paketi sürümü bulunamadı.
@@ -632,7 +632,7 @@ instances:
   addMMCDescription: Mevcut MultiMC instance'ını içe aktar. MultiMC'den veri klasörünü seçmeniz gerekir.
   addModrinthDescription: Mevcut Modrinth instance'ını içe aktar. Modrinth kök veri klasörünü seçmeniz gerekir.
   addVanilla: Vanilla benzeri Minecraft'tan oluştur
-  addVanillaDescription: Yaygın .minecraft klasöründen içe aktar. Bu, orijinal oyun profilini XMCL'ye kopyalayacaktır.
+  addVanillaDescription: Yaygın .minecraft klasöründen içe aktar. Bu, orijinal oyun profilini Vardrynn'ye kopyalayacaktır.
   fix: Onar
   folder: Klasör
   folderSetting: Klasör Ayarları
@@ -1101,7 +1101,7 @@ multiplayer:
   openConsumerPortal: Tüketici Portalını Aç
   refundHint: Para iadesine mi ihtiyacınız var? Siparişlerinizi ve aboneliklerinizi yönetmek için Waffo Tüketici Portalı'nı ziyaret edin.
   togetherSupportHint: Çok oyunculu mod çalışmıyorsa Discord'umuza katılın ve geliştirme ekibiyle iletişime geçin. Sorunu çözmenize yardımcı olacağız.
-  autoShareAmbiguous: Birden fazla oyun çalışıyor. XMCL'nin paylaşabilmesi için LAN dünyasını barındıran örneği seçin.
+  autoShareAmbiguous: Birden fazla oyun çalışıyor. Vardrynn'nin paylaşabilmesi için LAN dünyasını barındıran örneği seçin.
   editSharingScope: Paylaşım kapsamını düzenle
   gameAvailable: LAN oyunu mevcut
   joinGame: Oyuna katıl
@@ -1592,7 +1592,7 @@ setting:
   developerMode: Geliştirici Modu
   developerModeDescription: Geliştirici Modu kendi modlarınızı test etmek içindir
   disableTelemetry: Telemetriyi Devre Dışı Bırak
-  disableTelemetryDescription: XMCL oyun başlatma ve kullanıcı giriş olaylarını toplayacaktır.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Özel GPU Ata
   enableDedicatedGPUOptimizationDescription: Bu seçenek Minecraft işlemine özel GPU atayacaktır.
   enableDiscord: Discord Durumunu Etkinleştir
@@ -1709,7 +1709,7 @@ setting:
   aboutDenoDescription: XMCL, sunucusuz JavaScript uygulamaları için Deno Deploy'un sorunsuz platformundan yararlanır
   aboutLicense: MIT LİSANSI
   aboutLicenseInfo: Windows'ta ücretsiz kod imzalama SignPath.io tarafından, sertifika ise SignPath Foundation tarafından sağlanmaktadır
-  aboutSponsors: 😇 Sponsorlar 😇
+  aboutSponsors: XMCL upstream sponsors
   aiAgentApiKey: Yapay Zeka Temsilcisi API Anahtarı
   aiAgentApiKeyDescription: OpenAI veya Claude için bir ağ geçidi gibi OpenAI uyumlu bir sağlayıcı yapılandırın. Anahtar bu cihazda yerel olarak saklanır.
   aiAgentApiKeyPlaceholder: OpenAI veya Claude sağlayıcısı API anahtarı
@@ -1749,7 +1749,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: Veri kökü yaygın bir .minecraft dizini değildir. XMCL veri dizini yapısı vanilla'dan farklı olduğundan, veri kökü olarak yaygın .minecraft dizinini kullanmanızı önermiyoruz.
+    description: Veri kökü yaygın bir .minecraft dizini değildir. Vardrynn veri dizini yapısı vanilla'dan farklı olduğundan, veri kökü olarak yaygın .minecraft dizinini kullanmanızı önermiyoruz.
     drives: Önerilen Konumlar
     name: Veri Dizinini Ayarla
   defaultLayoutDescription: Varsayılan düzen oyun "instance" kavramını geliştirmeye çalışıyor. Discord gibi uygulamalara benziyor. Ayrıca Steam vb. diğer oyun başlatıcı uygulamalarından da esinlenmiştir.
@@ -2159,7 +2159,7 @@ agent:
   suggestion2: Modlarım çöküyor — nedenini bulun ve nasıl düzelteceğimi söyleyin
   suggestion3: 'Mod paketi oluşturun: İstediğim bir özellik için modları bulun ve bu örneğe yükleyin'
   thinking: düşünüyor…
-  title: XMCL Temsilcisi
+  title: Vardrynn Temsilcisi
   toggleHint: geçiş yapmak için
 minecraftFriends:
   accept: Kabul Et

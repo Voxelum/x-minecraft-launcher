@@ -89,8 +89,8 @@ backup:
   noInstancesFound: Nenhuma instância encontrada no launcher.
   excludeLibrariesNotice: Bibliotecas principais, assets do Minecraft e caches temporários são excluídos automaticamente para manter o arquivo compacto. Eles serão baixados ao iniciar o jogo.
   create: Criar Backup
-  createTitle: Criar Arquivo de Backup XMCL
-  saveDialogTitle: Salvar Arquivo de Backup XMCL
+  createTitle: Criar Arquivo de Backup Vardrynn
+  saveDialogTitle: Salvar Arquivo de Backup Vardrynn
   fileFilterName: 'Arquivo de Backup XMCL (*.xmclbackup, *.zip)'
   createError: Falha ao criar backup
   loadManifestError: Falha ao ler arquivo de backup
@@ -437,7 +437,7 @@ importModpack:
   selectVersionDescription: 'Escolha a versão de {name} para instalar:'
   pmcProtected: O Planet Minecraft é protegido pelo Cloudflare. Copie o link de download direto ou um link alternativo da página.
   netdiskTitle: Download da nuvem
-  netdiskDescription: Esta versão do modpack está hospedada em um serviço de armazenamento em nuvem externo. Clique abaixo para abrir a página de download no navegador e depois arraste o arquivo .zip ou .mrpack baixado para o XMCL.
+  netdiskDescription: Esta versão do modpack está hospedada em um serviço de armazenamento em nuvem externo. Clique abaixo para abrir a página de download no navegador e depois arraste o arquivo .zip ou .mrpack baixado para o Vardrynn.
   openNetdisk: Abrir armazenamento em nuvem
   netdiskOpened: O link do armazenamento em nuvem foi aberto no navegador e copiado para a área de transferência.
   noReleasesFound: Nenhuma versão de modpack .mrpack ou .zip foi encontrada neste repositório.
@@ -592,7 +592,7 @@ instances:
   addMMCDescription: Importar instância existente do MultiMC. Você precisa selecionar os arquivos do MultiMC.
   addModrinthDescription: Importar instância existente do Modrinth. Você precisa selecionar a pasta raiz de dados do Modrinth.
   addVanilla: Criar a partir do Minecraft puro
-  addVanillaDescription: Importar da pasta .minecraft comum. Isso duplicará o perfil do jogo original para o XMCL.
+  addVanillaDescription: Importar da pasta .minecraft comum. Isso duplicará o perfil do jogo original para o Vardrynn.
   fix: Reparar
   folderSetting: Configurações de Pasta
   importFolderDescription: Importar Minecraft para o Launcher
@@ -1051,7 +1051,7 @@ multiplayer:
   openConsumerPortal: Abrir o Portal do Consumidor
   refundHint: Precisa de um reembolso? Acesse o Portal do Consumidor da Waffo para gerenciar seus pedidos e assinaturas.
   togetherSupportHint: Se o modo multijogador não estiver funcionando, entre no nosso Discord e fale com a equipe de desenvolvimento. Ajudaremos você a resolver o problema.
-  autoShareAmbiguous: Há vários jogos em execução. Selecione a instância que hospeda o mundo LAN para que o XMCL possa compartilhá-la.
+  autoShareAmbiguous: Há vários jogos em execução. Selecione a instância que hospeda o mundo LAN para que o Vardrynn possa compartilhá-la.
   editSharingScope: Editar escopo de compartilhamento
   gameAvailable: Jogo LAN disponível
   joinGame: Entrar no jogo
@@ -1455,7 +1455,7 @@ setting:
   aboutDenoDescription: XMCL aproveita a plataforma sem problemas do Deno Deploy para aplicações JavaScript sem servidor
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Assinatura de código gratuita no Windows fornecida por SignPath.io, certificado pela SignPath Foundation
-  aboutSponsors: 😇 Patrocinadores 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Opções avançadas do Java
   advancedSettings: Configurações avançadas
   advancedSettingsHint: Zona de perigo - redefinir ou gerenciar dados do launcher
@@ -1512,7 +1512,7 @@ setting:
   developerMode: Modo de desenvolvedor
   developerModeDescription: O modo de desenvolvedor é para testar seus próprios mods
   disableTelemetry: Desabilitar telemetria
-  disableTelemetryDescription: O XMCL coletará eventos de lançamento do jogo e login do usuário.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Atribuir GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opção atribuirá a GPU dedicada ao processo do Minecraft.
   enableDiscord: Compartilhar jogo no Discord
@@ -1643,7 +1643,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: A raiz de dados não é um diretório .minecraft comum. Como a estrutura do diretório de dados do XMCL é diferente da do vanilla, não recomendamos usar o diretório .minecraft comum como raiz de dados.
+    description: A raiz de dados não é um diretório .minecraft comum. Como a estrutura do diretório de dados do Vardrynn é diferente da do vanilla, não recomendamos usar o diretório .minecraft comum como raiz de dados.
     drives: Locais Recomendados
     name: Definir Diretório de Dados
   defaultLayoutDescription: O layout padrão busca aprimorar o conceito de "instância" do jogo. Ele se parece com aplicativos como o Discord e também é inspirado por outros launchers de jogos como o Steam, etc.
@@ -1771,8 +1771,8 @@ theme:
   selectImage: Selecionar Imagem
   selectMusic: Selecionar Música
   selectVideo: Selecionar Vídeo
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Candidato Host
   prflx: Candidato Reflexivo Peer
@@ -2118,7 +2118,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

@@ -2,6 +2,7 @@
 import { config as dotenv } from 'dotenv'
 import type { Configuration } from 'electron-builder'
 import { resolve } from 'path'
+import { LAUNCHER_APP_ID, LAUNCHER_DISPLAY_NAME, LAUNCHER_NAME, LAUNCHER_PROTOCOL } from '../../xmcl-runtime/constant'
 
 dotenv()
 
@@ -13,24 +14,19 @@ const linuxPackageScripts = {
 }
 
 export const config = {
-  productName: 'XMCL',
-  appId: 'xmcl',
+  productName: LAUNCHER_DISPLAY_NAME,
+  appId: LAUNCHER_APP_ID,
   directories: {
     output: 'build/output',
     buildResources: 'build',
     app: '.',
   },
   protocols: {
-    name: 'XMCL',
-    schemes: ['xmcl'],
+    name: LAUNCHER_DISPLAY_NAME,
+    schemes: [LAUNCHER_PROTOCOL],
   },
-  // assign publish for auto-updater
-  // set this to your own repo!
-  publish: [{
-    provider: 'github',
-    owner: 'voxelum',
-    repo: 'x-minecraft-launcher',
-  }],
+  // Phase 5 must supply Vardrynn-owned signed release hosting explicitly.
+  publish: null,
   files: [{
     from: 'dist',
     to: '.',
@@ -41,22 +37,25 @@ export const config = {
     filter: 'package.json',
   }],
   extraResources: [{
+    from: '../LICENSE',
+    to: 'LICENSE.XMCL',
+  }, {
     from: 'main/agent-documents',
     to: 'agent-documents',
     filter: ['**/*.md'],
   }],
-  artifactName: 'xmcl-${version}-${platform}-${arch}.${ext}',
+  artifactName: 'vardrynn-${version}-${platform}-${arch}.${ext}',
   appx: {
-    displayName: 'XMCL',
-    applicationId: 'xmcl',
-    identityName: 'xmcl',
+    displayName: LAUNCHER_DISPLAY_NAME,
+    applicationId: 'Vardrynn',
+    identityName: 'Vardrynn.Launcher',
     backgroundColor: 'transparent',
-    publisher: process.env.PUBLISHER,
-    publisherDisplayName: 'CI010',
+    publisher: process.env.VARDRYNN_APPX_PUBLISHER,
+    publisherDisplayName: LAUNCHER_DISPLAY_NAME,
     setBuildNumber: true,
   },
   dmg: {
-    artifactName: 'xmcl-${version}-${arch}.${ext}',
+    artifactName: 'vardrynn-${version}-${arch}.${ext}',
     contents: [
       {
         x: 410,
@@ -72,7 +71,7 @@ export const config = {
     ],
   },
   mac: {
-    icon: 'icons/dark.icns',
+    icon: 'icons/vardrynn.icns',
     darkModeSupport: true,
     target: [
       {
@@ -81,7 +80,7 @@ export const config = {
       },
     ],
     extendInfo: {
-      NSLocalNetworkUsageDescription: 'XMCL and Minecraft need access to your local network to discover and connect to LAN games and servers.',
+      NSLocalNetworkUsageDescription: 'Vardrynn and Minecraft need access to your local network to discover and connect to LAN games and servers.',
       NSMicrophoneUsageDescription: 'A Minecraft mod wants to access your microphone.',
       NSCameraUsageDescription: 'Please give us access to your camera',
       'com.apple.security.device.audio-input': true,
@@ -89,11 +88,12 @@ export const config = {
     },
   },
   win: {
+    executableName: LAUNCHER_NAME,
     signtoolOptions: {
       certificateFile: undefined as string | undefined,
-      publisherName: 'CI010',
+      publisherName: process.env.VARDRYNN_PUBLISHER_NAME,
     },
-    icon: 'icons/dark.ico',
+    icon: 'icons/vardrynn.ico',
     electronLanguages: ['en-US'],
     target: [
       {
@@ -107,17 +107,18 @@ export const config = {
     ],
   },
   linux: {
-    executableName: 'xmcl',
+    maintainer: 'Vardrynn contributors',
+    executableName: LAUNCHER_NAME,
     electronLanguages: ['en-US'],
     desktop: {
       entry: {
-        MimeType: 'x-scheme-handler/xmcl',
-        StartupWMClass: 'xmcl',
+        MimeType: `x-scheme-handler/${LAUNCHER_PROTOCOL}`,
+        StartupWMClass: LAUNCHER_DISPLAY_NAME,
       },
     },
     category: 'Game',
-    icon: 'icons/dark.icns',
-    artifactName: 'xmcl-${version}-${arch}.${ext}',
+    icon: 'icons/linux',
+    artifactName: 'vardrynn-${version}-${arch}.${ext}',
     target: [
       { target: 'deb', arch: ['x64', 'arm64'] },
       { target: 'rpm', arch: ['x64', 'arm64'] },
@@ -130,8 +131,6 @@ export const config = {
   rpm: linuxPackageScripts,
   pacman: linuxPackageScripts,
   snap: {
-    publish: [
-      'github',
-    ],
+    publish: null,
   },
 } satisfies Configuration

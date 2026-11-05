@@ -6,20 +6,14 @@
         <div class="d-flex align-center flex-wrap gap-4 mb-6">
           <v-img
             :src="logo"
-            alt="XMCL Logo"
+            alt="Vardrynn logo"
             width="64"
             height="64"
             class="mr-4 rounded-lg flex-grow-0 flex-shrink-0"
           ></v-img>
           <div>
-            <a
-              class="text-h5 font-weight-bold text-decoration-none"
-              href="https://www.xmcl.app"
-              target="_blank"
-              v-shared-tooltip="() => 'XMCL'"
-            >
-              XMCL
-            </a>
+            <div class="text-h5 font-weight-bold">Vardrynn Launcher</div>
+            <div class="text-caption opacity-70">Built on <a href="https://www.xmcl.app" target="_blank">XMCL</a></div>
             <div class="d-flex items-center gap-2 mt-2">
               <a
                 href="https://afdian.com/a/ci010"
@@ -182,11 +176,10 @@ import { useI18n } from 'vue-i18n'
 import SettingCard from '@/components/SettingCard.vue'
 import { kEnvironment } from '@/composables/environment'
 import { kFlights } from '@/composables/flights'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { useId } from 'vue'
 import kofi from '../assets/kofi.webp'
-import logo from '../assets/logo.webp'
+import logo from '../assets/vardrynn-mark.png'
 
 const env = injection(kEnvironment)
 const flights = injection(kFlights)

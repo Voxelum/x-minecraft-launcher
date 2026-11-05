@@ -50,7 +50,7 @@ agent:
   suggestion2: मेरे मॉड क्रैश हो रहे हैं — कारण ढूंढें और मुझे बताएं कि इसे कैसे ठीक किया जाए
   suggestion3: 'एक मॉडपैक बनाएं: अपनी पसंद की सुविधा के लिए मॉड ढूंढें और उन्हें इस इंस्टेंस में इंस्टॉल करें'
   thinking: सोच रहा है...
-  title: XMCL एजेंट
+  title: Vardrynn एजेंट
   toggleHint: टॉगल करने के लिए
 ago:
   day: '{duration} दिन पहले | {duration} दिन पहले'
@@ -117,8 +117,8 @@ backup:
   noInstancesFound: लॉन्चर में कोई इंस्टेंस नहीं मिला।
   excludeLibrariesNotice: आर्काइव को छोटा रखने के लिए कोर लाइब्रेरी, माइनक्राफ्ट एसेट्स और अस्थायी कैश अपने आप छोड़ दिए जाते हैं।
   create: बैकअप बनाएं
-  createTitle: XMCL बैकअप आर्काइव बनाएं
-  saveDialogTitle: XMCL बैकअप आर्काइव सहेजें
+  createTitle: Vardrynn बैकअप आर्काइव बनाएं
+  saveDialogTitle: Vardrynn बैकअप आर्काइव सहेजें
   fileFilterName: 'XMCL बैकअप आर्काइव (*.xmclbackup, *.zip)'
   createError: बैकअप बनाने में विफल
   loadManifestError: बैकअप आर्काइव पढ़ने में विफल
@@ -500,7 +500,7 @@ importModpack:
   selectVersionDescription: 'इंस्टॉल करने के लिए {name} का संस्करण चुनें:'
   pmcProtected: Planet Minecraft, Cloudflare द्वारा सुरक्षित है। कृपया पेज से सीधा डाउनलोड लिंक या मिरर लिंक कॉपी करें।
   netdiskTitle: क्लाउड ड्राइव से डाउनलोड
-  netdiskDescription: मॉडपैक का यह संस्करण बाहरी क्लाउड ड्राइव पर है। ब्राउज़र में डाउनलोड पेज खोलने के लिए नीचे क्लिक करें, फिर डाउनलोड की गई .zip या .mrpack फ़ाइल को खींचकर XMCL में छोड़ें।
+  netdiskDescription: मॉडपैक का यह संस्करण बाहरी क्लाउड ड्राइव पर है। ब्राउज़र में डाउनलोड पेज खोलने के लिए नीचे क्लिक करें, फिर डाउनलोड की गई .zip या .mrpack फ़ाइल को खींचकर Vardrynn में छोड़ें।
   openNetdisk: क्लाउड ड्राइव खोलें
   netdiskOpened: क्लाउड ड्राइव का लिंक ब्राउज़र में खोल दिया गया है और क्लिपबोर्ड पर कॉपी कर दिया गया है।
   noReleasesFound: इस रिपॉज़िटरी में .mrpack या .zip मॉडपैक रिलीज़ नहीं मिली।
@@ -664,7 +664,7 @@ instances:
   addModrinthDescription: मौजूदा मोडरिंथ इंस्टेंस आयात करें। आपको मोडरिंथ रूट डेटा फ़ोल्डर का चयन करना होगा।
   addPrismDescription: मौजूदा PrismLauncher इंस्टेंस आयात करें।
   addVanilla: वेनिला जैसे माइनक्राफ्ट से बनाएं
-  addVanillaDescription: सामान्य .minecraft फ़ोल्डर से आयात करें। यह मूल गेम प्रोफ़ाइल को XMCL में डुप्लिकेट कर देगा।
+  addVanillaDescription: सामान्य .minecraft फ़ोल्डर से आयात करें। यह मूल गेम प्रोफ़ाइल को Vardrynn में डुप्लिकेट कर देगा।
   edition: संस्करण (Edition)
   editionJava: Java संस्करण
   editionBedrock: Bedrock संस्करण
@@ -1155,7 +1155,7 @@ multiplayer:
   openConsumerPortal: उपभोक्ता पोर्टल खोलें
   refundHint: रिफंड चाहिए? अपने ऑर्डर और सब्सक्रिप्शन प्रबंधित करने के लिए Waffo उपभोक्ता पोर्टल पर जाएँ।
   togetherSupportHint: यदि मल्टीप्लेयर काम नहीं कर रहा है, तो हमारे Discord से जुड़ें और डेवलपमेंट टीम से संपर्क करें। हम समस्या हल करने में आपकी मदद करेंगे।
-  autoShareAmbiguous: एक से अधिक गेम चल रहे हैं। LAN वर्ल्ड होस्ट करने वाला इंस्टेंस चुनें ताकि XMCL उसे साझा कर सके।
+  autoShareAmbiguous: एक से अधिक गेम चल रहे हैं। LAN वर्ल्ड होस्ट करने वाला इंस्टेंस चुनें ताकि Vardrynn उसे साझा कर सके।
   editSharingScope: साझाकरण का दायरा संपादित करें
   gameAvailable: LAN गेम उपलब्ध है
   joinGame: गेम में शामिल हों
@@ -1648,7 +1648,7 @@ setting:
   aboutDenoDescription: XMCL Deno Deploy के सरल प्लेटफॉर्म का उपयोग करता है
   aboutLicense: MIT लाइसेंस
   aboutLicenseInfo: विंडोज पर मुफ्त कोड हस्ताक्षर SignPath.io द्वारा प्रदान किया गया है, प्रमाणपत्र SignPath Foundation द्वारा प्रदान किया गया है
-  aboutSponsors: 😇 प्रायोजक 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: उन्नत Java विकल्प
   advancedSettings: उन्नत सेटिंग
   advancedSettingsHint: खतरनाक क्षेत्र - लॉन्चर डेटा रीसेट या प्रबंधित करें
@@ -1728,7 +1728,7 @@ setting:
   developerMode: डेवलपर मोड
   developerModeDescription: डेवलपर मोड आपके अपने मॉड का परीक्षण करने के लिए है
   disableTelemetry: टेलीमेट्री अक्षम करें
-  disableTelemetryDescription: XMCL गेम लॉन्च और उपयोगकर्ता लॉगिन इवेंट एकत्र करेगा।
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: समर्पित GPU असाइन करें
   enableDedicatedGPUOptimizationDescription: यह विकल्प Minecraft प्रक्रिया को समर्पित GPU असाइन करेगा।
   enableDiscord: Discord प्रेजेंस सक्षम करें
@@ -1868,7 +1868,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: डेटा रूट एक सामान्य .minecraft निर्देशिका नहीं है। चूंकि XMCL डेटा निर्देशिका संरचना वेनिला से भिन्न है, इसलिए हम डेटा रूट के रूप में सामान्य .minecraft निर्देशिका का उपयोग करने की अनुशंसा नहीं करते हैं।
+    description: डेटा रूट एक सामान्य .minecraft निर्देशिका नहीं है। चूंकि Vardrynn डेटा निर्देशिका संरचना वेनिला से भिन्न है, इसलिए हम डेटा रूट के रूप में सामान्य .minecraft निर्देशिका का उपयोग करने की अनुशंसा नहीं करते हैं।
     drives: अनुशंसित स्थान
     name: डेटा निर्देशिका सेट करें
   defaultLayoutDescription: डिफ़ॉल्ट लेआउट गेम "इंस्टेंस" अवधारणा को बढ़ाने का प्रयास कर रहा है। यह डिस्कॉर्ड जैसे ऐप जैसा दिखता है। यह स्टीम आदि जैसे अन्य गेम लॉन्चर ऐप से भी प्रेरित है।
@@ -2000,8 +2000,8 @@ theme:
   selectImage: छवि चुनें
   selectMusic: संगीत चुनें
   selectVideo: वीडियो चुनें
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: होस्ट कैंडिडेट
   prflx: पीयर रिफ्लेक्सिव कैंडिडेट

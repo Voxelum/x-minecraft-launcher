@@ -1,6 +1,7 @@
+import { configureAppIdentity } from './appIdentity'
 import { NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
 import { LauncherApp, Shell } from '@xmcl/runtime/app'
-import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
+import { LAUNCHER_NAME, LAUNCHER_PROTOCOL } from '@xmcl/runtime/constant'
 import { kFlights, runWithExternalHttpTrace } from '@xmcl/runtime/infra'
 import { AnyError } from '@xmcl/utils'
 import { Menu, app, net, shell } from 'electron'
@@ -168,6 +169,7 @@ export default class ElectronLauncherApp extends LauncherApp {
         // Electron may reject if app is already ready; fall back silently.
       }
     }
+    configureAppIdentity(app)
     super(app as any,
       new ElectronShell(),
       new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, IS_DEV ? 'secret-dev' : 'secret')),
@@ -336,7 +338,7 @@ export default class ElectronLauncherApp extends LauncherApp {
       this.protocol.handle({ url })
     }).on('second-instance', (e, argv) => {
       const last = argv[argv.length - 1]
-      if (last.startsWith('xmcl://')) {
+      if (last.startsWith(`${LAUNCHER_PROTOCOL}://`)) {
         this.protocol.handle({ url: last })
       } else {
         this.emit('second-instance', argv)

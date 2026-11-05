@@ -101,8 +101,8 @@ backup:
   noInstancesFound: Aucune instance trouvée dans le lanceur.
   excludeLibrariesNotice: 'Les bibliothèques principales, les ressources Minecraft et les caches temporaires sont automatiquement exclus pour garder l''archive compacte. Ils seront retéléchargés au lancement.'
   create: Créer une sauvegarde
-  createTitle: Créer une archive de sauvegarde XMCL
-  saveDialogTitle: 'Enregistrer l''archive de sauvegarde XMCL'
+  createTitle: Créer une archive de sauvegarde Vardrynn
+  saveDialogTitle: 'Enregistrer l''archive de sauvegarde Vardrynn'
   fileFilterName: 'Archive de sauvegarde XMCL (*.xmclbackup, *.zip)'
   createError: Échec de la création de la sauvegarde
   loadManifestError: 'Échec de la lecture de l''archive de sauvegarde'
@@ -440,7 +440,7 @@ importModpack:
   selectVersionDescription: 'Choisissez la version de {name} à installer :'
   pmcProtected: Planet Minecraft est protégé par Cloudflare. Veuillez copier le lien de téléchargement direct ou un lien miroir depuis la page.
   netdiskTitle: Téléchargement depuis le stockage en ligne
-  netdiskDescription: Cette version du modpack est hébergée sur un stockage en ligne externe. Cliquez ci-dessous pour ouvrir la page de téléchargement dans votre navigateur, puis glissez-déposez le fichier .zip ou .mrpack téléchargé dans XMCL.
+  netdiskDescription: Cette version du modpack est hébergée sur un stockage en ligne externe. Cliquez ci-dessous pour ouvrir la page de téléchargement dans votre navigateur, puis glissez-déposez le fichier .zip ou .mrpack téléchargé dans Vardrynn.
   openNetdisk: Ouvrir le stockage en ligne
   netdiskOpened: Le lien du stockage en ligne a été ouvert dans votre navigateur et copié dans le presse-papiers.
   noReleasesFound: Aucune version de modpack .mrpack ou .zip trouvée dans ce dépôt.
@@ -1087,7 +1087,7 @@ multiplayer:
   openConsumerPortal: Ouvrir le portail client
   refundHint: Besoin d'un remboursement ? Rendez-vous sur le portail client Waffo pour gérer vos commandes et abonnements.
   togetherSupportHint: Si le mode multijoueur ne fonctionne pas, rejoignez notre Discord et contactez l'équipe de développement. Nous vous aiderons à résoudre le problème.
-  autoShareAmbiguous: Plusieurs jeux sont en cours d'exécution. Sélectionnez l'instance qui héberge le monde en réseau local afin que XMCL puisse la partager.
+  autoShareAmbiguous: Plusieurs jeux sont en cours d'exécution. Sélectionnez l'instance qui héberge le monde en réseau local afin que Vardrynn puisse la partager.
   editSharingScope: Modifier la portée du partage
   gameAvailable: Partie en réseau local disponible
   joinGame: Rejoindre la partie
@@ -1494,7 +1494,7 @@ setting:
   aboutDenoDescription: XMCL tire parti de la plateforme sans prise de tête de Deno Deploy pour les applications JavaScript sans serveur
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Signature de code gratuite sous Windows fournie par SignPath.io, certificat par SignPath Foundation
-  aboutSponsors: 😇 Sponsors 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Options Java avancées
   advancedSettings: Paramètres avancés
   advancedSettingsHint: Zone dangereuse - réinitialiser ou gérer les données du lanceur
@@ -1552,7 +1552,7 @@ setting:
   developerMode: Mode développeur
   developerModeDescription: Le mode développeur vise à tester votre propre mod
   disableTelemetry: Désactiver la télémétrie
-  disableTelemetryDescription: XMCL collectera les événements de lancement du jeu et de connexion de l'utilisateur.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Attribuer un GPU dédié
   enableDedicatedGPUOptimizationDescription: Cette option attribuera un GPU dédié au processus Minecraft.
   enableDiscord: Activer la présence riche Discord
@@ -1680,7 +1680,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: La racine des données n'est pas un répertoire .minecraft commun. Étant donné que la structure du répertoire de données XMCL est différente de celle vanilla, nous ne recommandons pas d'utiliser le répertoire commun .minecraft comme racine de données.
+    description: La racine des données n'est pas un répertoire .minecraft commun. Étant donné que la structure du répertoire de données Vardrynn est différente de celle vanilla, nous ne recommandons pas d'utiliser le répertoire commun .minecraft comme racine de données.
     drives: Recommander des emplacements
     name: définir la racine des données
   defaultLayoutDescription: |-
@@ -1814,8 +1814,8 @@ theme:
   selectImage: Sélectionnez une image
   selectMusic: Sélectionnez la musique
   selectVideo: Sélectionnez la vidéo
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Candidat Hôte
   prflx: Candidat Peer Reflexive
@@ -2179,7 +2179,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

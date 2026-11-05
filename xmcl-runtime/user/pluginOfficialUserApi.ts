@@ -1,3 +1,4 @@
+import { LAUNCHER_PROTOCOL } from '~/constant'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { MicrosoftAuthenticator, MojangClient } from '@xmcl/user'
 import { LauncherAppPlugin } from '~/app'
@@ -95,7 +96,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
   userService.registerAccountSystem(AUTHORITY_MICROSOFT, system)
   await userService.initialize()
 
-  app.protocol.registerHandler('xmcl', ({ request, response }) => {
+  app.protocol.registerHandler(LAUNCHER_PROTOCOL, ({ request, response }) => {
     const parsed = request.url
     if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
       let error: Error | undefined

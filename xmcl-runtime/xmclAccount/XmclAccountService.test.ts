@@ -84,7 +84,7 @@ it('registers the server-approved browser OAuth callback path', () => {
 
   handler({
     request: {
-      url: new URL('xmcl://launcher/commercial-auth?state=unknown'),
+      url: new URL('vardrynn://launcher/commercial-auth?state=unknown'),
     },
     response,
   })

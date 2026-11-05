@@ -1,3 +1,5 @@
+import { LAUNCHER_DISPLAY_NAME } from '../constant'
+
 const VDF_OBJECT = 0x00
 const VDF_STRING = 0x01
 const VDF_INT32 = 0x02
@@ -170,7 +172,7 @@ function writeObject(chunks: Buffer[], key: string, write: () => void) {
 function serializeShortcut(index: number, shortcut: SteamShortcut): Buffer {
   const chunks: Buffer[] = []
   writeObject(chunks, index.toString(), () => {
-    writeString(chunks, 'AppName', 'XMCL')
+    writeString(chunks, 'AppName', LAUNCHER_DISPLAY_NAME)
     writeString(chunks, 'Exe', shortcut.executable)
     writeString(chunks, 'StartDir', shortcut.startDir)
     writeString(chunks, 'icon', shortcut.icon)
@@ -196,7 +198,7 @@ export function addSteamShortcutToVdf(buffer: Buffer, shortcut: SteamShortcut): 
   const parsed = buffer.length === 0 ? { endOffset: 0, entries: [] } : parseShortcuts(buffer)
 
   if (
-    parsed.entries.some(({ appName }) => appName === 'XMCL' || appName === 'XMCL')
+    parsed.entries.some(({ appName }) => appName === LAUNCHER_DISPLAY_NAME)
   ) {
     return undefined
   }

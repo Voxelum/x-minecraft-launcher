@@ -9,7 +9,7 @@ import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { setTimeout } from 'timers/promises'
 import { Logger } from '~/infra'
-import { IS_DEV, LAUNCHER_NAME } from '../constant'
+import { IS_DEV, LAUNCHER_NAME, LAUNCHER_PROTOCOL } from '../constant'
 import { isSystemError } from '@xmcl/utils'
 import { handleMigrateRoot } from './migrate'
 import { listen } from '../util/server'
@@ -150,7 +150,7 @@ export class LauncherApp extends EventEmitter {
   readonly server: Server = createServer((req, res) => {
     this.protocol.handle({
       method: req.method,
-      url: new URL(req.url ?? '/', 'xmcl://launcher'),
+      url: new URL(req.url ?? '/', `${LAUNCHER_PROTOCOL}://launcher`),
       headers: req.headers,
       body: req,
     }).then((resp) => {
@@ -331,13 +331,13 @@ export class LauncherApp extends EventEmitter {
 
     this.logger.log(`Boot from ${this.appDataPath}`)
 
-    // register xmcl protocol
-    if (!this.host.isDefaultProtocolClient('xmcl')) {
-      const result = this.host.setAsDefaultProtocolClient('xmcl')
+    // register Vardrynn protocol
+    if (!this.host.isDefaultProtocolClient(LAUNCHER_PROTOCOL)) {
+      const result = this.host.setAsDefaultProtocolClient(LAUNCHER_PROTOCOL)
       if (result) {
-        this.logger.log('Successfully register the xmcl protocol')
+        this.logger.log('Successfully register the Vardrynn protocol')
       } else {
-        this.logger.log('Fail to register the xmcl protocol')
+        this.logger.log('Fail to register the Vardrynn protocol')
       }
     }
 
@@ -406,14 +406,14 @@ export class LauncherApp extends EventEmitter {
           }
         }
         this.logger.log('Didn\'t find --url options')
-        const protocolOption = process.argv.find(a => a.startsWith('xmcl://'))
+        const protocolOption = process.argv.find(a => a.startsWith(`${LAUNCHER_PROTOCOL}://`))
         if (protocolOption) {
           const u = new URL(protocolOption)
           if (u.host === 'launcher' && u.pathname === '/app' && u.searchParams.has('url')) {
             return u.searchParams.get('url') as string
           }
         }
-        this.logger.log('Didn\'t find xmcl:// protocol')
+        this.logger.log('Didn\'t find vardrynn:// protocol')
       }
     }
     this.logger.log('Didn\'t find the start up url, try to load from config file.')

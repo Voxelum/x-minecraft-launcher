@@ -4,8 +4,13 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { config } from './electron-builder.config'
+import { AppInfo } from 'app-builder-lib/out/appInfo'
+import metadata from '../package.json'
 
 const appDir = resolve(__dirname, '..')
+// FpmTarget installs into /opt/<sanitizedProductName>, preserving its case.
+const packageInfo = new AppInfo({ config, metadata } as any, undefined, config.linux)
+const installDirectory = `/opt/${packageInfo.sanitizedProductName}`
 const shellPath = (path: string) => path.replaceAll('\\', '/')
   .replace(/^([a-z]):/i, (_, drive: string) => `/${drive.toLowerCase()}`)
 const template = (path: string) => readFileSync(resolve(appDir, path), 'utf8')
@@ -20,23 +25,23 @@ describe('Linux package scripts', () => {
   let paths: Record<string, string>
 
   beforeEach(() => {
-    directory = mkdtempSync(join(tmpdir(), 'xmcl-package-scripts-'))
+    directory = mkdtempSync(join(tmpdir(), 'vardrynn-package-scripts-'))
     bin = join(directory, 'commands')
     log = join(directory, 'commands.log')
     paths = {
-      '/opt/xmcl': join(directory, 'opt', 'xmcl'),
+      [installDirectory]: join(directory, 'opt', packageInfo.sanitizedProductName),
       '/opt': join(directory, 'opt'),
       '/usr/bin': join(directory, 'usr', 'bin'),
       '/etc/apparmor.d': join(directory, 'etc', 'apparmor.d'),
       '/etc/alternatives': join(directory, 'etc', 'alternatives'),
     }
-    for (const path of [bin, ...Object.values(paths), join(paths['/opt/xmcl'], 'resources')]) {
+    for (const path of [bin, ...Object.values(paths), join(paths['/opt/Vardrynn'], 'resources')]) {
       mkdirSync(path, { recursive: true })
     }
-    sandbox = join(paths['/opt/xmcl'], 'chrome-sandbox')
-    installedProfile = join(paths['/etc/apparmor.d'], 'xmcl')
+    sandbox = join(paths['/opt/Vardrynn'], 'chrome-sandbox')
+    installedProfile = join(paths['/etc/apparmor.d'], 'vardrynn')
     writeFileSync(sandbox, 'sandbox fixture')
-    writeFileSync(join(paths['/opt/xmcl'], 'resources', 'apparmor-profile'), template(config.deb.appArmorProfile))
+    writeFileSync(join(paths['/opt/Vardrynn'], 'resources', 'apparmor-profile'), template(config.deb.appArmorProfile))
     writeFileSync(log, '')
 
     const command = `#!/bin/bash
@@ -71,7 +76,7 @@ esac
   })
 
   function run(path: string, env: NodeJS.ProcessEnv = {}, args: string[] = []) {
-    const input = template(path).replace(/\/opt\/xmcl|\/opt(?=[\s/'"])|\/usr\/bin|\/etc\/apparmor\.d|\/etc\/alternatives/g,
+    const input = template(path).replace(/\/opt\/Vardrynn|\/opt(?=[\s/'"])|\/usr\/bin|\/etc\/apparmor\.d|\/etc\/alternatives/g,
       match => shellPath(paths[match]))
     return spawnSync('sh', ['-s', '--', ...args], {
       input: `export PATH='${shellPath(bin)}':"$PATH"\n${input}`,
@@ -97,13 +102,13 @@ esac
     expect(commands()).not.toContain('chmod 0755')
     expect(commands()).toContain('update-alternatives --install')
     expect(commands()).toContain('apparmor_parser --replace --write-cache --skip-read-cache')
-    expect(readFileSync(installedProfile, 'utf8')).toContain('"/opt/xmcl/xmcl"')
+    expect(readFileSync(installedProfile, 'utf8')).toContain('"/opt/Vardrynn/vardrynn"')
   })
 
   it.each(['chown', 'chmod'])('fails installation when %s fails', (command) => {
     const result = run(config.deb.afterInstall, { XMCL_FAIL_COMMAND: command })
     expect(result.status).not.toBe(0)
-    expect(result.stderr).toContain('XMCL installation failed')
+    expect(result.stderr).toContain('Vardrynn installation failed')
     expect(commands()).not.toContain('update-alternatives')
     if (command === 'chown') expect(commands()).not.toContain('chmod 4755')
   })
@@ -164,7 +169,7 @@ if [ "$1" = "--replace" ]; then exit 1; fi
 `, { mode: 0o755 })
     const retry = run(config.deb.afterInstall)
     expect(retry.status).not.toBe(0)
-    expect(retry.stderr).toContain('cannot load the XMCL AppArmor profile')
+    expect(retry.stderr).toContain('cannot load the Vardrynn AppArmor profile')
   })
 
   it('installs the profile without loading it inside a chroot', () => {
@@ -188,9 +193,21 @@ if [ "$1" = "--replace" ]; then exit 1; fi
     writeFileSync(log, '')
     const result = run(config.deb.afterRemove, {}, ['0'])
     expect(result.status, result.stderr).toBe(0)
-    expect(commands()).toContain(`update-alternatives --remove xmcl ${shellPath(paths['/opt/xmcl'])}/xmcl`)
+    expect(commands()).toContain(`update-alternatives --remove vardrynn ${shellPath(paths['/opt/Vardrynn'])}/vardrynn`)
     expect(commands()).toContain(`apparmor_parser --remove ${shellPath(installedProfile)}`)
     expect(existsSync(installedProfile)).toBe(false)
+  })
+
+  it('leaves XMCL executable and AppArmor records untouched on install and removal', () => {
+    const upstreamExecutable = join(paths['/usr/bin'], 'xmcl')
+    const upstreamProfile = join(paths['/etc/apparmor.d'], 'xmcl')
+    writeFileSync(upstreamExecutable, 'upstream executable')
+    writeFileSync(upstreamProfile, 'upstream profile')
+    expect(run(config.deb.afterInstall).status).toBe(0)
+    expect(run(config.deb.afterRemove, {}, ['0']).status).toBe(0)
+    expect(readFileSync(upstreamExecutable, 'utf8')).toBe('upstream executable')
+    expect(readFileSync(upstreamProfile, 'utf8')).toBe('upstream profile')
+    expect(commands()).not.toContain('update-alternatives --remove xmcl ')
   })
 
   it('does not delete the profile when unloading it fails', () => {

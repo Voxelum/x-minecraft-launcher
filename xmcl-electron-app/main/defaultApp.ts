@@ -5,8 +5,8 @@ import { darkIco, darkIcon, darkTray, lightIco, lightIcon, lightTray } from './u
 import { HAS_DEV_SERVER, HOST } from './constant'
 
 const manifest: InstalledAppManifest = {
-  name: 'KeyStone Launcher',
-  description: 'The default launcher UI',
+  name: 'Vardrynn Launcher',
+  description: 'The Vardrynn launcher UI',
   url: HAS_DEV_SERVER ? defaultUrl : `http://${HOST}/index.html`,
   backgroundColor: '0x424242',
   minWidth: 800,

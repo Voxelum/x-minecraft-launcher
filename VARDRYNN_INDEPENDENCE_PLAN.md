@@ -1,6 +1,6 @@
 # Vardrynn independence plan
 
-Status: phase 1 implemented with development and production-bundle validation on 2026-11-04; later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
+Status: phases 1 and 2 implemented with macOS validation on 2026-11-04; Windows/Linux installation qualification remains open and later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
 
 ## Goal
 
@@ -32,6 +32,8 @@ Relevant code: `xmcl-runtime/app/BaseService.ts`, `xmcl-electron-app/main/utils/
 - Keep Vardrynn and XMCL installable side by side. Do not reuse identifiers that could take over XMCL's shortcuts, protocol, or package manager records.
 
 Acceptance: packages on supported platforms identify as Vardrynn and coexist with XMCL.
+
+Implementation and macOS smoke evidence: see `VARDRYNN_APP_IDENTITY.md`. Independent profile/game directories are established as a coexistence prerequisite; no XMCL import is performed. Signed installers and Windows/Linux installation runs remain unqualified.
 
 Relevant code: `xmcl-electron-app/build/electron-builder.config.ts`, `xmcl-electron-app/icons/`, `xmcl-electron-app/build/linux/`, `xmcl-keystone-ui/locales/`.
 

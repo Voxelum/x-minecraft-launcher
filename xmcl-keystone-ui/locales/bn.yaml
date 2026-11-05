@@ -50,7 +50,7 @@ agent:
   suggestion2: আমার মডগুলো ক্র্যাশ করছে — কারণটি খুঁজুন এবং কীভাবে এটি ঠিক করা যায় তা আমাকে বলুন
   suggestion3: 'একটি মডপ্যাক তৈরি করুন: আমার পছন্দের ফিচারের জন্য মড খুঁজুন এবং সেগুলো এই ইনস্ট্যান্সে ইনস্টল করুন'
   thinking: ভাবছে…
-  title: XMCL এজেন্ট
+  title: Vardrynn এজেন্ট
   toggleHint: টগল করার জন্য
 ago:
   day: '{duration} দিন আগে | {duration} দিন আগে'
@@ -117,8 +117,8 @@ backup:
   noInstancesFound: No instances found in launcher.
   excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
   create: ব্যাকআপ তৈরি করুন
-  createTitle: Create XMCL Backup Archive
-  saveDialogTitle: Save XMCL Backup Archive
+  createTitle: Create Vardrynn Backup Archive
+  saveDialogTitle: Save Vardrynn Backup Archive
   fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
@@ -500,7 +500,7 @@ importModpack:
   selectVersionDescription: 'ইনস্টল করার জন্য {name}-এর সংস্করণ বেছে নিন:'
   pmcProtected: Planet Minecraft সাইটটি Cloudflare দ্বারা সুরক্ষিত। পৃষ্ঠা থেকে সরাসরি ডাউনলোড লিঙ্ক বা মিরর লিঙ্ক কপি করুন।
   netdiskTitle: ক্লাউড ড্রাইভ থেকে ডাউনলোড
-  netdiskDescription: মডপ্যাকের এই সংস্করণটি একটি বাহ্যিক ক্লাউড ড্রাইভে রাখা আছে। ব্রাউজারে ডাউনলোড পৃষ্ঠা খুলতে নিচে ক্লিক করুন, তারপর ডাউনলোড করা .zip বা .mrpack ফাইলটি টেনে XMCL-এ ছেড়ে দিন।
+  netdiskDescription: মডপ্যাকের এই সংস্করণটি একটি বাহ্যিক ক্লাউড ড্রাইভে রাখা আছে। ব্রাউজারে ডাউনলোড পৃষ্ঠা খুলতে নিচে ক্লিক করুন, তারপর ডাউনলোড করা .zip বা .mrpack ফাইলটি টেনে Vardrynn-এ ছেড়ে দিন।
   openNetdisk: ক্লাউড ড্রাইভ খুলুন
   netdiskOpened: ক্লাউড ড্রাইভের লিঙ্ক ব্রাউজারে খোলা হয়েছে এবং ক্লিপবোর্ডে কপি করা হয়েছে।
   noReleasesFound: এই রিপোজিটরিতে .mrpack বা .zip মডপ্যাক রিলিজ পাওয়া যায়নি।
@@ -664,7 +664,7 @@ instances:
   addModrinthDescription: বিদ্যমান Modrinth ইন্সট্যান্স ইম্পোর্ট করুন। আপনাকে Modrinth রুট ডেটা ফোল্ডারটি নির্বাচন করতে হবে।
   addPrismDescription: বিদ্যমান PrismLauncher ইন্সট্যান্স ইম্পোর্ট করুন।
   addVanilla: ভ্যানিলা-সদৃশ Minecraft থেকে তৈরি করুন
-  addVanillaDescription: সাধারণ .minecraft ফোল্ডার থেকে ইম্পোর্ট করুন। এটি আসল গেম প্রোফাইলটিকে XMCL-এ অনুলিপি (duplicate) করবে।
+  addVanillaDescription: সাধারণ .minecraft ফোল্ডার থেকে ইম্পোর্ট করুন। এটি আসল গেম প্রোফাইলটিকে Vardrynn-এ অনুলিপি (duplicate) করবে।
   edition: সংস্করণ
   editionJava: জাভা সংস্করণ
   editionBedrock: বেডরক সংস্করণ
@@ -1155,7 +1155,7 @@ multiplayer:
   openConsumerPortal: কনজিউমার পোর্টাল খুলুন
   refundHint: রিফান্ড প্রয়োজন? আপনার অর্ডার ও সাবস্ক্রিপশন পরিচালনা করতে Waffo কনজিউমার পোর্টালে যান।
   togetherSupportHint: মাল্টিপ্লেয়ার কাজ না করলে Discord-এ যোগ দিয়ে ডেভেলপমেন্ট টিমের সঙ্গে যোগাযোগ করুন। আমরা সমস্যা সমাধানে সাহায্য করব।
-  autoShareAmbiguous: একাধিক গেম চলছে। XMCL যাতে শেয়ার করতে পারে, ল্যান ওয়ার্ল্ড হোস্ট করা ইনস্ট্যান্সটি নির্বাচন করুন।
+  autoShareAmbiguous: একাধিক গেম চলছে। Vardrynn যাতে শেয়ার করতে পারে, ল্যান ওয়ার্ল্ড হোস্ট করা ইনস্ট্যান্সটি নির্বাচন করুন।
   editSharingScope: শেয়ারের পরিধি সম্পাদনা করুন
   gameAvailable: ল্যান গেম উপলভ্য
   joinGame: গেমে যোগ দিন
@@ -1648,7 +1648,7 @@ setting:
   aboutDenoDescription: সার্ভারহীন জাভাস্ক্রিপ্ট অ্যাপ্লিকেশনের জন্য XMCL ডেনো ডিপ্লয় (Deno Deploy)-এর ঝামেলামুক্ত প্ল্যাটফর্ম ব্যবহার করে
   aboutLicense: MIT লাইসেন্স
   aboutLicenseInfo: SignPath.io দ্বারা উইন্ডোজে বিনামূল্যে কোড সাইনিং এবং SignPath ফাউন্ডেশন দ্বারা সার্টিফিকেট প্রদান করা হয়েছে
-  aboutSponsors: 😇 পৃষ্ঠপোষকগণ 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: উন্নত জাভা অপশনসমূহ
   advancedSettings: উন্নত সেটিংস
   advancedSettingsHint: বিপদ অঞ্চল - লঞ্চারের ডেটা রিসেট বা পরিচালনা করুন
@@ -1728,7 +1728,7 @@ setting:
   developerMode: ডেভেলপার মোড
   developerModeDescription: ডেভেলপার মোড আপনার নিজস্ব মড পরীক্ষার জন্য
   disableTelemetry: টেলিমেট্রি নিষ্ক্রিয় করুন
-  disableTelemetryDescription: XMCL গেম চালু এবং ব্যবহারকারীর লগইন ইভেন্টগুলি সংগ্রহ করবে।
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: ডেডিকেটেড জিপিইউ বরাদ্দ করুন
   enableDedicatedGPUOptimizationDescription: এই বিকল্পটি মাইনক্রাফ্ট প্রসেসের জন্য ডেডিকেটেড জিপিইউ বরাদ্দ করবে।
   enableDiscord: ডিসকর্ড প্রেসেন্স সক্ষম করুন
@@ -1868,7 +1868,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: ডাটা রুট কোনো সাধারণ .minecraft ডিরেক্টরি নয়। যেহেতু XMCL ডাটা ডিরেক্টরি গঠন ভ্যানিলা থেকে আলাদা, তাই আমরা ডাটা রুট হিসেবে সাধারণ .minecraft ডিরেক্টরি ব্যবহার করার পরামর্শ দিই না।
+    description: ডাটা রুট কোনো সাধারণ .minecraft ডিরেক্টরি নয়। যেহেতু Vardrynn ডাটা ডিরেক্টরি গঠন ভ্যানিলা থেকে আলাদা, তাই আমরা ডাটা রুট হিসেবে সাধারণ .minecraft ডিরেক্টরি ব্যবহার করার পরামর্শ দিই না।
     drives: সুপারিশকৃত অবস্থানসমূহ
     name: ডাটা ডিরেক্টরি সেট করুন
   defaultLayoutDescription: ডিফল্ট লেআউটটি গেমের "ইনস্ট্যান্স" ধারণাকে উন্নত করার চেষ্টা করে। এটি ডিসকর্ড এর মতো অ্যাপের মতো দেখায়। এটি স্টিম ইত্যাদি অন্যান্য গেম লঞ্চার অ্যাপ দ্বারাও অনুপ্রাণিত।

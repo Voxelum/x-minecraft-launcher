@@ -39,7 +39,7 @@ SettingMigrationDialog:
 agent:
   accessRequiredHint: 订阅 XMCL 即可使用内置 Agent，或前往设置自行配置 AI 服务商。
   abort: 停止生成
-  title: XMCL Agent
+  title: Vardrynn Agent
   statusReady: 就绪
   statusWorking: 处理中…
   statusDisabled: 已禁用 — 请登录或配置服务商
@@ -140,8 +140,8 @@ backup:
   noInstancesFound: 启动器中未找到任何实例。
   excludeLibrariesNotice: 核心库文件、Minecraft 资源和临时缓存会自动排除以保持备份包精简，启动游戏时会自动重新下载。
   create: 创建备份
-  createTitle: 创建 XMCL 备份归档
-  saveDialogTitle: 保存 XMCL 备份归档
+  createTitle: 创建 Vardrynn 备份归档
+  saveDialogTitle: 保存 Vardrynn 备份归档
   fileFilterName: 'XMCL 备份归档 (*.xmclbackup, *.zip)'
   createError: 创建备份失败
   loadManifestError: 读取备份归档失败
@@ -529,7 +529,7 @@ importModpack:
   selectVersionDescription: 请选择要安装的 {name} 版本：
   pmcProtected: Planet Minecraft 受 Cloudflare 保护。请从页面复制直接下载链接或镜像链接。
   netdiskTitle: 网盘下载
-  netdiskDescription: 此整合包版本存放在外部网盘中。点击下方按钮在浏览器中打开下载页面，然后将下载的 .zip 或 .mrpack 文件拖入 XMCL。
+  netdiskDescription: 此整合包版本存放在外部网盘中。点击下方按钮在浏览器中打开下载页面，然后将下载的 .zip 或 .mrpack 文件拖入 Vardrynn。
   openNetdisk: 打开网盘
   netdiskOpened: 网盘链接已在浏览器中打开并复制到剪贴板。
   noReleasesFound: 此仓库中未找到 .mrpack 或 .zip 格式的整合包发行版。
@@ -714,7 +714,7 @@ instances:
   addVanilla: 从原版 Minecraft 创建
   addVanillaDescription: |-
     从通用 .minecraft 文件夹导入。
-    这会将原始游戏配置文件复制到 XMCL。
+    这会将原始游戏配置文件复制到 Vardrynn。
   fix: 修复
   folder: 文件夹
   folderSetting: 文件夹设置
@@ -791,9 +791,9 @@ launchBlocked:
     description: 没有权限执行 <span class="highlight"> {javaPath} </span>，请尝试给启动器更高权限，给 Java 文件增加可执行权限，或者更换 Java。
     title: 无权限使用 Java
   launchLinuxDisplayUnavailable:
-    environmentMissing: XMCL 无法从当前桌面会话恢复 X11 显示信息。请在当前桌面会话的终端中重新启动 XMCL，或注销后重新登录。
-    noGraphicalSession: XMCL 当前不在图形桌面会话中运行。请从桌面会话启动 XMCL 后再启动 Minecraft。
-    sandboxDenied: 应用沙箱无法访问 X11。请在 Flatpak 权限中允许 XMCL 访问 X11 socket，然后重启 XMCL。
+    environmentMissing: Vardrynn 无法从当前桌面会话恢复 X11 显示信息。请在当前桌面会话的终端中重新启动 Vardrynn，或注销后重新登录。
+    noGraphicalSession: Vardrynn 当前不在图形桌面会话中运行。请从桌面会话启动 Vardrynn 后再启动 Minecraft。
+    sandboxDenied: 应用沙箱无法访问 X11。请在 Flatpak 权限中允许 Vardrynn 访问 X11 socket，然后重启 Vardrynn。
     title: X11 显示不可用
     xwaylandMissing: 当前 Wayland 会话中的 Minecraft 需要 XWayland。请安装 Linux 发行版提供的 XWayland 软件包，然后注销并重新登录。
     xwaylandNotRunning: 已安装 XWayland，但当前没有运行 X11 显示服务。请在合成器配置中启用 XWayland，然后注销并重新登录。
@@ -1325,7 +1325,7 @@ modrinthCard:
   currentVersion: 当前版本
 multiplayer:
   addFunds: 充值
-  autoShareAmbiguous: 检测到多个正在运行的游戏。请选择开放局域网世界的实例，XMCL 将自动分享它。
+  autoShareAmbiguous: 检测到多个正在运行的游戏。请选择开放局域网世界的实例，Vardrynn 将自动分享它。
   availableBalance: 可用余额
   balanceHint: 可用于 XMCL Together 服务
   billing: 账单
@@ -1938,11 +1938,11 @@ serverStatus:
 setting:
   appImageUpdateMode: AppImage 更新管理方式
   appImageExternalMode: 外部管理器或手动替换（默认）
-  appImageSelfMode: XMCL 自维护（此 AppImage 由我自行管理）
+  appImageSelfMode: Vardrynn 自维护（此 AppImage 由我自行管理）
   appImageAutoDownload: 自动下载更新
   appImageAutoInstall: 退出时安装已下载的更新
-  appImageExternalUpdateHint: 如果通过 Shelly 等管理器安装，请保留外部管理模式并使用该管理器更新；否则请自行替换原路径上的 AppImage。外部管理模式下 XMCL 不下载或安装更新，也不修改管理器记录或桌面入口。
-  appImageSelfUpdateHint: 仅对自行管理、而非 Shelly 等管理器维护的 AppImage 选择自维护。内置更新要求 AppImage 使用绝对路径且文件名不含版本号（例如 xmcl.AppImage）。如果文件名含 0.73.0 等版本号，请先退出 XMCL，自行重命名文件，将自己的桌面入口改为该稳定路径，再重新启动。在此之前仅允许手动更新。XMCL 不会代为重命名。切换模式后请重新检查更新。
+  appImageExternalUpdateHint: 如果通过 Shelly 等管理器安装，请保留外部管理模式并使用该管理器更新；否则请自行替换原路径上的 AppImage。外部管理模式下 Vardrynn 不下载或安装更新，也不修改管理器记录或桌面入口。
+  appImageSelfUpdateHint: 仅对自行管理、而非 Shelly 等管理器维护的 AppImage 选择自维护。内置更新要求 AppImage 使用绝对路径且文件名不含版本号（例如 vardrynn.AppImage）。如果文件名含 0.73.0 等版本号，请先退出 Vardrynn，自行重命名文件，将自己的桌面入口改为该稳定路径，再重新启动。在此之前仅允许手动更新。Vardrynn 不会代为重命名。切换模式后请重新检查更新。
   multiplayerTransport: Together 传输核心
   multiplayerTransportDescription: 选择 Together 使用的 WebRTC 实现。切换核心会断开当前连接。
   themeStore:
@@ -1963,7 +1963,7 @@ setting:
   aboutDenoDescription: XMCL 使用 Deno Deploy 提供的无服务器 JavaScript 应用平台
   aboutLicense: MIT 许可证
   aboutLicenseInfo: 感谢 SignPath.io 提供免费的 Windows 代码签名
-  aboutSponsors: 😇 赞助商 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: 高级 Java 选项
   advancedSettings: 高级设置
   advancedSettingsHint: 危险区域 - 重置或管理启动器数据
@@ -2056,11 +2056,11 @@ setting:
   developerMode: 开发者模式
   developerModeDescription: 开发者模式旨在帮助您测试自己写的模组
   disableTelemetry: 关闭遥测
-  disableTelemetryDescription: XMCL 会收集游戏启动以及用户登录事件
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: 分配专用 GPU
   enableDedicatedGPUOptimizationDescription: 此选项将为 Minecraft 进程分配专用 GPU。
   enableDiscord: 启用 Discord Presence
-  enableDiscordDescription: 根据 XMCL 实时更新 Discord 的状态
+  enableDiscordDescription: 根据 Vardrynn 实时更新 Discord 的状态
   enterUrl: 输入网址
   exportSettings: 导出设置
   exportSettingsHint: 将当前设置保存到文件
@@ -2185,7 +2185,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: 数据存储目录不是常规的 .minecraft 目录。因为 XMCL 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。
+    description: 数据存储目录不是常规的 .minecraft 目录。因为 Vardrynn 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。
     drives: 推荐路径
     name: 设置数据存储目录
   defaultLayoutDescription: |-
@@ -2333,8 +2333,8 @@ theme:
   selectImage: 选择图像
   selectMusic: 选择音乐
   selectVideo: 选择视频
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: 公网地址
   prflx: 同伴反射地址
@@ -2695,7 +2695,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

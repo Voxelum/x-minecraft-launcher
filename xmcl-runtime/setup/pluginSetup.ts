@@ -1,3 +1,4 @@
+import { LAUNCHER_NAME } from '../constant'
 import Drive from 'node-disk-info/dist/classes/drive'
 import { join, parse } from 'path'
 import { setTimeout } from 'timers/promises'
@@ -86,8 +87,8 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
 
   app.controller.handle('preset', async () => {
     // E2E isolation: when the harness provides a game-data root, use it as the
-    // onboarding default so the wizard never points at the real ~/.minecraftx.
-    const defaultPath = process.env.XMCL_E2E_GAME_DATA || join(app.host.getPath('home'), '.minecraftx')
+    // onboarding default so the wizard never points at the real game directory.
+    const defaultPath = process.env.XMCL_E2E_GAME_DATA || join(app.host.getPath('home'), `.${LAUNCHER_NAME}`)
     const getPath = (driveSymbol: string) => {
       const parsedHome = parse(defaultPath)
       if (
@@ -96,7 +97,7 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
       ) {
         return defaultPath
       }
-      return join(driveSymbol, '.minecraftx')
+      return join(driveSymbol, `.${LAUNCHER_NAME}`)
     }
     const getAllDrived = async () => {
       try {

@@ -50,7 +50,7 @@ agent:
   suggestion2: எனது மோட்கள் செயலிழக்கின்றன — காரணத்தைக் கண்டறிந்து அதை எவ்வாறு சரிசெய்வது என்று கூறுங்கள்
   suggestion3: 'ஒரு மோட்பேக்கை உருவாக்குங்கள்: எனக்குத் தேவையான அம்சத்திற்கான மோட்களைக் கண்டறிந்து அவற்றை இந்த நிகழ்வில் நிறுவவும்'
   thinking: யோசிக்கிறது...
-  title: XMCL முகவர்
+  title: Vardrynn முகவர்
   toggleHint: மாற்றுவதற்கு
 ago:
   day: '{duration} நாளுக்கு முன்பு | {duration} நாட்களுக்கு முன்பு'
@@ -117,8 +117,8 @@ backup:
   noInstancesFound: No instances found in launcher.
   excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
   create: காப்புப்பிரதியை உருவாக்கு
-  createTitle: Create XMCL Backup Archive
-  saveDialogTitle: Save XMCL Backup Archive
+  createTitle: Create Vardrynn Backup Archive
+  saveDialogTitle: Save Vardrynn Backup Archive
   fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
@@ -500,7 +500,7 @@ importModpack:
   selectVersionDescription: 'நிறுவ வேண்டிய {name} பதிப்பைத் தேர்ந்தெடுக்கவும்:'
   pmcProtected: Planet Minecraft தளம் Cloudflare மூலம் பாதுகாக்கப்படுகிறது. பக்கத்திலிருந்து நேரடிப் பதிவிறக்க இணைப்பை அல்லது மாற்று இணைப்பை நகலெடுக்கவும்.
   netdiskTitle: மேகக்கணி இயக்ககத்திலிருந்து பதிவிறக்கம்
-  netdiskDescription: இந்த மோட்பேக் பதிப்பு வெளிப்புற மேகக்கணி இயக்ககத்தில் உள்ளது. உலாவியில் பதிவிறக்கப் பக்கத்தைத் திறக்கக் கீழே சொடுக்கவும். பின்னர் பதிவிறக்கிய .zip அல்லது .mrpack கோப்பை XMCL-க்குள் இழுத்து விடவும்.
+  netdiskDescription: இந்த மோட்பேக் பதிப்பு வெளிப்புற மேகக்கணி இயக்ககத்தில் உள்ளது. உலாவியில் பதிவிறக்கப் பக்கத்தைத் திறக்கக் கீழே சொடுக்கவும். பின்னர் பதிவிறக்கிய .zip அல்லது .mrpack கோப்பை Vardrynn-க்குள் இழுத்து விடவும்.
   openNetdisk: மேகக்கணி இயக்ககத்தைத் திறக்கவும்
   netdiskOpened: மேகக்கணி இயக்கக இணைப்பு உலாவியில் திறக்கப்பட்டு இடைநிலைப் பலகையில் நகலெடுக்கப்பட்டது.
   noReleasesFound: இந்தக் களஞ்சியத்தில் .mrpack அல்லது .zip மோட்பேக் வெளியீடுகள் எதுவும் கிடைக்கவில்லை.
@@ -664,7 +664,7 @@ instances:
   addModrinthDescription: ஏற்கனவே உள்ள Modrinth நிகழ்வை இறக்குமதி செய்யவும். Modrinth முதன்மை தரவு கோப்புறையை நீங்கள் தேர்ந்தெடுக்க வேண்டும்.
   addPrismDescription: ஏற்கனவே உள்ள PrismLauncher நிகழ்வை இறக்குமதி செய்யவும்.
   addVanilla: வெண்ணிலா போன்ற Minecraft இலிருந்து உருவாக்கு
-  addVanillaDescription: பொதுவான .minecraft கோப்புறையிலிருந்து இறக்குமதி செய்யவும். இது அசல் விளையாட்டு சுயவிவரத்தை XMCL க்கு நகலெடுக்கும்.
+  addVanillaDescription: பொதுவான .minecraft கோப்புறையிலிருந்து இறக்குமதி செய்யவும். இது அசல் விளையாட்டு சுயவிவரத்தை Vardrynn க்கு நகலெடுக்கும்.
   edition: பதிப்பு
   editionJava: ஜாவா பதிப்பு (Java Edition)
   editionBedrock: பெட்ராக் பதிப்பு (Bedrock Edition)
@@ -1155,7 +1155,7 @@ multiplayer:
   openConsumerPortal: நுகர்வோர் தளத்தைத் திறக்கவும்
   refundHint: பணத்தைத் திரும்பப் பெற வேண்டுமா? உங்கள் ஆர்டர்களையும் சந்தாக்களையும் நிர்வகிக்க Waffo நுகர்வோர் தளத்திற்குச் செல்லுங்கள்.
   togetherSupportHint: மல்டிபிளேயர் வேலை செய்யவில்லை என்றால், எங்கள் Discord-இல் இணைந்து மேம்பாட்டுக் குழுவைத் தொடர்புகொள்ளுங்கள். சிக்கலைத் தீர்க்க நாங்கள் உதவுவோம்.
-  autoShareAmbiguous: பல விளையாட்டுகள் இயங்குகின்றன. XMCL பகிர்வதற்காக LAN உலகை நடத்தும் நிகழ்வைத் தேர்ந்தெடுக்கவும்.
+  autoShareAmbiguous: பல விளையாட்டுகள் இயங்குகின்றன. Vardrynn பகிர்வதற்காக LAN உலகை நடத்தும் நிகழ்வைத் தேர்ந்தெடுக்கவும்.
   editSharingScope: பகிர்வு வரம்பைத் திருத்து
   gameAvailable: LAN விளையாட்டு கிடைக்கிறது
   joinGame: விளையாட்டில் சேர்
@@ -1648,7 +1648,7 @@ setting:
   aboutDenoDescription: சேவையகமற்ற ஜாவாஸ்கிரிப்ட் பயன்பாடுகளுக்காக Deno Deploy இன் எளிதான தளத்தை XMCL பயன்படுத்துகிறது
   aboutLicense: எம்ஐடி உரிமம் (MIT LICENSE)
   aboutLicenseInfo: விண்டோஸில் இலவச குறியீடு கையொப்பமிடுதல் SignPath.io வழங்குகிறது, சான்றிதழ் SignPath அறக்கட்டளையால் வழங்கப்படுகிறது
-  aboutSponsors: 😇 ஸ்பான்சர்கள் 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: மேம்பட்ட ஜாவா விருப்பங்கள்
   advancedSettings: மேம்பட்ட அமைப்புகள்
   advancedSettingsHint: ஆபத்தான பகுதி - லான்ச்சர் தரவை மீட்டமைக்கவும் அல்லது நிர்வகிக்கவும்
@@ -1728,7 +1728,7 @@ setting:
   developerMode: டெவலப்பர் பயன்முறை
   developerModeDescription: டெவலப்பர் பயன்முறை என்பது உங்கள் சொந்த மோட்களைச் சோதிப்பதற்கானது
   disableTelemetry: டெலிமெட்ரியை முடக்கு
-  disableTelemetryDescription: XMCL விளையாட்டு தொடக்கம் மற்றும் பயனர் உள்நுழைவு நிகழ்வுகளைச் சேகரிக்கும்.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: பிரத்யேக GPU-வை ஒதுக்கு
   enableDedicatedGPUOptimizationDescription: இந்த விருப்பம் மைன்கிராஃப்ட் செயல்முறைக்கு பிரத்யேக GPU-வை ஒதுக்கும்.
   enableDiscord: டிஸ்கார்ட் பிரசன்ஸை இயக்கு
@@ -1868,7 +1868,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: தரவு ரூட் என்பது ஒரு பொதுவான .minecraft கோப்பகம் அல்ல. XMCL தரவுக் கோப்பக அமைப்பு அசல் அமைப்பிலிருந்து வேறுபடுவதால், பொதுவான .minecraft கோப்பகத்தை தரவு ரூட்டாகப் பயன்படுத்த நாங்கள் பரிந்துரைக்கவில்லை.
+    description: தரவு ரூட் என்பது ஒரு பொதுவான .minecraft கோப்பகம் அல்ல. Vardrynn தரவுக் கோப்பக அமைப்பு அசல் அமைப்பிலிருந்து வேறுபடுவதால், பொதுவான .minecraft கோப்பகத்தை தரவு ரூட்டாகப் பயன்படுத்த நாங்கள் பரிந்துரைக்கவில்லை.
     drives: பரிந்துரைக்கப்படும் இருப்பிடங்கள்
     name: தரவுக் கோப்பகத்தை அமை
   defaultLayoutDescription: இயல்புநிலை தளவமைப்பு விளையாட்டின் "நிகழ்வு" கருத்தை மேம்படுத்த முயற்சிக்கிறது. இது டிஸ்கார்ட் போன்ற பயன்பாடுகளைப் போல தோற்றமளிக்கும். ஸ்டீம் போன்ற பிற விளையாட்டு துவக்கி பயன்பாடுகளாலும் இது ஈர்க்கப்பட்டுள்ளது.
@@ -2280,7 +2280,7 @@ gamepad:
   steamAddedNotify: லாஞ்சர் Steam நூலகத்தில் வெற்றிகரமாக சேர்க்கப்பட்டது! அதைக் காண தயவுசெய்து Steam ஐ மறுதொடக்கம் செய்யவும்.
   steamAlreadyAddedNotify: லாஞ்சர் ஏற்கனவே உங்கள் Steam நூலகத்தில் உள்ளது.
   steamDeckTitle: Steam Deck கண்டறியப்பட்டது
-  steamDeckDesc: நீங்கள் Steam Deck-ஐப் பயன்படுத்துவதைக் கண்டறிந்துள்ளோம். கேமிங் பயன்முறையில் முழுமையான Steam மேலடுக்கு மற்றும் கட்டுப்படுத்தி ஒருங்கிணைப்பிற்காக, XMCL-ஐ Steam சாரா விளையாட்டாக உங்கள் Steam நூலகத்தில் சேர்க்க விரும்புகிறீர்களா?
+  steamDeckDesc: நீங்கள் Steam Deck-ஐப் பயன்படுத்துவதைக் கண்டறிந்துள்ளோம். கேமிங் பயன்முறையில் முழுமையான Steam மேலடுக்கு மற்றும் கட்டுப்படுத்தி ஒருங்கிணைப்பிற்காக, Vardrynn-ஐ Steam சாரா விளையாட்டாக உங்கள் Steam நூலகத்தில் சேர்க்க விரும்புகிறீர்களா?
   steamDeckAddBtn: Steam-இல் சேர்க்கவும் ({btn})
   steamDeckCancelBtn: ரத்துசெய்யவும் ({btn})
   disconnected: Controller Disconnected

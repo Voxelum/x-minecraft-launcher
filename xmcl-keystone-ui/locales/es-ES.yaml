@@ -60,7 +60,7 @@ agent:
   suggestion2: Mis mods están fallando — encuentra la causa y dime cómo arreglarlo
   suggestion3: 'Crear un modpack: encuentra mods para una función que quiero e instálalos en esta instancia'
   thinking: pensando…
-  title: Agente XMCL
+  title: Agente Vardrynn
   toggleHint: para alternar
 ago:
   day: hace {duration} día | hace {duration} días
@@ -93,8 +93,8 @@ backup:
   noInstancesFound: No se encontraron instancias en el lanzador.
   excludeLibrariesNotice: Las librerías principales, recursos de Minecraft y cachés temporales se excluyen automáticamente para mantener el archivo compacto. Se descargarán al iniciar el juego.
   create: Crear copia de seguridad
-  createTitle: Crear archivo de copia de seguridad XMCL
-  saveDialogTitle: Guardar copia de seguridad XMCL
+  createTitle: Crear archivo de copia de seguridad Vardrynn
+  saveDialogTitle: Guardar copia de seguridad Vardrynn
   fileFilterName: 'Archivo de copia de seguridad XMCL (*.xmclbackup, *.zip)'
   createError: Error al crear la copia de seguridad
   loadManifestError: Error al leer el archivo de copia de seguridad
@@ -490,7 +490,7 @@ importModpack:
   selectVersionDescription: 'Elige la versión de {name} que quieres instalar:'
   pmcProtected: Planet Minecraft está protegido por Cloudflare. Copia el enlace de descarga directa o un enlace alternativo de la página.
   netdiskTitle: Descarga desde la nube
-  netdiskDescription: Esta versión del modpack está alojada en un servicio de almacenamiento en la nube externo. Haz clic abajo para abrir la página de descarga en el navegador y después arrastra el archivo .zip o .mrpack descargado a XMCL.
+  netdiskDescription: Esta versión del modpack está alojada en un servicio de almacenamiento en la nube externo. Haz clic abajo para abrir la página de descarga en el navegador y después arrastra el archivo .zip o .mrpack descargado a Vardrynn.
   openNetdisk: Abrir almacenamiento en la nube
   netdiskOpened: El enlace del almacenamiento en la nube se ha abierto en el navegador y se ha copiado al portapapeles.
   noReleasesFound: No se han encontrado versiones de modpacks .mrpack o .zip en este repositorio.
@@ -661,7 +661,7 @@ instances:
   addModrinthDescription: Importa una instancia existente de Modrinth. Debes seleccionar la carpeta raíz de datos de Modrinth.
   addPrismDescription: Importar una instancia existente de PrismLauncher.
   addVanilla: Crear desde Minecraft vanilla
-  addVanillaDescription: Importar desde una carpeta .minecraft común. Esto duplicará el perfil de juego original en XMCL.
+  addVanillaDescription: Importar desde una carpeta .minecraft común. Esto duplicará el perfil de juego original en Vardrynn.
   edition: Edición
   editionJava: Edición Java
   editionBedrock: Edición Bedrock
@@ -1144,7 +1144,7 @@ multiplayer:
   openConsumerPortal: Abrir el portal del consumidor
   refundHint: ¿Necesitas un reembolso? Visita el portal del consumidor de Waffo para gestionar tus pedidos y suscripciones.
   togetherSupportHint: Si el modo multijugador no funciona, únete a nuestro Discord y contacta con el equipo de desarrollo. Te ayudaremos a resolver el problema.
-  autoShareAmbiguous: Hay varias partidas en ejecución. Selecciona la instancia que aloja el mundo LAN para que XMCL pueda compartirla.
+  autoShareAmbiguous: Hay varias partidas en ejecución. Selecciona la instancia que aloja el mundo LAN para que Vardrynn pueda compartirla.
   editSharingScope: Editar alcance compartido
   gameAvailable: Partida LAN disponible
   joinGame: Unirse a la partida
@@ -1595,7 +1595,7 @@ setting:
   aboutDenoDescription: XMCL aprovecha la plataforma sin complicaciones de Deno Deploy para aplicaciones JavaScript sin servidor
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Firma de código gratuita en Windows proporcionada por SignPath.io, certificado por SignPath Foundation
-  aboutSponsors: 😇 Patrocinadores 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Opciones avanzadas de Java
   advancedSettings: Configuración avanzada
   advancedSettingsHint: Zona de peligro — restablecer o administrar datos del lanzador
@@ -1674,7 +1674,7 @@ setting:
   developerMode: Modo de Desarrollador
   developerModeDescription: El Modo de Desarrollador está diseñado para probar tus propios mods
   disableTelemetry: Desactivar Telemetría
-  disableTelemetryDescription: XMCL recopilará eventos de inicio del juego y de inicio de sesión del usuario.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Asignar GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opción asignará GPU dedicada al proceso de Minecraft.
   enableDiscord: Habilitar Presencia en Discord
@@ -1808,7 +1808,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: El directorio de datos no es un directorio .minecraft común. Dado que la estructura de directorios de datos de XMCL es diferente de la original, no recomendamos usar el directorio .minecraft común como directorio de datos.
+    description: El directorio de datos no es un directorio .minecraft común. Dado que la estructura de directorios de datos de Vardrynn es diferente de la original, no recomendamos usar el directorio .minecraft común como directorio de datos.
     drives: Ubicaciones recomendadas
     name: Establecer Directorio de Datos
   defaultLayoutDescription: El diseño predeterminado intenta mejorar el concepto de "instancia" del juego. Se parece a aplicaciones como Discord. También está inspirado en otros lanzadores como Steam, etc.
@@ -1943,8 +1943,8 @@ theme:
   selectImage: Seleccionar imagen
   selectMusic: Seleccionar música
   selectVideo: Seleccionar vídeo
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Candidato de Anfitrión
   prflx: Candidato Reflexivo de Par
@@ -2305,7 +2305,7 @@ gamepad:
   steamAddedNotify: ¡Lanzador añadido a la biblioteca de Steam correctamente! Reinicia Steam para verlo.
   steamAlreadyAddedNotify: El lanzador ya está en tu biblioteca de Steam.
   steamDeckTitle: Steam Deck detectado
-  steamDeckDesc: Detectamos que estás ejecutando Steam Deck. ¿Te gustaría añadir X Minecraft Launcher a tu biblioteca de Steam como un juego no Steam para tener la superposición completa de Steam y la integración del mando en el modo de juego?
+  steamDeckDesc: Detectamos que estás ejecutando Steam Deck. ¿Te gustaría añadir Vardrynn a tu biblioteca de Steam como un juego no Steam para tener la superposición completa de Steam y la integración del mando en el modo de juego?
   steamDeckAddBtn: Añadir a Steam ({btn})
   steamDeckCancelBtn: Cancelar ({btn})
   disconnected: Controller Disconnected

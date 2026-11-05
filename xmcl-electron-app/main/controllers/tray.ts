@@ -187,6 +187,7 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
     tray.setContextMenu(createMenu())
 
     if (app.dock) {
+      app.dock.setIcon(nativeImage.createFromPath(darkIcon))
       app.on('activate', () => {
         if (this.mainWin && !this.mainWin.isDestroyed()) {
           this.mainWin?.show()

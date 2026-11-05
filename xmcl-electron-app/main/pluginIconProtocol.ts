@@ -1,7 +1,7 @@
 import { createReadStream } from 'fs'
 import { LauncherAppPlugin } from '@xmcl/runtime/app'
-import logoDark from '../icons/dark@256x256.png'
-import logoLight from '../icons/light@256x256.png'
+import logoDark from '../icons/vardrynn.png'
+import logoLight from '../icons/vardrynn.png'
 
 const builtin: Record<string, string> = {
   logoLight,

@@ -1,3 +1,4 @@
+import { LAUNCHER_PROTOCOL } from '~/constant'
 import { Readable } from 'stream'
 
 export interface Context {
@@ -51,7 +52,7 @@ export type ResolvedResponse = Response & {
  * 3. open-url event or launcher process startup argument
  * 4. HTTP request from the browser process
  *
- * The drop in request or localhost request will be transformed into xmcl:// protocol
+ * The drop in request or localhost request will be transformed into the launcher protocol
  */
 export class LauncherProtocolHandler {
   private handlers: [string, Handler][] = []
@@ -91,7 +92,7 @@ export class LauncherProtocolHandler {
     const context: Context = {
       request: {
         method: request.method ?? 'GET',
-        url: typeof request.url === 'string' ? new URL(request.url, 'xmcl://launcher') : request.url,
+        url: typeof request.url === 'string' ? new URL(request.url, `${LAUNCHER_PROTOCOL}://launcher`) : request.url,
         headers: request.headers || {},
         body: request.body,
         signal: request.signal,

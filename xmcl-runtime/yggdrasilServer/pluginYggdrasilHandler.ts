@@ -1,3 +1,4 @@
+import { LAUNCHER_PROTOCOL } from '~/constant'
 import { AUTHORITY_DEV } from '@xmcl/runtime-api'
 import { YggdrasilTexture, YggdrasilTexturesInfo } from '@xmcl/user'
 import { sign } from 'crypto'
@@ -77,7 +78,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
     return undefined
   }
 
-  app.protocol.registerHandler('xmcl', async ({ request, response, handle }) => {
+  app.protocol.registerHandler(LAUNCHER_PROTOCOL, async ({ request, response, handle }) => {
     if (request.url.pathname.startsWith('/yggdrasil')) {
       logger.log(`Process ${request.url.toString()}`)
       const pathname = request.url.pathname.substring('/yggdrasil'.length) || ''

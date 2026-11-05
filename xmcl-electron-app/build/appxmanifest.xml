@@ -3,12 +3,12 @@
 	xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
-  <Identity Name="XMCL" Version="0.14.0.0" Publisher="CN=xmcl" ProcessorArchitecture="x64" />
+  <Identity Name="Vardrynn.Launcher" Version="0.73.1.0" Publisher="CN=Vardrynn" ProcessorArchitecture="x64" />
   <Properties>
-    <DisplayName>X Minecraft Launcher</DisplayName>
-    <PublisherDisplayName>xmcl</PublisherDisplayName>
+    <DisplayName>Vardrynn</DisplayName>
+    <PublisherDisplayName>Vardrynn</PublisherDisplayName>
     <Description>A Great Minecraft Launcher for Managing Resource</Description>
-    <Logo>icons\256x256.png</Logo>
+    <Logo>icons\vardrynn.png</Logo>
   </Properties>
   <Resources>
     <Resource Language="en-US" />
@@ -20,9 +20,9 @@
     <rescap:Capability Name="runFullTrust"/>
   </Capabilities>
   <Applications>
-    <Application Id="XMCL" Executable="xmcl.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="XMCL" Description="A"	Square150x150Logo="icons\256x256.png"
-          Square44x44Logo="icons\256x256.png"	BackgroundColor="transparent" />
+    <Application Id="Vardrynn" Executable="vardrynn.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="Vardrynn.Launcher" Description="Vardrynn Minecraft launcher"	Square150x150Logo="icons\vardrynn.png"
+          Square44x44Logo="icons\vardrynn.png"	BackgroundColor="transparent" />
     </Application>
   </Applications>
 </Package>

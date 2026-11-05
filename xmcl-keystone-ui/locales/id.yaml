@@ -50,7 +50,7 @@ agent:
   suggestion2: Mod saya mengalami crash — cari penyebabnya dan beri tahu saya cara memperbaikinya
   suggestion3: 'Buat modpack: cari mod untuk fitur yang saya inginkan dan pasang ke dalam instansi ini'
   thinking: berpikir…
-  title: Agen XMCL
+  title: Agen Vardrynn
   toggleHint: untuk beralih
 ago:
   day: '{duration} hari yang lalu | {duration} hari yang lalu'
@@ -117,8 +117,8 @@ backup:
   noInstancesFound: Tidak ada instance yang ditemukan di peluncur.
   excludeLibrariesNotice: File pustaka inti, aset Minecraft, dan cache sementara dikecualikan secara otomatis agar ukuran arsip tetap ringkas.
   create: Buat Cadangan
-  createTitle: Buat Arsip Cadangan XMCL
-  saveDialogTitle: Simpan Arsip Cadangan XMCL
+  createTitle: Buat Arsip Cadangan Vardrynn
+  saveDialogTitle: Simpan Arsip Cadangan Vardrynn
   fileFilterName: 'Arsip Cadangan XMCL (*.xmclbackup, *.zip)'
   createError: Gagal membuat cadangan
   loadManifestError: Gagal membaca arsip cadangan
@@ -500,7 +500,7 @@ importModpack:
   selectVersionDescription: 'Pilih versi {name} yang ingin dipasang:'
   pmcProtected: Planet Minecraft dilindungi oleh Cloudflare. Salin tautan unduhan langsung atau tautan cermin dari halaman tersebut.
   netdiskTitle: Unduh dari penyimpanan awan
-  netdiskDescription: Versi modpack ini tersedia di penyimpanan awan eksternal. Klik di bawah untuk membuka halaman unduhan di peramban, lalu seret dan lepas berkas .zip atau .mrpack yang telah diunduh ke XMCL.
+  netdiskDescription: Versi modpack ini tersedia di penyimpanan awan eksternal. Klik di bawah untuk membuka halaman unduhan di peramban, lalu seret dan lepas berkas .zip atau .mrpack yang telah diunduh ke Vardrynn.
   openNetdisk: Buka penyimpanan awan
   netdiskOpened: Tautan penyimpanan awan telah dibuka di peramban dan disalin ke papan klip.
   noReleasesFound: Tidak ditemukan rilis modpack .mrpack atau .zip di repositori ini.
@@ -664,7 +664,7 @@ instances:
   addModrinthDescription: Impor instansi Modrinth yang ada. Anda perlu memilih folder data utama Modrinth.
   addPrismDescription: Impor instansi PrismLauncher yang ada.
   addVanilla: Buat dari Minecraft mirip vanilla
-  addVanillaDescription: Impor dari folder .minecraft umum. Ini akan menduplikat profil game asli ke XMCL.
+  addVanillaDescription: Impor dari folder .minecraft umum. Ini akan menduplikat profil game asli ke Vardrynn.
   edition: Edisi
   editionJava: Edisi Java
   editionBedrock: Edisi Bedrock
@@ -1155,7 +1155,7 @@ multiplayer:
   openConsumerPortal: Buka Portal Konsumen
   refundHint: Perlu pengembalian dana? Kunjungi Portal Konsumen Waffo untuk mengelola pesanan dan langganan Anda.
   togetherSupportHint: Jika multipemain tidak berfungsi, bergabunglah ke Discord kami dan hubungi tim pengembang. Kami akan membantu menyelesaikan masalahnya.
-  autoShareAmbiguous: Beberapa game sedang berjalan. Pilih instans yang menghosting dunia LAN agar XMCL dapat membagikannya.
+  autoShareAmbiguous: Beberapa game sedang berjalan. Pilih instans yang menghosting dunia LAN agar Vardrynn dapat membagikannya.
   editSharingScope: Edit cakupan berbagi
   gameAvailable: Game LAN tersedia
   joinGame: Gabung ke game
@@ -1648,7 +1648,7 @@ setting:
   aboutDenoDescription: XMCL memanfaatkan platform bebas repot Deno Deploy untuk aplikasi JavaScript serverless
   aboutLicense: LISENSI MIT
   aboutLicenseInfo: Penandatanganan kode gratis di Windows disediakan oleh SignPath.io, sertifikat oleh SignPath Foundation
-  aboutSponsors: 😇 Sponsor 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Opsi Java Lanjutan
   advancedSettings: Pengaturan Lanjutan
   advancedSettingsHint: Zona bahaya - atur ulang atau kelola data peluncur
@@ -1728,7 +1728,7 @@ setting:
   developerMode: Mode Pengembang
   developerModeDescription: Mode Pengembang adalah untuk menguji mod Anda sendiri
   disableTelemetry: Nonaktifkan Telemetri
-  disableTelemetryDescription: XMCL akan mengumpulkan peristiwa peluncuran game dan masuk pengguna.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Tetapkan GPU Khusus
   enableDedicatedGPUOptimizationDescription: Opsi ini akan menetapkan GPU khusus ke proses Minecraft.
   enableDiscord: Aktifkan Discord Presence
@@ -1868,7 +1868,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: Folder data utama bukanlah direktori .minecraft umum. Karena struktur direktori data XMCL berbeda dari vanilla, kami tidak menyarankan menggunakan direktori .minecraft umum sebagai folder data utama.
+    description: Folder data utama bukanlah direktori .minecraft umum. Karena struktur direktori data Vardrynn berbeda dari vanilla, kami tidak menyarankan menggunakan direktori .minecraft umum sebagai folder data utama.
     drives: Lokasi yang Direkomendasikan
     name: Atur Direktori Data
   defaultLayoutDescription: Tata letak default mencoba untuk meningkatkan konsep "instansi" game. Terlihat seperti aplikasi seperti Discord. Ini juga terinspirasi oleh aplikasi peluncur game lain seperti Steam, dll.
@@ -2000,8 +2000,8 @@ theme:
   selectImage: Pilih Gambar
   selectMusic: Pilih Musik
   selectVideo: Pilih Video
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Kandidat Host
   prflx: Kandidat Peer Reflexive
@@ -2280,7 +2280,7 @@ gamepad:
   steamAddedNotify: Peluncur berhasil ditambahkan ke Perpustakaan Steam! Silakan mulai ulang Steam untuk melihatnya.
   steamAlreadyAddedNotify: Peluncur sudah ada di Perpustakaan Steam Anda.
   steamDeckTitle: Steam Deck Terdeteksi
-  steamDeckDesc: Kami mendeteksi bahwa Anda berjalan di Steam Deck. Apakah Anda ingin menambahkan XMCL ke Perpustakaan Steam Anda sebagai game non-Steam untuk integrasi overlay Steam dan pengontrol penuh dalam Mode Game?
+  steamDeckDesc: Kami mendeteksi bahwa Anda berjalan di Steam Deck. Apakah Anda ingin menambahkan Vardrynn ke Perpustakaan Steam Anda sebagai game non-Steam untuk integrasi overlay Steam dan pengontrol penuh dalam Mode Game?
   steamDeckAddBtn: Tambahkan ke Steam ({btn})
   steamDeckCancelBtn: Batal ({btn})
   disconnected: Controller Disconnected

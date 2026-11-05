@@ -1,3 +1,4 @@
+import { LAUNCHER_PROTOCOL } from '~/constant'
 import {
   XmclAccountServiceKey,
   XmclAccountState,
@@ -130,7 +131,7 @@ export class XmclAccountService
       },
     )
 
-    app.protocol.registerHandler('xmcl', ({ request, response }) => {
+    app.protocol.registerHandler(LAUNCHER_PROTOCOL, ({ request, response }) => {
       if (request.url.host !== 'launcher' || request.url.pathname !== BROWSER_AUTH_CALLBACK_PATH)
         return
       const state = request.url.searchParams.get('state') ?? ''

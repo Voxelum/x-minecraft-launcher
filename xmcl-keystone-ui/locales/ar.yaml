@@ -85,8 +85,8 @@ backup:
   noInstancesFound: لم يتم العثور على نسخ في المشغل.
   excludeLibrariesNotice: يتم استبعاد ملفات المكتبات الأساسية وأصول ماينكرافت وذاكرة التخزين المؤقت تلقائيًا للحفاظ على صغر حجم الأرشيف.
   create: إنشاء نسخة احتياطية
-  createTitle: إنشاء أرشيف نسخ احتياطي XMCL
-  saveDialogTitle: حفظ أرشيف النسخ الاحتياطي XMCL
+  createTitle: إنشاء أرشيف نسخ احتياطي Vardrynn
+  saveDialogTitle: حفظ أرشيف النسخ الاحتياطي Vardrynn
   fileFilterName: 'أرشيف النسخ الاحتياطي XMCL (*.xmclbackup, *.zip)'
   createError: فشل إنشاء النسخة الاحتياطية
   loadManifestError: فشل قراءة أرشيف النسخة الاحتياطية
@@ -452,7 +452,7 @@ importModpack:
   selectVersionDescription: 'اختر إصدار {name} المراد تثبيته:'
   pmcProtected: موقع Planet Minecraft محمي بواسطة Cloudflare. يرجى نسخ رابط التنزيل المباشر أو رابط بديل من الصفحة.
   netdiskTitle: التنزيل من التخزين السحابي
-  netdiskDescription: هذا الإصدار من حزمة التعديلات مستضاف على خدمة تخزين سحابي خارجية. انقر أدناه لفتح صفحة التنزيل في المتصفح، ثم اسحب ملف .zip أو .mrpack الذي نزّلته وأفلته في XMCL.
+  netdiskDescription: هذا الإصدار من حزمة التعديلات مستضاف على خدمة تخزين سحابي خارجية. انقر أدناه لفتح صفحة التنزيل في المتصفح، ثم اسحب ملف .zip أو .mrpack الذي نزّلته وأفلته في Vardrynn.
   openNetdisk: فتح التخزين السحابي
   netdiskOpened: فُتح رابط التخزين السحابي في المتصفح ونُسخ إلى الحافظة.
   noReleasesFound: لم يُعثر على إصدارات حزم تعديلات بصيغة .mrpack أو .zip في هذا المستودع.
@@ -615,7 +615,7 @@ instances:
   addModrinthDescription: استيراد مثيل Modrinth الموجود. تحتاج إلى تحديد مجلد البيانات الجذر Modrinth.
   addPrismDescription: استيراد مثيل PrismLauncher الموجود.
   addVanilla: اصنع من لعبة Minecraft الشبيهة بالفانيليا
-  addVanillaDescription: قم بالاستيراد من مجلد .minecraft المشترك. سيؤدي هذا إلى تكرار ملف تعريف اللعبة الأصلي إلى XMCL.
+  addVanillaDescription: قم بالاستيراد من مجلد .minecraft المشترك. سيؤدي هذا إلى تكرار ملف تعريف اللعبة الأصلي إلى Vardrynn.
   fix: بصلح
   folder: مجلد
   folderSetting: إعدادات المجلد
@@ -1082,7 +1082,7 @@ multiplayer:
   openConsumerPortal: افتح بوابة المستهلك
   refundHint: هل تحتاج إلى استرداد أموالك؟ تفضل بزيارة بوابة Waffo للمستهلك لإدارة طلباتك واشتراكاتك.
   togetherSupportHint: إذا لم يعمل اللعب الجماعي، انضم إلى Discord وتواصل مع فريق التطوير. سنساعدك في حل المشكلة.
-  autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن XMCL من مشاركتها.
+  autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن Vardrynn من مشاركتها.
   editSharingScope: تحرير نطاق المشاركة
   gameAvailable: لعبة شبكة محلية متاحة
   joinGame: الانضمام إلى اللعبة
@@ -1496,7 +1496,7 @@ setting:
   aboutDenoDescription: تستفيد XMCL من منصة Deno Deploy الخالية من المتاعب لتطبيقات JavaScript بدون خادم
   aboutLicense: رخصة معهد ماساتشوستس للتكنولوجيا
   aboutLicenseInfo: توقيع رمز مجاني على Windows مقدم من SignPath.io، وشهادة من SignPath Foundation
-  aboutSponsors: 😇 الرعاة 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: خيارات جافا المتقدمة
   advancedSettings: الإعدادات المتقدمة
   advancedSettingsHint: منطقة الخطر - إعادة ضبط بيانات المشغل أو إدارتها
@@ -1572,7 +1572,7 @@ setting:
   developerMode: وضع المطور
   developerModeDescription: وضع المطور مخصص لاختبار التعديلات الخاصة بك
   disableTelemetry: تعطيل القياس عن بعد
-  disableTelemetryDescription: سيقوم XMCL بجمع أحداث إطلاق اللعبة وتسجيل دخول المستخدم.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: تعيين GPU مخصص
   enableDedicatedGPUOptimizationDescription: سيقوم هذا الخيار بتعيين GPU مخصص لعملية Minecraft.
   enableDiscord: تمكين وجود الخلاف
@@ -1694,7 +1694,7 @@ setup:
   appearance:
     name: '@:الإعدادات.المظهر'
   dataRoot:
-    description: جذر البيانات ليس دليلاً شائعًا لـ .minecraft. نظرًا لأن بنية دليل بيانات XMCL تختلف عن الفانيليا، فإننا لا نوصي باستخدام دليل .minecraft الشائع كجذر للبيانات.
+    description: جذر البيانات ليس دليلاً شائعًا لـ .minecraft. نظرًا لأن بنية دليل بيانات Vardrynn تختلف عن الفانيليا، فإننا لا نوصي باستخدام دليل .minecraft الشائع كجذر للبيانات.
     drives: يوصي المواقع
     name: قم بتعيين دليل البيانات
   defaultLayoutDescription: يحاول التخطيط الافتراضي تحسين مفهوم "مثيل" اللعبة. يبدو أن تطبيقات مثل Discord. كما أنها مستوحاة أيضًا من تطبيقات تشغيل الألعاب الأخرى مثل Steam وما إلى ذلك.
@@ -2186,7 +2186,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

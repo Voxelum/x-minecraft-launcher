@@ -70,15 +70,15 @@
                 "NODE_ENV": "production",
             },
             "windows": {
-                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/win-unpacked/X Minecraft Launcher.exe",
+                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/win-unpacked/vardrynn.exe",
                 "env": {}
             },
             "linux": {
-                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/linux-unpacked/xmcl",
+                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/linux-unpacked/vardrynn",
                 "env": {}
             },
             "osx": {
-                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/mac/X Minecraft Launcher.app/Contents/MacOS/X Minecraft Launcher",
+                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/mac/Vardrynn.app/Contents/MacOS/Vardrynn",
                 "env": {}
             }
         },

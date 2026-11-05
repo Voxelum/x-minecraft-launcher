@@ -1,3 +1,4 @@
+import { LAUNCHER_PROTOCOL } from '~/constant'
 import { LauncherAppPlugin } from '~/app'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { UserService } from './UserService'
@@ -6,7 +7,7 @@ import { formatModrinthAuthorization } from './utils/loginModrinth'
 export const pluginModrinthAccess: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('ModrinthAccess')
 
-  app.protocol.registerHandler('xmcl', ({ request, response }) => {
+  app.protocol.registerHandler(LAUNCHER_PROTOCOL, ({ request, response }) => {
     const parsed = request.url
     if (parsed.host === 'launcher' && parsed.pathname === '/modrinth-auth') {
       let error: Error | undefined

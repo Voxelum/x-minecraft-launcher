@@ -74,7 +74,7 @@
                     {{ backupFileName }}
                   </div>
                   <div class="text-caption text-medium-emphasis">
-                    {{ t('backup.createdOn', { date: formattedDate }) }} · XMCL v{{ manifest.appVersion }}
+                    {{ t('backup.createdOn', { date: formattedDate }) }} · Launcher v{{ manifest.appVersion }}
                   </div>
                 </div>
               </div>

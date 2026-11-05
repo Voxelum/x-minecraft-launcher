@@ -4,15 +4,15 @@ import { resolve } from 'node:path'
 import { config } from './electron-builder.config'
 
 describe('macOS packaging', () => {
-  it('declares local network access for XMCL and its Minecraft subprocesses', () => {
+  it('declares local network access for Vardrynn and its Minecraft subprocesses', () => {
     expect(config.mac.extendInfo.NSLocalNetworkUsageDescription).toBe(
-      'XMCL and Minecraft need access to your local network to discover and connect to LAN games and servers.',
+      'Vardrynn and Minecraft need access to your local network to discover and connect to LAN games and servers.',
     )
   })
 })
 
 describe('Linux system packaging', () => {
-  it.each(['deb', 'rpm', 'pacman'] as const)('uses XMCL-owned scripts for %s', (target) => {
+  it.each(['deb', 'rpm', 'pacman'] as const)('uses Vardrynn-owned scripts for %s', (target) => {
     expect(config[target]).toEqual({
       afterInstall: 'build/linux/after-install.tpl',
       afterRemove: 'build/linux/after-remove.tpl',
@@ -29,7 +29,7 @@ describe('Linux system packaging', () => {
   it('allows namespaces for the actual installed executable', () => {
     const profile = readFileSync(resolve(__dirname, '..', config.deb.appArmorProfile), 'utf8')
       .replaceAll('${executable}', config.linux.executableName)
-    expect(profile).toContain('profile "xmcl" "/opt/xmcl/xmcl" flags=(unconfined)')
+    expect(profile).toContain('profile "vardrynn" "/opt/Vardrynn/vardrynn" flags=(unconfined)')
     expect(profile).toContain('userns,')
   })
 })

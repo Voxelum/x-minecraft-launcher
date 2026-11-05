@@ -1,3 +1,4 @@
+import { LAUNCHER_DISPLAY_NAME } from '../constant'
 import {
   BaseServiceKey,
   type Environment,
@@ -126,7 +127,7 @@ export class BaseService extends AbstractService implements IBaseService {
   async makeDesktopShortcut() {
     const desktopDir = this.app.host.getPath('desktop')
     if (process.platform === 'win32') {
-      const shortcutPath = join(desktopDir, 'XMCL.lnk')
+      const shortcutPath = join(desktopDir, `${LAUNCHER_DISPLAY_NAME}.lnk`)
       return this.app.shell.createShortcut(shortcutPath, {
         target: this.app.host.getPath('exe'),
         args: process.execArgv.join(' '),
