@@ -25,7 +25,7 @@ export const config = {
     name: LAUNCHER_DISPLAY_NAME,
     schemes: [LAUNCHER_PROTOCOL],
   },
-  // Phase 5 must supply Vardrynn-owned signed release hosting explicitly.
+  // electron-builder never publishes. CI signs a manifest over the packages (VARDRYNN_RELEASES.md).
   publish: null,
   files: [{
     from: 'dist',

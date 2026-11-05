@@ -71,7 +71,8 @@ jobs:
           NODE_ENV: production
           RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-          PUBLISHER: CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US
+          VARDRYNN_API_BASE_URL: ${{ vars.VARDRYNN_API_BASE_URL }}
+          VARDRYNN_RELEASE_PUBLIC_KEY: ${{ vars.VARDRYNN_RELEASE_PUBLIC_KEY }}
       - name: Resolve pinned DeskGap runtime
         if: ${{ runner.os == 'Windows' }}
         id: deskgap
@@ -327,41 +328,17 @@ jobs:
           commit-message: "chore(release): version ${{ steps.version.outputs.version }}"
           title: Prepare Release ${{ steps.version.outputs.version }}
           body: ${{ steps.version.outputs.changelog }}
-          reviewers: ci010
-          assignees: ci010
           branch: prepare-release
 
-  upload-sourcemap:
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    steps:
-      - name: Download Source Map
-        uses: actions/download-artifact@v7
-        with:
-          name: sourcemap
-          path: sourcemap/${{github.run_number}}
-      - name: Upload Source Map to Azure
-        uses: ci010/upload-blob-to-azure@master
-        env:
-          AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
-        with:
-          account: xmcl
-          container: sourcemap
-          directory: ./sourcemap
-
+  # Packages and a signed manifest are produced as a workflow artifact. Nothing here publishes:
+  # uploading to Vardrynn hosting and serving /v1/releases/latest are separate, reviewed steps.
   release:
     if: startsWith(github.event.head_commit.message, 'chore(release)')
     runs-on: ubuntu-latest
     needs:
       - build
-      # - build-arch
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          # Treeless clone — see comment on `prepare-release`.
-          filter: blob:none
       - uses: pnpm/action-setup@v6
       - name: Use Node.js 22
         uses: actions/setup-node@v5
@@ -369,118 +346,32 @@ jobs:
           node-version: 22
           cache: "pnpm"
       - name: Install
-        run: |
-          pnpm install --frozen-lockfile --filter action-*
+        run: pnpm install --frozen-lockfile --filter ./.github/actions
       - name: Download Build
         uses: actions/download-artifact@v7
         with:
           pattern: build-*
           merge-multiple: true
           path: build
-      - name: Prepare Release
-        id: prepare_release
-        uses: Voxelum/semantic-version-bump-action@xmcl
-        with:
-          packages: |
-            ./packages/asm
-            ./packages/bore
-            ./packages/bytebuffer
-            ./packages/client
-            ./packages/core
-            ./packages/curseforge
-            ./packages/discord-rpc
-            ./packages/file-transfer
-            ./packages/forge-site-parser
-            ./packages/game-data
-            ./packages/gamesetting
-            ./packages/installer
-            ./packages/instance
-            ./packages/mod-parser
-            ./packages/model
-            ./packages/modrinth
-            ./packages/nat-api
-            ./packages/nbt
-            ./packages/oxlint-config
-            ./packages/resource
-            ./packages/resourcepack
-            ./packages/schematic
-            ./packages/semver
-            ./packages/sqlite
-            ./packages/system
-            ./packages/text-component
-            ./packages/undici-shim
-            ./packages/unzip
-            ./packages/user
-            ./packages/user-offline-uuid
-            ./packages/utils
-            ./packages/worker
-            ./packages/wrtc-multiplayer
-            ./packages/yauzl
-            ./xmcl-keystone-ui
-            ./xmcl-runtime
-            ./xmcl-runtime-api
-          root: "."
-          stage: "release"
-      - name: Create Tag
-        run: |
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/voxelum/x-minecraft-launcher.git"
-          git config user.name ci010
-          git config user.email cijhn@hotmail.com
-          git tag -f ${{ steps.prepare_release.outputs.tag }}
-          git push origin tag ${{ steps.prepare_release.outputs.tag }} -f
-      - name: Emit Version File
-        run: |
-          echo ${{ steps.prepare_release.outputs.version }}.${{ github.run_number }} > ./build/version
-      - name: Patch download links
-        uses: ./.github/actions/patch-release-note
-        id: release_note
-        with:
-          body: ${{ steps.prepare_release.outputs.changelog }}
-          version: ${{ steps.prepare_release.outputs.version }}
-      - name: Draft Release
-        id: create_release
-        uses: voxelum/create-release@xmcl
+      - name: Sign release manifest and checksums
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.prepare_release.outputs.tag }}
-          release_name: ${{ steps.prepare_release.outputs.tag }}
-          draft: true
-          prerelease: false
-          body: |
-            ${{ steps.release_note.outputs.body }}
-
-            ### DeskGap Windows x64 — UNSIGNED PREVIEW
-
-            [Download the DeskGap EXE](https://github.com/${{ github.repository }}/releases/download/${{ steps.prepare_release.outputs.tag }}/xmcl-deskgap-${{ steps.prepare_release.outputs.version }}-win32-x64.exe) for **manual installation only**.
-            This preview is not Authenticode-signed. Production DeskGap signing and automatic updates are not enabled; the launcher intentionally rejects unsigned EXEs as automatic updates.
-            Electron/APPX signing and publishing are unchanged. This preview is not evidence of a completed signed DeskGap update workflow.
-          asset_dir_path: ./build
-      - name: Checkout Website
-        uses: actions/checkout@v5
-        with:
-          repository: Voxelum/xmcl-page
-          path: xmcl-page
-          token: ${{ secrets.PAT_GITHUB_TOKEN }}
-      - name: Create Release Note
-        uses: ./.github/actions/generate-release-note
-        with:
-          body: ${{ steps.prepare_release.outputs.changelog }}
-          version: ${{ steps.prepare_release.outputs.version }}
-        env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-      - name: Push Release Note to xmcl-page
-        # Each release produces brand-new `<version>.md` files under
-        # `src/<locale>/changelogs/` and `docs/<locale>/changelogs/`, so
-        # there's no conflict risk. Skip the PR dance and push directly.
-        working-directory: xmcl-page
+          VARDRYNN_RELEASE_SIGNING_KEY: ${{ secrets.VARDRYNN_RELEASE_SIGNING_KEY }}
+          VARDRYNN_RELEASE_PUBLIC_KEY: ${{ vars.VARDRYNN_RELEASE_PUBLIC_KEY }}
+          DOWNLOAD_BASE: ${{ vars.VARDRYNN_RELEASE_DOWNLOAD_BASE }}
+          NOTES_URL: ${{ vars.VARDRYNN_RELEASE_NOTES_URL }}
         run: |
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "No changelog changes to commit."
-            exit 0
-          fi
-          git config user.name ci010
-          git config user.email cijhn@hotmail.com
-          git add -A
-          git commit -m "docs: Update ${{ steps.prepare_release.outputs.version }} release note"
-          git push origin HEAD:master
+          set -euo pipefail
+          version=$(node -p "require('./xmcl-electron-app/package.json').version")
+          mkdir -p release
+          # electron-builder output is nested; installers are the only files the manifest can match.
+          find build -maxdepth 3 -type f \( -name 'vardrynn-*.dmg' -o -name 'vardrynn-*.deb' \) -exec cp {} release/ \;
+          pnpm tsx scripts/vardrynn-release.ts manifest \
+            --version "$version" --channel stable --dir release \
+            --download-base "$DOWNLOAD_BASE/$version" --notes-url "$NOTES_URL" \
+            --out release/release.json
+          (cd release && sha256sum vardrynn-* > SHA256SUMS)
+      - name: Upload signed release
+        uses: actions/upload-artifact@v6
+        with:
+          name: vardrynn-release
+          path: release/

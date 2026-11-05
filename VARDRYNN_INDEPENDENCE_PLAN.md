@@ -1,6 +1,6 @@
 # Vardrynn independence plan
 
-Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, and development and production status services are deployed. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
+Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, and development and production status services are deployed. The launcher and CI side of phase 5 is implemented; hosting, signing keys and platform qualification are open. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
 
 ## Goal
 
@@ -72,7 +72,9 @@ Relevant code: `xmcl-runtime-api/src/services/VardrynnApi.ts`, `xmcl-runtime/app
 
 Acceptance: each platform discovers, downloads, verifies, and installs a Vardrynn test release, with no upstream release path.
 
-Relevant code: `xmcl-electron-app/main/utils/updater.ts`, `xmcl-electron-app/build/appinstaller-builder.ts`, `.github/workflows/build.yml`.
+Implementation and open work: see `VARDRYNN_RELEASES.md`. The launcher discovers, downloads, verifies and opens signed packages, and CI produces the signed manifest. No release has been hosted, signed with a production key, or installed on any platform yet.
+
+Relevant code: `xmcl-electron-app/main/utils/updater.ts`, `xmcl-runtime/app/vardrynnRelease.ts`, `scripts/vardrynn-release.ts`, `xmcl-electron-app/build/appinstaller-builder.ts`, `.github/workflows/build.yml`.
 
 ### 6. Own accounts and integrations
 

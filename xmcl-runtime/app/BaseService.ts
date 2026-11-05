@@ -42,6 +42,7 @@ import { HAS_DEV_SERVER } from '../constant'
 import { ZipFile } from 'yazl'
 import { getTracker } from '~/util/taskHelper'
 import { addSteamShortcutToVdf } from './steamShortcut'
+import { isSignedReleaseInfo } from './vardrynnRelease'
 import { fetchVardrynnServiceStatus, getVardrynnApiOrigin } from './vardrynnApiOrigin'
 import { writeFile as writeAtomically } from 'atomically'
 
@@ -87,9 +88,12 @@ export class BaseService extends AbstractService implements IBaseService {
 
   async getSettings(): Promise<SharedState<Settings>> {
     const settings = await this.app.registry.get(kSettings)
-    // Old XMCL release metadata may still be present in a migrated profile.
-    if (settings.updateInfo || settings.updateStatus !== 'none') {
+    // Release metadata from XMCL (or a tampered settings file) carries no Vardrynn signature.
+    // Without a configured release source nothing stored can be acted on.
+    if (settings.updateInfo && (this.app.updater.capability || !isSignedReleaseInfo(settings.updateInfo))) {
       settings.updateInfoSet(null)
+    }
+    if (!settings.updateInfo && settings.updateStatus !== 'none') {
       settings.updateStatusSet('none')
     }
     const capability = this.app.updater.capability
@@ -295,8 +299,21 @@ export class BaseService extends AbstractService implements IBaseService {
    */
   @Singleton()
   async quitAndInstall() {
-    await this.getSettings()
-    throw new Error('Vardrynn updates are unavailable')
+    const settings = await this.getSettings()
+    if (this.app.updater.capability) throw new Error('Vardrynn updates are unavailable')
+    if (settings.updateStatus === 'ready' && settings.updateInfo) {
+      const actionId = getActiveRendererActionId()
+      if (actionId) {
+        endRendererAction({
+          id: actionId,
+          outcome: 'success',
+          attributes: { 'update.phase': 'apply' },
+        })
+      }
+      await this.app.updater.installUpdateAndQuit(settings.updateInfo)
+    } else {
+      this.warn('There is no update available!')
+    }
   }
 
   /** Startup is best-effort; explicit user checks still reject for the error UI. */
@@ -314,7 +331,29 @@ export class BaseService extends AbstractService implements IBaseService {
    */
   @Singleton()
   async checkUpdate() {
-    await this.getSettings()
+    if (HAS_DEV_SERVER) return
+    const settings = await this.getSettings()
+    if (this.app.updater.capability) return
+    try {
+      this.log('Check update')
+      const info = await this.app.updater.checkUpdateTask()
+      setActiveSpanAttributes({
+        'update.available': info.newUpdate,
+        'update.phase': 'check',
+      })
+      const sameRelease = settings.updateInfo?.name === info.name
+      const ready = settings.updateStatus === 'ready' && sameRelease
+      settings.updateInfoSet(info)
+      settings.updateStatusSet(!info.newUpdate ? 'none' : ready ? 'ready' : 'pending')
+    } catch (e) {
+      if (e instanceof Error && e.name === 'Error') {
+        if (e.message === 'No update info found') {
+          return
+        }
+        e.name = 'CheckUpdateError'
+      }
+      throw e
+    }
   }
 
   /**
@@ -322,7 +361,33 @@ export class BaseService extends AbstractService implements IBaseService {
    */
   @Singleton()
   async downloadUpdate() {
-    throw new Error('Vardrynn updates are unavailable')
+    const settings = await this.getSettings()
+    if (this.app.updater.capability) throw new Error('Vardrynn updates are unavailable')
+    if (!settings.updateInfo) {
+      throw new Error("Cannot download update if we don't check the version update!")
+    }
+    const updateInfo = settings.updateInfo
+    setActiveSpanAttributes({
+      'update.operation': updateInfo.operation,
+      'update.phase': 'download',
+    })
+
+    this.log(`Start to download update: ${updateInfo.name} operation=${updateInfo.operation}`)
+    const task = this.tasks.create<DownloadUpdateTask>({
+      type: 'downloaUpdate',
+      key: `download-update-${updateInfo.operation}`,
+      operation: updateInfo.operation as DownloadUpdateTask['operation'],
+      version: updateInfo.name,
+    })
+    await task.wrap(
+      this.app.updater.downloadUpdate(updateInfo, {
+        tracker: getTracker(task),
+        abortSignal: task.controller.signal,
+      }).then(() => {
+        task.controller.signal.throwIfAborted()
+      }),
+    )
+    settings.updateStatusSet('ready')
   }
 
   quit() {

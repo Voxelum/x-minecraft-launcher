@@ -100,14 +100,13 @@ describe('regular DeskGap Windows release workflow', () => {
     expect(publish.run).toContain('--draft=false')
   })
 
-  it('labels the regular release EXE as an unsigned manual-install preview', () => {
-    const release = build.jobs.release.steps.find(step => step.name === 'Draft Release')!
-    expect(release.with?.draft).toBe(true)
-    expect(release.with?.body).toContain('${{ steps.release_note.outputs.body }}')
-    expect(release.with?.body).toContain('UNSIGNED PREVIEW')
-    expect(release.with?.body).toContain('manual installation only')
-    expect(release.with?.body).toContain('intentionally rejects unsigned EXEs')
-    expect(release.with?.body).toContain('xmcl-deskgap-${{ steps.prepare_release.outputs.version }}-win32-x64.exe')
+  it('keeps the unsigned DeskGap EXE out of the signed release manifest and any publication', () => {
+    const release = build.jobs.release.steps
+    expect(release.some(step => step.uses?.includes('create-release') || step.uses?.includes('Voxelum'))).toBe(false)
+    const manifest = release.find(step => step.name === 'Sign release manifest and checksums')!.run!
+    expect(manifest).toContain("-name 'vardrynn-*.dmg'")
+    expect(manifest).not.toContain('deskgap')
+    expect(manifest).not.toContain('.exe')
   })
 
   it.skipIf(process.platform !== 'win32').each([false, true])('can hash/upload/publish APPX with unsigned preview present: %s', (withPreview) => {

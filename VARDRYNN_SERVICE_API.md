@@ -33,7 +33,7 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `GET /v1/status` | `state` of `ok`, `degraded` or `maintenance`, optional `message` | Settings > About |
 | `GET /v1/config` | Remote `flags` | Not consumed; needs an allowlist first (see below) |
 | `GET /v1/news` | `items`; query carries `version`, `os`, `arch`, `env`, `build`, `locale` | `useLauncherNews`, not yet shown in the UI |
-| `GET /v1/releases/latest` | Version, channel, assets with `sha256` and `signature` | Phase 5 |
+| `GET /v1/releases/latest` | Version, channel, assets with `sha256` and `signature` | Launcher updater (see `VARDRYNN_RELEASES.md`); the Worker does not serve it yet |
 | `POST /v1/sessions`, `GET /v1/sessions/current`, `DELETE /v1/sessions/current` | Launcher account session | Phase 6 |
 
 Remote flags are not applied yet. `kFlights` also holds security-relevant values such as `safeStorageEncryption`, so `/v1/config` needs an explicit allowlist before anything merges into it.

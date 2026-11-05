@@ -9,6 +9,11 @@ export interface ReleaseFile {
    * The file download url
    */
   url: string
+  /** Set on Vardrynn releases: the signed fields needed to re-verify the file offline. */
+  platform?: string
+  arch?: string
+  sha256?: string
+  signature?: string
 }
 
 /**
