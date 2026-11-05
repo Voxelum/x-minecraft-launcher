@@ -43,7 +43,7 @@ Deleted workflows: `deploy-release.yml` (Azure AppInstaller, `xmcl-page`, `@xmcl
 
 ## Not done
 
-- Hosting: the development Worker serves the dev bucket (verified below). Production's Worker and secrets are not updated, the CI `release` job does not upload to a bucket, and no real release has been published.
+- Hosting: both Workers serve their buckets. The CI `release` job does not upload to a bucket, and no real release has been published.
 - A production key pair has not been generated; the key custody decision is open.
 - Not exercised: the CI job, a packaged and code-signed build, Linux, Windows, and an upgrade that actually replaces the app.
 - Install is a hand-off to the OS opener; it is not silent. On macOS it mounts the dmg and quits, and the user still drags the app into Applications.
@@ -66,6 +66,8 @@ Deleted workflows: `deploy-release.yml` (Azure AppInstaller, `xmcl-page`, `@xmcl
 | Objects removed | 404; bucket empty afterwards |
 
 This found one defect the unit tests missed: Workers reject `fetch(..., { redirect: 'error' })`, so every storage read failed with 503. It now uses `redirect: 'manual'`, and a redirect counts as a failure. The packaged launcher did not download through this route; that is still open.
+
+Production (`vardrynn-api`) was deployed from the same commit (`65eb1c5bf`) with the prod bucket's bindings and read-only secrets. The deployed source matched the committed file. With `vardrynn-releases-prod` empty, `/v1/releases/latest` returned 404 (`no-store`), which this code returns only when storage accepts the signed read; bad credentials would return 503. `/v1/status` returned 200, `/v1/config` 404 and `POST` 405. No test release was uploaded to production.
 
 ## Verification on 2026-11-04
 
