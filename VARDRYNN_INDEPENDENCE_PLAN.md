@@ -123,7 +123,7 @@ Acceptance: the endpoint audit shows no XMCL connections; install, migration, fe
 
 ## Decisions needed before service implementation
 
-1. Vardrynn domain and infrastructure owner.
+1. Vardrynn domain and infrastructure owner. Domain chosen: `olaveapi.com` (2026-11-04); API hostname and infrastructure owner still open.
 2. First-release platforms and package formats.
 3. Whether paid relay and a hosted Agent are in scope.
 4. Diagnostics policy: local only or opt-in Vardrynn telemetry.

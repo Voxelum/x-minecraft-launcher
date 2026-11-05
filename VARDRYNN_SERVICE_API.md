@@ -1,6 +1,6 @@
 # Vardrynn service API (phase 4)
 
-This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. No service is deployed yet: the domain and infrastructure owner are still open decisions in `VARDRYNN_INDEPENDENCE_PLAN.md`, so every build is currently unconfigured.
+This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. No service is deployed yet. The service domain is `olaveapi.com` (decided 2026-11-04); the exact API hostname, the infrastructure owner and TLS/deployment are still open, so every build is currently unconfigured until `VARDRYNN_API_BASE_URL` is set to the chosen origin.
 
 ## Endpoint selection
 
