@@ -2,6 +2,7 @@ import { LAUNCHER_PROTOCOL } from '~/constant'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { MicrosoftAuthenticator, MojangClient } from '@xmcl/user'
 import { LauncherAppPlugin } from '~/app'
+import { MICROSOFT_CLIENT_ID_UNCONFIGURED, resolveMicrosoftClientId } from '~/app/vardrynnIntegrationIds'
 import { kNetworkInterface } from '~/network'
 import { AnyError } from '@xmcl/utils'
 import { UserService } from './UserService'
@@ -10,7 +11,7 @@ import { MicrosoftOAuthClient } from './accountSystems/MicrosoftOAuthClient'
 import { kUserTokenStorage } from './userTokenStore'
 import { withRetry } from './utils/withRetry'
 
-const CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
+const CLIENT_ID = resolveMicrosoftClientId(process.env.VARDRYNN_MICROSOFT_CLIENT_ID)
 const XBOX_DEVICE_STORAGE_SERVICE = 'xmcl/xbox-device'
 const XBOX_DEVICE_STORAGE_ACCOUNT = 'XMCL_XBOX_DEVICE'
 
@@ -23,6 +24,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
   app.registry.register(MojangClient, mojangApi)
 
   const logger = app.getLogger('OfficialUserSystem')
+  if (!CLIENT_ID) logger.warn(`${MICROSOFT_CLIENT_ID_UNCONFIGURED}: Microsoft sign-in is disabled in this build.`)
 
   const userService = await app.registry.getOrCreate(UserService)
   const headers = {}
@@ -57,7 +59,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
     new MicrosoftOAuthClient(
       (...args) => app.fetch(...args),
       logger,
-      CLIENT_ID,
+      CLIENT_ID ?? '',
       async (url, redirectUri, signal, authAttemptId) => {
         if (app.controller.openMicrosoftLogin) {
           return app.controller.openMicrosoftLogin(url, redirectUri, signal, authAttemptId)

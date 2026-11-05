@@ -1,4 +1,5 @@
 import { LAUNCHER_PROTOCOL } from '~/constant'
+import { resolveMicrosoftClientId } from '~/app/vardrynnIntegrationIds'
 import {
   XmclAccountServiceKey,
   XmclAccountState,
@@ -34,7 +35,7 @@ import {
 } from './XmclAccountDpop'
 import { ProviderCredentialExchangeCache } from './ProviderCredentialExchangeCache'
 
-const MICROSOFT_LAUNCHER_CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
+const MICROSOFT_LAUNCHER_CLIENT_ID = resolveMicrosoftClientId(process.env.VARDRYNN_MICROSOFT_CLIENT_ID) ?? ''
 const SESSION_SERVICE = 'xmcl-xmcl-account'
 const SESSION_ACCOUNT = 'current-session'
 const DPOP_KEY_SERVICE = 'xmcl-xmcl-account'

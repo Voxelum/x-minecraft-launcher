@@ -150,6 +150,9 @@ export class MicrosoftOAuthClient {
     nativeBrokerPlugin?: INativeBrokerPlugin,
     onDiagnostic?: (diagnostic: MsalDiagnostic) => void,
   ) {
+    if (!this.clientId) {
+      throw new AnyError('MicrosoftClientUnconfigured', 'This build has no Vardrynn Microsoft application ID (VARDRYNN_MICROSOFT_CLIENT_ID), so Microsoft sign-in is unavailable.')
+    }
     return new PublicClientApplication({
       auth: {
         authority: 'https://login.microsoftonline.com/consumers/',

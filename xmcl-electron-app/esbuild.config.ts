@@ -29,6 +29,8 @@ const config = {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) ?? '"development"',
     'process.env.CURSEFORGE_API_KEY': JSON.stringify(process.env.CURSEFORGE_API_KEY),
     'process.env.VARDRYNN_API_BASE_URL': JSON.stringify(process.env.VARDRYNN_API_BASE_URL ?? ''),
+    'process.env.VARDRYNN_MICROSOFT_CLIENT_ID': JSON.stringify(process.env.VARDRYNN_MICROSOFT_CLIENT_ID ?? ''),
+    'process.env.VARDRYNN_DISCORD_APP_ID': JSON.stringify(process.env.VARDRYNN_DISCORD_APP_ID ?? ''),
     'process.env.VARDRYNN_RELEASE_PUBLIC_KEY': JSON.stringify(process.env.VARDRYNN_RELEASE_PUBLIC_KEY ?? ''),
   } as Record<string, string>,
   platform: 'node',
