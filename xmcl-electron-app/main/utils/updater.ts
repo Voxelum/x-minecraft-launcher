@@ -12,7 +12,7 @@ import {
 } from '~/app/vardrynnRelease'
 import { createHash } from 'crypto'
 import { createWriteStream } from 'fs'
-import { mkdir, rename, rm } from 'fs/promises'
+import { mkdir, readdir, rename, rm } from 'fs/promises'
 import { basename, join } from 'path'
 import { Readable, Transform } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -90,8 +90,17 @@ export class ElectronUpdater implements LauncherAppUpdater {
     return { origin, publicKey }
   }
 
+  /** Staged packages for this or an older version were installed or are stale; they are large. */
+  async #pruneStaged() {
+    const entries = await readdir(this.#options.stagingDirectory).catch(() => [] as string[])
+    await Promise.all(entries
+      .filter((name) => !isNewerVersion(name, this.#options.version))
+      .map((name) => rm(join(this.#options.stagingDirectory, name), { recursive: true, force: true }).catch(() => undefined)))
+  }
+
   async checkUpdateTask(): Promise<ReleaseInfo> {
     const { origin, publicKey } = this.#configured()
+    await this.#pruneStaged()
     const response = await this.#options.fetch(new URL(`/${VARDRYNN_API_VERSION}/releases/latest`, origin), {
       // A redirect could leave the approved origin.
       redirect: 'error',

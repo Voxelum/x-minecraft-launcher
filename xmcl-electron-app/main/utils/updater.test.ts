@@ -118,6 +118,15 @@ describe('download and install', () => {
     expect(quit).toHaveBeenCalledOnce()
   })
 
+  it('removes staged packages that are not newer than the running version', async () => {
+    for (const name of ['0.9.0', '1.0.0', '1.2.0']) {
+      await mkdir(join(dir, name), { recursive: true })
+      await writeFile(join(dir, name, 'pkg.dmg'), 'x')
+    }
+    await discover()
+    expect((await readdir(dir)).sort()).toEqual(['1.2.0'])
+  })
+
   it('skips the download when the staged file already matches', async () => {
     const { updater, info } = await discover()
     fetchMock.mockResolvedValueOnce(new Response(PACKAGE))
