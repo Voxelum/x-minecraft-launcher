@@ -1,6 +1,6 @@
 # Vardrynn service API (phase 4)
 
-This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. No service is deployed yet. The service domain is `olaveapi.com` (decided 2026-11-04); the exact API hostname, the infrastructure owner and TLS/deployment are still open, so every build is currently unconfigured until `VARDRYNN_API_BASE_URL` is set to the chosen origin.
+This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. The development service runs at `https://dev-api.olaveapi.com` as the Cloudflare Worker `vardrynn-api-dev`, from `vardrynn-service/worker.js`, and implements `GET /v1/status` only. There is no production service yet, and builds are unconfigured unless `VARDRYNN_API_BASE_URL` is set.
 
 ## Endpoint selection
 
@@ -44,7 +44,7 @@ The status request times out after five seconds and refuses redirects, so a resp
 
 ## Not covered here
 
-Deployment, TLS, monitoring, backups and failure handling on the server side do not exist yet and need the domain and owner decisions. Remaining hard-coded XMCL origins are assigned to later phases and stay blocked by the phase 1 guard: `BUILTIN_AGENT_ENDPOINT` (phase 8), and the Ely.by helper and metadata database proxy (phase 9).
+Production deployment, monitoring and backups do not exist yet. The Worker has no stored data and only the status route; every other contract route returns 404. Remaining hard-coded XMCL origins are assigned to later phases and stay blocked by the phase 1 guard: `BUILTIN_AGENT_ENDPOINT` (phase 8), and the Ely.by helper and metadata database proxy (phase 9).
 
 ## Verification on 2026-11-04
 
@@ -52,4 +52,7 @@ Deployment, TLS, monitoring, backups and failure handling on the server side do 
 - Real development app without a configured origin: normal startup, `window.flights` empty, About showed `Not configured`.
 - `pnpm check`, `pnpm lint`, the renderer build, production main compilation and `scripts/check-vardrynn-network.ts` passed. The stub origin does not appear in the production bundle.
 
-Not verified: a deployed service, TLS, an origin set in a packaged build, Windows and Linux.
+- Deployed development service: `/v1/status` returned the contract body over TLS 1.3 with `cache-control: no-store`; unknown paths returned 404 and `POST` returned 405. Plain `http://` is also served, but the launcher only accepts `https://` origins outside loopback.
+- Real development app built with `https://dev-api.olaveapi.com`: About showed `Available`. The app was then restored to unconfigured.
+
+Not verified: a production service, an origin set in a packaged build, Windows and Linux.

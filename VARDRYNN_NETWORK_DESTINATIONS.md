@@ -11,6 +11,7 @@ The launcher remains a fork of XMCL. This inventory distinguishes required exter
 | `launchercontent.mojang.com`, Minecraft/Microsoft endpoints | Minecraft news, authentication, game metadata | Still used for their respective features |
 | Modrinth, CurseForge, Fabric, Forge and other content providers | Mod and game content | Still used when requested by the feature |
 | `http://launcher/agent/chat/completions` | Local Agent transport, intercepted before network dispatch | Rewritten to the configured custom provider; final destination still checked |
+| `dev-api.olaveapi.com` | Vardrynn development service (`/v1/status`) | Only contacted by builds compiled with that origin |
 | User-configured Agent endpoint | Custom AI provider | Still available when configured; builtin XMCL mode stays unavailable |
 
 The XMCL account panel is hidden pending Vardrynn accounts. The multiplayer route displays an unavailable state. The Agent's unavailable state offers custom-provider settings without an XMCL subscription action. Existing XMCL account state is not migrated by this phase. Upstream help, feedback, and attribution links remain visible and need ownership decisions in phase 9; users can still open those external pages intentionally. Optional project-mapping helpers can still attempt a denied URL and log a local error; marketplace provider search remains functional.
