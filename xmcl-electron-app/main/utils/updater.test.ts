@@ -25,15 +25,20 @@ let options: UpdaterOptions
 const fetchMock = vi.fn<typeof fetch>()
 const open = vi.fn(async (_: string) => '')
 const quit = vi.fn()
+const relaunch = vi.fn()
+const install = vi.fn(async (_: string): Promise<'quit' | 'relaunch' | undefined> => undefined)
 
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), 'vardrynn-updater-'))
   fetchMock.mockReset()
   open.mockClear()
   quit.mockClear()
+  relaunch.mockClear()
+  install.mockReset()
+  install.mockResolvedValue(undefined)
   options = {
     origin: 'https://api.example.com', publicKey: rawPublic, version: '1.0.0', platform: 'darwin', arch: 'arm64',
-    stagingDirectory: dir, fetch: fetchMock, open, quit,
+    stagingDirectory: dir, fetch: fetchMock, open, quit, install, relaunch,
   }
 })
 afterEach(() => rm(dir, { recursive: true, force: true }))
@@ -136,6 +141,7 @@ describe('download and install', () => {
     await writeFile(staged, 'swapped')
     await expect(updater.installUpdateAndQuit(info)).rejects.toThrow('does not match')
     expect(open).not.toHaveBeenCalled()
+    expect(install).not.toHaveBeenCalled()
     expect(quit).not.toHaveBeenCalled()
     expect(await readdir(join(dir, '1.2.0'))).toEqual([])
   })
@@ -156,6 +162,30 @@ describe('download and install', () => {
       await expect(updater.installUpdateAndQuit(candidate as any)).rejects.toThrow()
     }
     expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(open).not.toHaveBeenCalled()
+  })
+
+  it('installs in place when the platform supports it, opening nothing', async () => {
+    for (const [mode, called] of [['quit', quit], ['relaunch', relaunch]] as const) {
+      const { updater, info } = await discover()
+      fetchMock.mockResolvedValueOnce(new Response(PACKAGE))
+      await updater.downloadUpdate(info)
+      install.mockResolvedValueOnce(mode)
+      await updater.installUpdateAndQuit(info)
+      expect(install).toHaveBeenLastCalledWith(join(dir, '1.2.0', 'vardrynn-1.2.0-arm64.dmg'))
+      expect(called).toHaveBeenCalledOnce()
+    }
+    expect(open).not.toHaveBeenCalled()
+  })
+
+  it('keeps running when the in-place install fails', async () => {
+    const { updater, info } = await discover()
+    fetchMock.mockResolvedValueOnce(new Response(PACKAGE))
+    await updater.downloadUpdate(info)
+    install.mockRejectedValueOnce(new Error('Installation was not authorized'))
+    await expect(updater.installUpdateAndQuit(info)).rejects.toThrow('not authorized')
+    expect(quit).not.toHaveBeenCalled()
+    expect(relaunch).not.toHaveBeenCalled()
     expect(open).not.toHaveBeenCalled()
   })
 

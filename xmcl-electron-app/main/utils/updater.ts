@@ -17,6 +17,7 @@ import { basename, join } from 'path'
 import { Readable, Transform } from 'stream'
 import { pipeline } from 'stream/promises'
 import type ElectronLauncherApp from '../ElectronLauncherApp'
+import { defaultInstallerHost, installInPlace, type InPlaceInstall } from './updateInstaller'
 
 const CHECK_TIMEOUT = 10_000
 
@@ -32,7 +33,10 @@ export interface UpdaterOptions {
   fetch: typeof fetch
   /** Hands a verified package to the OS. Resolves to an error message, or empty on success. */
   open: (path: string) => Promise<string>
+  /** Installs a verified package over the running app when the platform allows it. */
+  install: (path: string) => Promise<InPlaceInstall>
   quit: () => void
+  relaunch: () => void
 }
 
 function defaultOptions(app?: ElectronLauncherApp): UpdaterOptions {
@@ -49,7 +53,12 @@ function defaultOptions(app?: ElectronLauncherApp): UpdaterOptions {
     stagingDirectory: join(app?.appDataPath ?? '', 'updates'),
     fetch: (input, init) => (app?.fetch ?? fetch)(input as any, init),
     open: async (path) => (await import('electron')).shell.openPath(path),
+    install: async (path) => {
+      const { app: electron } = await import('electron')
+      return installInPlace(defaultInstallerHost(electron.isPackaged, app?.appDataPath ?? ''), path)
+    },
     quit: () => app?.quit(),
+    relaunch: () => app?.relaunch(),
   }
 }
 
@@ -57,7 +66,8 @@ function defaultOptions(app?: ElectronLauncherApp): UpdaterOptions {
  * Updates come only from the Vardrynn release endpoint and are accepted only with an
  * Ed25519 signature from the key compiled into this build. The signature covers the
  * file hash, version, platform and architecture; the download is then hashed in full.
- * Installation hands the verified package to the OS installer.
+ * Installation replaces the app in place where possible (macOS bundle swap, Linux dpkg) and
+ * otherwise hands the verified package to the OS.
  */
 export class ElectronUpdater implements LauncherAppUpdater {
   readonly #options: UpdaterOptions
@@ -173,6 +183,9 @@ export class ElectronUpdater implements LauncherAppUpdater {
       await rm(path, { force: true })
       throw new Error('Staged update is missing or does not match its signed checksum; download it again')
     }
+    const installed = await this.#options.install(path)
+    if (installed === 'relaunch') return this.#options.relaunch()
+    if (installed === 'quit') return this.#options.quit()
     const failure = await this.#options.open(path)
     if (failure) throw new Error(`Cannot open the update package: ${failure}`)
     this.#options.quit()
