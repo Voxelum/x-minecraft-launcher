@@ -43,7 +43,7 @@ Deleted workflows: `deploy-release.yml` (Azure AppInstaller, `xmcl-page`, `@xmcl
 
 ## Not done
 
-- Hosting: the S3 buckets exist and the Worker code reads them, but the Worker with S3 support is not deployed, its secrets are not set, and no release has been uploaded. The presigner matches AWS's published test vector and is unit tested with a stubbed fetch; it has not run against s3.olaveapi.com. The CI `release` job does not upload to the bucket yet.
+- Hosting: the development Worker serves the dev bucket (verified below). Production's Worker and secrets are not updated, the CI `release` job does not upload to a bucket, and no real release has been published.
 - A production key pair has not been generated; the key custody decision is open.
 - Not exercised: the CI job, a packaged and code-signed build, Linux, Windows, and an upgrade that actually replaces the app.
 - Install is a hand-off to the OS opener; it is not silent. On macOS it mounts the dmg and quits, and the user still drags the app into Applications.
@@ -51,6 +51,21 @@ Deleted workflows: `deploy-release.yml` (Azure AppInstaller, `xmcl-page`, `@xmcl
 - `xmcl-asar/README.md` still describes the deleted `deploy-release.yml`.
 - Windows updates, `appinstaller-builder.ts` (still disabled), `sign-release.yml` (upstream SignPath project, still present), `deploy-ui.yml`, the Windows `deskgap-app` build steps (pull Voxelum/DeskGap, pinned by its tests), and the disabled `build-arch` job (xmcl names) belong to Windows signing and phase 9.
 - No rollback mechanism beyond installing an older signed package manually; the updater never downgrades.
+
+## Hosted route on 2026-11-05
+
+`vardrynn-api-dev` was deployed from the committed `worker.js` with `S3_ENDPOINT`, `S3_BUCKET` and `S3_REGION` as plain bindings and the dev read-only pair as secrets. A throwaway release (4 KB `.dmg`, throwaway key) was uploaded to `vardrynn-releases-dev` with the publishing pair, package first.
+
+| Check | Observed |
+| --- | --- |
+| `GET dev-api.olaveapi.com/v1/releases/latest` | 200, `no-store`; asset URL presigned for 3600 s |
+| Launcher parsing | `parseVardrynnRelease` + `selectVerifiedAsset` accepted the served manifest for darwin-arm64 |
+| Presigned download | 200, bytes identical; range request 206 |
+| Tampered or missing URL signature | 403 |
+| `latest.json` with `apiVersion: v2` | 503 |
+| Objects removed | 404; bucket empty afterwards |
+
+This found one defect the unit tests missed: Workers reject `fetch(..., { redirect: 'error' })`, so every storage read failed with 503. It now uses `redirect: 'manual'`, and a redirect counts as a failure. The packaged launcher did not download through this route; that is still open.
 
 ## Verification on 2026-11-04
 

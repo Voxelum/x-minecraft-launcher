@@ -1,6 +1,6 @@
 # Vardrynn service API (phase 4)
 
-This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. Both services run from `vardrynn-service/worker.js`. Development also has `GET /v1/releases/latest`, which reads the S3 release bucket (code merged, not yet deployed; the deployed version returns 404 with no storage). Production still runs the status-only version:
+This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. Both services run from `vardrynn-service/worker.js`. Development also has `GET /v1/releases/latest`, which serves the signed manifest from the `vardrynn-releases-dev` S3 bucket (see `VARDRYNN_RELEASES.md`). Production still runs the status-only version:
 
 | Environment | Origin | Cloudflare Worker |
 | --- | --- | --- |

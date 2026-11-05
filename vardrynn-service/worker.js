@@ -57,7 +57,8 @@ async function presignAssets(env, release) {
 async function readManifest(env) {
   if (s3Configured(env)) {
     const url = new URL(`${env.S3_BUCKET}/latest.json`, `${env.S3_ENDPOINT.replace(/\/?$/, '/')}`)
-    const response = await fetch(await presign(env, url, 60), { redirect: 'error' })
+    // Workers reject redirect: 'error'. A redirect is not ok, so it fails below.
+    const response = await fetch(await presign(env, url, 60), { redirect: 'manual' })
     if (response.status === 404) return undefined
     if (!response.ok) throw new Error(`storage responded ${response.status}`)
     return presignAssets(env, await response.json())
