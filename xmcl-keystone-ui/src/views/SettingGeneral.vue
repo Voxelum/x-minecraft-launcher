@@ -38,12 +38,9 @@
     <v-divider class="my-3" />
 
     <!-- Privacy & Telemetry -->
-    <SettingItemSwitcher
-      v-model="disableTelemetry"
-      :title="t('setting.disableTelemetry')"
-      :description="t('setting.disableTelemetryDescription')"
-      icon="privacy_tip"
-    />
+    <v-alert type="info" variant="tonal" class="my-3" role="status">
+      Diagnostics remain on this device. Vardrynn does not send launcher telemetry.
+    </v-alert>
 
     <!-- GPU Optimization (Windows/Linux only) -->
     <template v-if="env?.os === 'linux' || env?.os === 'windows'">
@@ -210,7 +207,7 @@
             density="compact"
             class="setting-item-input"
             hide-details
-            :placeholder="agentProviderMode === 'custom' ? t('setting.aiAgentModelPlaceholder') : agentResolvedModel"
+            :placeholder="agentProviderMode === 'builtin' ? agentResolvedModel : t('setting.aiAgentModelPlaceholder')"
           />
         </template>
     </SettingItem>
@@ -229,7 +226,7 @@
             density="compact"
             class="setting-item-input"
             hide-details
-            :placeholder="agentProviderMode === 'custom' ? t('setting.aiAgentEndpointPlaceholder') : agentResolvedEndpoint"
+            :placeholder="agentProviderMode === 'builtin' ? agentResolvedEndpoint : t('setting.aiAgentEndpointPlaceholder')"
           />
         </template>
     </SettingItem>
@@ -269,7 +266,6 @@ const {
   developerMode,
   selectedLocale,
   replaceNative,
-  disableTelemetry,
   enableDiscord,
   quickActionShortcut,
   locales: rawLocales,

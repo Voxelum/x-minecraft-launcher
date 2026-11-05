@@ -31,6 +31,10 @@ function isMultiplayerLogEvent(value: unknown): value is MultiplayerLogEvent {
   )
 }
 
+function isVardrynnSignalingUnavailable() {
+  return true
+}
+
 const sensitiveMultiplayerLogKey =
   /^(candidate|credential|description|password|sdp|token|username)$/i
 
@@ -104,6 +108,9 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   private async createMultiplayerHost(transport: MultiplayerTransport) {
+    if (isVardrynnSignalingUnavailable()) {
+      throw new Error('Vardrynn multiplayer is unavailable until Vardrynn signaling is configured')
+    }
     const factory = await this.app.registry.get(kMultiplayerHostFactory)
     const settings = await this.app.registry.get(kSettings)
     const accountState = await this.app.registry
@@ -214,6 +221,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   async setMultiplayerTransport(transport: MultiplayerTransport): Promise<void> {
+    if (isVardrynnSignalingUnavailable()) return
     await this.ensureMultiplayerHost(transport)
   }
 
@@ -229,6 +237,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   async multiplayerRefreshIceServers(): Promise<void> {
+    if (isVardrynnSignalingUnavailable()) return
     const accountState = await this.app.registry
       .get(XmclAccountService)
       .then((service) => service.getXmclAccountState())
@@ -237,6 +246,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   async multiplayerSetUserInfo(info: ConnectionUserInfo): Promise<void> {
+    if (isVardrynnSignalingUnavailable()) return
     ;(await this.getMultiplayerHost()).setUserInfo(info)
   }
 

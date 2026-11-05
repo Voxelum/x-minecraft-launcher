@@ -4,23 +4,14 @@
     :title="t('setting.update')"
     icon="rocket_launch"
   >
-    <AppImageUpdateSettings />
+    <AppImageUpdateSettings v-if="!updateUnavailable" />
     <v-progress-linear v-if="!updateStateReady" indeterminate />
     <template v-else-if="updateUnavailable">
       <v-alert type="info" variant="tonal" class="ma-4" role="status">
         <strong>{{ t('launcherUpdate.automaticUnavailable') }}</strong>
         <div>{{ t(updateCapabilityReason === 'not-configured' ? 'launcherUpdate.automaticNotConfigured' : 'launcherUpdate.automaticNotImplemented') }}</div>
-        <div>{{ t('launcherUpdate.manualCheckHint') }}</div>
-        <div v-if="manualCheckRequested">{{ t('launcherUpdate.manualCheckRequired') }}</div>
+        <div>Vardrynn releases are not configured yet.</div>
       </v-alert>
-      <div class="flex gap-2 px-4 pb-4">
-        <v-btn variant="text" :loading="checkingUpdate" @click="checkUpdate">
-          {{ t('setting.checkUpdate') }}
-        </v-btn>
-        <v-btn variant="text" @click="openReleases">
-          {{ t('setting.githubRelease') }}
-        </v-btn>
-      </div>
     </template>
     <SettingItem v-else>
       <template #preaction>
@@ -91,10 +82,7 @@ import AppImageUpdateSettings from './AppImageUpdateSettings.vue'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'
-function openReleases() {
-  window.open('https://github.com/voxelum/x-minecraft-launcher/releases', 'browser')
-}
-const { updateInfo, installing, updateStatus, checkUpdate, checkingUpdate, version, updateStateReady, updateUnavailable, updateCapabilityReason, manualCheckRequested } = injection(kUpdateSettings)
+const { updateInfo, installing, updateStatus, checkUpdate, checkingUpdate, version, updateStateReady, updateUnavailable, updateCapabilityReason } = injection(kUpdateSettings)
 const hasNewUpdate = computed(() => updateStatus.value !== 'none' && !!updateInfo.value?.newUpdate)
 const { t } = useI18n()
 

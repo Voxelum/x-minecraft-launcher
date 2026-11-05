@@ -15,9 +15,6 @@
           {{ t('agent.accessRequiredHint') }}
         </div>
         <div class="flex flex-wrap items-center justify-center gap-2 mt-1">
-          <v-btn color="primary" variant="flat" prepend-icon="workspace_premium" @click="openSubscription">
-            {{ t('agent.subscribeXmcl') }}
-          </v-btn>
           <v-btn color="primary" variant="flat" prepend-icon="settings" @click="openSettings">
             {{ t('agent.openSettings') }}
           </v-btn>
@@ -412,10 +409,6 @@ const { push } = useRouter()
 function openSettings() {
   hide()
   push({ path: '/setting', query: { target: 'agent' } })
-}
-function openSubscription() {
-  hide()
-  push({ path: '/multiplayer', query: { target: 'billing' } })
 }
 
 function onTranscriptScroll() {

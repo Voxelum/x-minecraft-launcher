@@ -1,7 +1,7 @@
 import { Agent, type AgentEvent, type AgentTool } from '@earendil-works/pi-agent-core'
 import {
   AGENT_MODEL_CONTEXT_WINDOW,
-  BUILTIN_AGENT_ENDPOINT,
+  AGENT_PROXY_ENDPOINT,
 } from '@xmcl/runtime-api'
 import {
   type Api,
@@ -100,7 +100,7 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
 
   const providerApi = openAICompletionsApi()
   const streamFn: StreamFunction<Api, SimpleStreamOptions> = (model, context, streamOptions) => {
-    const transportModel = createAgentModel(BUILTIN_AGENT_ENDPOINT, model.id)
+    const transportModel = createAgentModel(AGENT_PROXY_ENDPOINT, model.id)
     if (activeRunTelemetry) recordAgentProviderRequest(activeRunTelemetry)
     return providerApi.streamSimple(transportModel, context, {
       ...streamOptions,

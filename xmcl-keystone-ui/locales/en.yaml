@@ -32,7 +32,7 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
-  accessRequiredHint: Subscribe to XMCL to use the built-in Agent, or configure your own AI provider in Settings.
+  accessRequiredHint: The built-in Agent is unavailable in Vardrynn. Configure your own AI provider in Settings.
   abort: Stop generation
   callingTool: calling {name}…
   confirmAccept: Continue
@@ -64,7 +64,7 @@ agent:
   passiveModInstalled: installed {version}
   reset: New conversation
   setupGuide: Setup guide
-  statusDisabled: Disabled — sign in or configure a provider
+  statusDisabled: Disabled — configure a provider in Settings
   statusReady: Ready
   statusWorking: Working…
   suggestion1: Upgrade this instance to a newer Minecraft version, and update the mods to match

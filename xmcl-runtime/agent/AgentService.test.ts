@@ -155,7 +155,7 @@ describe('AgentService provider editing', () => {
   test('local mock endpoint receives only its own saved key via provider protocol', async () => {
     const { createServer } = await import('node:http')
     const { createAgentProtocolHandler } = await import('./providerProtocol')
-    const { BUILTIN_AGENT_ENDPOINT } = await import('@xmcl/runtime-api')
+    const { AGENT_PROXY_ENDPOINT } = await import('@xmcl/runtime-api')
     const seen: Array<{ path: string; authorization?: string }> = []
     const server = createServer((request, response) => {
       seen.push({ path: request.url!, authorization: request.headers.authorization })
@@ -172,7 +172,7 @@ describe('AgentService provider editing', () => {
       await service.setProviderSettings({ endpoint, model: 'mock', apiKey: 'local-test-key' })
       const handler = createAgentProtocolHandler(() => (service as any)[kResolvedAgentProvider](), async () => undefined)
       const ctx = {
-        request: { method: 'POST', url: new URL(BUILTIN_AGENT_ENDPOINT), headers: { authorization: 'Bearer renderer-stale-key' }, body: '{}' },
+        request: { method: 'POST', url: new URL(AGENT_PROXY_ENDPOINT), headers: { authorization: 'Bearer renderer-stale-key' }, body: '{}' },
         response: { headers: {} },
         handle: vi.fn(),
       } as unknown as import('~/app').Context

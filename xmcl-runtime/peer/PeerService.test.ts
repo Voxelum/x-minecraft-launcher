@@ -49,14 +49,14 @@ describe('PeerService multiplayer ICE refresh', () => {
     expect(refreshIceServers).not.toHaveBeenCalled()
   })
 
-  it('refreshes official credentials for an authenticated session', async () => {
+  it('skips upstream credential refresh even for an authenticated session', async () => {
     const { context, getMultiplayerHost, refreshIceServers } = createRefreshContext({
       sessionId: 'session-1',
     })
 
     await PeerService.prototype.multiplayerRefreshIceServers.call(context as any)
 
-    expect(getMultiplayerHost).toHaveBeenCalledOnce()
-    expect(refreshIceServers).toHaveBeenCalledOnce()
+    expect(getMultiplayerHost).not.toHaveBeenCalled()
+    expect(refreshIceServers).not.toHaveBeenCalled()
   })
 })

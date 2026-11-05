@@ -112,6 +112,7 @@
 
         <!-- Multiplayer -->
         <AppSideBarNotchItem
+          v-if="false"
           data-testid="nav-multiplayer"
           icon="hub"
           :icon-size="iconSize"

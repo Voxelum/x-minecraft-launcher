@@ -1,6 +1,5 @@
 <template>
   <section class="about">
-    <XmclAccountPanel class="mb-4" />
     <SettingCard>
       <div class="pa-4">
         <!-- Logo & Header info -->
@@ -62,34 +61,6 @@
           <pre
             class="debug-info-code pa-4 text-caption font-mono"
           ><code>{{ debugInfo }}</code></pre>
-        </div>
-
-        <v-divider class="my-6 opacity-20" />
-
-        <!-- Contributors Section -->
-        <div class="mb-8">
-          <h3 :id="contributorsHeadingId" class="text-subtitle-1 font-weight-bold text-center mb-4">
-            {{ t('setting.aboutContributors') }}
-          </h3>
-          <div
-            v-roving-tabindex
-            role="group"
-            :aria-labelledby="contributorsHeadingId"
-            class="d-flex flex-wrap gap-2 justify-center py-2 max-h-48 overflow-y-auto"
-          >
-            <a
-              v-for="c in contributors"
-              :key="c.login"
-              v-shared-tooltip="() => c.login"
-              :href="c.html_url"
-              target="_blank"
-              class="contributor-avatar"
-            >
-              <v-avatar size="36" class="elevation-1 border border-opacity-10">
-                <v-img :src="c.avatar_url" alt="avatar"></v-img>
-              </v-avatar>
-            </a>
-          </div>
         </div>
 
         <v-divider class="my-6 opacity-20" />
@@ -208,15 +179,11 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import XmclAccountPanel from '@/components/XmclAccountPanel.vue'
 import SettingCard from '@/components/SettingCard.vue'
 import { kEnvironment } from '@/composables/environment'
 import { kFlights } from '@/composables/flights'
-import { useSWRVConfig } from '@/composables/swrvConfig'
-import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import useSWRV from 'swrv'
 import { useId } from 'vue'
 import kofi from '../assets/kofi.webp'
 import logo from '../assets/logo.webp'
@@ -224,7 +191,6 @@ import logo from '../assets/logo.webp'
 const env = injection(kEnvironment)
 const flights = injection(kFlights)
 
-const contributorsHeadingId = useId()
 const sponsorsHeadingId = useId()
 
 const debugInfo = computed(() => {
@@ -234,12 +200,6 @@ const debugInfo = computed(() => {
 const { t } = useI18n()
 const version = computed(() => env.value?.version ?? '')
 
-const config = useSWRVConfig()
-const { data: contributors } = useSWRV<{ login: string; avatar_url: string; html_url: string }[]>(
-  'https://api.github.com/repos/voxelum/x-minecraft-launcher/contributors',
-  (e) => fetch(e).then((r) => r.json()),
-  config,
-)
 </script>
 
 <style scoped>

@@ -6,7 +6,8 @@ import { AnyError } from '@xmcl/utils'
 import { Menu, app, net, shell } from 'electron'
 import { stat } from 'fs-extra'
 import { join } from 'path'
-import { fetch as ufetch, FormData as UndiciFormData } from 'undici'
+import { fetch as ufetch, FormData as UndiciFormData, getGlobalDispatcher } from 'undici'
+import { upstreamNetworkInterceptor } from '@xmcl/runtime/network/upstreamNetworkInterceptor'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
 import { ElectronSession } from './ElectronSession'
@@ -16,6 +17,7 @@ import { definedPlugins } from './definedPlugins'
 import { isReplayableFetchBody, splitFetchBody } from './fetchBody'
 import { getOzonePlatform } from './ozonePlatform'
 import { ElectronUpdater } from './utils/updater'
+import { isUpstreamLauncherUrl } from './upstreamNetworkPolicy'
 import { getWindowsUtils } from './utils/windowsUtils'
 
 class ElectronShell implements Shell {
@@ -208,6 +210,9 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   fetch: typeof fetch = async (...args: any[]) => {
+    if (isUpstreamLauncherUrl(args[0])) {
+      throw new Error(`Upstream launcher service is disabled: ${args[0]}`)
+    }
     const bodies = splitFetchBody(
       await adaptFormDataForElectron(args[1]?.body),
       isReplayableFetchBody(args[1]?.headers),
@@ -288,7 +293,10 @@ export default class ElectronLauncherApp extends LauncherApp {
             ? () => {
                 retryCount++
                 span?.setAttribute('http.request.resend_count', retryCount)
-                return ufetch(args[0], fallbackInit).catch(handlError)
+                return ufetch(args[0], {
+                  ...fallbackInit,
+                  dispatcher: getGlobalDispatcher().compose(upstreamNetworkInterceptor),
+                }).catch(handlError)
               }
             : undefined,
         )
