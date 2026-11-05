@@ -12,6 +12,18 @@ describe('macOS packaging', () => {
 })
 
 describe('Linux system packaging', () => {
+  // The package scripts and AppArmor profile assume /opt/Vardrynn. An upstream postinstall used to
+  // rewrite electron-builder to /opt/xmcl, which made every deb fail its post-install check.
+  it('installs to /opt/<productName>, not a rewritten prefix', () => {
+    const builder = resolve(__dirname, '..', 'node_modules', 'app-builder-lib', 'out', 'targets')
+    for (const file of ['FpmTarget.js', 'LinuxTargetHelper.js']) {
+      const source = readFileSync(resolve(builder, file), 'utf8')
+      expect(source).toContain('installPrefix}/${appInfo.sanitizedProductName}')
+      expect(source).not.toContain('installPrefix}/xmcl')
+    }
+    expect(readFileSync(resolve(__dirname, '..', 'postinstall.ts'), 'utf8')).not.toContain('installPrefix}/xmcl\'')
+  })
+
   it.each(['deb', 'rpm', 'pacman'] as const)('uses Vardrynn-owned scripts for %s', (target) => {
     expect(config[target]).toEqual({
       afterInstall: 'build/linux/after-install.tpl',

@@ -208,14 +208,14 @@ UUID as described in [Apple TN3179](https://developer.apple.com/documentation/te
 
 The deb, rpm and pacman packages use the templates in
 `xmcl-electron-app/build/linux` for installation, removal and AppArmor.
-Keep their paths aligned with the existing `/opt/xmcl` package layout.
+Keep their paths aligned with electron-builder's `/opt/Vardrynn` package layout.
 Installation and upgrades configure only `chrome-sandbox` as `root:root`
 with mode `4755`, and reject symlinked, non-root-owned, or group-/other-writable
 installation directories. Do not determine desktop-user namespace support
 with a root-only `unshare` probe, or disable Chromium sandboxing to hide
 installation errors.
 
-The AppArmor profile grants `userns` to `/opt/xmcl/xmcl` on supported
+The AppArmor profile grants `userns` to `/opt/Vardrynn/vardrynn` on supported
 systems. Unsupported older AppArmor versions retain the SUID sandbox.
 The FPM `--after-upgrade` hook explicitly reuses the same install script;
 pacman does not invoke `post_install` on upgrades. These scripts must also
