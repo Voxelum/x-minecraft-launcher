@@ -1,6 +1,6 @@
 # Vardrynn service API (phase 4)
 
-This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. Both services run from `vardrynn-service/worker.js`. The deployed Workers implement `GET /v1/status` only; `GET /v1/releases/latest` is in the source but not deployed:
+This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. Both services run from `vardrynn-service/worker.js`. Development also has `GET /v1/releases/latest`, which returns 404 until an R2 bucket is bound. Production still runs the status-only version:
 
 | Environment | Origin | Cloudflare Worker |
 | --- | --- | --- |
@@ -33,7 +33,7 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `GET /v1/status` | `state` of `ok`, `degraded` or `maintenance`, optional `message` | Settings > About |
 | `GET /v1/config` | Remote `flags` | Not consumed; needs an allowlist first (see below) |
 | `GET /v1/news` | `items`; query carries `version`, `os`, `arch`, `env`, `build`, `locale` | `useLauncherNews`, not yet shown in the UI |
-| `GET /v1/releases/latest` | Version, channel, assets with `sha256` and `signature` | Launcher updater (see `VARDRYNN_RELEASES.md`); in the Worker source, not yet deployed |
+| `GET /v1/releases/latest` | Version, channel, assets with `sha256` and `signature` | Launcher updater (see `VARDRYNN_RELEASES.md`); deployed to development only |
 | `POST /v1/sessions`, `GET /v1/sessions/current`, `DELETE /v1/sessions/current` | Launcher account session | Phase 6 |
 
 Remote flags are not applied yet. `kFlights` also holds security-relevant values such as `safeStorageEncryption`, so `/v1/config` needs an explicit allowlist before anything merges into it.
@@ -66,3 +66,5 @@ Monitoring and backups do not exist yet. The Worker stores nothing itself; the r
 - Real development app built with `https://api.olaveapi.com`, with `--host-resolver-rules` for the same reason: About showed `Available`. The app was then restored to unconfigured.
 
 Not verified: an origin set in a packaged build, Windows and Linux.
+
+- Release route deployed to `vardrynn-api-dev` by direct Scripts API upload. The deployed script matched the committed source. `/v1/status` returned 200; `/v1/releases/latest` returned 404 with no binding and 405 for `POST`, both `no-store`. The 200 and 503 release responses have not run on Cloudflare. Production's script and both domain bindings were unchanged.

@@ -37,7 +37,7 @@ Deleted workflows: `deploy-release.yml` (Azure AppInstaller, `xmcl-page`, `@xmcl
 
 ## Not done
 
-- Hosting: the release route is in `vardrynn-service/worker.js` but is not deployed, no bucket exists, and nothing hosts the package files.
+- Hosting: the release route is deployed to development only, with no bucket bound, so it returns 404. Production has not been updated, and nothing hosts the package files.
 - A production key pair has not been generated; the key custody decision is open.
 - Not exercised: the CI job, a packaged and code-signed build, Linux, Windows, and an upgrade that actually replaces the app.
 - Install is a hand-off to the OS opener; it is not silent. On macOS it mounts the dmg and quits, and the user still drags the app into Applications.
