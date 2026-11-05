@@ -72,7 +72,7 @@ Relevant code: `xmcl-runtime-api/src/services/VardrynnApi.ts`, `xmcl-runtime/app
 
 Acceptance: each platform discovers, downloads, verifies, and installs a Vardrynn test release, with no upstream release path.
 
-Implementation and open work: see `VARDRYNN_RELEASES.md`. The launcher discovers, downloads, verifies and opens signed packages, and CI produces the signed manifest. No release has been hosted, signed with a production key, or installed on any platform yet.
+Implementation and open work: see `VARDRYNN_RELEASES.md`. The launcher discovers, downloads, verifies and opens signed packages, and CI produces the signed manifest. The flow passed against a local stub in a macOS production bundle. No release has been hosted or signed with a production key, and no packaged upgrade has run on any platform.
 
 Relevant code: `xmcl-electron-app/main/utils/updater.ts`, `xmcl-runtime/app/vardrynnRelease.ts`, `scripts/vardrynn-release.ts`, `xmcl-electron-app/build/appinstaller-builder.ts`, `.github/workflows/build.yml`.
 

@@ -126,5 +126,5 @@ export function sha256File(path: string): Promise<string> {
 
 /** Whether stored update info has the shape of a Vardrynn release. Authenticity is checked by the updater. */
 export function isSignedReleaseInfo(info: ReleaseInfo): boolean {
-  return info.operation === 'manual' && info.files?.length === 1 && !!info.files[0].sha256 && !!info.files[0].signature
+  return info.operation === 'verified' && info.files?.length === 1 && !!info.files[0].sha256 && !!info.files[0].signature
 }

@@ -36,6 +36,10 @@ export const enum ElectronUpdateOperation {
    * Use appx update
    */
   Appx = 'appx',
+  /**
+   * Download a signed Vardrynn package, verify it and hand it to the OS installer
+   */
+  Verified = 'verified',
 }
 
 export interface ReleaseInfo {

@@ -82,3 +82,16 @@ describe('settings update capability UI', () => {
     expect(await render()).not.toContain('launcherUpdate.alreadyLatest')
   })
 })
+
+describe('update info dialog', () => {
+  const dialog = readFileSync(new URL('./SettingUpdateInfoDialog.vue', import.meta.url), 'utf8')
+
+  it('offers no upstream release destination', () => {
+    expect(dialog).not.toMatch(/xmcl\.app|voxelum/i)
+  })
+
+  it('reserves the redownload dead end for manual releases, not verified ones', () => {
+    expect(dialog).toContain("state.value?.updateInfo?.operation === 'manual'")
+    expect(dialog).toContain('v-if="!hintRedownload"')
+  })
+})

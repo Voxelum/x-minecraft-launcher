@@ -838,6 +838,7 @@ launcherUpdate:
   manualCheckHint: No release check has been performed. Check GitHub Releases for a compatible package and install it manually.
   manualCheckRequired: This host cannot check or install updates automatically. Use the GitHub Releases button to check manually.
   alreadyLatest: Up To Date
+  failed: The update was not installed
   installAndQuit: Restart to Install
   noUpdateAvailable: No Update Available
   updateToThisVersion: Download and Install

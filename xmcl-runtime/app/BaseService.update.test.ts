@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { BaseService } from './BaseService'
 
 const signed: ReleaseInfo = {
-  name: '1.2.0', body: '', date: '', newUpdate: true, operation: 'manual',
+  name: '1.2.0', body: '', date: '', newUpdate: true, operation: 'verified',
   files: [{ name: 'v.dmg', url: 'https://downloads.example.com/v.dmg', platform: 'darwin', arch: 'arm64', sha256: 'a'.repeat(64), signature: 'sig' }],
 }
 
@@ -108,6 +108,16 @@ describe('Vardrynn update state with a release source', () => {
     settings.updateStatusSet('ready')
     await service.quitAndInstall()
     expect(updater.installUpdateAndQuit).toHaveBeenCalledWith(signed)
+  })
+
+  it('offers the download again after a failed install', async () => {
+    const { service, settings, updater } = setup(true)
+    settings.updateInfoSet(signed)
+    settings.updateStatusSet('ready')
+    updater.installUpdateAndQuit.mockRejectedValueOnce(new Error('Staged update is missing'))
+    await expect(service.quitAndInstall()).rejects.toThrow('Staged update is missing')
+    expect(settings.updateStatus).toBe('pending')
+    expect(settings.updateInfo).toEqual(signed)
   })
 
   it('keeps a missing release non-fatal and names other failures', async () => {

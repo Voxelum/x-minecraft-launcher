@@ -108,7 +108,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
         signature: asset.signature,
       }],
       newUpdate: isNewerVersion(release.version, version),
-      operation: ElectronUpdateOperation.Manual,
+      operation: ElectronUpdateOperation.Verified,
     }
   }
 
@@ -117,7 +117,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
     const { publicKey } = this.#configured()
     const file = info.files[0]
     if (
-      info.operation !== ElectronUpdateOperation.Manual ||
+      info.operation !== ElectronUpdateOperation.Verified ||
       info.files.length !== 1 ||
       !file?.sha256 || !file.signature || !file.platform || !file.arch ||
       file.platform !== this.#options.platform || file.arch !== this.#options.arch ||

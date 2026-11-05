@@ -310,7 +310,13 @@ export class BaseService extends AbstractService implements IBaseService {
           attributes: { 'update.phase': 'apply' },
         })
       }
-      await this.app.updater.installUpdateAndQuit(settings.updateInfo)
+      try {
+        await this.app.updater.installUpdateAndQuit(settings.updateInfo)
+      } catch (e) {
+        // The staged file may be gone, so offer the download again instead of a retry that cannot work.
+        settings.updateStatusSet('pending')
+        throw e
+      }
     } else {
       this.warn('There is no update available!')
     }

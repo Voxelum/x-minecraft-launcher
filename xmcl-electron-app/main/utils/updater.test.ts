@@ -56,7 +56,7 @@ describe('release discovery', () => {
     const updater = new ElectronUpdater(undefined, options)
     expect(updater.capability).toBeUndefined()
     const info = await updater.checkUpdateTask()
-    expect(info).toMatchObject({ name: '1.2.0', newUpdate: true, operation: 'manual' })
+    expect(info).toMatchObject({ name: '1.2.0', newUpdate: true, operation: 'verified' })
     expect(info.files).toHaveLength(1)
     expect(info.files[0]).toMatchObject({ name: 'vardrynn-1.2.0-arm64.dmg', platform: 'darwin', sha256: SHA })
     const [url, init] = fetchMock.mock.calls[0]
@@ -171,7 +171,7 @@ describe('download and install', () => {
   it('rejects an upstream download url inside otherwise signed info', async () => {
     const upstream = asset('1.2.0', { url: 'https://github.com/Voxelum/x-minecraft-launcher/releases/download/v1/x.dmg' })
     const updater = new ElectronUpdater(undefined, options)
-    const info = { name: '1.2.0', body: '', date: '', newUpdate: true, operation: 'manual', files: [{ name: 'x.dmg', ...upstream }] }
+    const info = { name: '1.2.0', body: '', date: '', newUpdate: true, operation: 'verified', files: [{ name: 'x.dmg', ...upstream }] }
     await expect(updater.downloadUpdate(info)).rejects.toThrow('unsafe')
     expect(fetchMock).not.toHaveBeenCalled()
   })

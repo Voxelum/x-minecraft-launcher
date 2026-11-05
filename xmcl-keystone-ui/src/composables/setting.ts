@@ -17,10 +17,16 @@ export function useUpdateSettings() {
   const updateInfo = computed(() => state.value?.updateInfo)
   const version = computed(() => env.value?.version ?? '0.0.0')
   const installing = ref(false)
+  /** Why the last download or install failed. A rejected update must not look like nothing happened. */
+  const updateError = ref('')
+  const describeError = (e: unknown) => (e as { message?: string } | undefined)?.message || String(e)
   async function install() {
     installing.value = true
+    updateError.value = ''
     try {
       await quitAndInstall()
+    } catch (e) {
+      updateError.value = describeError(e)
     } finally {
       installing.value = false
     }
@@ -29,8 +35,11 @@ export function useUpdateSettings() {
   const downloadingUpdate = ref(false)
   async function download() {
     downloadingUpdate.value = true
+    updateError.value = ''
     try {
       await downloadUpdate()
+    } catch (e) {
+      updateError.value = describeError(e)
     } finally {
       downloadingUpdate.value = false
     }
@@ -46,6 +55,7 @@ export function useUpdateSettings() {
     installing,
     updateStatus,
     downloadingUpdate,
+    updateError,
     updateInfo,
   }
 }
