@@ -27,13 +27,17 @@ Store `VARDRYNN_RELEASE_SIGNING_KEY` as a CI secret and the public key, API orig
 
 Only `.dmg` (macOS) and `.deb` (Linux) are offered as updates. Windows is excluded until packages carry an Authenticode signature the OS will accept.
 
+## Serving a release
+
+`GET /v1/releases/latest` returns `latest.json` from the R2 bucket bound to the Worker as `RELEASES`, unchanged and with `cache-control: no-store`. With no binding or no object it returns 404, which the launcher treats as no release. A failed read or an object that is not `v1` returns 503. Use a separate bucket for each environment. Upload the packages first and `release.json` last, as `latest.json`, so a client never sees a manifest whose files are missing.
+
 ## Removed upstream release paths
 
 Deleted workflows: `deploy-release.yml` (Azure AppInstaller, `xmcl-page`, `@xmcl/app-*` npm packages, Homebrew tap, Discord/KOOK), `core-release.yml` (npm publishing of `@xmcl/*`) and `core-github-pages.yml` (`xmcl-page`). In `build.yml`: the Voxelum release action, tag push to `voxelum/x-minecraft-launcher`, `xmcl-page` changelog push, DeepSeek release notes, Azure source-map upload, SignPath publisher and the `ci010` reviewer.
 
 ## Not done
 
-- Hosting: nothing serves `/v1/releases/latest` (the Worker returns 404) or the package files. Choose storage (for example R2) and add the route.
+- Hosting: the release route is in `vardrynn-service/worker.js` but is not deployed, no bucket exists, and nothing hosts the package files.
 - A production key pair has not been generated; the key custody decision is open.
 - Not exercised: the CI job, a packaged and code-signed build, Linux, Windows, and an upgrade that actually replaces the app.
 - Install is a hand-off to the OS opener; it is not silent. On macOS it mounts the dmg and quits, and the user still drags the app into Applications.

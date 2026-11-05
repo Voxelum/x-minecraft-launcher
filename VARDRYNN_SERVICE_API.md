@@ -1,6 +1,6 @@
 # Vardrynn service API (phase 4)
 
-This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. Both services run from `vardrynn-service/worker.js` and implement `GET /v1/status` only:
+This is the launcher's contract with the Vardrynn service. Its types live in `xmcl-runtime-api/src/services/VardrynnApi.ts`. The service domain is `olaveapi.com`. Both services run from `vardrynn-service/worker.js`. The deployed Workers implement `GET /v1/status` only; `GET /v1/releases/latest` is in the source but not deployed:
 
 | Environment | Origin | Cloudflare Worker |
 | --- | --- | --- |
@@ -33,7 +33,7 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `GET /v1/status` | `state` of `ok`, `degraded` or `maintenance`, optional `message` | Settings > About |
 | `GET /v1/config` | Remote `flags` | Not consumed; needs an allowlist first (see below) |
 | `GET /v1/news` | `items`; query carries `version`, `os`, `arch`, `env`, `build`, `locale` | `useLauncherNews`, not yet shown in the UI |
-| `GET /v1/releases/latest` | Version, channel, assets with `sha256` and `signature` | Launcher updater (see `VARDRYNN_RELEASES.md`); the Worker does not serve it yet |
+| `GET /v1/releases/latest` | Version, channel, assets with `sha256` and `signature` | Launcher updater (see `VARDRYNN_RELEASES.md`); in the Worker source, not yet deployed |
 | `POST /v1/sessions`, `GET /v1/sessions/current`, `DELETE /v1/sessions/current` | Launcher account session | Phase 6 |
 
 Remote flags are not applied yet. `kFlights` also holds security-relevant values such as `safeStorageEncryption`, so `/v1/config` needs an explicit allowlist before anything merges into it.
@@ -51,7 +51,7 @@ The status request times out after five seconds and refuses redirects, so a resp
 
 ## Not covered here
 
-Monitoring and backups do not exist yet. The Worker has no stored data and only the status route; every other contract route returns 404. Remaining hard-coded XMCL origins are assigned to later phases and stay blocked by the phase 1 guard: `BUILTIN_AGENT_ENDPOINT` (phase 8), and the Ely.by helper and metadata database proxy (phase 9).
+Monitoring and backups do not exist yet. The Worker stores nothing itself; the release route reads an optional R2 binding. Other contract routes return 404. Remaining hard-coded XMCL origins are assigned to later phases and stay blocked by the phase 1 guard: `BUILTIN_AGENT_ENDPOINT` (phase 8), and the Ely.by helper and metadata database proxy (phase 9).
 
 ## Verification on 2026-11-04
 
