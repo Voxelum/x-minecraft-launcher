@@ -211,7 +211,9 @@ export class XmclAccountService
     const { result } = await oauthClient.authenticate('', [MICROSOFT_GRAPH_USER_READ_SCOPE], {
       useNativeBroker: process.platform === 'win32',
     })
-    await this.bootstrapCredential('microsoft', result.accessToken)
+    // The service verifies the ID token's signature and audience; a Graph access token proves neither.
+    if (!result.idToken) throw new Error('microsoft_id_token_missing')
+    await this.bootstrapCredential('microsoft', result.idToken)
   }
 
   @Singleton()

@@ -181,27 +181,65 @@ async function completeAuthorization(env, origin, provider, body, current, now) 
   return resolveIdentity(env, { provider, ...profile, linkedBy: 'web_link' }, current, now)
 }
 
-// Microsoft: the launcher sends a Graph access token it obtained for Vardrynn's application.
+// Microsoft: the launcher sends the ID token from its sign-in with Vardrynn's application.
+// It must be signed by Microsoft, issued to MICROSOFT_CLIENT_ID, for a personal account, and current.
+const MS_CONSUMER_TENANT = '9188040d-6c67-4c5b-b112-36a304b66dad'
+const MS_ISSUER = `https://login.microsoftonline.com/${MS_CONSUMER_TENANT}/v2.0`
+const MS_KEYS_URL = 'https://login.microsoftonline.com/consumers/discovery/v2.0/keys'
+const CLOCK_SKEW_S = 300
+let microsoftKeyCache
+
+const fromB64url = (value) => {
+  const base64 = value.replace(/-/g, '+').replace(/_/g, '/')
+  return Uint8Array.from(atob(base64 + '='.repeat((4 - (base64.length % 4)) % 4)), (c) => c.charCodeAt(0))
+}
+const decodeJson = (part) => JSON.parse(new TextDecoder().decode(fromB64url(part)))
+
+async function microsoftKeys(refresh) {
+  if (!refresh && microsoftKeyCache && Date.now() - microsoftKeyCache.at < 3_600_000) return microsoftKeyCache.keys
+  const r = await fetch(MS_KEYS_URL)
+  if (!r.ok) throw fail(502, 'provider_unavailable')
+  const { keys } = await r.json()
+  microsoftKeyCache = { at: Date.now(), keys: Array.isArray(keys) ? keys : [] }
+  return microsoftKeyCache.keys
+}
+
+export async function verifyMicrosoftIdToken(token, clientId, now) {
+  const parts = typeof token === 'string' ? token.split('.') : []
+  if (parts.length !== 3) throw fail(401, 'provider_rejected')
+  let header, claims
+  try {
+    header = decodeJson(parts[0])
+    claims = decodeJson(parts[1])
+  } catch {
+    throw fail(401, 'provider_rejected')
+  }
+  if (header.alg !== 'RS256' || typeof header.kid !== 'string') throw fail(401, 'provider_rejected')
+  let jwk = (await microsoftKeys(false)).find((k) => k.kid === header.kid)
+  if (!jwk) jwk = (await microsoftKeys(true)).find((k) => k.kid === header.kid) // keys rotate
+  if (!jwk || jwk.kty !== 'RSA') throw fail(401, 'provider_rejected')
+  const key = await crypto.subtle.importKey('jwk', { kty: 'RSA', n: jwk.n, e: jwk.e, alg: 'RS256', ext: true },
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify'])
+  const valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, fromB64url(parts[2]), new TextEncoder().encode(`${parts[0]}.${parts[1]}`))
+  const seconds = now / 1000
+  if (!valid || claims.iss !== MS_ISSUER || claims.aud !== clientId || claims.tid !== MS_CONSUMER_TENANT ||
+    typeof claims.exp !== 'number' || claims.exp + CLOCK_SKEW_S < seconds ||
+    (typeof claims.nbf === 'number' && claims.nbf - CLOCK_SKEW_S > seconds)) {
+    throw fail(401, 'provider_rejected')
+  }
+  const oid = typeof claims.oid === 'string' ? claims.oid.toLowerCase() : ''
+  // A personal account's oid is 00000000-0000-0000-<16 hex>; those 16 hex digits are its Graph user id,
+  // which earlier identities were stored under.
+  const msa = /^00000000-0000-0000-([0-9a-f]{4})-([0-9a-f]{12})$/.exec(oid)
+  return { subject: msa ? msa[1] + msa[2] : oid, displayName: typeof claims.name === 'string' ? claims.name : undefined }
+}
+
 async function microsoftExchange(env, body, current, now) {
   if (!env.MICROSOFT_CLIENT_ID) throw fail(503, 'provider_unconfigured')
   if (typeof body.credential !== 'string' || !body.credential) throw fail(400, 'invalid_request')
-  // Reject tokens minted for another application when the token is a readable JWT.
-  const parts = body.credential.split('.')
-  if (parts.length === 3) {
-    try {
-      const claims = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
-      const app = claims.appid ?? claims.azp
-      if (app && app !== env.MICROSOFT_CLIENT_ID) throw fail(401, 'provider_rejected')
-    } catch (e) {
-      if (e.status) throw e
-    }
-  }
-  const r = await fetch('https://graph.microsoft.com/v1.0/me?$select=id,displayName', { headers: { authorization: `Bearer ${body.credential}` } })
-  if (r.status === 401 || r.status === 403) throw fail(401, 'provider_rejected')
-  if (!r.ok) throw fail(502, 'provider_unavailable')
-  const profile = await r.json()
+  const profile = await verifyMicrosoftIdToken(body.credential, env.MICROSOFT_CLIENT_ID, now)
   return resolveIdentity(env, {
-    provider: 'microsoft', subject: String(profile.id ?? ''), displayName: profile.displayName,
+    provider: 'microsoft', ...profile,
     linkedBy: current ? 'launcher_link' : 'launcher_bootstrap',
   }, current, now)
 }

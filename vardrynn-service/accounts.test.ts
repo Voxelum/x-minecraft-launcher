@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto'
+import { createHash, createSign, generateKeyPairSync } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { DatabaseSync } from 'node:sqlite'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -33,6 +33,19 @@ const call = (e: any, method: string, path: string, body?: unknown, token?: stri
     body: body ? JSON.stringify(body) : undefined,
   }), e)
 
+const msKey = generateKeyPairSync('rsa', { modulusLength: 2048 })
+const msJwk = { ...msKey.publicKey.export({ format: 'jwk' }), kid: 'test-kid', use: 'sig' }
+const MS_TENANT = '9188040d-6c67-4c5b-b112-36a304b66dad'
+function idToken(claims: Record<string, unknown> = {}, kid = 'test-kid') {
+  const now = Math.floor(Date.now() / 1000)
+  const enc = (v: unknown) => Buffer.from(JSON.stringify(v)).toString('base64url')
+  const body = `${enc({ alg: 'RS256', kid, typ: 'JWT' })}.${enc({
+    iss: `https://login.microsoftonline.com/${MS_TENANT}/v2.0`, aud: 'ms-app', tid: MS_TENANT,
+    oid: '00000000-0000-0000-abcd-0123456789ab', name: 'Em', iat: now, nbf: now, exp: now + 3600, ...claims,
+  })}`
+  return `${body}.${createSign('RSA-SHA256').update(body).sign(msKey.privateKey).toString('base64url')}`
+}
+
 let providerUsers: Record<string, any>
 beforeEach(() => {
   providerUsers = { google: { sub: 'g-1', name: 'Gee' }, discord: { id: 'd-1', username: 'dee' }, graph: { id: 'm-1', displayName: 'Em' } }
@@ -41,7 +54,7 @@ beforeEach(() => {
     if (u.includes('oauth2.googleapis.com/token') || u.includes('discord.com/api/oauth2/token')) return Response.json({ access_token: 'pt' })
     if (u.includes('openidconnect')) return Response.json(providerUsers.google)
     if (u.includes('users/@me')) return Response.json(providerUsers.discord)
-    if (u.includes('graph.microsoft.com')) return Response.json(providerUsers.graph)
+    if (u.includes('login.microsoftonline.com/consumers/discovery/v2.0/keys')) return Response.json({ keys: [msJwk] })
     return new Response('?', { status: 500 })
   }))
 })
@@ -89,7 +102,7 @@ describe('accounts', () => {
 
   it('signs in with Microsoft and links Discord to it', async () => {
     const e = env()
-    const ms = await (await call(e, 'POST', '/v1/auth/microsoft/launcher-exchange', { credential: 'graph-token' })).json() as any
+    const ms = await (await call(e, 'POST', '/v1/auth/microsoft/launcher-exchange', { credential: idToken() })).json() as any
     expect(ms.bindingDisposition).toBe('created')
     const link = await browserSignIn(e, 'discord', ms.session.accessToken)
     expect(await link.done.json()).toEqual({ bindingDisposition: 'linked' })
@@ -103,17 +116,31 @@ describe('accounts', () => {
   it('reports a conflict instead of merging two accounts', async () => {
     const e = env()
     const g = await (await browserSignIn(e, 'google')).done.json() as any
-    const ms = await (await call(e, 'POST', '/v1/auth/microsoft/launcher-exchange', { credential: 'graph-token' })).json() as any
-    const conflict = await call(e, 'POST', '/v1/auth/microsoft/launcher-exchange', { credential: 'graph-token' }, g.session.accessToken)
+    const ms = await (await call(e, 'POST', '/v1/auth/microsoft/launcher-exchange', { credential: idToken() })).json() as any
+    const conflict = await call(e, 'POST', '/v1/auth/microsoft/launcher-exchange', { credential: idToken() }, g.session.accessToken)
     expect(conflict.status).toBe(409)
     expect((await conflict.json() as any).error).toBe('identity_conflict')
     expect(ms.account.accountId).not.toBe(g.account.accountId)
   })
 
-  it('rejects a Microsoft token minted for another application', async () => {
-    const claims = Buffer.from(JSON.stringify({ appid: 'someone-else' })).toString('base64url')
-    const r = await call(env(), 'POST', '/v1/auth/microsoft/launcher-exchange', { credential: `h.${claims}.s` })
-    expect(r.status).toBe(401)
+  it('accepts only a current Microsoft ID token issued to Vardrynn for a personal account', async () => {
+    const e = env()
+    const ok = await (await call(e, 'POST', '/v1/auth/microsoft/launcher-exchange', { credential: idToken() })).json() as any
+    expect(ok.identities).toEqual([expect.objectContaining({ provider: 'microsoft', displayName: 'Em' })])
+    const forged = idToken().replace(/\.[^.]+$/, '.' + Buffer.from('bad').toString('base64url'))
+    for (const credential of [
+      idToken({ aud: 'someone-else' }),
+      idToken({ tid: 'another-tenant' }),
+      idToken({ iss: 'https://login.microsoftonline.com/another-tenant/v2.0' }),
+      idToken({ exp: Math.floor(Date.now() / 1000) - 3600 }),
+      idToken({}, 'unknown-kid'),
+      forged,
+      'graph-access-token',
+    ]) {
+      const r = await call(e, 'POST', '/v1/auth/microsoft/launcher-exchange', { credential })
+      expect(r.status).toBe(401)
+      expect((await r.json() as any).error).toBe('provider_rejected')
+    }
   })
 
   it('limits unauthenticated sign-in routes per client address', async () => {

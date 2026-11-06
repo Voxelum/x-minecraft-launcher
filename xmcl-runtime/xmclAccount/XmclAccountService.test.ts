@@ -142,9 +142,9 @@ describe('XmclAccountService authentication', () => {
     Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true })
   })
 
-  it('authorizes the XMCL Microsoft identity interactively without a game account login', async () => {
+  it('authorizes the Microsoft identity interactively and sends its ID token', async () => {
     Object.defineProperty(process, 'platform', { value: 'win32', configurable: true })
-    oauth.authenticate.mockResolvedValue({ result: { accessToken: 'microsoft-graph-token' } })
+    oauth.authenticate.mockResolvedValue({ result: { accessToken: 'microsoft-graph-token', idToken: 'microsoft-id-token' } })
     const { service } = createXmclService()
     const bootstrapCredential = vi.mocked((service as any).bootstrapCredential)
 
@@ -153,7 +153,16 @@ describe('XmclAccountService authentication', () => {
     expect(oauth.authenticate).toHaveBeenCalledWith('', ['User.Read'], {
       useNativeBroker: true,
     })
-    expect(bootstrapCredential).toHaveBeenCalledWith('microsoft', 'microsoft-graph-token')
+    expect(bootstrapCredential).toHaveBeenCalledWith('microsoft', 'microsoft-id-token')
+  })
+
+  it('refuses a Microsoft sign-in that returned no ID token', async () => {
+    oauth.authenticate.mockResolvedValue({ result: { accessToken: 'microsoft-graph-token' } })
+    const { service } = createXmclService()
+    const bootstrapCredential = vi.mocked((service as any).bootstrapCredential)
+
+    await expect(service.authorizeMicrosoft()).rejects.toThrow('microsoft_id_token_missing')
+    expect(bootstrapCredential).not.toHaveBeenCalled()
   })
 
   it('persists the rotated credential when the subsequent account snapshot fails', async () => {
