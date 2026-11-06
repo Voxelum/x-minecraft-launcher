@@ -33,6 +33,8 @@ interface PackageJson {
 }
 
 const DRY = !process.env.CI
+// Changelog links point at the repository this workflow runs in.
+const COMMIT_URL = `${process.env.GITHUB_SERVER_URL || 'https://github.com'}/${process.env.GITHUB_REPOSITORY || 'MichaelOlave/x-minecraft-launcher'}/commit`
 const appPackageDirs = ['xmcl-keystone-ui', 'xmcl-runtime', 'xmcl-runtime-api']
 
 function runGit(args: string[]) {
@@ -208,7 +210,7 @@ function getCommitInfoText(packages: PackageInfo[]) {
       if (typeof reason === 'string') {
         body += `  - ${reason}\n`
       } else {
-        body += `  - ${reason.header} ([${reason.hash}](https://github.com/Voxelum/x-minecraft-launcher/commit/${reason.hash}))\n`
+        body += `  - ${reason.header} ([${reason.hash}](${COMMIT_URL}/${reason.hash}))\n`
       }
     }
   }
@@ -245,7 +247,7 @@ function getAppChangelog(version: string) {
     body += `\n### ${section.title}\n\n`
     for (const commit of matched) {
       const scope = commit.scope ? `**${commit.scope}**: ` : ''
-      body += `- ${scope}${commit.subject || commit.header} ([${commit.hash}](https://github.com/Voxelum/x-minecraft-launcher/commit/${commit.hash}))\n`
+      body += `- ${scope}${commit.subject || commit.header} ([${commit.hash}](${COMMIT_URL}/${commit.hash}))\n`
     }
   }
   return body
