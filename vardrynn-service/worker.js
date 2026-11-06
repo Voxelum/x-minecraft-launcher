@@ -3,7 +3,7 @@ import { handleMultiplayerRoute } from './multiplayer.js'
 
 export { MultiplayerRoom } from './multiplayer.js'
 
-// Minimal Vardrynn service. Accounts: accounts.js. Implements the status and release routes of VARDRYNN_SERVICE_API.md.
+// Minimal Vardrynn service. Accounts: accounts.js. Implements the status, release and database routes of VARDRYNN_SERVICE_API.md.
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -86,6 +86,42 @@ async function latestRelease(env) {
   }
 }
 
+// Mod metadata and project mapping databases, copied into the bucket's `databases/` prefix by the
+// mirror-databases workflow. The launcher checks each file against the checksum file next to it.
+const DATABASE_ASSETS = {
+  'mod-metadata': /^db\.sqlite(\.sha1)?$/,
+  'project-mapping': /^[a-z]{2,3}(-[a-z0-9]{2,8})?\.sqlite\.(gz|sha256)$/i,
+}
+const DATABASE_HEADERS = ['content-type', 'content-length', 'content-range', 'accept-ranges', 'etag', 'last-modified']
+
+async function databaseAsset(request, env, name, asset) {
+  if (!DATABASE_ASSETS[name]?.test(asset)) return json({ error: 'not_found' }, 404)
+  if (!s3Configured(env)) return json({ error: 'database_unavailable' }, 503)
+  try {
+    const url = new URL(`${env.S3_BUCKET}/databases/${name}/${asset}`, `${env.S3_ENDPOINT.replace(/\/?$/, '/')}`)
+    // The URL is signed for GET, so a HEAD request reads the headers and drops the body.
+    const range = request.headers.get('range')
+    const response = await fetch(await presign(env, url, 300), {
+      redirect: 'manual',
+      headers: range ? { range } : {},
+    })
+    if (response.status === 404) return json({ error: 'not_found' }, 404)
+    if (!response.ok) {
+      await response.body?.cancel()
+      return json({ error: 'database_unavailable' }, 503)
+    }
+    const headers = new Headers({ 'cache-control': 'public, max-age=300' })
+    for (const header of DATABASE_HEADERS) {
+      const value = response.headers.get(header)
+      if (value) headers.set(header, value)
+    }
+    if (request.method === 'HEAD') await response.body?.cancel()
+    return new Response(request.method === 'HEAD' ? null : response.body, { status: response.status, headers })
+  } catch {
+    return json({ error: 'database_unavailable' }, 503)
+  }
+}
+
 export default {
   async fetch(request, env = {}) {
     const { pathname } = new URL(request.url)
@@ -98,6 +134,8 @@ export default {
     }
     if (pathname === '/v1/status') return json({ apiVersion: 'v1', state: 'ok' })
     if (pathname === '/v1/releases/latest') return latestRelease(env)
+    const database = /^\/v1\/databases\/([^/]+)\/([^/]+)$/.exec(pathname)
+    if (database) return databaseAsset(request, env, database[1], database[2])
     return json({ error: 'not_found' }, 404)
   },
 }

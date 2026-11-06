@@ -94,3 +94,56 @@ describe('S3 storage', () => {
     expect(redirect.mock.calls[0][1].redirect).toBe('manual')
   })
 })
+
+describe('database route', () => {
+  afterEach(() => vi.unstubAllGlobals())
+  const env = {
+    S3_ENDPOINT: 'https://s3.example.com', S3_BUCKET: 'rel', S3_REGION: 'us-east-1',
+    S3_READ_ACCESS_KEY_ID: 'AKIDEXAMPLE', S3_READ_SECRET_ACCESS_KEY: 'secret',
+  }
+  const stored = (body: string, headers: Record<string, string> = {}) =>
+    vi.fn(async (_url: string, _init?: RequestInit) => new Response(body, { headers: { 'content-length': String(body.length), etag: '"e"', 'x-amz-request-id': 'r', ...headers } }))
+
+  it('streams a database file from the bucket with a signed request', async () => {
+    const fetchMock = stored('checksum')
+    vi.stubGlobal('fetch', fetchMock)
+    const response = await get('/v1/databases/mod-metadata/db.sqlite.sha1', env)
+    expect(response.status).toBe(200)
+    expect(await response.text()).toBe('checksum')
+    expect(response.headers.get('etag')).toBe('"e"')
+    expect(response.headers.get('x-amz-request-id')).toBeNull()
+    const requested = new URL(fetchMock.mock.calls[0][0])
+    expect(requested.pathname).toBe('/rel/databases/mod-metadata/db.sqlite.sha1')
+    expect(requested.searchParams.get('X-Amz-Signature')).toMatch(/^[0-9a-f]{64}$/)
+    expect(fetchMock.mock.calls[0][1]?.redirect).toBe('manual')
+  })
+
+  it('answers HEAD without a body and forwards ranges', async () => {
+    const fetchMock = stored('payload')
+    vi.stubGlobal('fetch', fetchMock)
+    const head = await get('/v1/databases/project-mapping/zh-cn.sqlite.sha256', env, 'HEAD')
+    expect(head.status).toBe(200)
+    expect(head.body).toBeNull()
+    await worker.fetch(new Request('https://api.example.com/v1/databases/project-mapping/en.sqlite.gz', { headers: { range: 'bytes=0-3' } }), env as any)
+    expect(fetchMock.mock.calls[1][1]?.headers).toEqual({ range: 'bytes=0-3' })
+  })
+
+  it('serves only the known databases and files', async () => {
+    const fetchMock = stored('x')
+    vi.stubGlobal('fetch', fetchMock)
+    for (const path of ['/v1/databases/other/db.sqlite', '/v1/databases/mod-metadata/latest.json', '/v1/databases/project-mapping/..%2Flatest.json', '/v1/databases/project-mapping/en.sqlite']) {
+      expect((await get(path, env)).status).toBe(404)
+    }
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('maps missing files to 404 and storage failures to 503', async () => {
+    expect((await get('/v1/databases/mod-metadata/db.sqlite')).status).toBe(503)
+    vi.stubGlobal('fetch', async () => new Response('', { status: 404 }))
+    expect((await get('/v1/databases/mod-metadata/db.sqlite', env)).status).toBe(404)
+    vi.stubGlobal('fetch', async () => new Response('', { status: 403 }))
+    expect((await get('/v1/databases/mod-metadata/db.sqlite', env)).status).toBe(503)
+    vi.stubGlobal('fetch', async () => new Response('', { status: 302, headers: { location: 'https://evil.example.com/' } }))
+    expect((await get('/v1/databases/mod-metadata/db.sqlite', env)).status).toBe(503)
+  })
+})

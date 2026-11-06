@@ -1,0 +1,59 @@
+# Copies the mod metadata and project mapping databases into the Vardrynn buckets, where the
+# service's /v1/databases route serves them. The launcher never contacts the upstream source.
+# Source: the latest releases of Voxelum/minecraft-mods-database and
+# Voxelum/xmcl-commuity-content-i18n (build input only, like the pinned DeskGap runtime).
+# Secrets live on the `databases` environment (see VARDRYNN_SERVICE_API.md).
+name: Mirror databases
+
+on:
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Bucket to update
+        type: choice
+        options: [both, dev, prod]
+        default: both
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror-databases
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    environment: databases
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON((inputs.target == 'dev' || inputs.target == 'prod') && format('["{0}"]', inputs.target) || '["dev","prod"]') }}
+    env:
+      S3_ENDPOINT: ${{ vars.VARDRYNN_S3_ENDPOINT }}
+      S3_BUCKET: ${{ matrix.target == 'dev' && vars.VARDRYNN_S3_DEV_BUCKET || vars.VARDRYNN_S3_PROD_BUCKET }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: scripts/vardrynn-mirror-databases.sh
+          sparse-checkout-cone-mode: false
+      - name: Download the latest databases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p databases/mod-metadata databases/project-mapping
+          gh release download --repo Voxelum/minecraft-mods-database \
+            --pattern db.sqlite --pattern db.sqlite.sha1 --dir databases/mod-metadata
+          gh release download --repo Voxelum/xmcl-commuity-content-i18n \
+            --pattern '*.sqlite.gz' --pattern '*.sqlite.sha256' --dir databases/project-mapping
+      - name: Verify and upload to the ${{ matrix.target }} bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ matrix.target == 'dev' && secrets.VARDRYNN_S3_DEV_ACCESS_KEY_ID || secrets.VARDRYNN_S3_PROD_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ matrix.target == 'dev' && secrets.VARDRYNN_S3_DEV_SECRET_ACCESS_KEY || secrets.VARDRYNN_S3_PROD_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          : "${S3_ENDPOINT:?set the VARDRYNN_S3_ENDPOINT variable}" "${S3_BUCKET:?set the bucket variable for ${{ matrix.target }}}"
+          bash scripts/vardrynn-mirror-databases.sh databases

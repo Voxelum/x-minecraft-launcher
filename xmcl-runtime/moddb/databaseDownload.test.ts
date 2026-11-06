@@ -15,57 +15,41 @@ import {
 } from './databaseDownload'
 
 describe('database downloads', () => {
-  it('configures no source while no Vardrynn mirror exists', async () => {
-    expect(getModMetadataDownloadUrls('db.sqlite')).toEqual([])
-    expect(getProjectMappingDownloadUrls('zh-cn.sqlite.gz')).toEqual([])
+  it('requests nothing without a Vardrynn service origin', async () => {
+    expect(getModMetadataDownloadUrls(undefined, 'db.sqlite')).toEqual([])
+    expect(getProjectMappingDownloadUrls(undefined, 'zh-cn.sqlite.gz')).toEqual([])
     const fetcher = vi.fn()
     await expect(fetchDatabaseText(fetcher, [])).rejects.toThrow('No database metadata source is configured')
     expect(fetcher).not.toHaveBeenCalled()
   })
 
-  it('falls back when GitHub metadata cannot be fetched', async () => {
-    const fetcher = vi
-      .fn()
-      .mockRejectedValueOnce(new Error('GitHub unavailable'))
-      .mockResolvedValueOnce(new Response(' checksum\n'))
-
-    await expect(
-      fetchDatabaseText(fetcher, ['https://github.com/db', 'https://api.xmcl.app/db']),
-    ).resolves.toBe('checksum')
-    expect(fetcher).toHaveBeenCalledTimes(2)
+  it('uses only the Vardrynn service database route', () => {
+    expect(getModMetadataDownloadUrls('https://api.olaveapi.com', 'db.sqlite.sha1')).toEqual([
+      'https://api.olaveapi.com/v1/databases/mod-metadata/db.sqlite.sha1',
+    ])
+    expect(getProjectMappingDownloadUrls('http://localhost:8787', 'zh-cn.sqlite.gz')).toEqual([
+      'http://localhost:8787/v1/databases/project-mapping/zh-cn.sqlite.gz',
+    ])
+    expect(getProjectMappingDownloadUrls('https://api.olaveapi.com', '../x/y')[0]).toBe(
+      'https://api.olaveapi.com/v1/databases/project-mapping/..%2Fx%2Fy',
+    )
   })
 
-  it('treats a GitHub 404 as a missing locale without proxying it again', async () => {
-    const fetcher = vi.fn().mockResolvedValue(new Response(null, { status: 404 }))
+  it('trims the checksum text', async () => {
+    const fetcher = vi.fn().mockResolvedValue(new Response(' checksum\n'))
+    await expect(fetchDatabaseText(fetcher, ['https://api.olaveapi.com/db'])).resolves.toBe('checksum')
+  })
 
-    await expect(
-      databaseAssetExists(fetcher, ['https://github.com/missing', 'https://api.xmcl.app/missing']),
-    ).resolves.toBe(false)
+  it('treats a 404 as a missing locale', async () => {
+    const fetcher = vi.fn().mockResolvedValue(new Response(null, { status: 404 }))
+    await expect(databaseAssetExists(fetcher, ['https://api.olaveapi.com/missing'])).resolves.toBe(false)
     expect(fetcher).toHaveBeenCalledTimes(1)
   })
 
-  it('moves slow or stalled GitHub payloads to the fallback only', () => {
+  it('lets the single source finish instead of aborting slow downloads', () => {
     const controller = createDatabaseDownloadController()
-    expect(controller.isAbortable?.('https://github.com')).toBe(true)
-    expect(controller.isAbortable?.('https://api.xmcl.app')).toBe(false)
-    expect(
-      controller.onSample?.({
-        origin: 'https://github.com',
-        received: 64 * 1024,
-        total: 1024 * 1024,
-        speed: 64 * 1024,
-        elapsed: 6_000,
-      }),
-    ).toBe('abort')
-    expect(
-      controller.onSample?.({
-        origin: 'https://api.xmcl.app',
-        received: 64 * 1024,
-        total: 1024 * 1024,
-        speed: 64 * 1024,
-        elapsed: 6_000,
-      }),
-    ).toBe('continue')
+    expect(controller.isAbortable?.('https://api.olaveapi.com')).toBe(false)
+    expect(controller.onSample).toBeUndefined()
   })
 
   it.each([false, true])('downloads a valid gzip database without a known size (fallback: %s)', async (fallback) => {

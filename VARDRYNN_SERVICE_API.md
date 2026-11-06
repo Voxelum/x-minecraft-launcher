@@ -38,10 +38,21 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `POST /v1/auth/microsoft/launcher-exchange` | Exchanges a Graph token for a session; links when called with a session | Account sign-in |
 | `POST /v1/sessions/refresh`, `POST /v1/sessions/revoke`, `GET /v1/sessions/current` | Rotating refresh, sign-out (one or all devices) | Account session |
 | `POST /v1/multiplayer/rooms`, `POST /v1/multiplayer/rooms/{id}/join`, `DELETE /v1/multiplayer/rooms/{id}`, `GET /v1/multiplayer/rooms/{id}/socket` (WebSocket) | Room admission, host-only close, signaling | Multiplayer (Bearer session; the socket takes a one-minute ticket) |
+| `GET`/`HEAD /v1/databases/mod-metadata/{db.sqlite,db.sqlite.sha1}`, `GET`/`HEAD /v1/databases/project-mapping/<locale>.sqlite.{gz,sha256}` | Mod metadata and project mapping databases, streamed from the bucket's `databases/` prefix | Mod identification and localized project names (see below) |
 | `POST /v1/rtc/official` | STUN and TURN credentials, one hour | Multiplayer |
 | `GET /v1/account`, `DELETE /v1/account`, `GET /v1/account/identities`, `POST /v1/account/identities/{google,discord}/{authorize,complete}` | Account, deletion, identity linking | Account settings |
 
 Remote flags are not applied yet. `kFlights` also holds security-relevant values such as `safeStorageEncryption`, so `/v1/config` needs an explicit allowlist before anything merges into it.
+
+## Databases
+
+The launcher downloads two read-only SQLite databases from this service: `mod-metadata` (maps a file's sha1 to its Modrinth and CurseForge project) and `project-mapping` (localized project names, one file per locale, `en` as the fallback). It fetches the checksum file first, then the database, and rejects a download whose checksum differs. A build without a service origin requests neither.
+
+The Worker streams files from `<bucket>/databases/<name>/` with presigned GETs and serves only the names above. A missing file is 404 (a missing locale falls back to `en`); a storage failure is 503.
+
+`.github/workflows/mirror-databases.yml` fills both buckets every day at 05:23 UTC, or on a manual run. It downloads the latest releases of `Voxelum/minecraft-mods-database` and `Voxelum/xmcl-commuity-content-i18n`, checks every file against its checksum with `scripts/vardrynn-mirror-databases.sh`, and uploads only the databases that changed (data first, then its checksum). Neither upstream repository declares a license; the mod database describes itself as data for launchers to use.
+
+Setup, once: create the GitHub environment `databases` (no required reviewers, so the schedule can run) with secrets `VARDRYNN_S3_{DEV,PROD}_{ACCESS_KEY_ID,SECRET_ACCESS_KEY}`. Use MinIO keys that can write only `databases/*` in each bucket, not the release publishing keys. The bucket and endpoint variables are the repository variables the release job already uses. The Worker needs no change beyond deploying this version: it reads with its existing read-only pair.
 
 ## Offline behavior
 
@@ -56,7 +67,7 @@ The status request times out after five seconds and refuses redirects, so a resp
 
 ## Not covered here
 
-Monitoring and backups do not exist yet. The Worker stores nothing itself; the release route reads an optional R2 binding. Other contract routes return 404. Remaining hard-coded XMCL origins are assigned to later phases and stay blocked by the phase 1 guard: `BUILTIN_AGENT_ENDPOINT` (phase 8), and the Ely.by helper and metadata database proxy (phase 9).
+Monitoring and backups do not exist yet. The Worker stores nothing itself; the release route reads an optional R2 binding. Other contract routes return 404. The only hard-coded XMCL origin left is `BUILTIN_AGENT_ENDPOINT` (phase 8), still blocked by the phase 1 guard.
 
 ## Verification on 2026-11-04
 
