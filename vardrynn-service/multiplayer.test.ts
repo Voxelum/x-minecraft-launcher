@@ -511,6 +511,11 @@ describe('room sockets', () => {
     const replay = await open(env, host.roomId, guest.ticket)
     expect(replay.server.closedWith?.code).toBe(4003)
 
+    // The rejected replay must not take over delivery for the live guest socket.
+    const before = guestSocket.server.received.length
+    hostSocket.server.emit('message', { data: signal(guest.peerId) })
+    expect(guestSocket.server.received).toHaveLength(before + 1)
+
     guestSocket.server.emit('close', {})
     expect(hostSocket.server.received.at(-1).members).toHaveLength(1)
 

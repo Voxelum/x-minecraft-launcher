@@ -444,11 +444,14 @@ export class MultiplayerRoom {
     const pair = new WebSocketPair()
     const [client, server] = Object.values(pair)
     server.accept()
+    // A replayed ticket must not displace the live socket that already owns this peer id.
+    const previous = this.sockets.get(claims.p)
     try {
       this.sockets.set(claims.p, server)
       core.attach(claims.p, claims.a, now)
     } catch (e) {
-      this.sockets.delete(claims.p)
+      if (previous) this.sockets.set(claims.p, previous)
+      else this.sockets.delete(claims.p)
       server.close(e?.status === 404 ? 4000 : 4003, e?.code ?? 'rejected')
       return new Response(null, { status: 101, webSocket: client })
     }
