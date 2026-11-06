@@ -41,3 +41,26 @@ CREATE TABLE IF NOT EXISTS oauth_transactions (
   expires_at TEXT NOT NULL,
   used_at TEXT
 );
+-- Vardrynn packs (packs.js). A version's manifest is the launcher's instance manifest as JSON.
+CREATE TABLE IF NOT EXISTS packs (
+  slug TEXT PRIMARY KEY,
+  owner_account_id TEXT NOT NULL REFERENCES accounts(id),
+  title TEXT NOT NULL,
+  summary TEXT NOT NULL,
+  description TEXT NOT NULL,
+  icon_sha1 TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS pack_versions (
+  id TEXT PRIMARY KEY,
+  pack_slug TEXT NOT NULL REFERENCES packs(slug),
+  version TEXT NOT NULL,
+  changelog TEXT NOT NULL,
+  minecraft TEXT NOT NULL,
+  loaders TEXT NOT NULL,
+  manifest TEXT NOT NULL,
+  published_at TEXT NOT NULL,
+  UNIQUE (pack_slug, version)
+);
+CREATE INDEX IF NOT EXISTS pack_versions_pack ON pack_versions(pack_slug, published_at);

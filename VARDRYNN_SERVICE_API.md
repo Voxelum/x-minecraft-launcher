@@ -41,6 +41,8 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `GET`/`HEAD /v1/databases/mod-metadata/{db.sqlite,db.sqlite.sha1}`, `GET`/`HEAD /v1/databases/project-mapping/<locale>.sqlite.{gz,sha256}` | Mod metadata and project mapping databases, streamed from the bucket's `databases/` prefix | Mod identification and localized project names (see below) |
 | `GET`/`POST /v1/curseforge/v1/...` (also `v2`) | CurseForge API proxy that adds the API key | Every CurseForge search, lookup and install (see below) |
 | `POST /v1/rtc/official` | STUN and TURN credentials, one hour | Multiplayer |
+| `GET /v1/packs`, `GET /v1/packs/{slug}`, `GET /v1/packs/{slug}/versions/{id}`, `GET`/`HEAD /v1/packs/files/{sha1}` | Vardrynn packs: list, detail, version manifest, uploaded files | Not consumed yet (see below) |
+| `PUT /v1/packs/{slug}`, `POST /v1/packs/{slug}/versions`, `DELETE /v1/packs/{slug}/versions/{id}`, `PUT /v1/packs/files/{sha1}` | Publish packs (Bearer session of a listed publisher) | Not consumed yet |
 | `GET /v1/account`, `DELETE /v1/account`, `GET /v1/account/identities`, `POST /v1/account/identities/{google,discord}/{authorize,complete}` | Account, deletion, identity linking | Account settings |
 
 Remote flags are not applied yet. `kFlights` also holds security-relevant values such as `safeStorageEncryption`, so `/v1/config` needs an explicit allowlist before anything merges into it.
@@ -62,6 +64,33 @@ Deployment (2026-11-06): both buckets were filled by running `scripts/vardrynn-m
 The launcher holds no CurseForge API key. The main process's CurseForge client uses `<origin>/v1/curseforge` as its server, and renderer requests to `api.curseforge.com` are rewritten to the same place by `pluginApiFallback`. The Worker (`vardrynn-service/curseforge.js`) forwards only `/v1/` and `/v2/` CurseForge API paths, adds the `CURSEFORGE_API_KEY` secret, passes only `accept` and `content-type` upstream, limits POST bodies to 1 MB, and does not follow redirects. `CURSEFORGE_RATE_LIMITER` allows 300 requests per minute per client address (namespaces `1005` dev, `1006` production). File downloads come from CurseForge's CDN and need no key. A build without a service origin has no CurseForge access.
 
 Deployed 2026-11-06 to both Workers with the key from Infisical (`CURSEFORGE_API_KEY`). Checked on both origins: a game lookup, a search and a fingerprint POST return 200; other paths return 404. To rotate the key, set the Worker secret again; no launcher release is needed.
+
+## Packs
+
+Code: `vardrynn-service/packs.js`; tables `packs` and `pack_versions` in `schema.sql`, on the same D1 database as accounts. A pack's mods can come from Modrinth and CurseForge in the same version, which neither site's own pack format allows.
+
+A version's manifest is the launcher's instance manifest (`InstanceManifest` in `packages/instance/files.ts`): `runtime` plus `files`. Each file needs a `sha1` and at least one source: `modrinth` (`projectId`, `versionId`), `curseforge` (`projectId`, `fileId`) or `https` `downloads`. Files on neither site, such as configs, are uploaded to this service and listed by their `/v1/packs/files/{sha1}` URL. Publishing rejects paths that are absolute, contain `..`, `\` or `:`, repeat (case-insensitively), or name launcher files (`instance.json`, `instance-lock.json`, `unresolved-files.json`, `.install*`).
+
+| Route | Behavior |
+| --- | --- |
+| `GET /v1/packs?q=` | Packs with at least one version, newest version first, up to 100; `q` matches the title |
+| `GET /v1/packs/{slug}` | Pack with description and versions (no manifests); 404 until the first version is published |
+| `GET /v1/packs/{slug}/versions/{id}` | One version with its manifest |
+| `GET`/`HEAD /v1/packs/files/{sha1}` | Uploaded file streamed from `packs/files/{sha1}` in the bucket; cached as immutable |
+| `PUT /v1/packs/{slug}` | Create or update title (1-100), `summary` (300), `description` (20,000), `iconSha1` (an uploaded file) |
+| `POST /v1/packs/{slug}/versions` | `version` (letters, digits, `.+_-`, up to 64), `changelog`, `manifest`; 409 if the version exists; JSON bodies are limited to 1 MB |
+| `DELETE /v1/packs/{slug}/versions/{id}` | Removes a version |
+| `PUT /v1/packs/files/{sha1}` | Raw body up to 50 MB; 400 `hash_mismatch` unless its SHA-1 is the name |
+
+Write routes require a session whose account is listed in the Worker setting `PACK_PUBLISHER_ACCOUNT_IDS` (comma-separated); without it nobody can publish. A pack belongs to the account that created it. Invalid manifests return 400 `invalid_manifest` with a `detail` naming the problem. Without `DB` the pack routes return 503 `packs_unconfigured`; without the S3 read settings files return 503 `pack_storage_unavailable`, and uploads also need `S3_PACKS_ACCESS_KEY_ID` and `S3_PACKS_SECRET_ACCESS_KEY`. The slug `files` is reserved.
+
+Download URLs in a manifest are fetched by every player who installs the pack, so only publishers can add them. Public routes are not rate limited, like the database routes.
+
+Deployment (not done yet):
+- Apply `schema.sql` to `vardrynn-accounts-dev` and `vardrynn-accounts-prod`. It only adds tables.
+- Create a MinIO user per bucket that can read and write only `packs/*`, like the `databases/*` users, and set its keys as `S3_PACKS_ACCESS_KEY_ID` and `S3_PACKS_SECRET_ACCESS_KEY` on each Worker.
+- Set `PACK_PUBLISHER_ACCOUNT_IDS` on each Worker. Production needs a sign-in first to create the account.
+- Upload `s3.js` and `packs.js` with the other modules, keeping every existing binding.
 
 ## Offline behavior
 

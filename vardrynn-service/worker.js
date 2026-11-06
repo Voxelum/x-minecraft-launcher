@@ -1,12 +1,13 @@
 import { authenticate, handleAccountRoute } from './accounts.js'
 import { handleMultiplayerRoute } from './multiplayer.js'
 import { handleCurseforgeRoute } from './curseforge.js'
+import { handlePackRoute } from './packs.js'
 import { json, objectUrl, presign, s3Configured, streamObject } from './s3.js'
 
 export { MultiplayerRoom } from './multiplayer.js'
 export { presign }
 
-// Minimal Vardrynn service. Accounts: accounts.js. Implements the status, release and database routes of VARDRYNN_SERVICE_API.md.
+// Minimal Vardrynn service. Accounts: accounts.js; packs: packs.js. Implements the status, release and database routes of VARDRYNN_SERVICE_API.md.
 
 // Asset URLs are not covered by the release signature, so they can be swapped for short-lived
 // presigned ones. Only URLs inside this bucket are touched.
@@ -73,6 +74,8 @@ export default {
     if (multiplayer) return multiplayer
     const curseforge = await handleCurseforgeRoute(request, env, pathname)
     if (curseforge) return curseforge
+    const pack = await handlePackRoute(request, env, pathname)
+    if (pack) return pack
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       return json({ error: 'method_not_allowed' }, 405)
     }
