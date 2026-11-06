@@ -36,6 +36,9 @@ const PROVIDERS = {
     authorize: 'https://discord.com/oauth2/authorize',
     token: 'https://discord.com/api/oauth2/token',
     scope: 'identify',
+    // Discord matches redirect URIs exactly, so it cannot follow the launcher's fallback ports.
+    // It returns to this service, which forwards to the launcher's loopback address.
+    relay: true,
     profile: async (accessToken) => {
       const r = await fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${accessToken}` } })
       if (!r.ok) throw fail(502, 'provider_unavailable')
@@ -47,6 +50,8 @@ const PROVIDERS = {
 }
 
 const nowIso = (now) => new Date(now).toISOString()
+const relayUri = (origin, provider) => `${origin}/v1/auth/${provider}/callback`
+const providerRedirect = (config, origin, provider, launcherUri) => config.relay ? relayUri(origin, provider) : launcherUri
 
 async function createSession(env, accountId, now) {
   const accessToken = randomToken()
@@ -131,7 +136,7 @@ function validateAuthorizeRequest(body) {
   return { state: body.state, redirectUri: uri.href, codeChallenge: body.codeChallenge }
 }
 
-async function beginAuthorization(env, provider, body, accountId, now) {
+async function beginAuthorization(env, origin, provider, body, accountId, now) {
   const config = PROVIDERS[provider]
   const [clientId, secret] = config.credentials(env)
   if (!clientId || !secret) throw fail(503, 'provider_unconfigured')
@@ -143,13 +148,13 @@ async function beginAuthorization(env, provider, body, accountId, now) {
     .bind(id, provider, req.state, req.redirectUri, req.codeChallenge, accountId ?? null, expiresAt).run()
   const url = new URL(config.authorize)
   url.search = new URLSearchParams({
-    client_id: clientId, redirect_uri: req.redirectUri, response_type: 'code', scope: config.scope,
+    client_id: clientId, redirect_uri: providerRedirect(config, origin, provider, req.redirectUri), response_type: 'code', scope: config.scope,
     state: req.state, code_challenge: req.codeChallenge, code_challenge_method: 'S256',
   }).toString()
   return { transactionId: id, authorizationUrl: url.href, expiresAt }
 }
 
-async function completeAuthorization(env, provider, body, current, now) {
+async function completeAuthorization(env, origin, provider, body, current, now) {
   const config = PROVIDERS[provider]
   const [clientId, secret] = config.credentials(env)
   if (!clientId || !secret) throw fail(503, 'provider_unconfigured')
@@ -165,7 +170,7 @@ async function completeAuthorization(env, provider, body, current, now) {
     method: 'POST',
     headers: { 'content-type': 'application/x-www-form-urlencoded', accept: 'application/json' },
     body: new URLSearchParams({
-      grant_type: 'authorization_code', code: body.code, redirect_uri: tx.redirect_uri,
+      grant_type: 'authorization_code', code: body.code, redirect_uri: providerRedirect(config, origin, provider, tx.redirect_uri),
       client_id: clientId, client_secret: secret, code_verifier: body.codeVerifier,
     }),
   })
@@ -201,6 +206,24 @@ async function microsoftExchange(env, body, current, now) {
   }, current, now)
 }
 
+// Forward a relayed provider response to the launcher that started the transaction.
+// Only a stored, validated loopback URI is ever a target; the code is useless without the PKCE verifier.
+async function relayCallback(env, provider, url, now) {
+  const params = url.searchParams
+  const state = params.get('state')
+  if (!state) throw fail(400, 'invalid_transaction')
+  const tx = await env.DB.prepare(
+    'SELECT redirect_uri FROM oauth_transactions WHERE provider = ? AND state = ? AND used_at IS NULL AND expires_at > ? ORDER BY expires_at DESC LIMIT 1',
+  ).bind(provider, state, nowIso(now)).first()
+  if (!tx) throw fail(400, 'invalid_transaction')
+  const target = new URL(tx.redirect_uri)
+  for (const key of ['code', 'state', 'error', 'error_description']) {
+    const value = params.get(key)
+    if (value !== null) target.searchParams.set(key, value)
+  }
+  return new Response(null, { status: 302, headers: { location: target.href, 'cache-control': 'no-store', 'referrer-policy': 'no-referrer' } })
+}
+
 async function refresh(request, env, now) {
   const body = await request.json().catch(() => ({}))
   if (typeof body.sessionId !== 'string' || typeof body.refreshToken !== 'string') throw fail(400, 'invalid_request')
@@ -227,15 +250,20 @@ async function refresh(request, env, now) {
 
 async function route(request, env, pathname, now) {
   const method = request.method
+  const url = new URL(request.url)
+  const origin = env.PUBLIC_ORIGIN || url.origin
   const body = () => request.json().catch(() => { throw fail(400, 'invalid_request') })
   let m
 
   if (method === 'GET' && (m = /^\/v1\/auth\/(google|discord)\/authorize$/.exec(pathname))) {
-    const q = new URL(request.url).searchParams
-    return json(await beginAuthorization(env, m[1], { state: q.get('state'), redirectUri: q.get('redirectUri'), codeChallenge: q.get('codeChallenge') }, undefined, now))
+    const q = url.searchParams
+    return json(await beginAuthorization(env, origin, m[1], { state: q.get('state'), redirectUri: q.get('redirectUri'), codeChallenge: q.get('codeChallenge') }, undefined, now))
+  }
+  if (method === 'GET' && (m = /^\/v1\/auth\/(discord)\/callback$/.exec(pathname))) {
+    return relayCallback(env, m[1], url, now)
   }
   if (method === 'POST' && (m = /^\/v1\/auth\/(google|discord)\/exchange$/.exec(pathname))) {
-    return json(await completeAuthorization(env, m[1], await body(), undefined, now))
+    return json(await completeAuthorization(env, origin, m[1], await body(), undefined, now))
   }
   if (method === 'POST' && pathname === '/v1/auth/microsoft/launcher-exchange') {
     const current = request.headers.has('authorization') ? await authenticate(request, env, now) : undefined
@@ -273,10 +301,10 @@ async function route(request, env, pathname, now) {
   }
   if (method === 'GET' && pathname === '/v1/account/identities') return json(await listIdentities(env, auth.accountId))
   if (method === 'POST' && (m = /^\/v1\/account\/identities\/(google|discord)\/authorize$/.exec(pathname))) {
-    return json(await beginAuthorization(env, m[1], await body(), auth.accountId, now))
+    return json(await beginAuthorization(env, origin, m[1], await body(), auth.accountId, now))
   }
   if (method === 'POST' && (m = /^\/v1\/account\/identities\/(google|discord)\/complete$/.exec(pathname))) {
-    await completeAuthorization(env, m[1], await body(), auth, now)
+    await completeAuthorization(env, origin, m[1], await body(), auth, now)
     return json({ bindingDisposition: 'linked' })
   }
   return undefined

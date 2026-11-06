@@ -34,7 +34,7 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `GET /v1/config` | Remote `flags` | Not consumed; needs an allowlist first (see below) |
 | `GET /v1/news` | `items`; query carries `version`, `os`, `arch`, `env`, `build`, `locale` | `useLauncherNews`, not yet shown in the UI |
 | `GET /v1/releases/latest` | Version, channel, assets with `sha256` and `signature` | Launcher updater (see `VARDRYNN_RELEASES.md`); deployed to development only |
-| `GET /v1/auth/{google,discord}/authorize`, `POST /v1/auth/{google,discord}/exchange` | Browser PKCE sign-in; redirect must be `http://127.0.0.1:<port>/commercial-auth` | Account sign-in |
+| `GET /v1/auth/{google,discord}/authorize`, `POST /v1/auth/{google,discord}/exchange`, `GET /v1/auth/discord/callback` | Browser PKCE sign-in; redirect must be `http://127.0.0.1:<port>/commercial-auth` | Account sign-in |
 | `POST /v1/auth/microsoft/launcher-exchange` | Exchanges a Graph token for a session; links when called with a session | Account sign-in |
 | `POST /v1/sessions/refresh`, `POST /v1/sessions/revoke`, `GET /v1/sessions/current` | Rotating refresh, sign-out (one or all devices) | Account session |
 | `GET /v1/account`, `DELETE /v1/account`, `GET /v1/account/identities`, `POST /v1/account/identities/{google,discord}/{authorize,complete}` | Account, deletion, identity linking | Account settings |
@@ -76,7 +76,11 @@ Not verified: an origin set in a packaged build, Windows and Linux.
 
 Code: `vardrynn-service/accounts.js`; storage: `vardrynn-service/schema.sql` on a D1 database bound as `DB`. Without `DB` every account route returns 503 `accounts_unconfigured`.
 
+Provisioned 2026-11-05: development Worker `vardrynn-api-dev` binds `vardrynn-accounts-dev` (`e6ed2673-e806-4070-b77e-a398d55984ce`) as `DB`; production Worker `vardrynn-api` binds `vardrynn-accounts-prod` (`e1cb502c-01bc-4b65-90d3-7d613242e5e1`) as `DB`. Both have all four tables and three indexes from `schema.sql`. Existing S3 settings and secrets were preserved. This provision did not upload Worker source. Preserve these bindings on future deployments.
+
 Worker settings: secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, and `MICROSOFT_CLIENT_ID` (the same value the launcher builds in as `VARDRYNN_MICROSOFT_CLIENT_ID`). An unset provider returns 503 `provider_unconfigured`. Register `http://127.0.0.1` loopback redirects (`/commercial-auth`) with Google and Discord.
+
+Google uses a native desktop client with loopback support. Discord app `1568042963743805582` matches redirect URIs exactly, and the launcher's port moves (25555, then +7) when another launcher such as XMCL holds it. Discord therefore returns to this service at `GET /v1/auth/discord/callback`, which forwards `code` and `state` to the loopback address stored with the transaction. Register `https://dev-api.olaveapi.com/v1/auth/discord/callback` and `https://api.olaveapi.com/v1/auth/discord/callback` with Discord; the loopback URIs registered earlier are no longer used. Set `PUBLIC_ORIGIN` on a Worker only if it is reached through another host. Builds also read GitHub variable `VARDRYNN_DISCORD_APP_ID` for Discord presence (the same application ID). Microsoft public desktop app `fb0d7ac0-f0ff-426f-bad8-63d3863e8aa2` registers `http://localhost/auth` for personal Microsoft accounts. All five settings are authoritative in `homelab prod /dev-platform/vardrynn/{dev,prod}` and installed on both Workers. GitHub repository variable `VARDRYNN_MICROSOFT_CLIENT_ID` and the local ignored build environment contain the same Microsoft client ID.
 
 Behavior:
 - Sessions are opaque Bearer tokens (15 minute access, 30 day rotating refresh), stored as SHA-256 hashes. Replaying a rotated refresh token revokes the session. The launcher's DPoP binding is not used yet.
@@ -85,4 +89,4 @@ Behavior:
 - `DELETE /v1/account` erases identities and revokes all sessions at once. Recovery is signing in again with any linked provider; there are no passwords.
 - Billing and subscription routes (`/v1/xmcl-plus/*`, `/v1/billing/*`) do not exist; the launcher refuses them locally with `billing_unavailable`.
 
-Open: Microsoft Graph tokens for personal accounts are often opaque, so the application check only applies when the token is a readable JWT (a different issuer design, such as an ID token, would close this); no rate limiting on unauthenticated routes (add Cloudflare rules before enabling); Modrinth identity is not supported; deploying the database and secrets, and registering the three OAuth applications, are manual steps not yet done.
+Open: Microsoft Graph tokens for personal accounts are often opaque, so the application check only applies when the token is a readable JWT (a different issuer design, such as an ID token, would close this); no rate limiting on unauthenticated routes (add Cloudflare rules before enabling); Modrinth identity is not supported; D1 databases, `DB` bindings, all five OAuth settings and the three application registrations are provisioned (2026-11-05); real provider sign-in has not yet been exercised.

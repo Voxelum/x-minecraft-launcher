@@ -143,6 +143,24 @@ describe('accounts', () => {
     expect(c.account.accountId).not.toBe(b.account.accountId)
   })
 
+  it('relays Discord through one fixed callback to the launcher\'s fallback port', async () => {
+    const e = env()
+    const fallback = 'http://127.0.0.1:25562/commercial-auth'
+    const begin = await (await call(e, 'GET', `/v1/auth/discord/authorize?${new URLSearchParams({ state, redirectUri: fallback, codeChallenge: challenge })}`)).json() as any
+    expect(new URL(begin.authorizationUrl).searchParams.get('redirect_uri')).toBe('https://api.example.com/v1/auth/discord/callback')
+    const relay = await call(e, 'GET', `/v1/auth/discord/callback?code=c&state=${state}`)
+    expect(relay.status).toBe(302)
+    expect(relay.headers.get('location')).toBe(`${fallback}?code=c&state=${state}`)
+    expect((await call(e, 'GET', '/v1/auth/discord/callback?code=c&state=unknown')).status).toBe(400)
+    const done = await call(e, 'POST', '/v1/auth/discord/exchange', { transactionId: begin.transactionId, code: 'c', state, codeVerifier: verifier })
+    expect(done.status).toBe(200)
+    const tokenCall = (fetch as any).mock.calls.find((c: any[]) => String(c[0]).includes('discord.com/api/oauth2/token'))
+    expect(new URLSearchParams(String(tokenCall[1].body)).get('redirect_uri')).toBe('https://api.example.com/v1/auth/discord/callback')
+    // Google keeps the launcher's own loopback address.
+    const g = await (await call(e, 'GET', `/v1/auth/google/authorize?${new URLSearchParams({ state, redirectUri: fallback, codeChallenge: challenge })}`)).json() as any
+    expect(new URL(g.authorizationUrl).searchParams.get('redirect_uri')).toBe(fallback)
+  })
+
   it('requires a token for account routes', async () => {
     expect((await call(env(), 'GET', '/v1/account')).status).toBe(401)
   })

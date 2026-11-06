@@ -81,6 +81,8 @@ jobs:
           # A dev test release must check the dev service, or it could never see its own update.
           VARDRYNN_API_BASE_URL: ${{ inputs.publish == 'dev' && vars.VARDRYNN_DEV_API_BASE_URL || vars.VARDRYNN_API_BASE_URL }}
           VARDRYNN_RELEASE_PUBLIC_KEY: ${{ vars.VARDRYNN_RELEASE_PUBLIC_KEY }}
+          VARDRYNN_MICROSOFT_CLIENT_ID: ${{ vars.VARDRYNN_MICROSOFT_CLIENT_ID }}
+          VARDRYNN_DISCORD_APP_ID: ${{ vars.VARDRYNN_DISCORD_APP_ID }}
       - name: Resolve pinned DeskGap runtime
         if: ${{ runner.os == 'Windows' }}
         id: deskgap
@@ -129,6 +131,8 @@ jobs:
         shell: pwsh
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+          VARDRYNN_MICROSOFT_CLIENT_ID: ${{ vars.VARDRYNN_MICROSOFT_CLIENT_ID }}
+          VARDRYNN_DISCORD_APP_ID: ${{ vars.VARDRYNN_DISCORD_APP_ID }}
           DESKGAP_VERSION: ${{ steps.deskgap.outputs.version }}
         run: |
           $source = Join-Path $env:GITHUB_WORKSPACE 'deskgap-runtime-source'
