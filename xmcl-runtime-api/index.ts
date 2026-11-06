@@ -99,7 +99,7 @@ export * from './src/util/SharedState'
 export { default as packFormatVersionRange } from './src/util/packFormatVersionRange'
 export * from './src/util/promiseSignal'
 export { default as protocolToMinecraft } from './src/util/protocolToMinecraft'
-export * from './src/util/sdp'
+export * from './src/util/vardrynnLinks'
 export * from './src/util/LockKey'
 export * from './src/util/versionRange'
 

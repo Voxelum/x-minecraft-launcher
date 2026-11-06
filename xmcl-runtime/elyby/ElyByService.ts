@@ -2,7 +2,7 @@ import { LibraryInfo, Version } from '@xmcl/core'
 import { ElyByServiceKey, type ElyByService as IElyByService } from '@xmcl/runtime-api'
 import { open, openEntryReadStream, walkEntriesGenerator } from '@xmcl/unzip'
 import { createHash } from 'crypto'
-import { ensureDir, readFile, readJSON, stat, writeFile, writeJSON } from 'fs-extra'
+import { ensureDir, readFile, readJSON, stat, writeFile } from 'fs-extra'
 import { dirname, isAbsolute, join, relative } from 'path'
 import { Writable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -18,26 +18,6 @@ export class ElyByService extends AbstractService implements IElyByService {
     @Inject(kResourceWorker) private resourceWorker: ResourceWorker,
   ) {
     super(app)
-    this.#init().catch(e => this.warn('Failed to init elyby authlib', e))
-  }
-
-  async #init() {
-    const cachePath = join(this.app.appDataPath, 'ely-authlib.cache.json')
-    const content = await readJSON(cachePath, 'utf-8').catch(() => undefined)
-    const etag = content?.etag
-    const resp = await this.app.fetch('https://api.xmcl.app/elyby/authlib', {
-      headers: etag ? {
-        'If-None-Match': etag,
-      } : {},
-    })
-    if (!resp.ok) {
-      return
-    }
-    const data = await resp.json()
-    await writeJSON(cachePath, {
-      etag: resp.headers.get('etag'),
-      data,
-    })
   }
 
   async #getCache() {

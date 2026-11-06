@@ -125,21 +125,17 @@
 <script lang=ts setup>
 import { useRefreshable } from '@/composables'
 import { kPeerState } from '@/composables/peers'
-import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
-import { createAnswerAppUrl } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 
 const { embedded = false } = defineProps<{ embedded?: boolean }>()
 
 const { isShown, parameter } = useDialog('peer-receive')
-const { gameProfile } = injection(kUserContext)
 const { connections, setRemoteDescription } = injection(kPeerState)
 
 const connection = computed(() => connections.value.find(c => c.id === id.value))
 const localDescription = computed(() => connection.value?.localDescriptionSDP ? (connection.value?.localDescriptionSDP) : '')
 const canCopy = computed(() => !!localDescription.value)
-const localSdpUrl = computed(() => createAnswerAppUrl(localDescription.value, gameProfile.value.name))
 const { t } = useI18n()
 
 const remoteDescription = ref('')

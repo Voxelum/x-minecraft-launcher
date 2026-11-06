@@ -1,24 +1,23 @@
 import type { DownloadController, DownloadSample } from '@xmcl/file-transfer'
 
 const GITHUB_ORIGIN = 'https://github.com'
-const DATABASE_PROXY_ORIGIN = 'https://api.xmcl.app'
 const DATABASE_FETCH_TIMEOUT = 8_000
 const SLOW_DOWNLOAD_THRESHOLD = 128 * 1024
 
 type Fetcher = (input: string, init?: RequestInit) => Promise<Response>
 
-export function getModMetadataDownloadUrls(asset: 'db.sqlite' | 'db.sqlite.sha1') {
-  return [
-    `${GITHUB_ORIGIN}/Voxelum/minecraft-mods-database/releases/latest/download/${asset}`,
-    `${DATABASE_PROXY_ORIGIN}/downloads/databases/mod-metadata/${asset}`,
-  ]
+/**
+ * Vardrynn does not host the mod metadata or project mapping databases yet. The
+ * upstream sources (Voxelum GitHub releases and the XMCL proxy) are denied by the
+ * network policy, so no source is configured and nothing is requested. Adding a
+ * Vardrynn-owned mirror here re-enables both features.
+ */
+export function getModMetadataDownloadUrls(_asset: 'db.sqlite' | 'db.sqlite.sha1'): string[] {
+  return []
 }
 
-export function getProjectMappingDownloadUrls(asset: string) {
-  return [
-    `${GITHUB_ORIGIN}/Voxelum/xmcl-commuity-content-i18n/releases/latest/download/${asset}`,
-    `${DATABASE_PROXY_ORIGIN}/downloads/databases/project-mapping/${asset}`,
-  ]
+export function getProjectMappingDownloadUrls(_asset: string): string[] {
+  return []
 }
 
 function createAttemptSignal(signal: AbortSignal | null | undefined) {
@@ -52,7 +51,7 @@ export async function fetchDatabaseText(fetcher: Fetcher, urls: string[], init: 
       errors.push(e)
     }
   }
-  throw new AggregateError(errors, 'All database metadata sources failed')
+  throw new AggregateError(errors, urls.length === 0 ? 'No database metadata source is configured' : 'All database metadata sources failed')
 }
 
 export async function databaseAssetExists(fetcher: Fetcher, urls: string[]) {

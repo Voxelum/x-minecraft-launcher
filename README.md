@@ -1,68 +1,24 @@
 <p align="center">
-  <a href="https://xmcl.app" target="_blank">
-    <img alt="Logo" width="100" src="https://github.com/Voxelum/x-minecraft-launcher/blob/master/xmcl-electron-app/icons/dark@256x256.png">
-  </a>
+  <img alt="Vardrynn" width="100" src="xmcl-keystone-ui/src/assets/vardrynn-mark.png">
 </p>
 
+<h1 align="center">Vardrynn Launcher</h1>
+
 <p align="center">
-  <a href="https://github.com/Voxelum/x-minecraft-launcher">
-    <img src="https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg" alt="Build">
-  </a>
-  <a href="https://github.com/Voxelum/x-minecraft-launcher/blob/master/LICENSE">
+  <a href="LICENSE">
     <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="License">
   </a>
   <a href="https://conventionalcommits.org">
     <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Commit">
   </a>
-  <a href="https://flathub.org/en/apps/app.xmcl.voxelum">
-    <img src="https://img.shields.io/flathub/v/app.xmcl.voxelum?logo=flathub&label=Flathub" alt="Flathub">
-  </a>
 </p>
 
-<p align="center">
-  <a href="https://discord.gg/W5XVwYY7GQ">
-    <img src="https://img.shields.io/discord/405213567118213121?logo=discord&logoColor=white&label=Discord&color=5865F2" alt="Discord">
-  </a>
-  <a href="https://www.reddit.com/r/XMCL/">
-    <img src="https://img.shields.io/badge/Reddit-r%2FXMCL-FF4500?logo=reddit&logoColor=white" alt="Reddit">
-  </a>
-  <a href="https://kook.top/gqjSHh">
-    <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/kook-badge" alt="Kook">
-  </a>
-</p>
+Vardrynn is a Minecraft launcher built on [X Minecraft Launcher (XMCL)](https://github.com/Voxelum/x-minecraft-launcher) by Voxelum and contributors, used under the MIT license. It runs on its own data directory, update channel and online services, and it never contacts XMCL's services.
 
-<p align="center">
-  <a href="https://afdian.com/@ci010">
-    <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/afdian-badge" alt="afdian">
-  </a>
-  <a href="https://patreon.com/xmcl">
-    <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dxmcl%26type%3Dpledges" alt="patreon">
-  </a>
-</p>
-
-![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
-
-Visit the [official site](https://xmcl.app) to download the app!
-
-If you have winget, you can use winget to install
-
-```bash
-winget install CI010.XMinecraftLauncher
-```
-
-HomeBrew installation also available via tap
-
-```bash
-brew tap voxelum/xmcl
-brew install --cask voxelum/xmcl/xmcl
-sudo xattr -rd com.apple.quarantine /Applications/X\ Minecraft\ Launcher.app
-```
-
-On Linux, XMCL is also available on Flathub:
-
-```bash
-flatpak install flathub app.xmcl.voxelum
-```
+- **Issues and support:** [open an issue](https://github.com/MichaelOlave/x-minecraft-launcher/issues).
+- **Downloads:** no public package exists yet. Build from source ([Contributing](./CONTRIBUTING.md)); release process in [VARDRYNN_RELEASES.md](./VARDRYNN_RELEASES.md).
+- **What contacts the network, and why:** [VARDRYNN_NETWORK_DESTINATIONS.md](./VARDRYNN_NETWORK_DESTINATIONS.md).
+- **Not affiliated with Mojang or Microsoft.** Not an official Minecraft product.
 
 <kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](i18n/README.uk.md)</kbd>
 <kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](i18n/README.ru.md)</kbd>
@@ -120,24 +76,24 @@ This repository also includes the **Minecraft Launcher Core** (`@xmcl/*` package
 
 ## Contribute
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Voxelum/x-minecraft-launcher)
-
 For general developer, see [Contributing](./CONTRIBUTING.md)
 
-For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
+For translators, the strings live in [`xmcl-keystone-ui/locales`](xmcl-keystone-ui/locales); add or edit a locale file and open a pull request.
 
 ## LICENSE
 
 [MIT](LICENSE)
 
-## Sponsorship
+## Upstream sponsorship and credits
+
+These sponsors support the upstream XMCL project. They are credited here because Vardrynn is built on its work; they are not Vardrynn sponsors.
 
 | [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://signpath.io/) | Free code signing on Windows provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/) |
 | :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
 | [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL leverage its hassle-free platform for serverless JavaScript applications. Provided by [Deno](https://deno.com/)   |
 | [![](assets/EdgeOne.png)](https://edgeone.ai/) | [Best Asian CDN, Edge, and Secure Solutions - Tencent EdgeOne](https://edgeone.ai/),CDN acceleration and security protection for this project are sponsored by Tencent EdgeOne. |
 
-### Sponsor (AFDIAN)
+### Upstream sponsors (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">

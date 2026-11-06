@@ -86,7 +86,7 @@ Highly recommend to use the VSCode to open the project.
 Clone the project with submodule flag `--recurse-submodules`.
 
 ```bash
-git clone --recurse-submodules https://github.com/Voxelum/x-minecraft-launcher
+git clone --recurse-submodules https://github.com/MichaelOlave/x-minecraft-launcher
 ```
 
 If you forget to add `--recurse-submodules` flag, you need to initialize & update the git submodule manually.

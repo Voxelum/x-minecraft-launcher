@@ -1,6 +1,6 @@
 import { getPlatform } from '@xmcl/core'
 import type { InstallEvent } from '@xmcl/installer'
-import { AgentRunTrace, InstalledAppManifest, Platform, createPromiseSignal } from '@xmcl/runtime-api'
+import { AgentRunTrace, InstalledAppManifest, Platform, createPromiseSignal, createVardrynnUserAgent } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, writeFile } from 'fs-extra'
 import { Server, createServer } from 'http'
@@ -136,7 +136,7 @@ export class LauncherApp extends EventEmitter {
 
   get userAgent() {
     const version = IS_DEV ? '0.0.0' : this.host.getVersion()
-    return `voxelum/x_minecraft_launcher/${version} (xmcl.app)`
+    return createVardrynnUserAgent(version)
   }
 
   #disposed = false

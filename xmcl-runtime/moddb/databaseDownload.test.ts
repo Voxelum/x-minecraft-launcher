@@ -15,15 +15,12 @@ import {
 } from './databaseDownload'
 
 describe('database downloads', () => {
-  it('uses GitHub releases before the XMCL streaming proxy', () => {
-    expect(getModMetadataDownloadUrls('db.sqlite')).toEqual([
-      'https://github.com/Voxelum/minecraft-mods-database/releases/latest/download/db.sqlite',
-      'https://api.xmcl.app/downloads/databases/mod-metadata/db.sqlite',
-    ])
-    expect(getProjectMappingDownloadUrls('zh-cn.sqlite.gz')).toEqual([
-      'https://github.com/Voxelum/xmcl-commuity-content-i18n/releases/latest/download/zh-cn.sqlite.gz',
-      'https://api.xmcl.app/downloads/databases/project-mapping/zh-cn.sqlite.gz',
-    ])
+  it('configures no source while no Vardrynn mirror exists', async () => {
+    expect(getModMetadataDownloadUrls('db.sqlite')).toEqual([])
+    expect(getProjectMappingDownloadUrls('zh-cn.sqlite.gz')).toEqual([])
+    const fetcher = vi.fn()
+    await expect(fetchDatabaseText(fetcher, [])).rejects.toThrow('No database metadata source is configured')
+    expect(fetcher).not.toHaveBeenCalled()
   })
 
   it('falls back when GitHub metadata cannot be fetched', async () => {

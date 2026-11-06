@@ -186,19 +186,11 @@
         <div class="flex flex-col gap-1.5 pt-1">
           <a
             target="browser"
-            href="https://xmcl.app/en/guide/microsoft-login-issues"
-            class="flex items-center gap-1.5 text-xs text-amber-500 hover:underline font-medium"
-          >
-            <v-icon size="14">help_outline</v-icon>
-            {{ t('loginError.openLoginGuide') }}
-          </a>
-          <a
-            target="browser"
-            href="https://discord.gg/r7Sz9cAUSu"
+            :href="VARDRYNN_NEW_ISSUE_URL"
             class="flex items-center gap-1.5 text-xs text-primary hover:underline font-medium"
           >
-            <v-icon size="14">xmcl:discord</v-icon>
-            {{ t('loginError.openDiscordSupport') }}
+            <v-icon size="14">help_outline</v-icon>
+            {{ t('loginError.openSupport') }}
           </a>
         </div>
       </div>
@@ -253,6 +245,7 @@ import {
   AUTHORITY_MOJANG,
   UserException,
   UserServiceKey,
+  VARDRYNN_NEW_ISSUE_URL,
   isException,
 } from '@xmcl/runtime-api'
 import { Ref, watch } from 'vue'
@@ -565,17 +558,10 @@ watch(error, (err) => {
       key: 'microsoft-login-error-help',
       operations: [
         {
-          text: t('loginError.openLoginGuide'),
+          text: t('loginError.openSupport'),
           icon: 'help_outline',
           handler() {
-            window.open('https://xmcl.app/en/guide/microsoft-login-issues', 'browser')
-          },
-        },
-        {
-          text: t('loginError.openDiscordSupport'),
-          icon: 'xmcl:discord',
-          handler() {
-            window.open('https://discord.gg/r7Sz9cAUSu', 'browser')
+            window.open(VARDRYNN_NEW_ISSUE_URL, 'browser')
           },
         },
       ],

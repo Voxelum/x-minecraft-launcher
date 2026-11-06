@@ -90,6 +90,7 @@
 </template>
 
 <script lang="ts" setup>
+import { VARDRYNN_NEW_ISSUE_URL } from '@xmcl/runtime-api'
 import FeedbackCard from '../components/FeedbackCard.vue'
 import { useDialog } from '../composables/dialog'
 
@@ -102,45 +103,9 @@ const feedbackChannels = computed(() => [
     description: t('feedback.githubDescription'),
     icon: 'code',
     color: 'black',
-    link: 'https://github.com/Voxelum/x-minecraft-launcher/issues/new',
+    link: VARDRYNN_NEW_ISSUE_URL,
     target: 'browser',
     buttonText: t('feedback.githubOpenIssue')
-  },
-  {
-    title: t('feedback.reddit'),
-    description: t('feedback.redditDescription'),
-    icon: 'xmcl:reddit',
-    color: 'deep-orange darken-1',
-    link: 'https://www.reddit.com/r/XMCL/',
-    target: 'browser',
-    buttonText: t('feedback.discordJoin')
-  },
-  {
-    title: t('feedback.qq'),
-    description: t('feedback.qqDescription', { number: 858391850 }),
-    icon: 'chat',
-    color: 'blue',
-    link: 'https://jq.qq.com/?_wv=1027&k=5Py5zM1',
-    target: '_blank',
-    buttonText: t('feedback.qqEnterGroup')
-  },
-  {
-    title: t('feedback.kook'),
-    description: t('feedback.kookDescription'),
-    icon: 'chat',
-    color: 'purple',
-    link: 'https://kook.top/gqjSHh',
-    target: 'browser',
-    buttonText: t('feedback.qqEnterGroup')
-  },
-  {
-    title: t('feedback.discord'),
-    description: t('feedback.discordDescription'),
-    icon: 'xmcl:discord',
-    color: 'indigo darken-2',
-    link: 'https://discord.gg/W5XVwYY7GQ',
-    target: 'browser',
-    buttonText: t('feedback.discordJoin')
   }
 ])
 

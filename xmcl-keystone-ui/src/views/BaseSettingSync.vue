@@ -42,13 +42,14 @@
 
 <script lang="ts" setup>
 import { injection } from '@/util/inject'
+import { VARDRYNN_ISSUES_URL } from '@xmcl/runtime-api'
 
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 
 const { data } = injection(InstanceEditInjectionKey)
 const { t } = useI18n()
 const gotoHelp = () => {
-  window.open('https://xmcl.app/faq/', 'browser')
+  window.open(VARDRYNN_ISSUES_URL, 'browser')
 }
 
 </script>

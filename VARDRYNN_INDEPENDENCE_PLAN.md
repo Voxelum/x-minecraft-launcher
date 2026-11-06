@@ -118,6 +118,8 @@ Relevant code: `xmcl-runtime-api/src/services/AgentService.ts`, `xmcl-runtime/ag
 
 Acceptance: every visible link and network destination has an intentional owner and purpose.
 
+Implementation (2026-11-05): support links (feedback, login help, unauthenticated-launch warning, crash prompt, sync help, code of conduct) now point at the Vardrynn repository's issue tracker through `xmcl-runtime-api/src/util/vardrynnLinks.ts`; upstream Discord, Reddit, QQ, Kook and XMCL guide links are gone, and `supportLinks.test.ts` fails if they return. The user agent identifies Vardrynn. The Ely.by authlib list, the mod-metadata and project-mapping database sources, the dead `xmcl.app/peer` invite builders and the unused `xmcl.app/auth` redirect no longer name XMCL services; the two databases have no source until a Vardrynn mirror exists. DeskGap's updater no longer targets the upstream repository and reports `not-configured`. README and contributing text name Vardrynn and keep upstream attribution and sponsor credit (About page, README). News and localization already use the Vardrynn service (phase 4). Not done: a Vardrynn website or documentation site (none exists, so no guide link), a Vardrynn mirror for the metadata databases, DeskGap packaging and signing, a Vardrynn-owned Agent endpoint (phase 8, skipped), translating the new `loginError.openSupport` string beyond English, Ukrainian and Simplified Chinese.
+
 ### 10. Verify and release
 
 - Validate the real development launcher and packaged builds at supported window sizes and on each target OS.

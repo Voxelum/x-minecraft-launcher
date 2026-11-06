@@ -81,10 +81,9 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
           })
         })
       },
-      async (directRedirectToLauncher) => {
+      async () => {
         const port = await app.serverPort ?? 25555
-        directRedirectToLauncher = true // force to use localhost before the website is fixed
-        return (directRedirectToLauncher ? `http://localhost:${port}/auth` : `https://xmcl.app/auth?port=${port}`)
+        return `http://localhost:${port}/auth`
       },
       (response) => {
         userService.emit('device-code', response)

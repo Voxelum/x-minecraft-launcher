@@ -82,7 +82,7 @@ These need something this repository cannot supply on its own:
 - **No production release is published.** It waits on the first CI run, and on `VARDRYNN_API_BASE_URL` being set; until then, production builds cannot check for updates.
 - **Code signing.** macOS builds are ad-hoc signed and not notarized, because there is no Apple Developer ID. They update in place (below), but a first install from a browser download meets Gatekeeper. Windows updates stay excluded until Authenticode signing exists.
 - **Windows and x64.** Only arm64 was exercised on macOS and Linux. Windows has no update path.
-- **Out of phase 5:** the user agent (`voxelum/x_minecraft_launcher/...` in `xmcl-runtime/app/LauncherApp.ts`) and the About page's XMCL and Afdian links (phase 9); `appinstaller-builder.ts`, `sign-release.yml`, `deploy-ui.yml`, the Windows `deskgap-app` steps and the disabled `build-arch` job (Windows signing and phase 9).
+- **Out of phase 5:** the user agent and support links (done in phase 9; the About page keeps upstream attribution and sponsor credit); `appinstaller-builder.ts`, `sign-release.yml`, `deploy-ui.yml`, the Windows `deskgap-app` steps and the disabled `build-arch` job (Windows signing and phase 9).
 
 ## Packaged upgrades on 2026-11-05
 

@@ -158,13 +158,10 @@
 import { useRefreshable } from '@/composables'
 import { kPeerState } from '@/composables/peers'
 import { injection } from '@/util/inject'
-import { createOfferAppUrl } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { kUserContext } from '../composables/user'
 
 const { embedded = false } = defineProps<{ embedded?: boolean }>()
 
-const { gameProfile } = injection(kUserContext)
 const { connections, setRemoteDescription, initiate: _initiate } = injection(kPeerState)
 const { isShown, parameter } = useDialog('peer-initiate')
 
@@ -173,7 +170,6 @@ const gatheringState = computed(() => connection.value?.iceGatheringState)
 const connection = computed(() => connections.value.find(c => c.id === id.value))
 const localDescription = computed(() => connection.value ? (connection.value.localDescriptionSDP) : '')
 const canCopy = computed(() => !!localDescription.value)
-const localUrl = computed(() => createOfferAppUrl(localDescription.value, gameProfile.value.name))
 const { t } = useI18n()
 
 const remoteDescription = ref('')

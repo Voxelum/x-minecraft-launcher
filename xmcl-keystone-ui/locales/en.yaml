@@ -892,8 +892,7 @@ loginError:
   noProfileForNewUser: No game profile found! If you are a new Minecraft user, please login at least one time in Minecraft official launcher.
   requestFailed: Login failed, we do not know the exact reason. Please retry.
   xboxErrorGuideHint: Having trouble signing in? Learn how to fix Microsoft & Xbox login issues.
-  openLoginGuide: How to fix this issue
-  openDiscordSupport: Still need help? Join our Discord
+  openSupport: Still need help? Open an issue
   requireEmail: E-mail is required
   requirePassword: Password is required
   requireUsername: Username is required
