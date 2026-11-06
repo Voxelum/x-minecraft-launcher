@@ -73,7 +73,7 @@ async function createSession(env, accountId, now) {
   return session
 }
 
-async function authenticate(request, env, now) {
+export async function authenticate(request, env, now) {
   const match = /^Bearer (\S+)$/.exec(request.headers.get('authorization') ?? '')
   if (!match) throw fail(401, 'unauthorized')
   const row = await env.DB.prepare(

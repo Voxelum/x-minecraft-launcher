@@ -9,7 +9,7 @@ import Me from '@/views/Me.vue'
 import Mod from '@/views/Mod.vue'
 import ModActions from '@/views/ModActions.vue'
 import ModExtension from '@/views/ModExtension.vue'
-import MultiplayerUnavailable from '@/views/MultiplayerUnavailable.vue'
+import MultiplayerDesktop from '@/views/MultiplayerDesktop.vue'
 import ResourcePack from '@/views/ResourcePack.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
 import ResourcePackExtension from '@/views/ResourcePackExtension.vue'
@@ -133,7 +133,7 @@ export const router = createRouter({
     },
     {
       path: '/multiplayer',
-      component: MultiplayerUnavailable,
+      component: MultiplayerDesktop,
       meta: { workspaceSidePanel: true },
     },
   ],

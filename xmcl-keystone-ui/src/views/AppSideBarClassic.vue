@@ -93,7 +93,6 @@
 
     <div v-roving-tabindex role="group" class="sidebar__section">
       <AppSideBarItem
-        v-if="false"
         data-testid="nav-multiplayer"
         v-shared-tooltip.right="() => t('multiplayer.togetherName')"
         clickable
@@ -214,7 +213,6 @@
       </v-btn>
 
       <v-btn
-        v-if="false"
         data-testid="nav-multiplayer"
         v-shared-tooltip.bottom="t('multiplayer.togetherName')"
         icon

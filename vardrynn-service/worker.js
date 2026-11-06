@@ -1,4 +1,7 @@
-import { handleAccountRoute } from './accounts.js'
+import { authenticate, handleAccountRoute } from './accounts.js'
+import { handleMultiplayerRoute } from './multiplayer.js'
+
+export { MultiplayerRoom } from './multiplayer.js'
 
 // Minimal Vardrynn service. Accounts: accounts.js. Implements the status and release routes of VARDRYNN_SERVICE_API.md.
 const json = (body, status = 200) =>
@@ -88,6 +91,8 @@ export default {
     const { pathname } = new URL(request.url)
     const account = await handleAccountRoute(request, env, pathname)
     if (account) return account
+    const multiplayer = await handleMultiplayerRoute(request, env, pathname, authenticate)
+    if (multiplayer) return multiplayer
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       return json({ error: 'method_not_allowed' }, 405)
     }

@@ -1,6 +1,6 @@
 # Vardrynn independence plan
 
-Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, and development and production status services are deployed. The launcher and CI side of phase 5 is implemented; hosting, signing keys and platform qualification are open. Phase 6 is implemented and deployed to development and production (`vardrynn-service/accounts.js` on D1; Microsoft, Google and Discord sign-in; Settings > Vardrynn account): its acceptance check passed on development with real sign-ins; see `VARDRYNN_SERVICE_API.md`. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
+Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, and development and production status services are deployed. The launcher and CI side of phase 5 is implemented; hosting, signing keys and platform qualification are open. Phase 6 is implemented and deployed to development and production (`vardrynn-service/accounts.js` on D1; Microsoft, Google and Discord sign-in; Settings > Vardrynn account): its acceptance check passed on development with real sign-ins; see `VARDRYNN_SERVICE_API.md`. Phase 7 is implemented in code (rooms, signaling and ICE routes plus launcher wiring) but not deployed or tested with two real clients. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
 
 ## Goal
 
@@ -98,6 +98,8 @@ Implementation (2026-11-06): the service issues rotating Bearer sessions, verifi
 Acceptance: two clients can create, join, reconnect, and leave rooms across representative networks; relay traffic uses only Vardrynn infrastructure.
 
 Relevant code: `xmcl-runtime/peer/`, `xmcl-runtime-api/src/util/sdp.ts`, `xmcl-keystone-ui/src/views/MultiplayerBilling.vue`.
+
+Implementation (2026-11-06, not deployed): paid relay is out of scope, so there is no billing, entitlement or purchase path; the multiplayer screen no longer shows billing. The service gained room, socket and ICE routes backed by a Durable Object (`vardrynn-service/multiplayer.js`; limits and bindings in `VARDRYNN_SERVICE_API.md`). The launcher's existing room client now authenticates with the Vardrynn session, requires sign-in, and uploads no multiplayer telemetry. The sidebar entry and `/multiplayer` route are restored. Verified by unit tests of the room rules, routes, tickets and socket glue (fake sockets) and by type checks. Not verified: a deployed service, Cloudflare TURN, two clients on different networks, reconnect over real sockets, Windows and Linux. Open: the manual-invite dialogs still build `xmcl.app/peer` links (phase 9), and an unauthenticated user sees the raw error code rather than a sign-in prompt.
 
 ### 8. Replace the built-in Agent
 

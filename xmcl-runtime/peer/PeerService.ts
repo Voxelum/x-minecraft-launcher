@@ -16,7 +16,7 @@ import { kPeerFacade } from './PeerServiceFacade'
 import { kClientToken, kFlights, launcherSessionId } from '~/infra'
 import { requireVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import { kSettings } from '~/settings'
-import { XmclAccountService } from '~/xmclAccount'
+import { kXmclSessionAuthorization, XmclAccountService } from '~/xmclAccount'
 import { kMultiplayerHostFactory, type MultiplayerHost } from './MultiplayerHost'
 
 function isMultiplayerLogEvent(value: unknown): value is MultiplayerLogEvent {
@@ -29,10 +29,6 @@ function isMultiplayerLogEvent(value: unknown): value is MultiplayerLogEvent {
     (event.data === undefined ||
       (!!event.data && typeof event.data === 'object' && !Array.isArray(event.data)))
   )
-}
-
-function isVardrynnSignalingUnavailable() {
-  return true
 }
 
 const sensitiveMultiplayerLogKey =
@@ -108,14 +104,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   private async createMultiplayerHost(transport: MultiplayerTransport) {
-    if (isVardrynnSignalingUnavailable()) {
-      throw new Error('Vardrynn multiplayer is unavailable until Vardrynn signaling is configured')
-    }
     const factory = await this.app.registry.get(kMultiplayerHostFactory)
-    const settings = await this.app.registry.get(kSettings)
-    const accountState = await this.app.registry
-      .get(XmclAccountService)
-      .then((service) => service.getXmclAccountState())
     const host = await factory({
       transport,
       state: this.state,
@@ -123,8 +112,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       log: (event) => {
         void this.logMultiplayer(event)
       },
-      isTelemetryEnabled: () => !settings.disableTelemetry,
-      getTelemetryAccountId: () => accountState.account?.accountId,
+      getAuthorization: async () => {
+        const service = await this.app.registry.get(XmclAccountService)
+        return (await service[kXmclSessionAuthorization]())?.accessToken
+      },
       setDownloadPort: (port) => {
         this.downloadPort = port
       },
@@ -217,7 +208,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   async setMultiplayerTransport(transport: MultiplayerTransport): Promise<void> {
-    if (isVardrynnSignalingUnavailable()) return
     await this.ensureMultiplayerHost(transport)
   }
 
@@ -233,7 +223,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   async multiplayerRefreshIceServers(): Promise<void> {
-    if (isVardrynnSignalingUnavailable()) return
     const accountState = await this.app.registry
       .get(XmclAccountService)
       .then((service) => service.getXmclAccountState())
@@ -242,7 +231,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   async multiplayerSetUserInfo(info: ConnectionUserInfo): Promise<void> {
-    if (isVardrynnSignalingUnavailable()) return
     ;(await this.getMultiplayerHost()).setUserInfo(info)
   }
 

@@ -20,8 +20,8 @@ export interface MultiplayerHostOptions {
   state: SharedState<PeerState>
   init: MultiplayerInitPayload
   log(event: MultiplayerLogEvent): void
-  isTelemetryEnabled(): boolean
-  getTelemetryAccountId(): string | undefined
+  /** Bearer token of the signed-in Vardrynn account, if any. Room and relay requests need it. */
+  getAuthorization(): Promise<string | undefined>
   setDownloadPort(port: number): void
 }
 

@@ -17,7 +17,10 @@ vi.mock('~/infra', () => ({
   launcherSessionId: 'launcher-session',
 }))
 vi.mock('~/settings', () => ({ kSettings: Symbol('kSettings') }))
-vi.mock('~/xmclAccount', () => ({ XmclAccountService: class {} }))
+vi.mock('~/xmclAccount', () => ({
+  XmclAccountService: class {},
+  kXmclSessionAuthorization: Symbol('kXmclSessionAuthorization'),
+}))
 vi.mock('./PeerServiceFacade', () => ({ kPeerFacade: Symbol('kPeerFacade') }))
 vi.mock('./MultiplayerHost', () => ({ kMultiplayerHostFactory: Symbol('kMultiplayerHostFactory') }))
 
@@ -49,14 +52,14 @@ describe('PeerService multiplayer ICE refresh', () => {
     expect(refreshIceServers).not.toHaveBeenCalled()
   })
 
-  it('skips upstream credential refresh even for an authenticated session', async () => {
+  it('refreshes Vardrynn relay credentials for an authenticated session', async () => {
     const { context, getMultiplayerHost, refreshIceServers } = createRefreshContext({
       sessionId: 'session-1',
     })
 
     await PeerService.prototype.multiplayerRefreshIceServers.call(context as any)
 
-    expect(getMultiplayerHost).not.toHaveBeenCalled()
-    expect(refreshIceServers).not.toHaveBeenCalled()
+    expect(getMultiplayerHost).toHaveBeenCalledOnce()
+    expect(refreshIceServers).toHaveBeenCalledOnce()
   })
 })

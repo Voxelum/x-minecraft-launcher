@@ -37,6 +37,8 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `GET /v1/auth/{google,discord}/authorize`, `POST /v1/auth/{google,discord}/exchange`, `GET /v1/auth/discord/callback` | Browser PKCE sign-in; redirect must be `http://127.0.0.1:<port>/commercial-auth` | Account sign-in |
 | `POST /v1/auth/microsoft/launcher-exchange` | Exchanges a Graph token for a session; links when called with a session | Account sign-in |
 | `POST /v1/sessions/refresh`, `POST /v1/sessions/revoke`, `GET /v1/sessions/current` | Rotating refresh, sign-out (one or all devices) | Account session |
+| `POST /v1/multiplayer/rooms`, `POST /v1/multiplayer/rooms/{id}/join`, `DELETE /v1/multiplayer/rooms/{id}`, `GET /v1/multiplayer/rooms/{id}/socket` (WebSocket) | Room admission, host-only close, signaling | Multiplayer (Bearer session; the socket takes a one-minute ticket) |
+| `POST /v1/rtc/official` | STUN and TURN credentials, one hour | Multiplayer |
 | `GET /v1/account`, `DELETE /v1/account`, `GET /v1/account/identities`, `POST /v1/account/identities/{google,discord}/{authorize,complete}` | Account, deletion, identity linking | Account settings |
 
 Remote flags are not applied yet. `kFlights` also holds security-relevant values such as `safeStorageEncryption`, so `/v1/config` needs an explicit allowlist before anything merges into it.
@@ -119,3 +121,20 @@ Both Workers run `worker.js` and `accounts.js` from `d6d62f030`, uploaded with `
 
 - Development: a sequential run of 30 sign-in requests from one address was not limited; a parallel burst of 80 returned 28 × 200 and 52 × 429. A raw Graph token returned 401 `provider_rejected`. In the real development launcher, signing out and then using Sign in with Microsoft (ID token path, 26 s) restored the existing account with all three methods, confirming the subject mapping. Sign out all devices returned to the signed-out view, and Discord sign-in restored the account. No renderer console errors.
 - Production (`https://api.olaveapi.com`): `/v1/status` 200, `/v1/account` 401 without a token, `/v1/releases/latest` 404 (empty bucket, unchanged), Google `authorize` used the launcher's loopback redirect, Discord `authorize` used `https://api.olaveapi.com/v1/auth/discord/callback`, the callback 302'd to the stored loopback port, and a Graph token returned 401. No real sign-in has been made against production, and no production build has been published with it.
+
+## Multiplayer (phase 7)
+
+`vardrynn-service/multiplayer.js` holds the routes and the `MultiplayerRoom` Durable Object. The Worker authenticates the Bearer session, rate-limits per account and forwards to the room object named by the room ID. Peers carry game traffic directly or through TURN; the service relays only signaling.
+
+| Binding | Purpose |
+| --- | --- |
+| `MULTIPLAYER_ROOMS` | Durable Object namespace for class `MultiplayerRoom` (needs a `new_sqlite_classes` or `new_classes` migration) |
+| `ROOM_TICKET_SECRET` | Secret that signs socket tickets. Without it every multiplayer route answers 503 `multiplayer_unconfigured` |
+| `MULTIPLAYER_RATE_LIMITER` | Optional Workers rate limiter, keyed by account |
+| `TURN_KEY_ID`, `TURN_API_TOKEN` | Optional Cloudflare Realtime TURN key. Without them `/v1/rtc/official` offers STUN only (`STUN_URLS`, default `stun:stun.cloudflare.com:3478`) |
+
+Rules enforced by the room object: 2 to 16 members (default 8); one connection per account (a newer one replaces the older, close code 4001); tickets are signed, expire after 60 seconds and seat the peer once; messages over 64 KiB or above 20 per second (burst 60) close the socket; signals are rebuilt field by field, members may signal only the host, and a shared TURN server must be a `turn:`/`turns:` URL. The host can remove a member (close code 4003, no rejoin) or hand over the role to a connected member. If the host's socket drops the room waits 60 seconds for it to return, then closes (4000); rooms also close 24 hours after creation, and closed records are deleted after an hour. Sockets are plain, not hibernating, so an open room is billed as an active Durable Object.
+
+The launcher refuses room and relay requests without a signed-in account (`multiplayer_sign_in_required`) and sends them only to the configured origin. Multiplayer telemetry is removed: diagnostics stay in the local log.
+
+Not in scope: paid relay, billing and entitlements. The XMCL billing views are gone from the multiplayer screen and the launcher refuses the billing calls. Not deployed yet: no Durable Object migration, secret or TURN key exists on development or production.
