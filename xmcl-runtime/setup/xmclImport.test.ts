@@ -73,6 +73,24 @@ describe('XMCL import', () => {
     expect(await readFile(join(source, 'secret'), 'utf8')).toBe('SECRET')
   })
 
+  it('never carries an XMCL account session into Vardrynn', async () => {
+    // XMCL keeps its launcher-account session and DPoP key in <profile>/secret, separate from game accounts.
+    await rm(join(source, 'secret'))
+    await mkdir(join(source, 'secret'))
+    await writeFile(join(source, 'secret', 'xmcl-xmcl-account-current-session'), 'XMCL-ACCOUNT-SESSION')
+    await writeFile(join(source, 'secret', 'xmcl-xmcl-account-dpop-key'), 'XMCL-ACCOUNT-SESSION')
+    await importer.preview(source)
+    await importer.copy()
+    await importer.activate()
+    await recoverXmclImport(profile)
+    const files = await readdir(profile, { recursive: true })
+    expect(files.some(f => String(f).split(/[\\/]/)[0] === 'secret')).toBe(false)
+    for (const file of files) {
+      const path = join(profile, String(file))
+      if ((await stat(path)).isFile()) expect(await readFile(path, 'utf8')).not.toContain('XMCL-ACCOUNT-SESSION')
+    }
+  })
+
   it('resumes an interrupted copy and repairs partial destination contents', async () => {
     await importer.preview(source)
     const running = importer.copy()
