@@ -6,6 +6,8 @@ import {
   getCurseforgeFileDownloadUrls,
 } from '@xmcl/curseforge'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
+import { getCurseforgeProxyBaseUrl, getVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
+import { kFlights } from '~/infra'
 import { diagnoseFile, onDownloadSingle, Tracker } from '@xmcl/installer'
 import { InstanceFile as _InstanceFile } from '@xmcl/instance'
 import { ModrinthV2Client, ProjectVersion } from '@xmcl/modrinth'
@@ -42,7 +44,10 @@ type InstanceFile = _InstanceFile & { downloads: string[]; icon?: string }
 export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
   const modrinth = new ModrinthV2Client({ fetch: createModrinthAuthenticatedFetch(app) })
   app.registry.register(ModrinthV2Client, modrinth)
-  const curseforge = new CurseforgeV1Client(process.env.CURSEFORGE_API_KEY || '', {
+  // The key stays on the Vardrynn service; a build without a service origin has no CurseForge access.
+  const origin = getVardrynnApiOrigin(await app.registry.get(kFlights))
+  const curseforge = new CurseforgeV1Client('', {
+    baseUrl: origin ? getCurseforgeProxyBaseUrl(origin) : undefined,
     fetch: (...args) => app.fetch(...args),
   })
   app.registry.register(CurseforgeV1Client, curseforge)

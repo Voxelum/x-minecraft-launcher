@@ -78,7 +78,6 @@ jobs:
           NODE_ENV: production
           # Installers (dmg, deb) are built for real releases and for dev test releases.
           RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') || inputs.publish == 'dev' }}
-          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
           # A dev test release must check the dev service, or it could never see its own update.
           VARDRYNN_API_BASE_URL: ${{ inputs.publish == 'dev' && vars.VARDRYNN_DEV_API_BASE_URL || vars.VARDRYNN_API_BASE_URL }}
           VARDRYNN_RELEASE_PUBLIC_KEY: ${{ vars.VARDRYNN_RELEASE_PUBLIC_KEY }}
@@ -131,7 +130,6 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh
         env:
-          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
           VARDRYNN_MICROSOFT_CLIENT_ID: ${{ vars.VARDRYNN_MICROSOFT_CLIENT_ID }}
           VARDRYNN_DISCORD_APP_ID: ${{ vars.VARDRYNN_DISCORD_APP_ID }}
           DESKGAP_VERSION: ${{ steps.deskgap.outputs.version }}

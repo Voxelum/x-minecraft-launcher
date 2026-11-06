@@ -1,5 +1,6 @@
 import { authenticate, handleAccountRoute } from './accounts.js'
 import { handleMultiplayerRoute } from './multiplayer.js'
+import { handleCurseforgeRoute } from './curseforge.js'
 
 export { MultiplayerRoom } from './multiplayer.js'
 
@@ -129,6 +130,8 @@ export default {
     if (account) return account
     const multiplayer = await handleMultiplayerRoute(request, env, pathname, authenticate)
     if (multiplayer) return multiplayer
+    const curseforge = await handleCurseforgeRoute(request, env, pathname)
+    if (curseforge) return curseforge
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       return json({ error: 'method_not_allowed' }, 405)
     }

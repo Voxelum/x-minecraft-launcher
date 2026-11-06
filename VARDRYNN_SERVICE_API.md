@@ -39,6 +39,7 @@ All paths are versioned. A breaking change takes a new prefix; `v1` responses ca
 | `POST /v1/sessions/refresh`, `POST /v1/sessions/revoke`, `GET /v1/sessions/current` | Rotating refresh, sign-out (one or all devices) | Account session |
 | `POST /v1/multiplayer/rooms`, `POST /v1/multiplayer/rooms/{id}/join`, `DELETE /v1/multiplayer/rooms/{id}`, `GET /v1/multiplayer/rooms/{id}/socket` (WebSocket) | Room admission, host-only close, signaling | Multiplayer (Bearer session; the socket takes a one-minute ticket) |
 | `GET`/`HEAD /v1/databases/mod-metadata/{db.sqlite,db.sqlite.sha1}`, `GET`/`HEAD /v1/databases/project-mapping/<locale>.sqlite.{gz,sha256}` | Mod metadata and project mapping databases, streamed from the bucket's `databases/` prefix | Mod identification and localized project names (see below) |
+| `GET`/`POST /v1/curseforge/v1/...` (also `v2`) | CurseForge API proxy that adds the API key | Every CurseForge search, lookup and install (see below) |
 | `POST /v1/rtc/official` | STUN and TURN credentials, one hour | Multiplayer |
 | `GET /v1/account`, `DELETE /v1/account`, `GET /v1/account/identities`, `POST /v1/account/identities/{google,discord}/{authorize,complete}` | Account, deletion, identity linking | Account settings |
 
@@ -55,6 +56,12 @@ The Worker streams files from `<bucket>/databases/<name>/` with presigned GETs a
 Setup (done 2026-11-06): the GitHub environment `databases` has no required reviewers, so the schedule can run, and holds `VARDRYNN_S3_{DEV,PROD}_{ACCESS_KEY_ID,SECRET_ACCESS_KEY}`. These are dedicated MinIO users with the policies `vardrynn-releases-{dev,prod}-databases`: they can read, write and delete only `databases/*` in their own bucket. Checked from outside: writes elsewhere in the bucket, reading `latest.json`, listing the bucket root and writing to the other bucket are all refused. The bucket and endpoint variables are the repository variables the release job already uses. The Workers read with their existing read-only pair.
 
 Deployment (2026-11-06): both buckets were filled by running `scripts/vardrynn-mirror-databases.sh` locally with these keys (mod database release `v25`, translations `v12`; a second run skipped every file as unchanged). `vardrynn-api-dev` and `vardrynn-api` were uploaded through the Scripts API from the committed `worker.js`, `accounts.js` and `multiplayer.js`, with every binding and secret unchanged. On both origins `/v1/status` is 200, account and room routes are 401 without a session, the full `db.sqlite` download and the `en` and `zh-cn` mapping files match their checksums, and unknown names are 404. The scheduled workflow starts running once this branch is on `master`; GitHub only schedules or dispatches workflows from the default branch.
+
+## CurseForge proxy
+
+The launcher holds no CurseForge API key. The main process's CurseForge client uses `<origin>/v1/curseforge` as its server, and renderer requests to `api.curseforge.com` are rewritten to the same place by `pluginApiFallback`. The Worker (`vardrynn-service/curseforge.js`) forwards only `/v1/` and `/v2/` CurseForge API paths, adds the `CURSEFORGE_API_KEY` secret, passes only `accept` and `content-type` upstream, limits POST bodies to 1 MB, and does not follow redirects. `CURSEFORGE_RATE_LIMITER` allows 300 requests per minute per client address (namespaces `1005` dev, `1006` production). File downloads come from CurseForge's CDN and need no key. A build without a service origin has no CurseForge access.
+
+Deployed 2026-11-06 to both Workers with the key from Infisical (`CURSEFORGE_API_KEY`). Checked on both origins: a game lookup, a search and a fingerprint POST return 200; other paths return 404. To rotate the key, set the Worker secret again; no launcher release is needed.
 
 ## Offline behavior
 

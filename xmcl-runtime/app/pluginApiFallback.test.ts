@@ -130,4 +130,28 @@ describe('pluginApiFallback', () => {
     expect(response.handled).toBe(true)
     expect(JSON.parse(response.body).error).toBe('xmcl_account_server_time_unavailable')
   })
+
+  test('sends renderer CurseForge calls to the Vardrynn proxy without a key', async () => {
+    const { handler } = createPlugin(vi.fn())
+    const request = {
+      method: 'GET',
+      url: new URL('https://api.curseforge.com/v1/mods/search?gameId=432&searchFilter=jei'),
+      headers: { 'x-api-key': '', accept: 'application/json' } as Record<string, string>,
+    }
+    const response: Record<string, unknown> = {}
+    await handler({ request, response })
+    expect(request.url.toString()).toBe('https://edge.example.test/v1/curseforge/v1/mods/search?gameId=432&searchFilter=jei')
+    expect(request.headers).toEqual({ accept: 'application/json' })
+    expect(response).toEqual({})
+  })
+
+  test('refuses CurseForge calls when the Vardrynn service is unconfigured', async () => {
+    const { handler } = createPlugin(vi.fn(), {})
+    const request = { method: 'GET', url: new URL('https://api.curseforge.com/v1/categories'), headers: {} }
+    const response: Record<string, any> = { headers: {} }
+    await handler({ request, response })
+    expect(response.handled).toBe(true)
+    expect(response.status).toBe(503)
+    expect(request.url.host).toBe('api.curseforge.com')
+  })
 })

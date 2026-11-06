@@ -74,3 +74,15 @@ export async function fetchVardrynnServiceStatus(
   if (!response.ok) return { state: response.status >= 500 ? 'unreachable' : 'incompatible' }
   return parseVardrynnStatus(await response.json().catch(() => undefined))
 }
+
+/**
+ * CurseForge API calls go through the Vardrynn service, which holds the API key.
+ * `https://api.curseforge.com/v1/mods?x=1` becomes `<origin>/v1/curseforge/v1/mods?x=1`.
+ */
+export function getCurseforgeProxyBaseUrl(origin: string) {
+  return `${origin}/v1/curseforge`
+}
+
+export function toCurseforgeProxyUrl(origin: string, url: URL) {
+  return new URL(`${getCurseforgeProxyBaseUrl(origin)}${url.pathname}${url.search}`)
+}
