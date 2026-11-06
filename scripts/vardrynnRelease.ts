@@ -13,15 +13,16 @@ export interface PackageFile {
 
 /**
  * Packages that can be handed to the OS installer, named by electron-builder's
- * `vardrynn-${version}-${arch}.${ext}`. Archives are published for manual download but
+ * `vardrynn-${version}-${arch}.${ext}` (`amd64` for x64 debs). Archives are published for manual download but
  * never offered as an update. Windows is excluded until its packages carry an
  * Authenticode signature, because the OS would refuse to install them.
  */
 export function classifyPackage(name: string, version: string) {
-  const match = new RegExp(`^vardrynn-${version.replace(/[.+]/g, '\\$&')}-(x64|arm64|ia32)\\.(dmg|deb)$`).exec(basename(name))
+  const match = new RegExp(`^vardrynn-${version.replace(/[.+]/g, '\\$&')}-(x64|amd64|arm64|ia32)\\.(dmg|deb)$`).exec(basename(name))
   if (!match) return undefined
   const platform = { dmg: 'darwin', deb: 'linux' }[match[2] as 'dmg' | 'deb']
-  return { platform, arch: match[1] }
+  // electron-builder names x64 Debian packages with Debian's own `amd64`.
+  return { platform, arch: match[1] === 'amd64' ? 'x64' : match[1] }
 }
 
 export function generateReleaseKeyPair() {
