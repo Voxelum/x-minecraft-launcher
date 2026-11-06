@@ -1,6 +1,6 @@
 # Vardrynn independence plan
 
-Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, and development and production status services are deployed. The launcher and CI side of phase 5 is implemented; hosting, signing keys and platform qualification are open. Phase 6 has started: the launcher reads Vardrynn's Microsoft and Discord application IDs from the build (`VARDRYNN_MICROSOFT_CLIENT_ID`, `VARDRYNN_DISCORD_APP_ID`) and ships none of XMCL's. The account backend (`vardrynn-service/accounts.js` on D1: Microsoft, Discord and Google sign-in, refresh, sign-out, deletion, linking) is implemented, deployed to development and verified there with real Discord, Google and Microsoft sign-in, refresh, sign-out, re-sign-in and restart; billing is disabled. Settings has a Vardrynn account screen. Open: production deployment, XMCL account reconciliation during migration, and the limits listed in `VARDRYNN_SERVICE_API.md`. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
+Status: phases 1, 2 and 3 implemented with macOS validation on 2026-11-04; Windows/Linux qualification remains open. The launcher side of phase 4 is implemented, and development and production status services are deployed. The launcher and CI side of phase 5 is implemented; hosting, signing keys and platform qualification are open. Phase 6 is implemented and deployed to development and production (`vardrynn-service/accounts.js` on D1; Microsoft, Google and Discord sign-in; Settings > Vardrynn account): its acceptance check passed on development with real sign-ins; see `VARDRYNN_SERVICE_API.md`. Later phases remain proposed. This document records the implementation sequence; it does not authorize a release or service deployment.
 
 ## Goal
 
@@ -86,6 +86,8 @@ Relevant code: `xmcl-electron-app/main/utils/updater.ts`, `xmcl-electron-app/mai
 Acceptance: new and migrated users can sign in, renew, sign out, and recover from failed authentication without XMCL services.
 
 Relevant code: `xmcl-runtime/xmclAccount/`, `xmcl-runtime/user/pluginOfficialUserApi.ts`, `xmcl-runtime/presence/PresenceService.ts`.
+
+Implementation (2026-11-06): the service issues rotating Bearer sessions, verifies Microsoft ID tokens and Google/Discord PKCE sign-ins (Discord through a fixed service callback), rate-limits unauthenticated routes and supports deletion and identity linking; merging is refused with a conflict. The launcher uses Vardrynn's own Microsoft and Discord application IDs and refuses XMCL Plus billing calls. XMCL account state is reconciled by never importing it: the importer copies only allowlisted settings, schema-filtered game accounts and game files, never XMCL's `secret` folder, so a migrated user starts signed out of Vardrynn and signs in afresh (`xmclImport.test.ts` plants an XMCL account session to prove it). Verified on development: new-user sign-in with all three providers, linking, refresh, sign-out (one and all devices), recovery by signing in again, restart persistence. Not verified: a real sign-in against production, account deletion confirmed end to end in the launcher (covered by service tests), Windows and Linux.
 
 ### 7. Replace multiplayer and Together
 

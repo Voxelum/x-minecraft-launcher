@@ -22,7 +22,8 @@ MSAL caches, launcher account sessions, protocol registrations, backups, feature
 flags, update metadata, proxy credentials, Agent settings, launch hooks or launch
 environment variables. Microsoft/offline account references are schema-filtered;
 online references are expired and require sign-in. Other account systems require
-adding again. Do not reuse `migrate.ts`, which moves the source.
+adding again. XMCL launcher-account sessions live in XMCL's `secret` folder, which is
+never copied, so a migrated user is signed out of Vardrynn until they sign in. Do not reuse `migrate.ts`, which moves the source.
 
 Copy regular files atomically, preserving executable modes. Retry compares file
 contents, so interrupted copies can resume without duplicating data. Cancel

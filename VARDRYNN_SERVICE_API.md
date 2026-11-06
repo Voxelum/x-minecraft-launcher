@@ -7,7 +7,7 @@ This is the launcher's contract with the Vardrynn service. Its types live in `xm
 | Production | `https://api.olaveapi.com` | `vardrynn-api` |
 | Development | `https://dev-api.olaveapi.com` | `vardrynn-api-dev` |
 
-Builds are unconfigured unless `VARDRYNN_API_BASE_URL` is set. Production is deliberately not the default yet: account calls, Modrinth sign-in and community translation would then reach routes that return 404, instead of failing predictably as unconfigured. Make it the default once those routes exist.
+Builds are unconfigured unless `VARDRYNN_API_BASE_URL` is set. Since 2026-11-06 the GitHub variable `VARDRYNN_API_BASE_URL` is `https://api.olaveapi.com`, so CI production builds use the production service (dev test releases use `VARDRYNN_DEV_API_BASE_URL`). Account routes exist there; Modrinth sign-in and community translation still reach routes that return 404, so they fail as incompatible rather than unconfigured.
 
 ## Endpoint selection
 
@@ -88,8 +88,10 @@ Behavior:
 - Linking an identity that belongs to another account returns 409 `identity_conflict`. Account merge routes do not exist, and old XMCL accounts are not imported.
 - `DELETE /v1/account` erases identities and revokes all sessions at once. Recovery is signing in again with any linked provider; there are no passwords.
 - Billing and subscription routes (`/v1/xmcl-plus/*`, `/v1/billing/*`) do not exist; the launcher refuses them locally with `billing_unavailable`.
+- Microsoft sign-in sends the ID token from the launcher's MSAL sign-in. The service verifies the RS256 signature against Microsoft's consumer keys (`login.microsoftonline.com/consumers/discovery/v2.0/keys`, cached for an hour and refetched for an unknown `kid`), the issuer and `tid` of the personal-account tenant, `aud` = `MICROSOFT_CLIENT_ID`, and `exp`/`nbf` with five minutes of skew. A Graph access token is rejected. The identity subject is the personal account's Graph user id (the last 16 hex digits of `oid`), matching identities stored before this change.
+- `/v1/auth/*` and `/v1/sessions/refresh` are limited per `cf-connecting-ip` by the `AUTH_RATE_LIMITER` Workers rate-limit binding: 20 requests per 60 seconds, namespace `1001` on development and `1002` on production. Over the limit returns 429 `rate_limited` with `retry-after: 60`. Cloudflare counts per location and approximately. Without the binding requests are not limited. Deployments must keep this binding along with `DB`, the secrets and the S3 settings.
 
-Open: Microsoft Graph tokens for personal accounts are often opaque, so the application check only applies when the token is a readable JWT (a different issuer design, such as an ID token, would close this); no rate limiting on unauthenticated routes (add Cloudflare rules before enabling); Modrinth identity is not supported; D1 databases, `DB` bindings, all five OAuth settings and the three application registrations are provisioned (2026-11-05); production has not received the account code.
+Open: Modrinth identity is not supported; account merging is not supported; the launcher's DPoP binding is unused; monitoring and backups of the D1 databases do not exist.
 
 ### Development deployment and sign-in check (2026-11-06)
 
@@ -110,3 +112,10 @@ Found: after sign-out, re-reading the account state returned the old account and
 Settings > Vardrynn account (`XmclAccountPanel.vue`) shows the account, session (refresh, sign out this device, sign out all devices), the Microsoft, Google and Discord sign-in methods with their display names, and account deletion behind a confirmation dialog (`DELETE /v1/account`). It shows a notice instead of sign-in buttons when the build has no service origin. Modrinth sign-in and account merging are not offered; an identity that belongs to another account shows a conflict notice. Only the English strings are updated.
 
 Real development launcher at 1200x720: the signed-in screen showed all three methods; Sign out this device switched it to the signed-out view; Sign in with Discord restored the account; Refresh, and opening and cancelling the delete dialog, worked; no renderer console errors. At an emulated 800x400 viewport the cards stack and the method buttons fit without horizontal overflow. Not exercised: confirming deletion (it would delete your dev account), sign out all devices, and the unconfigured notice.
+
+### Hardening and production deployment (2026-11-06)
+
+Both Workers run `worker.js` and `accounts.js` from `d6d62f030`, uploaded with `keep_bindings` for `d1`, `secret_text` and `plain_text` plus the new `AUTH_RATE_LIMITER` binding. Settings reads before and after showed that binding as the only change; production `DB` is `vardrynn-accounts-prod`.
+
+- Development: a sequential run of 30 sign-in requests from one address was not limited; a parallel burst of 80 returned 28 × 200 and 52 × 429. A raw Graph token returned 401 `provider_rejected`. In the real development launcher, signing out and then using Sign in with Microsoft (ID token path, 26 s) restored the existing account with all three methods, confirming the subject mapping. Sign out all devices returned to the signed-out view, and Discord sign-in restored the account. No renderer console errors.
+- Production (`https://api.olaveapi.com`): `/v1/status` 200, `/v1/account` 401 without a token, `/v1/releases/latest` 404 (empty bucket, unchanged), Google `authorize` used the launcher's loopback redirect, Discord `authorize` used `https://api.olaveapi.com/v1/auth/discord/callback`, the callback 302'd to the stored loopback port, and a Graph token returned 401. No real sign-in has been made against production, and no production build has been published with it.
