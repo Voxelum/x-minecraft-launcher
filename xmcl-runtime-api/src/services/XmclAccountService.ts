@@ -89,6 +89,8 @@ export interface XmclAccountService {
   confirmMerge(): Promise<void>
   refreshSession(): Promise<void>
   revokeSession(allDevices?: boolean): Promise<void>
+  /** Permanently deletes the Vardrynn account and signs out every device. */
+  deleteAccount(): Promise<void>
   getTogetherOverview(): Promise<XmclTogetherOverview>
   claimTogetherTrial(): Promise<XmclTogetherTrial>
   createTogetherOrder(amountMinor: number): Promise<XmclTogetherOrder>

@@ -338,6 +338,11 @@ export class XmclAccountApi {
     return body.taskId
   }
 
+  /** Deletes the account at once; the service erases its identities and ends every session. */
+  async deleteAccount(credential: XmclSessionCredential): Promise<void> {
+    await this.request('/v1/account', { method: 'DELETE' }, credential, crypto.randomUUID())
+  }
+
   async revokeSession(credential: XmclSessionCredential, allDevices: boolean): Promise<void> {
     await this.request(
       '/v1/sessions/revoke',

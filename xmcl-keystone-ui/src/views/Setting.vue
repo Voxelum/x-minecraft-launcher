@@ -63,6 +63,13 @@
           <SettingGeneral class="mb-4" />
           <SettingAdvanced />
         </section>
+        <section id="account" class="mb-8 scroll-target" role="region" :aria-label="t('xmclAccount.title')">
+          <SettingHeader
+            :title="t('xmclAccount.title')"
+            icon="verified_user"
+          />
+          <XmclAccountPanel />
+        </section>
         <section id="appearance" class="mb-8 scroll-target" role="region" :aria-label="t('setting.appearance')">
           <SettingHeader
             icon="brush"
@@ -117,6 +124,7 @@ import { useI18n } from 'vue-i18n'
 import SettingUpdateInfoDialog from './SettingUpdateInfoDialog.vue'
 import SettingUpdate from './SettingUpdate.vue'
 import SettingGeneral from './SettingGeneral.vue'
+import XmclAccountPanel from '@/components/XmclAccountPanel.vue'
 import SettingMigrationDialog from './SettingMigrationDialog.vue'
 import SettingGlobal from './SettingGlobal.vue'
 import SettingAbout from './SettingAbout.vue'
@@ -163,6 +171,7 @@ let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 
 const sections = [
   { id: 'general', title: 'setting.general', icon: 'tune' },
+  { id: 'account', title: 'xmclAccount.title', icon: 'verified_user' },
   { id: 'appearance', title: 'setting.appearance', icon: 'palette' },
   { id: 'global', title: 'setting.globalSetting', icon: 'videogame_asset' },
   { id: 'network', title: 'setting.network', icon: 'wifi' },

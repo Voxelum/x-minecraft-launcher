@@ -346,6 +346,19 @@ describe('XmclAccountApi', () => {
     expect((confirmHeaders as Headers).get('Idempotency-Key')).toBeTruthy()
   })
 
+  it('deletes the account with an authenticated DELETE', async () => {
+    const fetch = vi.fn(async (_input: string | URL, _init?: RequestInit) => new Response(null, { status: 204 }))
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
+    const credential = { ...M1_LOCAL_AUTH_FIXTURE.session, tokenType: 'Bearer' as const }
+
+    await api.deleteAccount(credential)
+
+    const [url, init] = fetch.mock.calls[0]!
+    expect(String(url)).toBe('https://edge.example.test/v1/account')
+    expect(init?.method).toBe('DELETE')
+    expect(new Headers(init?.headers).get('Authorization')).toBe(`Bearer ${credential.accessToken}`)
+  })
+
   it('refuses billing and subscription routes without sending a request', async () => {
     const fetch = vi.fn(async (_input: string | URL, _init?: RequestInit) => Response.json({}))
     const api = new XmclAccountApi(fetch, 'https://edge.example.test/')

@@ -333,6 +333,14 @@ export class XmclAccountService
   }
 
   @Singleton()
+  async deleteAccount(): Promise<void> {
+    await this.initialize()
+    const credential = await this.requireValidCredential()
+    await this.api.deleteAccount(credential)
+    await this.clearSession(credential.sessionId)
+  }
+
+  @Singleton()
   async getTogetherOverview() {
     await this.initialize()
     return this.api.getTogetherOverview(await this.requireValidCredential())

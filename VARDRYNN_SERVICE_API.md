@@ -103,4 +103,10 @@ Real development launcher (`dev:main` with `VARDRYNN_API_BASE_URL=https://dev-ap
 - `revokeSession` cleared the main-process credential (`refreshAccount` then failed with `xmcl_account_session_missing`). Signing in with Discord again restored the same account with a new session and all three identities.
 - After restarting Electron, the stored session loaded and `refreshAccount` succeeded.
 
-Found: after sign-out, the renderer's synced account state still shows the old account and session IDs (identities are emptied), even after a page reload; the main process has no credential. The launcher needs an account screen before this matters, and the stale display should be fixed then. The test account (your Discord, Google and Microsoft identities) remains in `vardrynn-accounts-dev`.
+Found: after sign-out, re-reading the account state returned the old account and session IDs. The preload reused its cached state object with `Object.assign`, which cannot clear fields that became `undefined`; it now drops absent fields (fixed with the account screen below). The test account (your Discord, Google and Microsoft identities) remains in `vardrynn-accounts-dev`.
+
+### Account screen (2026-11-06)
+
+Settings > Vardrynn account (`XmclAccountPanel.vue`) shows the account, session (refresh, sign out this device, sign out all devices), the Microsoft, Google and Discord sign-in methods with their display names, and account deletion behind a confirmation dialog (`DELETE /v1/account`). It shows a notice instead of sign-in buttons when the build has no service origin. Modrinth sign-in and account merging are not offered; an identity that belongs to another account shows a conflict notice. Only the English strings are updated.
+
+Real development launcher at 1200x720: the signed-in screen showed all three methods; Sign out this device switched it to the signed-out view; Sign in with Discord restored the account; Refresh, and opening and cancelling the delete dialog, worked; no renderer console errors. At an emulated 800x400 viewport the cards stack and the method buttons fit without horizontal overflow. Not exercised: confirming deletion (it would delete your dev account), sign out all devices, and the unconfigured notice.

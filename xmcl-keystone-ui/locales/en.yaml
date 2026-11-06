@@ -917,22 +917,29 @@ migrateMinecraft:
   name: Migrate Minecraft Files
 xmclAccount:
   accountSummary: Account
-  confirmMerge: Confirm account merge
   createdAt: Created {date}
-  description: Your passwordless XMCL identity, separate from Minecraft game accounts.
+  deleteAction: Delete account
+  deleteConfirmText: This permanently deletes your Vardrynn account, unlinks every sign-in method and signs out all devices. Your Minecraft game accounts and local data are not affected. This cannot be undone.
+  deleteConfirmTitle: Delete your Vardrynn account?
+  deleteDescription: Removes the account and its sign-in methods for good.
+  deleteTitle: Delete account
+  description: Your passwordless Vardrynn identity, separate from Minecraft game accounts.
   expiresAt: Expires {date}
-  gameAccountsSeparate: Removing a game account does not unlink an XMCL login method.
-  guest: Guest
-  identityConflict: This {provider} login belongs to another XMCL Account. Accounts are never merged automatically.
-  linkAccountWith: Link account with
-  mergePreview: Review the resources that will move before confirming.
-  mergeNeedsSession: Sign in to the XMCL Account you want to keep before reviewing the merge.
-  mergeQueued: Account merge is in progress.
-  requestFailed: The XMCL Account service could not complete this request. Your game account is unchanged.
-  reviewMerge: Review merge
+  gameAccountsSeparate: Removing a game account does not unlink a Vardrynn sign-in method.
+  guest: Signed out
+  identityConflict: This {provider} login already belongs to another Vardrynn account. Accounts are never merged; sign out and sign in with {provider} to use that account.
+  link: Link {provider}
+  linkAction: Link
+  linked: Linked
+  linkedAs: '{provider} linked as {name}'
+  providerUnconfigured: This sign-in method is not available in this build.
+  requestFailed: The Vardrynn account service could not complete this request. Your game accounts are unchanged.
   session: Session
   sessionActive: Active
   sessionExpired: Expired
+  signInMethods: Sign-in methods
+  signInWith: Sign in with
+  signInWithProvider: Sign in with {provider}
   signOutAll: Sign out all devices
   signOutDevice: Sign out this device
   status:
@@ -940,7 +947,9 @@ xmclAccount:
     deleted: Deleted
     deletion_pending: Deletion pending
     merged: Merged
-  title: XMCL Account
+  timedOut: Sign-in timed out. Try again.
+  title: Vardrynn account
+  unconfigured: This build is not connected to a Vardrynn service, so accounts are unavailable.
 minecraftFriends:
   accept: Accept
   add: Add a friend

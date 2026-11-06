@@ -4,74 +4,41 @@
     class="xmcl-account-panel surface-card-subsection rounded-xl"
     :aria-label="t('xmclAccount.title')"
   >
-    <div class="flex items-start justify-between gap-4">
-      <div>
-        <div class="flex items-center gap-2">
-          <v-icon color="primary" aria-hidden="true">verified_user</v-icon>
-          <h2 class="text-lg font-semibold">{{ t('xmclAccount.title') }}</h2>
-        </div>
-        <p class="mt-1 text-sm opacity-60">{{ t('xmclAccount.description') }}</p>
-      </div>
+    <div class="flex items-center justify-between gap-4">
+      <p class="text-sm opacity-60">{{ t('xmclAccount.description') }}</p>
       <v-chip :color="account ? accountStatusColor : undefined" size="small" variant="tonal">
         {{ account ? t(`xmclAccount.status.${account.status}`) : t('xmclAccount.guest') }}
       </v-chip>
     </div>
 
     <v-alert
-      v-if="conflict"
+      v-if="!configured"
+      data-testid="xmcl-account-unconfigured"
+      type="info"
+      variant="tonal"
+      class="mt-4"
+    >
+      {{ t('xmclAccount.unconfigured') }}
+    </v-alert>
+
+    <v-alert
+      v-if="conflictProvider"
       data-testid="xmcl-account-conflict"
       type="warning"
       variant="tonal"
       class="mt-4"
     >
-      {{ t('xmclAccount.identityConflict', { provider: providerName(conflict.provider) }) }}
-      <template #append>
-        <v-btn
-          v-if="session"
-          data-testid="xmcl-account-merge-prepare"
-          size="small"
-          variant="tonal"
-          :loading="busy"
-          @click="prepareMerge"
-        >
-          {{ t('xmclAccount.reviewMerge') }}
-        </v-btn>
-        <span v-else class="text-xs">{{ t('xmclAccount.mergeNeedsSession') }}</span>
-      </template>
+      {{ t('xmclAccount.identityConflict', { provider: providerName(conflictProvider) }) }}
     </v-alert>
-
     <v-alert
-      v-if="mergePreview"
-      data-testid="xmcl-account-merge-preview"
-      type="info"
+      v-else-if="errorCode"
+      data-testid="xmcl-account-error"
+      type="error"
       variant="tonal"
       class="mt-4"
     >
-      <div class="font-medium">{{ t('xmclAccount.mergePreview') }}</div>
-      <ul class="mt-2 text-sm">
-        <li v-for="resource in mergePreview.resources" :key="resource.type">
-          {{ resource.type
-          }}<template v-if="resource.count !== undefined">: {{ resource.count }}</template>
-        </li>
-      </ul>
-      <v-btn
-        data-testid="xmcl-account-merge-confirm"
-        class="mt-3"
-        size="small"
-        color="primary"
-        :loading="busy"
-        @click="confirmMerge"
-      >
-        {{ t('xmclAccount.confirmMerge') }}
-      </v-btn>
-    </v-alert>
-
-    <v-alert v-if="mergeTaskId" type="success" variant="tonal" class="mt-4">
-      {{ t('xmclAccount.mergeQueued') }}
-    </v-alert>
-
-    <v-alert v-if="error" type="error" variant="tonal" class="mt-4">
-      {{ t('xmclAccount.requestFailed') }}
+      {{ errorMessage }}
+      <div class="mt-1 text-xs opacity-60 font-mono">{{ errorCode }}</div>
     </v-alert>
 
     <template v-if="account">
@@ -92,23 +59,20 @@
               {{ t('xmclAccount.session') }}
             </div>
             <v-chip :color="sessionExpired ? 'warning' : 'success'" size="x-small" variant="tonal">
-              {{
-                sessionExpired ? t('xmclAccount.sessionExpired') : t('xmclAccount.sessionActive')
-              }}
+              {{ sessionExpired ? t('xmclAccount.sessionExpired') : t('xmclAccount.sessionActive') }}
             </v-chip>
           </div>
           <div class="mt-2 text-sm">
-            {{
-              session ? t('xmclAccount.expiresAt', { date: formatDate(session.expiresAt) }) : '—'
-            }}
+            {{ session ? t('xmclAccount.expiresAt', { date: formatDate(session.expiresAt) }) : '—' }}
           </div>
           <div class="mt-3 flex flex-wrap gap-2">
             <v-btn
               data-testid="xmcl-session-refresh"
               size="small"
               variant="tonal"
-              :loading="busy"
-              @click="refreshSession"
+              :loading="busy && pending === 'refresh'"
+              :disabled="busy"
+              @click="act('refresh', refreshSession)"
             >
               {{ t('shared.refresh') }}
             </v-btn>
@@ -117,11 +81,17 @@
               size="small"
               variant="text"
               :disabled="busy"
-              @click="revokeSession(false)"
+              @click="act('signout', () => revokeSession(false))"
             >
               {{ t('xmclAccount.signOutDevice') }}
             </v-btn>
-            <v-btn size="small" variant="text" :disabled="busy" @click="revokeSession(true)">
+            <v-btn
+              data-testid="xmcl-session-revoke-all"
+              size="small"
+              variant="text"
+              :disabled="busy"
+              @click="act('signout', () => revokeSession(true))"
+            >
               {{ t('xmclAccount.signOutAll') }}
             </v-btn>
           </div>
@@ -130,113 +100,91 @@
     </template>
 
     <div class="mt-5">
-      <div v-if="!account" class="text-sm font-semibold tracking-wide opacity-80 mb-3">
-        {{ t('xmclAccount.linkAccountWith') }}
+      <div class="text-sm font-semibold tracking-wide opacity-80 mb-3">
+        {{ account ? t('xmclAccount.signInMethods') : t('xmclAccount.signInWith') }}
       </div>
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Microsoft -->
+      <div data-testid="xmcl-account-identities" class="grid gap-3 sm:grid-cols-3">
         <button
+          v-for="provider in providers"
+          :key="provider.id"
           type="button"
-          data-testid="xmcl-provider-microsoft"
-          class="provider-btn provider-btn--microsoft"
-          :class="{ 'provider-btn--linked': isProviderLinked('microsoft') }"
-          :disabled="busy || isProviderLinked('microsoft')"
-          @click="openMicrosoftLogin"
-        >
-          <v-icon size="20" aria-hidden="true" class="provider-icon">
-            xmcl:microsoft
-          </v-icon>
-          <span class="provider-name">Microsoft</span>
-          <v-icon v-if="isProviderLinked('microsoft')" color="success" size="18">
-            check_circle
-          </v-icon>
-        </button>
-
-        <!-- Modrinth -->
-        <button
-          type="button"
-          data-testid="xmcl-provider-modrinth"
-          class="provider-btn provider-btn--modrinth"
-          :class="{ 'provider-btn--linked': isProviderLinked('modrinth') }"
-          :disabled="busy || modrinthLoginPending || isProviderLinked('modrinth')"
-          @click="openModrinthLogin"
+          :data-testid="`xmcl-provider-${provider.id}`"
+          class="provider-btn"
+          :class="[`provider-btn--${provider.id}`, { 'provider-btn--linked': !!identityOf(provider.id) }]"
+          :disabled="!configured || busy || !!identityOf(provider.id)"
+          :aria-label="identityOf(provider.id)
+            ? t('xmclAccount.linkedAs', { provider: provider.name, name: identityOf(provider.id)?.displayName ?? provider.name })
+            : (account ? t('xmclAccount.link', { provider: provider.name }) : t('xmclAccount.signInWithProvider', { provider: provider.name }))"
+          @click="signIn(provider.id)"
         >
           <v-progress-circular
-            v-if="modrinthLoginPending"
+            v-if="busy && pending === provider.id"
             indeterminate
             size="18"
             width="2"
             color="primary"
           />
-          <v-icon v-else size="20" aria-hidden="true" class="provider-icon">
-            xmcl:modrinth
-          </v-icon>
-          <span class="provider-name">Modrinth</span>
-          <v-icon v-if="isProviderLinked('modrinth')" color="success" size="18">
-            check_circle
-          </v-icon>
-        </button>
-
-        <!-- Google -->
-        <button
-          type="button"
-          data-testid="xmcl-provider-google"
-          class="provider-btn provider-btn--google"
-          :class="{ 'provider-btn--linked': isProviderLinked('google') }"
-          :disabled="busy || isProviderLinked('google')"
-          @click="authorizeProvider('google')"
-        >
-          <v-progress-circular
-            v-if="busy && !isProviderLinked('google')"
-            indeterminate
-            size="18"
-            width="2"
-            color="primary"
-          />
-          <v-icon v-else size="20" aria-hidden="true" class="provider-icon">
-            xmcl:google
-          </v-icon>
-          <span class="provider-name">Google</span>
-          <v-icon v-if="isProviderLinked('google')" color="success" size="18">
-            check_circle
-          </v-icon>
-        </button>
-
-        <!-- Discord -->
-        <button
-          type="button"
-          data-testid="xmcl-provider-discord"
-          class="provider-btn provider-btn--discord"
-          :class="{ 'provider-btn--linked': isProviderLinked('discord') }"
-          :disabled="busy || isProviderLinked('discord')"
-          @click="authorizeProvider('discord')"
-        >
-          <v-progress-circular
-            v-if="busy && !isProviderLinked('discord')"
-            indeterminate
-            size="18"
-            width="2"
-            color="primary"
-          />
-          <v-icon v-else size="20" aria-hidden="true" class="provider-icon">
-            xmcl:discord
-          </v-icon>
-          <span class="provider-name">Discord</span>
-          <v-icon v-if="isProviderLinked('discord')" color="success" size="18">
+          <v-icon v-else size="20" aria-hidden="true">xmcl:{{ provider.id }}</v-icon>
+          <span class="provider-text">
+            <span class="provider-name">{{ provider.name }}</span>
+            <span v-if="identityOf(provider.id)" class="provider-detail">
+              {{ identityOf(provider.id)?.displayName ?? t('xmclAccount.linked') }}
+            </span>
+            <span v-else-if="account" class="provider-detail">{{ t('xmclAccount.linkAction') }}</span>
+          </span>
+          <v-icon v-if="identityOf(provider.id)" color="success" size="18" aria-hidden="true">
             check_circle
           </v-icon>
         </button>
       </div>
       <p class="mt-3 text-xs opacity-60">{{ t('xmclAccount.gameAccountsSeparate') }}</p>
     </div>
+
+    <div v-if="account" class="mt-5 flex items-center justify-between gap-4 danger-row rounded-xl p-4">
+      <div>
+        <div class="text-sm font-semibold">{{ t('xmclAccount.deleteTitle') }}</div>
+        <div class="text-xs opacity-60">{{ t('xmclAccount.deleteDescription') }}</div>
+      </div>
+      <v-btn
+        data-testid="xmcl-account-delete"
+        size="small"
+        color="error"
+        variant="tonal"
+        :disabled="busy"
+        @click="confirmingDelete = true"
+      >
+        {{ t('xmclAccount.deleteAction') }}
+      </v-btn>
+    </div>
+
+    <v-dialog v-model="confirmingDelete" :width="440">
+      <v-card data-testid="xmcl-account-delete-dialog" :title="t('xmclAccount.deleteConfirmTitle')">
+        <v-card-text>{{ t('xmclAccount.deleteConfirmText') }}</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="confirmingDelete = false">{{ t('shared.cancel') }}</v-btn>
+          <v-btn
+            data-testid="xmcl-account-delete-confirm"
+            color="error"
+            variant="flat"
+            :loading="busy && pending === 'delete'"
+            @click="confirmDelete"
+          >
+            {{ t('xmclAccount.deleteAction') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </section>
 </template>
 
 <script lang="ts" setup>
 import { kXmclAccount } from '@/composables/xmclAccount'
-import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
+import { kFlights } from '@/composables/flights'
 import { injection } from '@/util/inject'
-import type { XmclAccountStatus, XmclOAuthProvider } from '@xmcl/runtime-api'
+import { VARDRYNN_API_ORIGIN_FLIGHT, type XmclAccountStatus, type XmclOAuthProvider } from '@xmcl/runtime-api'
+
+type Provider = Extract<XmclOAuthProvider, 'microsoft' | 'google' | 'discord'>
 
 const { t, locale } = useI18n()
 const {
@@ -244,23 +192,67 @@ const {
   identities,
   session,
   conflict,
-  mergePreview,
-  mergeTaskId,
   sessionExpired,
   busy,
   error,
   authorizeMicrosoft,
-  authorizeModrinth,
   authorizeProvider,
-  prepareMerge,
-  confirmMerge,
   refreshSession,
   revokeSession,
+  deleteAccount,
 } = injection(kXmclAccount)
-const {
-  authenticate: authenticateModrinth,
-  isValidatingUser: modrinthLoginPending,
-} = injection(kModrinthAuthenticatedAPI)
+const flights = inject(kFlights, {})
+const configured = computed(() => !!flights[VARDRYNN_API_ORIGIN_FLIGHT])
+
+const providers: Array<{ id: Provider; name: string }> = [
+  { id: 'microsoft', name: 'Microsoft' },
+  { id: 'google', name: 'Google' },
+  { id: 'discord', name: 'Discord' },
+]
+
+const pending = ref<string>()
+const confirmingDelete = ref(false)
+const lastProvider = ref<Provider>()
+
+async function act(name: string, action: () => Promise<void>) {
+  pending.value = name
+  try {
+    await action()
+  } finally {
+    pending.value = undefined
+  }
+}
+
+function signIn(provider: Provider) {
+  lastProvider.value = provider
+  return act(provider, () => provider === 'microsoft' ? authorizeMicrosoft() : authorizeProvider(provider))
+}
+
+async function confirmDelete() {
+  await act('delete', deleteAccount)
+  if (!error.value) confirmingDelete.value = false
+}
+
+const errorCode = computed(() => {
+  const e = error.value as { code?: string; message?: string } | undefined
+  if (!e) return undefined
+  return e.code || e.message || 'xmcl_account_request_failed'
+})
+
+// The service reports a provider identity that belongs to another account as identity_conflict.
+const conflictProvider = computed<XmclOAuthProvider | undefined>(() =>
+  conflict.value?.provider ?? (errorCode.value === 'identity_conflict' ? lastProvider.value : undefined))
+
+const errorMessage = computed(() => {
+  switch (errorCode.value) {
+    case 'vardrynn_service_unconfigured': return t('xmclAccount.unconfigured')
+    case 'MicrosoftClientUnconfigured':
+    case 'provider_unconfigured': return t('xmclAccount.providerUnconfigured')
+    case 'authorization_timeout': return t('xmclAccount.timedOut')
+    case 'interactive_microsoft_auth_not_supported': return t('xmclAccount.providerUnconfigured')
+    default: return t('xmclAccount.requestFailed')
+  }
+})
 
 const accountStatusColor = computed(() => {
   const colors: Record<XmclAccountStatus, string> = {
@@ -276,31 +268,15 @@ function providerName(provider: XmclOAuthProvider) {
   return provider[0].toUpperCase() + provider.slice(1)
 }
 
-function providerIcon(provider: XmclOAuthProvider) {
-  return `xmcl:${provider}`
-}
-
-function isProviderLinked(provider: XmclOAuthProvider) {
-  return identities.value.some((identity) => identity.provider === provider)
+function identityOf(provider: Provider) {
+  return identities.value.find((identity) => identity.provider === provider)
 }
 
 function formatDate(value: string) {
   const date = new Date(value)
   return Number.isNaN(date.valueOf())
     ? '—'
-    : new Intl.DateTimeFormat(locale.value, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(date)
-}
-
-function openMicrosoftLogin() {
-  authorizeMicrosoft()
-}
-
-async function openModrinthLogin() {
-  await authenticateModrinth()
-  await authorizeModrinth()
+    : new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(date)
 }
 </script>
 
@@ -318,52 +294,62 @@ async function openModrinthLogin() {
 .provider-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  height: 46px;
-  padding: 0 16px;
+  min-height: 52px;
+  padding: 6px 14px;
   border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-weight: 500;
+  background-color: rgba(var(--v-theme-on-surface), 0.04);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
   font-size: 0.875rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.2s, border-color 0.2s;
   cursor: pointer;
-  user-select: none;
   width: 100%;
   color: inherit;
+  text-align: left;
 }
 
 .provider-btn:hover:not(:disabled) {
-  background-color: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: rgba(var(--v-theme-on-surface), 0.08);
 }
 
-.provider-btn--microsoft:hover:not(:disabled) {
-  border-color: rgba(0, 164, 239, 0.45);
-}
-
-.provider-btn--modrinth:hover:not(:disabled) {
-  border-color: rgba(93, 164, 38, 0.45);
-}
-
-.provider-btn--google:hover:not(:disabled) {
-  border-color: rgba(66, 133, 244, 0.45);
-}
-
-.provider-btn--discord:hover:not(:disabled) {
-  border-color: rgba(88, 101, 242, 0.45);
-}
+.provider-btn--microsoft:hover:not(:disabled) { border-color: rgba(0, 164, 239, 0.45); }
+.provider-btn--google:hover:not(:disabled) { border-color: rgba(66, 133, 244, 0.45); }
+.provider-btn--discord:hover:not(:disabled) { border-color: rgba(88, 101, 242, 0.45); }
 
 .provider-btn:disabled {
+  cursor: default;
+}
+
+.provider-btn:disabled:not(.provider-btn--linked) {
   opacity: 0.55;
-  cursor: not-allowed;
 }
 
 .provider-btn--linked {
   background-color: rgba(76, 175, 80, 0.08);
   border-color: rgba(76, 175, 80, 0.3);
+}
+
+.provider-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.provider-name {
+  font-weight: 500;
+}
+
+.provider-detail {
+  font-size: 0.75rem;
+  opacity: 0.65;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.danger-row {
+  border: 1px solid rgba(var(--v-theme-error), 0.3);
 }
 
 @media (max-width: 900px) {

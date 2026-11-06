@@ -73,7 +73,10 @@ async function receive(
     if (states[id] && states[id].deref()) {
       console.log(`reuse state ${id}`)
       const state = states[id].deref()
-      // try to overwrite the state
+      // Overwrite the state. Fields cleared to undefined are absent from the JSON, so drop them too.
+      for (const key of Object.keys(state as object)) {
+        if (!(key in result) && typeof (state as any)[key] !== 'function') delete (state as any)[key]
+      }
       Object.assign(state, result)
       return states[id].deref()
     }
