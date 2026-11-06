@@ -301,7 +301,7 @@
     >
       <template #action>
         <v-btn
-          v-if="!props.instancePath && developerMode"
+          v-if="AGENT_UI_ENABLED && !props.instancePath && developerMode"
           variant="outlined"
           size="small"
           class="mr-2"
@@ -455,7 +455,7 @@ import CustomCssEditor from '@/components/CustomCssEditor.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
-import { useAgentChatOpen } from '@/composables/agentChat'
+import { AGENT_UI_ENABLED, useAgentChatOpen } from '@/composables/agentChat'
 import { kCustomCss } from '@/composables/customCss'
 import { kEnvironment } from '@/composables/environment'
 import { kInstanceTheme } from '@/composables/instanceTheme'

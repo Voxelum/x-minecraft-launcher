@@ -48,6 +48,7 @@
       </AppSideBarItem>
 
       <AppSideBarItem
+        v-if="AGENT_UI_ENABLED"
         data-testid="nav-agent"
         v-shared-tooltip.right="agentTooltip"
         clickable
@@ -185,6 +186,7 @@
       <v-divider vertical class="mx-2 h-6" />
 
       <v-btn
+        v-if="AGENT_UI_ENABLED"
         data-testid="nav-agent"
         v-shared-tooltip.bottom="agentTooltip"
         icon
@@ -254,7 +256,7 @@
 
 <script lang="ts" setup>
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
-import { useAgentChatEntry, useAgentChatStatus } from '@/composables/agentChat'
+import { AGENT_UI_ENABLED, useAgentChatEntry, useAgentChatStatus } from '@/composables/agentChat'
 import { useDragAutoScroll } from '@/composables/dragAutoScroll'
 import { kMultiplayerEntry } from '@/composables/multiplayerEntry'
 import { kSettingsState } from '@/composables/setting'

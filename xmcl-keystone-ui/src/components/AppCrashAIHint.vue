@@ -11,6 +11,7 @@
       </div>
     </div>
 
+    <template v-if="AGENT_UI_ENABLED">
     <!-- Primary action: let the built-in launcher agent diagnose the crash -->
     <div class="flex flex-col gap-2">
       <v-btn
@@ -39,6 +40,7 @@
       <span class="text-xs opacity-50">{{ t('askAICrash.orExternal') }}</span>
       <v-divider class="flex-1" />
     </div>
+    </template>
 
     <div class="flex flex-col gap-2">
       <div class="flex items-center gap-2 text-sm font-medium opacity-80">
@@ -84,7 +86,7 @@
 </template>
 <script lang="ts" setup>
 import { kAgent } from '@/composables/agent'
-import { useAgentChatOpen } from '@/composables/agentChat'
+import { AGENT_UI_ENABLED, useAgentChatOpen } from '@/composables/agentChat'
 import { injection } from '@/util/inject'
 
 const { t } = useI18n()

@@ -23,7 +23,7 @@
     </div>
     <AppContextMenu />
     <AppNotifier />
-    <AppOmniDialog :agent-enabled="true" />
+    <AppOmniDialog :agent-enabled="AGENT_UI_ENABLED" />
     <AppAddInstanceDialog />
     <AppGameExitDialog />
     <AppUnauthenticatedWarningDialog />
@@ -56,7 +56,7 @@ import AppImageDialog from '@/components/AppImageDialog.vue'
 import InstanceScreenshots from '@/views/InstanceScreenshots.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
-import { useAgentChatHotkey } from '@/composables/agentChat'
+import { AGENT_UI_ENABLED, useAgentChatHotkey } from '@/composables/agentChat'
 import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
 import { kDialogModel } from '@/composables/dialog'

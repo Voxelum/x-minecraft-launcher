@@ -143,6 +143,7 @@
       @update:model-value="replaceNative = !$event ? false : $event"
     />
 
+    <template v-if="AGENT_UI_ENABLED">
     <v-divider class="my-3" />
 
     <SettingItem id="agent-settings" :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
@@ -235,10 +236,12 @@
           />
         </template>
     </SettingItem>
+    </template>
   </SettingCard>
 </template>
 
 <script lang="ts" setup>
+import { AGENT_UI_ENABLED } from '@/composables/agentChat'
 import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
