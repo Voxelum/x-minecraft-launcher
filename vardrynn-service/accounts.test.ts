@@ -116,6 +116,20 @@ describe('accounts', () => {
     expect(r.status).toBe(401)
   })
 
+  it('limits unauthenticated sign-in routes per client address', async () => {
+    const seen: string[] = []
+    const e = { ...env(), AUTH_RATE_LIMITER: { limit: async ({ key }: { key: string }) => { seen.push(key); return { success: seen.length <= 1 } } } }
+    const authorize = () => worker.fetch(new Request(`https://api.example.com/v1/auth/google/authorize?${new URLSearchParams({ state, redirectUri, codeChallenge: challenge })}`, { headers: { 'cf-connecting-ip': '203.0.113.9' } }), e as any)
+    expect((await authorize()).status).toBe(200)
+    const limited = await authorize()
+    expect(limited.status).toBe(429)
+    expect(limited.headers.get('retry-after')).toBe('60')
+    expect(seen).toEqual(['203.0.113.9', '203.0.113.9'])
+    // Signed-in routes are not counted.
+    await call(e, 'GET', '/v1/account', undefined, 'token')
+    expect(seen).toHaveLength(2)
+  })
+
   it('rotates refresh tokens and revokes the session on replay', async () => {
     const e = env()
     const s = (await (await browserSignIn(e, 'google')).done.json() as any).session

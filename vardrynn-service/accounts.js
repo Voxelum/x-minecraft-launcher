@@ -310,12 +310,28 @@ async function route(request, env, pathname, now) {
   return undefined
 }
 
+// Unauthenticated routes create rows and call providers, so they are limited per client address.
+// The `AUTH_RATE_LIMITER` binding is a Workers rate limiter; without it requests are not limited.
+const RATE_LIMITED = /^\/v1\/(auth\/|sessions\/refresh$)/
+
+async function rateLimited(request, env, pathname) {
+  if (!env.AUTH_RATE_LIMITER || !RATE_LIMITED.test(pathname)) return false
+  const key = request.headers.get('cf-connecting-ip') || 'unknown'
+  const { success } = await env.AUTH_RATE_LIMITER.limit({ key })
+  return !success
+}
+
 /** Returns a Response for account routes, or undefined when the path is not one. */
 export async function handleAccountRoute(request, env, pathname, now = Date.now()) {
   if (!/^\/v1\/(auth|account|sessions)(\/|$)/.test(pathname)) return undefined
   const requestId = crypto.randomUUID()
   if (!env.DB) return json({ error: 'accounts_unconfigured', requestId }, 503)
   try {
+    if (await rateLimited(request, env, pathname)) {
+      const response = json({ error: 'rate_limited', requestId }, 429)
+      response.headers.set('retry-after', '60')
+      return response
+    }
     return (await route(request, env, pathname, now)) ?? json({ error: 'not_found', requestId }, 404)
   } catch (e) {
     if (e?.status) return json({ error: e.code, requestId }, e.status)
