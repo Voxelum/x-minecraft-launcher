@@ -184,7 +184,6 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
           NODE_ENV: production
           NODE_OPTIONS: --max-old-space-size=32768
-          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
 
       - name: Run e2e packaged-boot group
         run: ${{ runner.os == 'Linux' && 'xvfb-run --auto-servernum' || '' }} pnpm test:e2e:release

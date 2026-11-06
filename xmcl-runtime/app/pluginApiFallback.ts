@@ -2,7 +2,7 @@ import { kFlights } from '~/infra'
 import { kXmclSessionAuthorization, XmclAccountService } from '~/xmclAccount/XmclAccountService'
 import type { LauncherAppPlugin } from './LauncherAppPlugin'
 import type { Handler, Response as LauncherResponse } from './LauncherProtocolHandler'
-import { getVardrynnApiOrigin } from './vardrynnApiOrigin'
+import { getVardrynnApiOrigin, toCurseforgeProxyUrl } from './vardrynnApiOrigin'
 
 function setHeader(headers: Record<string, any>, name: string, value?: string) {
   for (const key of Object.keys(headers)) {
@@ -57,7 +57,13 @@ export const pluginApiFallback: LauncherAppPlugin = (app) => {
       setHeader(request.headers, 'Authorization', `${tokenType} ${authorization.accessToken}`)
       setHeader(request.headers, 'DPoP', authorization.dpopProof)
     } else if (request.url.host === 'api.curseforge.com') {
-      request.headers['x-api-key'] = process.env.CURSEFORGE_API_KEY || ''
+      // Renderer CurseForge calls go to the Vardrynn proxy, which adds the API key.
+      if (!signalingOrigin) {
+        rejectAuthentication(response, 'vardrynn_service_unconfigured', 503)
+        return
+      }
+      setHeader(request.headers, 'x-api-key')
+      request.url = toCurseforgeProxyUrl(signalingOrigin, request.url)
     }
   }
   app.protocol.registerHandler('https', handler)

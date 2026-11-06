@@ -124,9 +124,7 @@ pnpm install
 
 #### Set Environment Variables
 
-You should set the `CURSEFORGE_API_KEY` by creating a `.env` file under `xmcl-electron-app`. This `.env` file is added in `.gitignore` file.
-
-**DO NOT LEAK YOUR CURSEFORGE API KEY**
+The launcher holds no CurseForge API key. CurseForge calls go through the Vardrynn service's `/v1/curseforge/` proxy, which adds the key (see `VARDRYNN_SERVICE_API.md`). Set `VARDRYNN_API_BASE_URL` to a service origin (for example `https://dev-api.olaveapi.com`) when compiling, or CurseForge stays unavailable. Put any local variables in `xmcl-electron-app/.env`, which is gitignored.
 
 #### Start Launcher
 

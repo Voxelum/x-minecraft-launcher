@@ -9,7 +9,7 @@ The launcher remains a fork of XMCL. This inventory distinguishes required exter
 | `registry.npmmirror.com/@xmcl/app-*` | Upstream package fallback | Update implementation removed |
 | Azure Application Insights ingestion | XMCL telemetry | Exporters and connection strings removed; traces remain local |
 | `launchercontent.mojang.com`, Minecraft/Microsoft endpoints | Minecraft news, authentication, game metadata | Still used for their respective features |
-| Modrinth, CurseForge, Fabric, Forge and other content providers | Mod and game content | Still used when requested by the feature |
+| Modrinth, CurseForge, Fabric, Forge and other content providers | Mod and game content | Still used when requested by the feature; CurseForge API calls go through the Vardrynn service's `/v1/curseforge/` proxy, which holds the API key, and CurseForge files download from its CDN directly |
 | `http://launcher/agent/chat/completions` | Local Agent transport, intercepted before network dispatch | Rewritten to the configured custom provider; final destination still checked |
 | `api.olaveapi.com`, `dev-api.olaveapi.com` | Vardrynn production and development services (`/v1/status`) | Only contacted by builds compiled with that origin |
 | User-configured Agent endpoint | Custom AI provider | Still available when configured; builtin XMCL mode stays unavailable |

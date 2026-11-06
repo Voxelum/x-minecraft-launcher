@@ -67,7 +67,6 @@ async function main() {
     ],
     define: {
       ...sharedConfig.define,
-      'process.env.CURSEFORGE_API_KEY': JSON.stringify(process.env.CURSEFORGE_API_KEY ?? ''),
     },
     minifyIdentifiers: process.env.NODE_ENV === 'production',
     charset: 'ascii',
