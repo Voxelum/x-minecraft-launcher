@@ -2598,22 +2598,29 @@ versionType:
   release: 稳定版
 xmclAccount:
   accountSummary: 账户
-  confirmMerge: 确认合并账户
   createdAt: 创建于 {date}
-  description: 无密码的 XMCL 身份，与 Minecraft 游戏账户分开管理。
+  deleteAction: 删除账户
+  deleteConfirmText: 这将永久删除你的 Vardrynn 账户，解除所有登录方式，并退出所有设备。你的 Minecraft 游戏账户和本地数据不受影响。此操作无法撤销。
+  deleteConfirmTitle: 删除你的 Vardrynn 账户？
+  deleteDescription: 永久移除该账户及其所有登录方式。
+  deleteTitle: 删除账户
+  description: 无密码的 Vardrynn 身份，与 Minecraft 游戏账户分开管理。
   expiresAt: 过期时间 {date}
-  gameAccountsSeparate: 移除游戏账户不会解除 XMCL 登录方式。
-  guest: 访客
-  identityConflict: 此 {provider} 登录属于另一个 XMCL Account。账户绝不会自动合并。
-  linkAccountWith: 使用以下方式绑定账户
-  mergePreview: 确认前请检查将要迁移的资源。
-  mergeNeedsSession: 请先登录你希望保留的 XMCL Account，再检查合并。
-  mergeQueued: 账户合并正在进行。
-  requestFailed: XMCL Account 服务无法完成请求。你的游戏账户未受影响。
-  reviewMerge: 检查合并
+  gameAccountsSeparate: 移除游戏账户不会解除 Vardrynn 登录方式。
+  guest: 未登录
+  identityConflict: 此 {provider} 登录已属于另一个 Vardrynn 账户。账户不会被合并；如需使用该账户，请退出后使用 {provider} 登录。
+  link: 绑定 {provider}
+  linkAction: 绑定
+  linked: 已绑定
+  linkedAs: '{provider} 已绑定为 {name}'
+  providerUnconfigured: 此版本不支持该登录方式。
+  requestFailed: Vardrynn 账户服务无法完成此请求。你的游戏账户未受影响。
   session: 会话
   sessionActive: 有效
   sessionExpired: 已过期
+  signInMethods: 登录方式
+  signInWith: 登录方式
+  signInWithProvider: 使用 {provider} 登录
   signOutAll: 退出所有设备
   signOutDevice: 退出此设备
   status:
@@ -2621,7 +2628,9 @@ xmclAccount:
     deleted: 已删除
     deletion_pending: 等待删除
     merged: 已合并
-  title: XMCL Account
+  timedOut: 登录超时，请重试。
+  title: Vardrynn 账户
+  unconfigured: 此版本未连接 Vardrynn 服务，因此无法使用账户。
 minecraftFriends:
   title: Minecraft 好友
   add: 添加好友
