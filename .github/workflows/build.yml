@@ -76,7 +76,8 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
           NODE_OPTIONS: --max-old-space-size=32768
           NODE_ENV: production
-          RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
+          # Installers (dmg, deb) are built for real releases and for dev test releases.
+          RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') || inputs.publish == 'dev' }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
           # A dev test release must check the dev service, or it could never see its own update.
           VARDRYNN_API_BASE_URL: ${{ inputs.publish == 'dev' && vars.VARDRYNN_DEV_API_BASE_URL || vars.VARDRYNN_API_BASE_URL }}
@@ -160,7 +161,7 @@ jobs:
       - name: Upload Build
         # Windows .appx in this artifact is UNSIGNED. The `release` job creates a
         # draft; `Sign Release` signs APPX before publication. DeskGap is excluded.
-        if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
+        if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') || inputs.publish == 'dev' }}
         uses: actions/upload-artifact@v6
         with:
           name: build-${{ runner.os }}
