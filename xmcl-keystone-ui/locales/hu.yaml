@@ -405,21 +405,13 @@ commandPalette:
 feedback:
   channel: Csatornák
   description: Találtam egy hibát, vagy szeretnék javasolni valamit
-  discord: Discord
-  discordDescription: Csatlakozz Discordra
-  discordJoin: Csatlakozás
   generateReport: Jelentés generálása
   generateSaveAs: Jelentés mentése ide
   github: Github problémák
   githubDescription: Nyiss egy Github problémát, hogy elmondd a gondolatodat
   githubOpenIssue: Github
   hint: Kattints a gombra a jelentés létrehozásához és a fejlesztői csapat eléréséhez. A jelentés tartalmazza az eszközadatokat, beleértve az operációs rendszer típusát, verzióját, felhasználónevedet stb.
-  kook: Kook
-  kookDescription: Kook egy alternatív app a Discordra Kínai felhasználóknak
   name: Visszajelzés
-  qq: QQ Csoport
-  qqDescription: 'Lépj be a visszajelző QQ-csoportba, és beszélgess közvetlenül a készítőkkel. Csoport száma: {number}'
-  qqEnterGroup: Csatlakozás
 fileDetail:
   fileSize: Fájl méret
   filesize: Fájl mérete
@@ -763,6 +755,8 @@ loginError:
   requirePassword: Jelszó szükséges
   requireUsername: Felhasználónév szükséges
   timeout: Bejelentkezési időtúllépés. Próbáld újra vagy ellenőrizd a hálózati kapcsolatot.
+  openLoginGuide: A probléma megoldása
+  openSupport: 'Még mindig segítség kell? Nyiss egy hibajegyet'
 logsCrashes:
   crashes: Hibanaplók
   logs: Naplók
@@ -1078,10 +1072,8 @@ modrinth:
 modrinthCard:
   currentVersion: Jelenlegi verzió
 multiplayer:
-  joinDiscord: Csatlakozás a Discordhoz
   openConsumerPortal: Ügyfélportál megnyitása
   refundHint: Visszatérítést szeretnél? Rendeléseid és előfizetéseid kezeléséhez keresd fel a Waffo ügyfélportálját.
-  togetherSupportHint: Ha a többjátékos mód nem működik, csatlakozz a Discordunkhoz, és lépj kapcsolatba a fejlesztőcsapattal. Segítünk megoldani a problémát.
   autoShareAmbiguous: Több játék is fut. Válaszd ki a LAN-világot futtató példányt, hogy az Vardrynn megoszthassa.
   editSharingScope: Megosztási kör szerkesztése
   gameAvailable: LAN-játék érhető el

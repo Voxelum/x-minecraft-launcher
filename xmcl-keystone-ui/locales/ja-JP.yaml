@@ -394,21 +394,13 @@ commandPalette:
 feedback:
   channel: チャンネル
   description: バグを見つけました / 提案があります
-  discord: Discord
-  discordDescription: Discordチャンネルに参加
-  discordJoin: 参加
   generateReport: レポートを作成
   generateSaveAs: レポートの保存先
   github: Github Issue
   githubDescription: Github Issueを開き意見を共有
   githubOpenIssue: Github
   hint: クリックしてレポートを作成し開発者に連絡します。レポートはあなたのデバイス情報(OS, バージョン, OSにおけるユーザー名)などを含みます。
-  kook: Kook
-  kookDescription: Kook は中国本土のユーザーのためのDiscordの代替アプリです
   name: フィードバック
-  qq: QQグループ
-  qqDescription: 'フィードバック用QQグループに参加し著者に直接連絡を取る。 グループナンバー: {number}'
-  qqEnterGroup: 参加
 fileDetail:
   fileSize: ファイルサイズ
   filesize: ファイルサイズ
@@ -747,6 +739,8 @@ loginError:
   requirePassword: パスワードが必要です
   requireUsername: ユーザー名が必要です
   timeout: ログインがタイムアウトしました。再度試すかネットワークを確認してください。
+  openLoginGuide: この問題の解決方法
+  openSupport: 解決しない場合は Issue を作成してください
 logsCrashes:
   crashes: クラッシュレポート
   logs: ログ
@@ -1060,10 +1054,8 @@ modrinth:
 modrinthCard:
   currentVersion: 現在のバージョン
 multiplayer:
-  joinDiscord: Discord に参加
   openConsumerPortal: コンシューマーポータルを開く
   refundHint: 返金をご希望ですか？Waffo コンシューマーポータルで注文とサブスクリプションを管理できます。
-  togetherSupportHint: マルチプレイが動作しない場合は、Discord に参加して開発チームへお問い合わせください。問題解決をお手伝いします。
   autoShareAmbiguous: 複数のゲームが実行中です。Vardrynnで共有するLANワールドをホストしているインスタンスを選択してください。
   editSharingScope: 共有範囲を編集
   gameAvailable: LANゲームが利用可能

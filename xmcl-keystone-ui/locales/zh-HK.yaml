@@ -469,21 +469,13 @@ commandPalette:
 feedback:
   channel: 聯絡管道
   description: 我找到咗漏洞/我想提出建議
-  discord: Discord
-  discordDescription: 加入 Discord 頻道
-  discordJoin: 加入
   generateReport: 產生報告
   generateSaveAs: 將報告儲存至
   github: Github Issue
   githubDescription: 透過 Github Issue 來回饋你嘅想法
   githubOpenIssue: Github
   hint: 按一下按鈕產生報告並聯絡開發團隊。報告會包含你嘅裝置資訊，例如作業系統類型、版本、作業系統使用者名稱等。
-  kook: Kook
-  kookDescription: 加入 Kook (僅限大陸地區)
   name: 回饋
-  qq: QQ 群
-  qqDescription: 加入 QQ 回饋群直接和作者聊聊吧，群組號碼：{number}
-  qqEnterGroup: 加入
 fileDetail:
   fileSize: 檔案大小
   filesize: 檔案大小
@@ -851,6 +843,8 @@ loginError:
   requirePassword: 請輸入密碼
   requireUsername: 使用者名稱唔能夠為空
   timeout: 登入超時，請重試或檢查你嘅網絡！
+  openLoginGuide: 如何修正此問題
+  openSupport: 仍需要協助？提交問題回報
 logsCrashes:
   crashes: 崩潰報告
   failures: 啟動失敗
@@ -1222,10 +1216,8 @@ modrinth:
 modrinthCard:
   currentVersion: 目前版本
 multiplayer:
-  joinDiscord: 加入 Discord
   openConsumerPortal: 開啟消費者入口網站
   refundHint: 如需退款，請前往 Waffo 消費者入口網站管理你的訂單及訂閱。
-  togetherSupportHint: 如果連線無法正常運作，請加入 Discord 聯絡開發團隊，我們會協助你解決問題。
   autoShareAmbiguous: 有多個遊戲正在運行。請選擇主持區域網絡世界的實例，讓 Vardrynn 可以分享它。
   editSharingScope: 編輯分享範圍
   gameAvailable: 有可用的區域網絡遊戲

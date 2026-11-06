@@ -394,21 +394,13 @@ commandPalette:
 feedback:
   channel: Kanalen
   description: Ik heb een Bug gevonden of ik wil een suggestie doen
-  discord: Discord
-  discordDescription: Word lid van het Discord-kanaal
-  discordJoin: Lid worden
   generateReport: Rapport genereren
   generateSaveAs: Sla het rapport op als
   github: Github Issue
   githubDescription: Open een Github Issue om je gedachten te delen
   githubOpenIssue: Github
   hint: Klik op de knop om het rapport te maken en contact op te nemen met het team. Het rapport bevat je apparaatinfo inclusief besturingssysteemtype, versie, gebruikersnaam (in je os), enz.
-  kook: Kook
-  kookDescription: Kook is een alternatieve app voor discord voor gebruikers op het Chinese vasteland
   name: Feedback
-  qq: QQ Groep
-  qqDescription: 'Ga naar de feedback QQ-groep en praat direct met auteurs. Groepsnummer: {number}'
-  qqEnterGroup: Lid worden
 fileDetail:
   fileSize: Bestandsgrootte
   filesize: Bestandsgrootte
@@ -734,6 +726,8 @@ loginError:
   requirePassword: Wachtwoord is verplicht
   requireUsername: Gebruikersnaam is verplicht
   timeout: Inlog time-out. Probeer opnieuw of controleer je netwerk.
+  openLoginGuide: Como solucionar este problema
+  openSupport: 'Aínda precisas axuda? Abre unha incidencia'
 logsCrashes:
   crashes: Crashrapporten
   logs: Logs
@@ -1036,10 +1030,8 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
-  joinDiscord: Unirse a Discord
   openConsumerPortal: Abrir o portal de consumidores
   refundHint: Precisas un reembolso? Visita o portal de consumidores de Waffo para xestionar os teus pedidos e subscricións.
-  togetherSupportHint: Se o modo multixogador non funciona, únete ao noso Discord e contacta co equipo de desenvolvemento. Axudarémosche a resolver o problema.
   autoShareAmbiguous: Hai varios xogos en execución. Selecciona a instancia que aloxa o mundo LAN para que Vardrynn poida compartila.
   editSharingScope: Editar o alcance da compartición
   gameAvailable: Xogo LAN dispoñible

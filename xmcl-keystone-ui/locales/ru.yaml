@@ -308,9 +308,6 @@ commandPalette:
 feedback:
   channel: Каналы
   description: Сообщите о своей проблеме/идее здесь.
-  discord: Discord
-  discordDescription: Присоединяйтесь к каналу Discord.
-  discordJoin: Присоединиться
   generateReport: Создать отчёт
   generateSaveAs: Сохранить отчёт
   github: Проблема в Github
@@ -318,13 +315,7 @@ feedback:
   githubOpenIssue: Github
   hint: >-
     Нажмите на кнопку, чтобы создать отчёт и связаться с командой разработчиков. Отчёт будет содержать информацию о вашем устройстве, включая тип операционной системы, версию, имя пользователя (в операционной системе) и другие данные.
-  kook: Kook
-  kookDescription: Kook - это альтернатива Discord на территории материкового Китая
   name: Обратная связь
-  qq: Группа QQ
-  qqDescription: >-
-    Войдите в группу обратной связи QQ и напрямую поговорите с авторами. Номер группы: {number}
-  qqEnterGroup: Присоединиться
 fileDetail:
   fileSize: Размер файла
   filesize: Размер файла
@@ -702,6 +693,8 @@ loginError:
   requireUsername: Требуется имя пользователя
   timeout: >-
     Время ожидания входа истекло. Пожалуйста, попробуйте ещё раз или проверьте соединение с сетью.
+  openLoginGuide: Как исправить эту проблему
+  openSupport: 'Всё ещё нужна помощь? Создайте обращение'
 logsCrashes:
   crashes: Отчёты об ошибках
   logs: Журналы
@@ -1047,10 +1040,8 @@ modrinth:
 modrinthCard:
   currentVersion: Текущая версия
 multiplayer:
-  joinDiscord: Присоединиться к Discord
   openConsumerPortal: Открыть портал клиента
   refundHint: Нужен возврат средств? Перейдите на клиентский портал Waffo, чтобы управлять заказами и подписками.
-  togetherSupportHint: Если многопользовательский режим не работает, присоединитесь к нашему Discord и свяжитесь с командой разработчиков. Мы поможем решить проблему.
   autoShareAmbiguous: Запущено несколько игр. Выберите сборку, в которой открыт мир для локальной сети, чтобы Vardrynn мог поделиться ею.
   editSharingScope: Изменить область общего доступа
   gameAvailable: Доступна игра в локальной сети

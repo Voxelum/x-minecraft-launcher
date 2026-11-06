@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: চ্যানেলসমূহ
   description: আমি একটি বাগ পেয়েছি বা আমি একটি পরামর্শ দিতে চাই
-  discord: Discord
-  discordDescription: ডিসকর্ড চ্যানেলে যোগ দিন
-  discordJoin: যোগ দিন
   generateReport: রিপোর্ট তৈরি করুন
   generateSaveAs: রিপোর্টটি এখানে সংরক্ষণ করুন
   github: Github ইস্যু
   githubDescription: আপনার মতামত জানাতে একটি Github ইস্যু খুলুন
   githubOpenIssue: Github
   hint: রিপোর্ট তৈরি করতে এবং ডেভেলপার টিমের সাথে যোগাযোগ করতে বোতামটিতে ক্লিক করুন। রিপোর্টে আপনার অপারেটিং সিস্টেমের ধরন, সংস্করণ, ব্যবহারকারীর নাম (আপনার ওএস-এ) ইত্যাদি সহ আপনার ডিভাইসের তথ্য থাকবে।
-  kook: Kook
-  kookDescription: চীনা মেইনল্যান্ড ব্যবহারকারীদের জন্য Kook হলো ডিসকর্ডের একটি বিকল্প অ্যাপ
   name: প্রতিক্রিয়া
-  qq: QQ গ্রুপ
-  qqDescription: 'মতামত জানাতে QQ গ্রুপে প্রবেশ করুন এবং লেখকদের সাথে সরাসরি কথা বলুন। গ্রুপ নম্বর: {number}'
-  qqEnterGroup: যোগ দিন
 fileDetail:
   fileSize: ফাইলের আকার
   filesize: ফাইলের আকার
@@ -815,6 +807,8 @@ loginError:
   requirePassword: পাসওয়ার্ড প্রয়োজন
   requireUsername: ইউজারনেম প্রয়োজন
   timeout: লগইনের সময়সীমা পার হয়ে গেছে। অনুগ্রহ করে আবার চেষ্টা করুন বা আপনার নেটওয়ার্ক পরীক্ষা করুন।
+  openLoginGuide: এই সমস্যাটি কীভাবে ঠিক করবেন
+  openSupport: 'এখনও সাহায্য দরকার? একটি ইস্যু খুলুন'
 logsCrashes:
   crashes: ক্র্যাশ রিপোর্ট
   failures: লঞ্চ ব্যর্থতা
@@ -1151,10 +1145,8 @@ modrinth:
 modrinthCard:
   currentVersion: বর্তমান সংস্করণ
 multiplayer:
-  joinDiscord: Discord-এ যোগ দিন
   openConsumerPortal: কনজিউমার পোর্টাল খুলুন
   refundHint: রিফান্ড প্রয়োজন? আপনার অর্ডার ও সাবস্ক্রিপশন পরিচালনা করতে Waffo কনজিউমার পোর্টালে যান।
-  togetherSupportHint: মাল্টিপ্লেয়ার কাজ না করলে Discord-এ যোগ দিয়ে ডেভেলপমেন্ট টিমের সঙ্গে যোগাযোগ করুন। আমরা সমস্যা সমাধানে সাহায্য করব।
   autoShareAmbiguous: একাধিক গেম চলছে। Vardrynn যাতে শেয়ার করতে পারে, ল্যান ওয়ার্ল্ড হোস্ট করা ইনস্ট্যান্সটি নির্বাচন করুন।
   editSharingScope: শেয়ারের পরিধি সম্পাদনা করুন
   gameAvailable: ল্যান গেম উপলভ্য

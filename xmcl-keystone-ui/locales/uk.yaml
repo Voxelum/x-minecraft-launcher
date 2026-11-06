@@ -428,23 +428,13 @@ commandPalette:
 feedback:
   channel: Канали
   description: Я знайшов помилку або хочу внести пропозицію
-  discord: Discord
-  discordDescription: Приєднатися до каналу Discord
-  discordJoin: Приєднатися
   generateReport: Сгенерувати звіт
   generateSaveAs: Зберегти звіт як
   github: Проблема на Github
   githubDescription: Відкрийте проблему на Github, щоб висловити свою думку
   githubOpenIssue: Github
   hint: Натисніть кнопку, щоб створити звіт і зв'язатися з командою розробників. Звіт міститиме інформацію про ваш пристрій, включаючи тип операційної системи, версію, ім'я користувача (у вашій ОС) тощо.
-  kook: Kook
-  kookDescription: Kook — це альтернативний додаток для Discord для користувачів з материкового Китаю
   name: Зворотний зв'язок
-  qq: Група QQ
-  qqDescription: 'Увійдіть до групи QQ для зворотного зв''язку та спілкуйтеся безпосередньо з авторами. Номер групи: {number}'
-  qqEnterGroup: Приєднатися
-  reddit: Reddit
-  redditDescription: Приєднатися до спільноти r/XMCL у Reddit
 fileDetail:
   fileSize: Розмір файлу
   filesize: Розмір файлу
@@ -767,6 +757,7 @@ loginError:
   noProfileForNewUser: Профіль гри не знайдено! Якщо ви новий користувач Minecraft, будь ласка, увійдіть принаймні один раз в офіційному лаунчері Minecraft.
   requestFailed: Помилка входу, точна причина невідома. Будь ласка, спробуйте ще раз.
   xboxErrorGuideHint: Виникла проблема із входом? Подивіться як це виправити.
+  openLoginGuide: Як це виправити (Гайд)
   openSupport: Не допомогло? Створіть звернення
   requireEmail: Електронна пошта обов'язкова
   requirePassword: Пароль обов'язковий
@@ -1123,10 +1114,8 @@ modrinth:
 modrinthCard:
   currentVersion: Поточна версія
 multiplayer:
-  joinDiscord: Приєднатися до Discord
   openConsumerPortal: Відкрити портал клієнта
   refundHint: Потрібне повернення коштів? Перейдіть на клієнтський портал Waffo, щоб керувати замовленнями та підписками.
-  togetherSupportHint: Якщо багатокористувацький режим не працює, приєднайтеся до нашого Discord і зв’яжіться з командою розробників. Ми допоможемо вирішити проблему.
   autoShareAmbiguous: Запущено кілька ігор. Виберіть збірку, у якій відкрито світ для локальної мережі, щоб Vardrynn міг нею поділитися.
   editSharingScope: Змінити область поширення
   gameAvailable: Доступна гра в локальній мережі

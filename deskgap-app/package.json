@@ -2,7 +2,7 @@
   "name": "@xmcl/deskgap-app",
   "private": true,
   "version": "0.66.2",
-  "description": "DeskGap host for X Minecraft Launcher",
+  "description": "DeskGap host for Vardrynn Launcher",
   "type": "module",
   "main": "./dist/main.cjs",
   "config": {

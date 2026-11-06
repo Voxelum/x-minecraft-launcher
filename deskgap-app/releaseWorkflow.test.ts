@@ -52,7 +52,9 @@ describe('regular DeskGap Windows release workflow', () => {
     expect(download).toContain("throw 'DeskGap runtime checksum mismatch'")
     const packaging = buildSteps.find(step => step.name === 'Build DeskGap single EXE alongside Electron')!
     expect(buildSteps.indexOf(packaging)).toBeGreaterThan(buildSteps.findIndex(step => step.name === 'Build'))
-    expect(packaging.run).toContain('win32-x64.exe" xmcl-electron-app\\build\\output\\')
+    expect(packaging.run).not.toContain('xmcl-electron-app')
+    const preview = buildSteps.find(step => step.name === 'Upload DeskGap preview (not part of the release)')!
+    expect(preview.with).toMatchObject({ name: 'deskgap-preview', path: 'deskgap-app/build/output/release/vardrynn-deskgap-*-win32-x64.exe' })
     expect(packaging.run).toContain('Join-Path $extracted "DeskGapBootstrap-v$env:DESKGAP_VERSION-win32-x64.exe"')
     expect(packaging.run).toContain('package "$source" "$runtime" "$bootstrap"')
     expect(buildSteps.find(step => step.name === 'Upload Build')!.with?.path).toBe('xmcl-electron-app/build/output/\n')
@@ -78,7 +80,7 @@ describe('regular DeskGap Windows release workflow', () => {
     expect(steps.map(step => step.run).join('\n')).not.toContain('verify-deskgap-signature.ps1')
     expect(steps.map(step => step.run).join('\n')).not.toContain('Get-AuthenticodeSignature')
     const xml = readFileSync(join(root, '.github', 'signpath', 'deskgap-exe.xml'), 'utf8')
-    expect(xml).toContain('<pe-file path="xmcl-deskgap-*-win32-x64.exe">')
+    expect(xml).toContain('<pe-file path="vardrynn-deskgap-*-win32-x64.exe">')
     expect(xml).toContain('<authenticode-sign />')
   })
 
@@ -94,7 +96,7 @@ describe('regular DeskGap Windows release workflow', () => {
     expect(hashing.run).toContain('Get-ChildItem signed -Filter *.appx')
     expect(steps.indexOf(upload)).toBeGreaterThan(steps.indexOf(hashing))
     expect(upload.run?.match(/if \(\$LASTEXITCODE -ne 0\)/g)).toHaveLength(2)
-    expect(upload.run).not.toContain('-Filter xmcl-deskgap')
+    expect(upload.run).not.toContain('-Filter vardrynn-deskgap')
     expect(steps.indexOf(publish)).toBeGreaterThan(steps.indexOf(upload))
     expect(steps.at(-1)).toBe(publish)
     expect(publish.run).toContain('--draft=false')
@@ -114,7 +116,7 @@ describe('regular DeskGap Windows release workflow', () => {
     try {
       mkdirSync(join(fixture, 'signed'))
       writeFileSync(join(fixture, 'signed', 'xmcl.appx'), 'returned SignPath APPX fixture')
-      if (withPreview) writeFileSync(join(fixture, 'xmcl-deskgap-0.70.0-win32-x64.exe'), 'unsigned preview fixture')
+      if (withPreview) writeFileSync(join(fixture, 'vardrynn-deskgap-0.70.0-win32-x64.exe'), 'unsigned preview fixture')
       const commands = ['Compute sha256 for signed .appx', 'Upload signed assets to release', 'Publish release']
         .map(name => steps.find(step => step.name === name)!.run!.replace(/\$\{\{[\s\S]*?\}\}/g, 'v0.70.0')).join('\n')
       const result = powershell(`
@@ -134,7 +136,7 @@ describe('regular DeskGap Windows release workflow', () => {
       expect(result.status, result.stderr || String(result.error)).toBe(0)
       expect(result.stdout).toContain('release edit v0.70.0 --draft=false')
       expect(readFileSync(join(fixture, 'signed', 'xmcl.appx.sha256'), 'utf8')).toMatch(/^[a-f0-9]{64}$/)
-      if (withPreview) expect(readFileSync(join(fixture, 'xmcl-deskgap-0.70.0-win32-x64.exe'), 'utf8')).toBe('unsigned preview fixture')
+      if (withPreview) expect(readFileSync(join(fixture, 'vardrynn-deskgap-0.70.0-win32-x64.exe'), 'utf8')).toBe('unsigned preview fixture')
     } finally {
       rmSync(fixture, { recursive: true, force: true })
     }

@@ -365,18 +365,10 @@ commandPalette:
 feedback:
   channel: Kanały
   description: Znalazłem błąd lub chcę coś zasugerować
-  discord: Discord
-  discordDescription: Dołącz do kanału Discord
-  discordJoin: Dołącz
   github: Problem Github
   githubDescription: Otwórz wątek na Github, aby podzielić się swoimi przemyśleniami
   githubOpenIssue: Github
-  kook: Kook
-  kookDescription: Kook to alternatywna aplikacja dla użytkownika Discord w Chinach kontynentalnych
   name: Informacje zwrotne
-  qq: Grupa QQ
-  qqDescription: 'Wejdź do grupy opinii QQ i rozmawiaj bezpośrednio z autorami. Numer grupy: {number}'
-  qqEnterGroup: Dołącz
 fileDetail:
   fileSize: Rozmiar pliku
   filesize: Rozmiar pliku
@@ -719,6 +711,8 @@ loginError:
   requirePassword: Wymagane jest hasło
   requireUsername: Nazwa użytkownika jest wymagana
   timeout: Limit czasu logowania. Spróbuj ponownie lub sprawdź sieć.
+  openLoginGuide: Jak rozwiązać ten problem
+  openSupport: 'Nadal potrzebujesz pomocy? Zgłoś problem'
 logsCrashes:
   crashes: Raporty o wypadkach
   logs: Dzienniki
@@ -1032,10 +1026,8 @@ modrinth:
 modrinthCard:
   currentVersion: Aktualna wersja
 multiplayer:
-  joinDiscord: Dołącz do Discorda
   openConsumerPortal: Otwórz portal klienta
   refundHint: Potrzebujesz zwrotu środków? Odwiedź portal klienta Waffo, aby zarządzać zamówieniami i subskrypcjami.
-  togetherSupportHint: Jeśli tryb wieloosobowy nie działa, dołącz do naszego Discorda i skontaktuj się z zespołem programistów. Pomożemy Ci rozwiązać problem.
   autoShareAmbiguous: Uruchomionych jest wiele gier. Wybierz instancję hostującą świat LAN, aby Vardrynn mógł ją udostępnić.
   editSharingScope: Edytuj zakres udostępniania
   gameAvailable: Gra LAN jest dostępna

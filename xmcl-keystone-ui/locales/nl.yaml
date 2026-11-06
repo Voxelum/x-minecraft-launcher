@@ -394,21 +394,13 @@ commandPalette:
 feedback:
   channel: Kanalen
   description: Ik heb een bug gevonden of ik wil een suggestie doen
-  discord: Discord
-  discordDescription: Neem deel aan het Discord-kanaal
-  discordJoin: Deelnemen
   generateReport: Rapport Genereerren
   generateSaveAs: Sla het rapport op in
   github: Github Issue
   githubDescription: Open een Github Issue om uw gedachten te delen
   githubOpenIssue: Github
   hint: Klik op de knop om het rapport te maken en contact op te nemen met het ontwikkelaarsteam. Het rapport zal apparaatinformatie bevatten, inclusief besturingssysteemtype, versie, gebruikersnaam (in uw besturingssysteem), etc.
-  kook: Kook
-  kookDescription: Kook is een alternatieve app voor discord voor gebruikers in het vasteland van China
   name: Feedback
-  qq: QQ Groep
-  qqDescription: 'Betreed de feedback QQ-groep en praat direct met de auteurs. Groepsnummer: {number}'
-  qqEnterGroup: Deelnemen
 fileDetail:
   fileSize: Bestandsgrootte
   filesize: Bestandsgrootte
@@ -735,6 +727,8 @@ loginError:
   requirePassword: Wachtwoord is verplicht
   requireUsername: Gebruikersnaam is verplicht
   timeout: Inloggen timeout. Probeer het opnieuw of controleer uw netwerk.
+  openLoginGuide: Zo los je dit probleem op
+  openSupport: 'Nog steeds hulp nodig? Open een issue'
 logsCrashes:
   crashes: Crash Rapporten
   logs: Logs
@@ -1037,10 +1031,8 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
-  joinDiscord: Deelnemen aan Discord
   openConsumerPortal: Consumentenportaal openen
   refundHint: Heb je een terugbetaling nodig? Ga naar het Waffo-consumentenportaal om je bestellingen en abonnementen te beheren.
-  togetherSupportHint: Werkt multiplayer niet? Neem dan deel aan onze Discord en neem contact op met het ontwikkelteam. We helpen je het probleem op te lossen.
   autoShareAmbiguous: Er zijn meerdere spellen actief. Selecteer de instantie die de LAN-wereld host, zodat Vardrynn deze kan delen.
   editSharingScope: Deelbereik bewerken
   gameAvailable: LAN-spel beschikbaar

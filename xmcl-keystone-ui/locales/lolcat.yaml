@@ -394,21 +394,13 @@ commandPalette:
 feedback:
   channel: CHANNELZ
   description: I FOUND A BUG OR I WANT TO MAKE A SUGGESTSHUN
-  discord: DISCORD
-  discordDescription: JOIN DISCORD CHANNEL
-  discordJoin: JOIN
   generateReport: GENERATE REPORT
   generateSaveAs: SAVE DA REPORT TO
   github: GITHUB ISSUE
   githubDescription: OPEN AN GITHUB ISSUE TO TELL UR THOT
   githubOpenIssue: GITHUB
   hint: CLICK DA BUTTON TO MAKE DA REPORT AN CONTACT DA DEVELOPR TEAM. TEH REPORT WILL CONTAIN UR DEVICE INFO INCLUDING OPERATIN SYSTEM TYP, VERSHUN, USER NAME (IN UR OS), ETC.
-  kook: KOOK
-  kookDescription: KOOK IS AN ALTERNATE APP FUR DISCORD FUR CHINESE MAINLAND USERS
   name: FEEDBACK
-  qq: QQ GROUP
-  qqDescription: 'ENTER DA FEEDBACK QQ GROUP AN DIRECT TALK WITH AUTHORZ. GROUP NUMBR: {number}'
-  qqEnterGroup: JOIN
 fileDetail:
   fileSize: FILE SIZE
   filesize: FILE SIZE
@@ -735,6 +727,8 @@ loginError:
   requirePassword: PASSWORD IS REQUIRED
   requireUsername: USERNAME IS REQUIRED
   timeout: LOGIN TIMEOUT. PLZ RETRY OR CHECK UR NETWORK.
+  openLoginGuide: HOW 2 FIX DIS
+  openSupport: 'STILL STUCK? OPEN AN ISHOO'
 logsCrashes:
   crashes: CRASH REPORTS
   logs: LOGS
@@ -1037,10 +1031,8 @@ modrinth:
 modrinthCard:
   currentVersion: CURREN VERSHUN
 multiplayer:
-  joinDiscord: JOIN DISCORD
   openConsumerPortal: OPEN CONSUMR PORTAL
   refundHint: NEED REFUND? VISIT WAFFO CONSUMR PORTAL TO MANAGE UR ORDERS AN SUBSCRIPSHUNS.
-  togetherSupportHint: IF MULTIPLAYR NO WERK, JOIN R DISCORD AN CONTACT TEH DEV TEAM. WE HALP FIX IT.
   autoShareAmbiguous: MANY GAEMS R RUNNIN. CHOOZ TEH INSTANCE HOSTIN TEH LAN WORLD SO Vardrynn CAN SHARE IT.
   editSharingScope: EDIT SHARIN RANGE
   gameAvailable: LAN GAEM IZ HERE

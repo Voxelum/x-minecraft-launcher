@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: Các kênh phản hồi
   description: Tôi đã tìm thấy lỗi hoặc tôi muốn đưa ra đề xuất
-  discord: Discord
-  discordDescription: Tham gia Kênh Discord
-  discordJoin: Tham gia
   generateReport: Tạo báo cáo
   generateSaveAs: Lưu báo cáo vào
   github: Sự cố Github (Github Issue)
   githubDescription: Mở một Github Issue để cho biết ý kiến của bạn
   githubOpenIssue: Github
   hint: Nhấp vào nút để tạo báo cáo và liên hệ với nhóm phát triển. Báo cáo sẽ chứa thông tin thiết bị của bạn bao gồm loại hệ điều hành, phiên bản, tên người dùng (trong hệ điều hành của bạn), v.v.
-  kook: Kook
-  kookDescription: Kook là một ứng dụng thay thế cho discord dành cho người dùng Trung Quốc Đại Lục
   name: Phản hồi
-  qq: Nhóm QQ
-  qqDescription: 'Tham gia nhóm QQ phản hồi và nói chuyện trực tiếp với tác giả. Số nhóm: {number}'
-  qqEnterGroup: Tham gia
 fileDetail:
   fileSize: Dung lượng tệp
   filesize: Dung lượng tệp
@@ -815,6 +807,8 @@ loginError:
   requirePassword: Mật khẩu là bắt buộc
   requireUsername: Tên người dùng là bắt buộc
   timeout: Hết thời gian đăng nhập. Vui lòng thử lại hoặc kiểm tra kết nối mạng của bạn.
+  openLoginGuide: Cách khắc phục sự cố này
+  openSupport: 'Vẫn cần trợ giúp? Hãy mở một issue'
 logsCrashes:
   crashes: Báo cáo sự cố (Crash Reports)
   failures: Khởi chạy thất bại
@@ -1151,10 +1145,8 @@ modrinth:
 modrinthCard:
   currentVersion: Phiên bản hiện tại
 multiplayer:
-  joinDiscord: Tham gia Discord
   openConsumerPortal: Mở Cổng thông tin khách hàng
   refundHint: Bạn cần hoàn tiền? Hãy truy cập Cổng thông tin khách hàng Waffo để quản lý đơn hàng và gói đăng ký.
-  togetherSupportHint: Nếu chế độ nhiều người chơi không hoạt động, hãy tham gia Discord và liên hệ với nhóm phát triển. Chúng tôi sẽ giúp bạn giải quyết vấn đề.
   autoShareAmbiguous: Có nhiều trò chơi đang chạy. Hãy chọn phiên bản đang lưu trữ thế giới LAN để Vardrynn có thể chia sẻ.
   editSharingScope: Chỉnh sửa phạm vi chia sẻ
   gameAvailable: Có trò chơi LAN

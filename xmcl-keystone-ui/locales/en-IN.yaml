@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: Channels
   description: I found a Bug or I want to make a suggestion
-  discord: Discord
-  discordDescription: Join Discord Channel
-  discordJoin: Join
   generateReport: Generate Report
   generateSaveAs: Save the report to
   github: Github Issue
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
   hint: Click the button to create the report and contact the developer team. The report will contain your device info including operating system type, version, user name (in your os), etc.
-  kook: Kook
-  kookDescription: Kook is an alternate app for discord for Chinese Mainland users
   name: Feedback
-  qq: QQ Group
-  qqDescription: 'Enter the feedback QQ group and direct talk with authors. Group Number: {number}'
-  qqEnterGroup: Join
 fileDetail:
   fileSize: File Size
   filesize: File size
@@ -815,6 +807,8 @@ loginError:
   requirePassword: Password is required
   requireUsername: Username is required
   timeout: Login timeout. Please retry or check your network.
+  openLoginGuide: How to fix this issue
+  openSupport: 'Still need help? Open an issue'
 logsCrashes:
   crashes: Crash Reports
   failures: Launch Failures
@@ -1151,10 +1145,8 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
-  joinDiscord: Join Discord
   openConsumerPortal: Open Consumer Portal
   refundHint: Need a refund? Visit the Waffo Consumer Portal to manage your orders and subscriptions.
-  togetherSupportHint: If multiplayer is not working, join our Discord and contact the development team. We will help you resolve the problem.
   autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so Vardrynn can share it.
   editSharingScope: Edit Sharing Scope
   gameAvailable: LAN game available

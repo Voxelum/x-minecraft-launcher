@@ -487,21 +487,13 @@ commandPalette:
 feedback:
   channel: 联系渠道
   description: 我找到了漏洞/我想反馈
-  discord: Discord
-  discordDescription: 加入 Discord 频道
-  discordJoin: 加入
   generateReport: 生成报告
   generateSaveAs: 将报告保存在
   github: Github Issue
   githubDescription: 通过 Github Issue 来反馈您的想法
   githubOpenIssue: Github
   hint: 点击生成报告按钮并联系开发团队。这个报告会包含你的设备信息，如操作系统，版本，操作系统的用户名等。
-  kook: Kook
-  kookDescription: 加入 Kook (国外请选 Discord)
   name: 反馈
-  qq: QQ 群
-  qqDescription: 加入反馈群直接和作者聊聊吧，群号 {number}
-  qqEnterGroup: 加群
 fileDetail:
   fileSize: 文件大小
   filesize: 文件大小
@@ -892,6 +884,7 @@ loginError:
     如果您是新的Minecraft用户，请在Minecraft官方启动器中至少登录一次。
   requestFailed: 由于未知原因登录失败，请重试
   xboxErrorGuideHint: 登录遇到问题？查看如何修复 Microsoft 和 Xbox 登录问题。
+  openLoginGuide: 如何修复此问题
   openSupport: 仍需要帮助？提交问题反馈
   requireEmail: 必须使用邮箱登录
   requirePassword: 请输入密码
@@ -1371,7 +1364,6 @@ multiplayer:
   illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
   initiateConnection: 发起连接
   joinConnection: 如果您的伙伴已经创建了连接，您需要选择加入链接。
-  joinDiscord: 加入 Discord
   joinGame: 加入游戏
   joinManual: 加入连接
   joinOrCreateGroup: 加入/创建群组
@@ -1388,7 +1380,6 @@ multiplayer:
   manualConnect: 手动连接
   name: 跨局域网联机
   togetherName: Minecraft Together
-  togetherSupportHint: 如果联机无法正常工作，请加入 Discord 联系开发团队，我们会帮助您解决问题。
   trial:
     active: 试用中
     available: 可免费试用

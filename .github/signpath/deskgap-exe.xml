@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
   <zip-file>
-    <pe-file path="xmcl-deskgap-*-win32-x64.exe">
+    <pe-file path="vardrynn-deskgap-*-win32-x64.exe">
       <authenticode-sign />
     </pe-file>
   </zip-file>

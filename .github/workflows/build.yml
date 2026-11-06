@@ -141,8 +141,14 @@ jobs:
           $bootstrap = Join-Path $extracted "DeskGapBootstrap-v$env:DESKGAP_VERSION-win32-x64.exe"
           pnpm --prefix=deskgap-app package "$source" "$runtime" "$bootstrap"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
-          Copy-Item "deskgap-app\build\output\release\xmcl-deskgap-$version-win32-x64.exe" xmcl-electron-app\build\output\
+      - name: Upload DeskGap preview (not part of the release)
+        # DeskGap is reviewed as a separate distribution target and is not published
+        # with Vardrynn releases. Keep it out of xmcl-electron-app/build/output.
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: deskgap-preview
+          path: deskgap-app/build/output/release/vardrynn-deskgap-*-win32-x64.exe
       - name: Upload Source Maps
         if: ${{ runner.os == 'Windows' }}
         uses: actions/upload-artifact@v6
@@ -152,9 +158,8 @@ jobs:
             xmcl-electron-app/dist/*.js.map
             xmcl-electron-app/dist/renderer/assets/*.js.map
       - name: Upload Build
-        # Windows .appx and DeskGap .exe in this artifact are UNSIGNED. The `release` job
-        # creates a draft; `Sign Release` signs APPX before publication.
-        # DeskGap signing is not enabled: its EXE remains a manual-install preview.
+        # Windows .appx in this artifact is UNSIGNED. The `release` job creates a
+        # draft; `Sign Release` signs APPX before publication. DeskGap is excluded.
         if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
         uses: actions/upload-artifact@v6
         with:

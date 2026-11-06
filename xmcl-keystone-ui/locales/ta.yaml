@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: சேனல்கள்
   description: நான் ஒரு பிழையைக் கண்டறிந்தேன் அல்லது பரிந்துரை செய்ய விரும்புகிறேன்
-  discord: டிஸ்கார்ட் (Discord)
-  discordDescription: டிஸ்கார்ட் சேனலில் இணையுங்கள்
-  discordJoin: இணை
   generateReport: அறிக்கையை உருவாக்கு
   generateSaveAs: அறிக்கையை இங்கே சேமிக்கவும்
   github: கிட்ஹப் பிரச்சனை (Github Issue)
   githubDescription: உங்கள் கருத்தை தெரிவிக்க Github Issue திறக்கவும்
   githubOpenIssue: கிட்ஹப் (Github)
   hint: அறிக்கையை உருவாக்கி டெவலப்பர் குழுவைத் தொடர்பு கொள்ள பொத்தானைக் கிளிக் செய்யவும். இந்த அறிக்கையில் இயக்க முறைமை வகை, பதிப்பு, பயனர் பெயர் (உங்கள் கணினியில்) உள்ளிட்ட உங்கள் சாதன விவரங்கள் இருக்கும்.
-  kook: கூக் (Kook)
-  kookDescription: Kook என்பது சீன பிரதான நிலப்பரப்பு பயனர்களுக்கு Discord க்கான மாற்று பயன்பாடாகும்
   name: கருத்து
-  qq: QQ குழு
-  qqDescription: 'கருத்து QQ குழுவில் நுழைந்து ஆசிரியர்களுடன் நேரடியாகப் பேசவும். குழு எண்: {number}'
-  qqEnterGroup: இணை
 fileDetail:
   fileSize: கோப்பு அளவு
   filesize: கோப்பு அளவு
@@ -815,6 +807,8 @@ loginError:
   requirePassword: கடவுச்சொல் தேவை
   requireUsername: பயனர் பெயர் தேவை
   timeout: உள்நுழைவு நேரம் முடிந்தது. மீண்டும் முயற்சிக்கவும் அல்லது உங்கள் பிணையத்தை சரிபார்க்கவும்.
+  openLoginGuide: இந்தச் சிக்கலை எப்படிச் சரிசெய்வது
+  openSupport: 'இன்னும் உதவி தேவையா? ஒரு சிக்கலைப் பதிவு செய்யுங்கள்'
 logsCrashes:
   crashes: செயலிழப்பு அறிக்கைகள்
   failures: துவக்க தோல்விகள்
@@ -1151,10 +1145,8 @@ modrinth:
 modrinthCard:
   currentVersion: தற்போதைய பதிப்பு
 multiplayer:
-  joinDiscord: Discord-இல் இணையுங்கள்
   openConsumerPortal: நுகர்வோர் தளத்தைத் திறக்கவும்
   refundHint: பணத்தைத் திரும்பப் பெற வேண்டுமா? உங்கள் ஆர்டர்களையும் சந்தாக்களையும் நிர்வகிக்க Waffo நுகர்வோர் தளத்திற்குச் செல்லுங்கள்.
-  togetherSupportHint: மல்டிபிளேயர் வேலை செய்யவில்லை என்றால், எங்கள் Discord-இல் இணைந்து மேம்பாட்டுக் குழுவைத் தொடர்புகொள்ளுங்கள். சிக்கலைத் தீர்க்க நாங்கள் உதவுவோம்.
   autoShareAmbiguous: பல விளையாட்டுகள் இயங்குகின்றன. Vardrynn பகிர்வதற்காக LAN உலகை நடத்தும் நிகழ்வைத் தேர்ந்தெடுக்கவும்.
   editSharingScope: பகிர்வு வரம்பைத் திருத்து
   gameAvailable: LAN விளையாட்டு கிடைக்கிறது

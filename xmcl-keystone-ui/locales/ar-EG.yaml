@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: القنوات
   description: لقيت مشكلة (Bug) أو عاوز أقول اقتراح
-  discord: ديسكورد
-  discordDescription: انضم لقناة الديسكورد
-  discordJoin: انضم
   generateReport: إنشاء تقرير
   generateSaveAs: حفظ التقرير في
   github: مشكلة على جيت هاب
   githubDescription: افتح تذكرة مشكلة (Issue) على جيت هاب وقول لنا رأيك
   githubOpenIssue: جيت هاب
   hint: اضغط على الزرار لعمل التقرير والتواصل مع فريق التطوير. التقرير بيحتوي على معلومات جهازك زي نوع نظام التشغيل وإصداره، واسم المستخدم (في النظام)، إلخ.
-  kook: Kook
-  kookDescription: تطبيق Kook هو بديل لديسكورد للمستخدمين في الصين
   name: الآراء والشكاوى
-  qq: جروب QQ
-  qqDescription: 'ادخل جروب QQ وتكلم مع المطورين مباشرة. رقم الجروب: {number}'
-  qqEnterGroup: انضم
 fileDetail:
   fileSize: حجم الملف
   filesize: حجم الملف
@@ -815,6 +807,8 @@ loginError:
   requirePassword: الباسورد مطلوب
   requireUsername: اسم المستخدم مطلوب
   timeout: انتهت مهلة تسجيل الدخول. يرجى إعادة المحاولة أو فحص الشبكة.
+  openLoginGuide: إزاي تحل المشكلة دي
+  openSupport: لسه محتاج مساعدة؟ افتح بلاغ
 logsCrashes:
   crashes: تقارير الكراش
   failures: أخطاء التشغيل
@@ -1151,10 +1145,8 @@ modrinth:
 modrinthCard:
   currentVersion: الإصدار الحالي
 multiplayer:
-  joinDiscord: انضم إلى Discord
   openConsumerPortal: افتح بوابة المستهلك
   refundHint: هل تحتاج إلى استرداد أموالك؟ تفضل بزيارة بوابة Waffo للمستهلك لإدارة طلباتك واشتراكاتك.
-  togetherSupportHint: إذا لم يعمل اللعب الجماعي، انضم إلى Discord وتواصل مع فريق التطوير. سنساعدك في حل المشكلة.
   autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن Vardrynn من مشاركتها.
   editSharingScope: تحرير نطاق المشاركة
   gameAvailable: لعبة شبكة محلية متاحة

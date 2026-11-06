@@ -396,21 +396,13 @@ commandPalette:
 feedback:
   channel: Opções
   description: Encontrei um Bug ou Quero fazer uma sugestão
-  discord: Discord
-  discordDescription: Entrar no Servidor do Discord
-  discordJoin: Entrar
   generateReport: Gerar um relatório
   generateSaveAs: Salvar o relatório em
   github: Problema no GitHub
   githubDescription: Relate um  problema no GitHub
   githubOpenIssue: Github
   hint: Aperte no botão para criar um relatório e entrar em contato com a equipe de desenvolvimento. O relatório terá informações do seu dispositivo, incluindo o tipo do sistema operacional, versão, nome de usuário (em seu sistema operacional), etc.
-  kook: Kook
-  kookDescription: Kook é uma alternativa ao Discord para usuário da China continental.
   name: Feedback
-  qq: QQ Group
-  qqDescription: 'Entre no grupo do QQ e converse diretamente com os autores. ID do grupo: {number}'
-  qqEnterGroup: Entrar
 fileDetail:
   fileSize: Tamanho do arquivo
   hash: Hash
@@ -741,6 +733,8 @@ loginError:
   requirePassword: Senha é obrigatória
   requireUsername: Nome de usuário é obrigatório
   timeout: Tempo de login expirado. Tente novamente ou verifique sua rede.
+  openLoginGuide: Como corrigir este problema
+  openSupport: 'Ainda precisa de ajuda? Abra uma issue'
 logsCrashes:
   crashes: Relatórios de falhas
   logs: Logs
@@ -1047,10 +1041,8 @@ modrinth:
 modrinthCard:
   currentVersion: Versão Atual
 multiplayer:
-  joinDiscord: Entrar no Discord
   openConsumerPortal: Abrir o Portal do Consumidor
   refundHint: Precisa de um reembolso? Acesse o Portal do Consumidor da Waffo para gerenciar seus pedidos e assinaturas.
-  togetherSupportHint: Se o modo multijogador não estiver funcionando, entre no nosso Discord e fale com a equipe de desenvolvimento. Ajudaremos você a resolver o problema.
   autoShareAmbiguous: Há vários jogos em execução. Selecione a instância que hospeda o mundo LAN para que o Vardrynn possa compartilhá-la.
   editSharingScope: Editar escopo de compartilhamento
   gameAvailable: Jogo LAN disponível

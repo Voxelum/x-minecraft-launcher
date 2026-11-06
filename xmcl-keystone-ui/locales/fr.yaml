@@ -403,18 +403,10 @@ commandPalette:
 feedback:
   channel: Salons
   description: J'ai trouvé un bug ou je veux faire une suggestion...
-  discord: Discord
-  discordDescription: Rejoindre le serveur Discord
-  discordJoin: Rejoindre
   github: Problème Github
   githubDescription: Ouvrez un problème Github pour dire ce que vous pensez
   githubOpenIssue: Github
-  kook: Kook
-  kookDescription: Kook est une application alternative à Discord en Chine continentale
   name: Améliorer le launcher
-  qq: Groupe QQ
-  qqDescription: 'Entrez dans le groupe de commentaires QQ et discutez directement avec les auteurs. Numéro de groupe : {number}'
-  qqEnterGroup: Rejoindre
 fileDetail:
   filesize: Taille du fichier
 filterLocalOnly: Afficher uniquement installé
@@ -779,6 +771,8 @@ loginError:
   timeout: |-
     Délai de connexion.
     Veuillez réessayer ou vérifier votre réseau.
+  openLoginGuide: Comment résoudre ce problème
+  openSupport: 'Besoin d’aide ? Ouvrez un ticket'
 logsCrashes:
   crashes: Rapports de plantage
   logs: Journaux
@@ -1083,10 +1077,8 @@ modrinth:
 modrinthCard:
   currentVersion: Version actuelle
 multiplayer:
-  joinDiscord: Rejoindre Discord
   openConsumerPortal: Ouvrir le portail client
   refundHint: Besoin d'un remboursement ? Rendez-vous sur le portail client Waffo pour gérer vos commandes et abonnements.
-  togetherSupportHint: Si le mode multijoueur ne fonctionne pas, rejoignez notre Discord et contactez l'équipe de développement. Nous vous aiderons à résoudre le problème.
   autoShareAmbiguous: Plusieurs jeux sont en cours d'exécution. Sélectionnez l'instance qui héberge le monde en réseau local afin que Vardrynn puisse la partager.
   editSharingScope: Modifier la portée du partage
   gameAvailable: Partie en réseau local disponible

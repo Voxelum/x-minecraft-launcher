@@ -514,23 +514,13 @@ commandPalette:
 feedback:
   channel: Channels
   description: I found a Bug or I want to make a suggestion
-  discord: Discord
-  discordDescription: Join Discord Channel
-  discordJoin: Join
   generateReport: Generate Report
   generateSaveAs: Save the report to
   github: Github Issue
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
   hint: Click the button to create the report and contact the developer team. The report will contain your device info including operating system type, version, user name (in your os), etc.
-  kook: Kook
-  kookDescription: Kook is an alternate app for discord for Chinese Mainland users
   name: Feedback
-  qq: QQ Group
-  qqDescription: 'Enter the feedback QQ group and direct talk with authors. Group Number: {number}'
-  qqEnterGroup: Join
-  reddit: Reddit
-  redditDescription: Join the r/XMCL subreddit community
 fileDetail:
   fileSize: File Size
   filesize: File size
@@ -892,6 +882,7 @@ loginError:
   noProfileForNewUser: No game profile found! If you are a new Minecraft user, please login at least one time in Minecraft official launcher.
   requestFailed: Login failed, we do not know the exact reason. Please retry.
   xboxErrorGuideHint: Having trouble signing in? Learn how to fix Microsoft & Xbox login issues.
+  openLoginGuide: How to fix this issue
   openSupport: Still need help? Open an issue
   requireEmail: E-mail is required
   requirePassword: Password is required
@@ -1447,7 +1438,6 @@ multiplayer:
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: If your peer has already initiated a connection, you need to Join Connection.
-  joinDiscord: Join Discord
   joinGame: Join game
   joinManual: Join
   joinOrCreateGroup: Join/Create Group
@@ -1486,7 +1476,6 @@ multiplayer:
     cancelled: Cancelled
     payment_due: Payment due
   togetherName: Minecraft Together
-  togetherSupportHint: If multiplayer is not working, join our Discord and contact the development team. We will help you resolve the problem.
   trial:
     active: Trial active
     available: Free trial available

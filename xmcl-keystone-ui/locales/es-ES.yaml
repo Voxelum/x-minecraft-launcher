@@ -448,21 +448,13 @@ commandPalette:
 feedback:
   channel: Canales
   description: Encontré un error o quiero hacer una sugerencia
-  discord: Discord
-  discordDescription: Unirse al canal de Discord
-  discordJoin: Unirse
   generateReport: Crear un informe
   generateSaveAs: Guardar el informe
   github: Problema en Github
   githubDescription: Abrir un problema en Github para expresar tu opinión
   githubOpenIssue: Github
   hint: Haz clic en el botón para crear un informe y ponerte en contacto con el equipo de desarrollo. El informe contendrá información sobre tu dispositivo, incluido el tipo de sistema operativo, la versión, el nombre de usuario (en el sistema operativo) y otros datos.
-  kook: Kook
-  kookDescription: Kook es una aplicación alternativa para usuarios de Discord en China continental
   name: Comentarios
-  qq: Grupo de QQ
-  qqDescription: 'Únete al grupo de QQ de comentarios y habla directamente con los autores. Número del grupo: {number}'
-  qqEnterGroup: Unirse
 fileDetail:
   fileSize: Tamaño del archivo
   filesize: Tamaño del archivo
@@ -823,6 +815,8 @@ loginError:
   requirePassword: Se requiere contraseña
   requireUsername: Se requiere nombre de usuario
   timeout: Tiempo de espera de inicio de sesión. Vuelve a intentarlo o revisa tu red.
+  openLoginGuide: Cómo solucionar este problema
+  openSupport: '¿Aún necesitas ayuda? Abre una incidencia'
 logsCrashes:
   crashes: Informes de Errores
   failures: Fallos de inicio
@@ -1140,10 +1134,8 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
-  joinDiscord: Únete a Discord
   openConsumerPortal: Abrir el portal del consumidor
   refundHint: ¿Necesitas un reembolso? Visita el portal del consumidor de Waffo para gestionar tus pedidos y suscripciones.
-  togetherSupportHint: Si el modo multijugador no funciona, únete a nuestro Discord y contacta con el equipo de desarrollo. Te ayudaremos a resolver el problema.
   autoShareAmbiguous: Hay varias partidas en ejecución. Selecciona la instancia que aloja el mundo LAN para que Vardrynn pueda compartirla.
   editSharingScope: Editar alcance compartido
   gameAvailable: Partida LAN disponible

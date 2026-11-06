@@ -410,21 +410,13 @@ commandPalette:
 feedback:
   channel: القنوات
   description: لقد وجدت خطأ أو أريد تقديم اقتراح
-  discord: الفتنة
-  discordDescription: انضم إلى قناة الديسكورد
-  discordJoin: ينضم
   generateReport: إنشاء تقرير
   generateSaveAs: احفظ التقرير في
   github: قضية جيثب
   githubDescription: افتح إصدار Github لتخبر أفكارك
   githubOpenIssue: جيثب
   hint: انقر فوق الزر لإنشاء التقرير والاتصال بفريق التطوير. سيحتوي التقرير على معلومات جهازك بما في ذلك نوع نظام التشغيل والإصدار واسم المستخدم (في نظام التشغيل لديك)، وما إلى ذلك.
-  kook: كوك
-  kookDescription: Kook هو تطبيق بديل للخلاف لمستخدمي البر الرئيسي الصيني
   name: تعليق
-  qq: مجموعة كيو كيو
-  qqDescription: 'أدخل مجموعة التعليقات QQ وتحدث مباشرة مع المؤلفين. رقم المجموعة: {number}'
-  qqEnterGroup: ينضم
 fileDetail:
   fileSize: حجم الملف
   filesize: حجم الملف
@@ -774,6 +766,8 @@ loginError:
   cyrillicNotAllowed: غير مسموح بالأحرف السيريلية
   illegalOfflineUsername: يجب أن يتكون اسم المستخدم من 3 إلى 16 حرفًا وأن يحتوي فقط على أحرف وأرقام وشرطات سفلية باللغة الإنجليزية
   timeout: مهلة تسجيل الدخول. يرجى إعادة المحاولة أو التحقق من شبكتك.
+  openLoginGuide: كيفية إصلاح هذه المشكلة
+  openSupport: هل ما زلت بحاجة إلى مساعدة؟ افتح بلاغًا
 logsCrashes:
   crashes: تقارير الأعطال
   failures: فشل الإطلاق
@@ -1078,10 +1072,8 @@ modrinth:
 modrinthCard:
   currentVersion: الإصدار الحالي
 multiplayer:
-  joinDiscord: انضم إلى Discord
   openConsumerPortal: افتح بوابة المستهلك
   refundHint: هل تحتاج إلى استرداد أموالك؟ تفضل بزيارة بوابة Waffo للمستهلك لإدارة طلباتك واشتراكاتك.
-  togetherSupportHint: إذا لم يعمل اللعب الجماعي، انضم إلى Discord وتواصل مع فريق التطوير. سنساعدك في حل المشكلة.
   autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن Vardrynn من مشاركتها.
   editSharingScope: تحرير نطاق المشاركة
   gameAvailable: لعبة شبكة محلية متاحة

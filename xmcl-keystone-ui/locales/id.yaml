@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: Saluran
   description: Saya menemukan Bug atau saya ingin memberikan saran
-  discord: Discord
-  discordDescription: Bergabung ke Saluran Discord
-  discordJoin: Gabung
   generateReport: Buat Laporan
   generateSaveAs: Simpan laporan ke
   github: Masalah Github
   githubDescription: Buka Masalah Github untuk menyampaikan pendapat Anda
   githubOpenIssue: Github
   hint: Klik tombol untuk membuat laporan dan hubungi tim pengembang. Laporan akan berisi info perangkat Anda termasuk jenis sistem operasi, versi, nama pengguna (di sistem operasi Anda), dll.
-  kook: Kook
-  kookDescription: Kook adalah aplikasi alternatif untuk Discord bagi pengguna di Tiongkok Daratan
   name: Umpan Balik
-  qq: Grup QQ
-  qqDescription: 'Masuk ke grup QQ umpan balik dan bicara langsung dengan pembuat. Nomor Grup: {number}'
-  qqEnterGroup: Gabung
 fileDetail:
   fileSize: Ukuran Berkas
   filesize: Ukuran berkas
@@ -815,6 +807,8 @@ loginError:
   requirePassword: Kata sandi diperlukan
   requireUsername: Nama pengguna diperlukan
   timeout: Masuk habis waktu. Silakan coba lagi atau periksa jaringan Anda.
+  openLoginGuide: Cara memperbaiki masalah ini
+  openSupport: 'Masih butuh bantuan? Buka issue'
 logsCrashes:
   crashes: Laporan Crash
   failures: Kegagalan Peluncuran
@@ -1151,10 +1145,8 @@ modrinth:
 modrinthCard:
   currentVersion: Versi Saat Ini
 multiplayer:
-  joinDiscord: Gabung ke Discord
   openConsumerPortal: Buka Portal Konsumen
   refundHint: Perlu pengembalian dana? Kunjungi Portal Konsumen Waffo untuk mengelola pesanan dan langganan Anda.
-  togetherSupportHint: Jika multipemain tidak berfungsi, bergabunglah ke Discord kami dan hubungi tim pengembang. Kami akan membantu menyelesaikan masalahnya.
   autoShareAmbiguous: Beberapa game sedang berjalan. Pilih instans yang menghosting dunia LAN agar Vardrynn dapat membagikannya.
   editSharingScope: Edit cakupan berbagi
   gameAvailable: Game LAN tersedia

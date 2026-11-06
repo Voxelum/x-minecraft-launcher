@@ -21,7 +21,7 @@ function* sources(dir: string): Generator<string> {
   for (const name of readdirSync(dir)) {
     const path = join(dir, name)
     if (statSync(path).isDirectory()) yield* sources(path)
-    else if (/\.(vue|ts)$/.test(name) && !/\.test\.ts$/.test(name)) yield path
+    else if (/\.(vue|ts)$/.test(name) && !name.endsWith('.test.ts')) yield path
   }
 }
 

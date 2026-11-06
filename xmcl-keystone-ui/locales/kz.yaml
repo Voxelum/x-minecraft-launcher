@@ -394,21 +394,13 @@ commandPalette:
 feedback:
   channel: Арналар
   description: Мен қате таптым немесе ұсыныс жасағым келеді
-  discord: Discord
-  discordDescription: Discord арнасына қосылыңыз
-  discordJoin: Қосылу
   generateReport: Есеп жасау
   generateSaveAs: Есепті мына жерге сақтау
   github: Github мәселесі
   githubDescription: Ойыңызды айту үшін Github мәселесін ашыңыз
   githubOpenIssue: Github
   hint: Есеп жасау және әзірлеушілер тобымен байланысу үшін батырманы басыңыз. Есеп операциялық жүйе түрі, нұсқасы, пайдаланушы аты (сіздің ОЖ-ңызда) сияқты құрылғы ақпаратын қамтиды.
-  kook: Kook
-  kookDescription: Kook - Қытай материгіндегі пайдаланушылар үшін Discord-тың баламалы қосымшасы
   name: Кері байланыс
-  qq: QQ тобы
-  qqDescription: 'Кері байланыс QQ тобына кіріп, авторлармен тікелей сөйлесіңіз. Топ нөмірі: {number}'
-  qqEnterGroup: Қосылу
 fileDetail:
   fileSize: Файл өлшемі
   filesize: Файл өлшемі
@@ -735,6 +727,8 @@ loginError:
   requirePassword: Құпиясөз қажет
   requireUsername: Пайдаланушы аты қажет
   timeout: Кіру уақыты аяқталды. Қайталап көріңіз немесе желіңізді тексеріңіз.
+  openLoginGuide: Бұл мәселені қалай шешуге болады
+  openSupport: 'Әлі де көмек керек пе? Сұраныс ашыңыз'
 logsCrashes:
   crashes: Құлау есептері
   logs: Журналдар
@@ -1037,10 +1031,8 @@ modrinth:
 modrinthCard:
   currentVersion: Ағымдағы нұсқа
 multiplayer:
-  joinDiscord: Discord-қа қосылу
   openConsumerPortal: Тұтынушы порталын ашу
   refundHint: Қаражатты қайтару керек пе? Тапсырыстар мен жазылымдарды басқару үшін Waffo тұтынушы порталына кіріңіз.
-  togetherSupportHint: Көп ойыншы режимі жұмыс істемесе, Discord-қа қосылып, әзірлеушілер тобымен хабарласыңыз. Мәселені шешуге көмектесеміз.
   autoShareAmbiguous: Бірнеше ойын іске қосылған. Vardrynn бөлісе алуы үшін LAN әлемін орналастырып тұрған дананы таңдаңыз.
   editSharingScope: Бөлісу ауқымын өзгерту
   gameAvailable: LAN ойыны қолжетімді

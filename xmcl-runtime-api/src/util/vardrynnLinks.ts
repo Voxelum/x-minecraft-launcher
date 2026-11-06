@@ -7,6 +7,9 @@ export const VARDRYNN_REPOSITORY_URL = 'https://github.com/MichaelOlave/x-minecr
 export const VARDRYNN_ISSUES_URL = `${VARDRYNN_REPOSITORY_URL}/issues`
 export const VARDRYNN_NEW_ISSUE_URL = `${VARDRYNN_ISSUES_URL}/new`
 
+/** Vardrynn's guide for Microsoft and Xbox sign-in errors (VARDRYNN_MICROSOFT_LOGIN_HELP.md). */
+export const VARDRYNN_MICROSOFT_LOGIN_HELP_URL = `${VARDRYNN_REPOSITORY_URL}/blob/master/VARDRYNN_MICROSOFT_LOGIN_HELP.md`
+
 /** Attribution only: the project Vardrynn is built on. */
 export const UPSTREAM_PROJECT_URL = 'https://github.com/Voxelum/x-minecraft-launcher'
 

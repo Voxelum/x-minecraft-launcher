@@ -186,6 +186,14 @@
         <div class="flex flex-col gap-1.5 pt-1">
           <a
             target="browser"
+            :href="VARDRYNN_MICROSOFT_LOGIN_HELP_URL"
+            class="flex items-center gap-1.5 text-xs text-amber-500 hover:underline font-medium"
+          >
+            <v-icon size="14">help_outline</v-icon>
+            {{ t('loginError.openLoginGuide') }}
+          </a>
+          <a
+            target="browser"
             :href="VARDRYNN_NEW_ISSUE_URL"
             class="flex items-center gap-1.5 text-xs text-primary hover:underline font-medium"
           >
@@ -245,6 +253,7 @@ import {
   AUTHORITY_MOJANG,
   UserException,
   UserServiceKey,
+  VARDRYNN_MICROSOFT_LOGIN_HELP_URL,
   VARDRYNN_NEW_ISSUE_URL,
   isException,
 } from '@xmcl/runtime-api'
@@ -557,6 +566,13 @@ watch(error, (err) => {
       body: t('loginError.xboxErrorGuideHint'),
       key: 'microsoft-login-error-help',
       operations: [
+        {
+          text: t('loginError.openLoginGuide'),
+          icon: 'help_outline',
+          handler() {
+            window.open(VARDRYNN_MICROSOFT_LOGIN_HELP_URL, 'browser')
+          },
+        },
         {
           text: t('loginError.openSupport'),
           icon: 'help_outline',

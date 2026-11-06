@@ -426,21 +426,13 @@ commandPalette:
 feedback:
   channel: 채널
   description: 버그를 발견했거나 제안을 하고 싶어요
-  discord: Discord
-  discordDescription: 디스코드 채널 참여
-  discordJoin: 참여
   generateReport: 보고서 생성
   generateSaveAs: 보고서 저장 위치
   github: Github 이슈
   githubDescription: 생각을 전하기 위해 Github 이슈 열기
   githubOpenIssue: Github
   hint: 버튼을 눌러 보고서를 생성하고 개발팀에 연락하세요. 보고서에는 운영체제 종류, 버전, 사용자 이름 등 기기 정보가 포함됩니다.
-  kook: Kook
-  kookDescription: Kook은 중국 본토 사용자를 위한 디스코드 대체 앱입니다
   name: 피드백
-  qq: QQ 그룹
-  qqDescription: 'QQ 피드백 그룹에 들어가 저자와 직접 대화하세요. 그룹 번호: {number}'
-  qqEnterGroup: 참여
 fileDetail:
   fileSize: 파일 크기
   filesize: 파일 크기
@@ -784,6 +776,8 @@ loginError:
   loginXboxFailedWithCode: Microsoft 토큰으로 Xbox에 로그인하지 못했습니다(XErr {code}). 해당 코드를 검색하여 도움을 받거나 나중에 다시 시도해 주세요.
   loginXboxNoXboxProfile: 이 Microsoft 계정에는 아직 Xbox 프로필이 없습니다. 브라우저에서 {url}을(를) 열어 프로필을 생성한 후 다시 시도해 주세요.
   loginXboxRegionLocked: 귀하의 계정 지역에서는 Xbox Live를 사용할 수 없습니다. Microsoft 계정 설정에서 국가/지역을 변경한 후 다시 시도해 주세요.
+  openLoginGuide: 이 문제 해결 방법
+  openSupport: '여전히 도움이 필요하신가요? 이슈를 등록하세요'
 logsCrashes:
   crashes: 크래시 리포트
   logs: 로그
@@ -1088,10 +1082,8 @@ modrinth:
 modrinthCard:
   currentVersion: 현재 버전
 multiplayer:
-  joinDiscord: Discord 참여
   openConsumerPortal: 소비자 포털 열기
   refundHint: 환불이 필요하신가요? Waffo 소비자 포털에서 주문과 구독을 관리하세요.
-  togetherSupportHint: 멀티플레이가 작동하지 않으면 Discord에 참여하여 개발팀에 문의하세요. 문제 해결을 도와드리겠습니다.
   autoShareAmbiguous: 여러 게임이 실행 중입니다. Vardrynn이 공유할 수 있도록 LAN 월드를 호스팅하는 인스턴스를 선택하세요.
   editSharingScope: 공유 범위 편집
   gameAvailable: LAN 게임 사용 가능

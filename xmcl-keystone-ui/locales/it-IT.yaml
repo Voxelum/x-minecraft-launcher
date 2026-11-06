@@ -373,20 +373,10 @@ commandPalette:
 feedback:
   channel: Canali
   description: Ho trovato un bug o voglio fare un suggerimento
-  discord: Discord
-  discordDescription: Unisciti al canale Discord
-  discordJoin: Unisciti
   github: Problema Github
   githubDescription: Apri un problema Github per dire il tuo pensiero
   githubOpenIssue: Github
-  kook: Kook
-  kookDescription: Kook è un'app alternativa per Discord per gli utenti della Cina continentale
   name: Feedback
-  qq: Gruppo QQ
-  qqDescription: |-
-    Entra nel gruppo di feedback QQ e parla direttamente con gli autori. Numero di
-      gruppo: {number}
-  qqEnterGroup: Unisciti
 fileDetail:
   fileSize: Dimensione del file
   filesize: Dimensione del file
@@ -731,6 +721,8 @@ loginError:
   requirePassword: La password è obbligatoria
   requireUsername: Il nome utente è obbligatorio
   timeout: Timeout di accesso. Riprovare o controllare la connessione di rete.
+  openLoginGuide: Come risolvere questo problema
+  openSupport: 'Serve ancora aiuto? Apri una segnalazione'
 logsCrashes:
   crashes: Report arresto anomalo
   logs: Log
@@ -1045,10 +1037,8 @@ modrinth:
 modrinthCard:
   currentVersion: Versione corrente
 multiplayer:
-  joinDiscord: Unisciti a Discord
   openConsumerPortal: Apri il portale clienti
   refundHint: Hai bisogno di un rimborso? Visita il portale clienti Waffo per gestire ordini e abbonamenti.
-  togetherSupportHint: Se la modalità multigiocatore non funziona, unisciti al nostro Discord e contatta il team di sviluppo. Ti aiuteremo a risolvere il problema.
   autoShareAmbiguous: Sono in esecuzione più giochi. Seleziona l'istanza che ospita il mondo LAN affinché Vardrynn possa condividerla.
   editSharingScope: Modifica ambito di condivisione
   gameAvailable: Partita LAN disponibile
