@@ -50,7 +50,7 @@ agent:
   suggestion2: Các mod của tôi đang bị crash — hãy tìm nguyên nhân và chỉ tôi cách khắc phục
   suggestion3: 'Tạo một modpack: tìm các mod có tính năng tôi muốn và cài đặt chúng vào phiên bản này'
   thinking: đang suy nghĩ…
-  title: Trợ lý XMCL
+  title: Trợ lý Vardrynn
   toggleHint: để bật/tắt
 ago:
   day: '{duration} ngày trước | {duration} ngày trước'
@@ -117,8 +117,8 @@ backup:
   noInstancesFound: Không tìm thấy phiên bản nào trong trình khởi chạy.
   excludeLibrariesNotice: Các tệp thư viện cốt lõi, tài nguyên Minecraft và bộ nhớ đệm tạm thời được tự động loại trừ để giữ tệp sao lưu nhỏ gọn.
   create: Tạo bản sao lưu
-  createTitle: Tạo tệp sao lưu XMCL
-  saveDialogTitle: Lưu tệp sao lưu XMCL
+  createTitle: Tạo tệp sao lưu Vardrynn
+  saveDialogTitle: Lưu tệp sao lưu Vardrynn
   fileFilterName: 'Tệp sao lưu XMCL (*.xmclbackup, *.zip)'
   createError: Không thể tạo bản sao lưu
   loadManifestError: Không thể đọc tệp sao lưu
@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: Các kênh phản hồi
   description: Tôi đã tìm thấy lỗi hoặc tôi muốn đưa ra đề xuất
-  discord: Discord
-  discordDescription: Tham gia Kênh Discord
-  discordJoin: Tham gia
   generateReport: Tạo báo cáo
   generateSaveAs: Lưu báo cáo vào
   github: Sự cố Github (Github Issue)
   githubDescription: Mở một Github Issue để cho biết ý kiến của bạn
   githubOpenIssue: Github
   hint: Nhấp vào nút để tạo báo cáo và liên hệ với nhóm phát triển. Báo cáo sẽ chứa thông tin thiết bị của bạn bao gồm loại hệ điều hành, phiên bản, tên người dùng (trong hệ điều hành của bạn), v.v.
-  kook: Kook
-  kookDescription: Kook là một ứng dụng thay thế cho discord dành cho người dùng Trung Quốc Đại Lục
   name: Phản hồi
-  qq: Nhóm QQ
-  qqDescription: 'Tham gia nhóm QQ phản hồi và nói chuyện trực tiếp với tác giả. Số nhóm: {number}'
-  qqEnterGroup: Tham gia
 fileDetail:
   fileSize: Dung lượng tệp
   filesize: Dung lượng tệp
@@ -500,7 +492,7 @@ importModpack:
   selectVersionDescription: 'Chọn phiên bản của {name} để cài đặt:'
   pmcProtected: Planet Minecraft được Cloudflare bảo vệ. Vui lòng sao chép liên kết tải trực tiếp hoặc liên kết dự phòng từ trang đó.
   netdiskTitle: Tải từ ổ đĩa đám mây
-  netdiskDescription: Phiên bản modpack này được lưu trên ổ đĩa đám mây bên ngoài. Nhấn bên dưới để mở trang tải xuống trong trình duyệt, sau đó kéo và thả tệp .zip hoặc .mrpack đã tải vào XMCL.
+  netdiskDescription: Phiên bản modpack này được lưu trên ổ đĩa đám mây bên ngoài. Nhấn bên dưới để mở trang tải xuống trong trình duyệt, sau đó kéo và thả tệp .zip hoặc .mrpack đã tải vào Vardrynn.
   openNetdisk: Mở ổ đĩa đám mây
   netdiskOpened: Liên kết ổ đĩa đám mây đã được mở trong trình duyệt và sao chép vào bộ nhớ tạm.
   noReleasesFound: Không tìm thấy bản phát hành modpack .mrpack hoặc .zip trong kho lưu trữ này.
@@ -664,7 +656,7 @@ instances:
   addModrinthDescription: Nhập phiên bản Modrinth hiện có. Bạn cần chọn thư mục dữ liệu gốc của Modrinth.
   addPrismDescription: Nhập phiên bản PrismLauncher hiện có.
   addVanilla: Tạo từ Minecraft vanilla
-  addVanillaDescription: Nhập từ thư mục .minecraft thông thường. Thao tác này sẽ sao chép hồ sơ game gốc sang XMCL.
+  addVanillaDescription: Nhập từ thư mục .minecraft thông thường. Thao tác này sẽ sao chép hồ sơ game gốc sang Vardrynn.
   edition: Phiên bản
   editionJava: Phiên bản Java
   editionBedrock: Phiên bản Bedrock
@@ -815,6 +807,8 @@ loginError:
   requirePassword: Mật khẩu là bắt buộc
   requireUsername: Tên người dùng là bắt buộc
   timeout: Hết thời gian đăng nhập. Vui lòng thử lại hoặc kiểm tra kết nối mạng của bạn.
+  openLoginGuide: Cách khắc phục sự cố này
+  openSupport: 'Vẫn cần trợ giúp? Hãy mở một issue'
 logsCrashes:
   crashes: Báo cáo sự cố (Crash Reports)
   failures: Khởi chạy thất bại
@@ -1151,11 +1145,9 @@ modrinth:
 modrinthCard:
   currentVersion: Phiên bản hiện tại
 multiplayer:
-  joinDiscord: Tham gia Discord
   openConsumerPortal: Mở Cổng thông tin khách hàng
   refundHint: Bạn cần hoàn tiền? Hãy truy cập Cổng thông tin khách hàng Waffo để quản lý đơn hàng và gói đăng ký.
-  togetherSupportHint: Nếu chế độ nhiều người chơi không hoạt động, hãy tham gia Discord và liên hệ với nhóm phát triển. Chúng tôi sẽ giúp bạn giải quyết vấn đề.
-  autoShareAmbiguous: Có nhiều trò chơi đang chạy. Hãy chọn phiên bản đang lưu trữ thế giới LAN để XMCL có thể chia sẻ.
+  autoShareAmbiguous: Có nhiều trò chơi đang chạy. Hãy chọn phiên bản đang lưu trữ thế giới LAN để Vardrynn có thể chia sẻ.
   editSharingScope: Chỉnh sửa phạm vi chia sẻ
   gameAvailable: Có trò chơi LAN
   joinGame: Tham gia trò chơi
@@ -1648,7 +1640,7 @@ setting:
   aboutDenoDescription: XMCL tận dụng nền tảng tiện lợi của Deno Deploy cho các ứng dụng JavaScript không máy chủ (serverless)
   aboutLicense: GIẤY PHÉP MIT
   aboutLicenseInfo: Ký mã Windows miễn phí được cung cấp bởi SignPath.io, chứng chỉ bởi SignPath Foundation
-  aboutSponsors: 😇 Nhà tài trợ 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Tùy chọn Java nâng cao
   advancedSettings: Cài đặt nâng cao
   advancedSettingsHint: Vùng nguy hiểm - đặt lại hoặc quản lý dữ liệu trình khởi chạy
@@ -1728,7 +1720,7 @@ setting:
   developerMode: Chế độ nhà phát triển
   developerModeDescription: Chế độ nhà phát triển dùng để thử nghiệm các bản mod của riêng bạn
   disableTelemetry: Vô hiệu hóa đo lường từ xa (Telemetry)
-  disableTelemetryDescription: XMCL sẽ thu thập dữ liệu về các sự kiện khởi chạy trò chơi và đăng nhập của người dùng.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Chỉ định GPU rời
   enableDedicatedGPUOptimizationDescription: Tùy chọn này sẽ chỉ định GPU rời (Dedicated GPU) cho tiến trình Minecraft.
   enableDiscord: Bật trạng thái hoạt động Discord (Rich Presence)
@@ -1868,7 +1860,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: Thư mục gốc của dữ liệu không phải là thư mục .minecraft thông thường. Vì cấu trúc thư mục dữ liệu của XMCL khác với phiên bản gốc (vanilla), chúng tôi khuyên bạn không nên sử dụng thư mục .minecraft thông thường làm thư mục gốc dữ liệu.
+    description: Thư mục gốc của dữ liệu không phải là thư mục .minecraft thông thường. Vì cấu trúc thư mục dữ liệu của Vardrynn khác với phiên bản gốc (vanilla), chúng tôi khuyên bạn không nên sử dụng thư mục .minecraft thông thường làm thư mục gốc dữ liệu.
     drives: Vị trí được khuyên dùng
     name: Thiết lập thư mục dữ liệu
   defaultLayoutDescription: Bố cục mặc định nhằm tối ưu hóa khái niệm "phiên bản" trò chơi. Nó trông giống như các ứng dụng như Discord và cũng được truyền cảm hứng từ các trình khởi chạy game khác như Steam, v.v.
@@ -2000,8 +1992,8 @@ theme:
   selectImage: Chọn hình ảnh
   selectMusic: Chọn nhạc
   selectVideo: Chọn video
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Ứng viên máy chủ (Host Candidate)
   prflx: Ứng viên phản chiếu ngang hàng
@@ -2280,7 +2272,7 @@ gamepad:
   steamAddedNotify: Đã thêm trình khởi chạy vào Thư viện Steam thành công! Vui lòng khởi động lại Steam để áp dụng.
   steamAlreadyAddedNotify: Trình khởi chạy đã có sẵn trong Thư viện Steam của bạn.
   steamDeckTitle: Phát hiện Steam Deck
-  steamDeckDesc: Chúng tôi phát hiện bạn đang chạy trên Steam Deck. Bạn có muốn thêm XMCL vào Thư viện Steam của mình dưới dạng trò chơi ngoài Steam để tích hợp đầy đủ lớp phủ Steam và điều khiển trong Gaming Mode không?
+  steamDeckDesc: Chúng tôi phát hiện bạn đang chạy trên Steam Deck. Bạn có muốn thêm Vardrynn vào Thư viện Steam của mình dưới dạng trò chơi ngoài Steam để tích hợp đầy đủ lớp phủ Steam và điều khiển trong Gaming Mode không?
   steamDeckAddBtn: Thêm vào Steam ({btn})
   steamDeckCancelBtn: Hủy ({btn})
   disconnected: Controller Disconnected

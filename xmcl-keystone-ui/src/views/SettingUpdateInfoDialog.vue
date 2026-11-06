@@ -34,27 +34,17 @@
       >
         {{ t(isAppImage ? (state?.appImageUpdateMode === 'self-managed' ? 'setting.appImageSelfUpdateHint' : 'setting.appImageExternalUpdateHint') : 'setting.maunalUpdateHint') }}
       </v-alert>
+      <v-alert
+        v-if="updateError"
+        data-testid="update-error"
+        variant="tonal"
+        type="error"
+        role="alert"
+      >
+        <strong>{{ t('launcherUpdate.failed') }}</strong>
+        <div>{{ updateError }}</div>
+      </v-alert>
       <v-card-actions>
-        <v-btn
-          @click="openOfficialWebsite()"
-         variant="text">
-          <v-icon
-            start
-          >
-            web
-          </v-icon>
-          {{ t('setting.officialWebsite') }}
-        </v-btn>
-        <v-btn
-          @click="openGithub()"
-         variant="text">
-          <v-icon
-            start
-          >
-            signpost
-          </v-icon>
-          {{ t('setting.githubRelease') }}
-        </v-btn>
         <v-spacer />
         <template v-if="!hintRedownload">
           <v-btn
@@ -92,9 +82,6 @@
       hover
 
       style="width: 100%"
-      to="https://github.com/voxelum/x-minecraft-launcher/releases"
-      target="browser"
-      push
     >
       <div class="m-8 flex h-full items-center justify-around">
         <h3 v-if="!checkingUpdate">
@@ -122,7 +109,7 @@ const { t } = useI18n()
 const { render } = useMarkdown()
 const { state } = injection(kSettingsState)
 const {
-  installing, downloadingUpdate, checkingUpdate, updateInfo, updateStatus,
+  installing, downloadingUpdate, checkingUpdate, updateError, updateInfo, updateStatus,
   downloadUpdate, quitAndInstall,
 } = injection(kUpdateSettings)
 
@@ -138,13 +125,6 @@ const isAppImage = computed(() => env.value?.env === 'appimage')
 const hintRedownload = computed(() =>
   state.value?.updateInfo?.operation === 'manual',
 )
-
-const openOfficialWebsite = () => {
-  window.open('https://xmcl.app', 'browser')
-}
-const openGithub = () => {
-  window.open('https://github.com/voxelum/x-minecraft-launcher/releases', 'browser')
-}
 </script>
 
 <style>

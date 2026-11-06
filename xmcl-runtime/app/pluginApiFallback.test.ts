@@ -14,13 +14,16 @@ vi.mock('~/xmclAccount/XmclAccountService', () => ({
 
 const { pluginApiFallback } = await import('./pluginApiFallback')
 
-function createPlugin(resolveAuthorization: () => Promise<unknown>) {
+function createPlugin(
+  resolveAuthorization: () => Promise<unknown>,
+  flights: Record<string, string> = { vardrynnApiBaseUrl: 'https://edge.example.test' },
+) {
   const service = {
     [keys.authorization]: resolveAuthorization,
   }
   const app = {
     registry: {
-      get: vi.fn(async (key: symbol) => (key === keys.flights ? {} : service)),
+      get: vi.fn(async (key: symbol) => (key === keys.flights ? flights : service)),
     },
     protocol: {
       registerHandler: vi.fn(),
@@ -34,6 +37,26 @@ function createPlugin(resolveAuthorization: () => Promise<unknown>) {
 }
 
 describe('pluginApiFallback', () => {
+  test('attaches no session when the Vardrynn service is unconfigured', async () => {
+    const resolveAuthorization = vi.fn()
+    const { handler } = createPlugin(resolveAuthorization, {})
+    const headers = {}
+    const response: Record<string, unknown> = {}
+
+    await handler({
+      request: {
+        method: 'GET',
+        url: new URL('https://signaling.xmcl.app/v1/rtc/official'),
+        headers,
+      },
+      response,
+    })
+
+    expect(resolveAuthorization).not.toHaveBeenCalled()
+    expect(headers).toEqual({})
+    expect(response).toEqual({})
+  })
+
   test('strips renderer authorization before lookup and applies generated DPoP headers', async () => {
     const headers: Record<string, string> = {
       Authorization: 'renderer-token',
@@ -51,7 +74,7 @@ describe('pluginApiFallback', () => {
     const { handler } = createPlugin(resolveAuthorization)
     const request = {
       method: 'POST',
-      url: new URL('https://signaling.xmcl.app/v1/rtc/official?room=1'),
+      url: new URL('https://edge.example.test/v1/rtc/official?room=1'),
       headers,
     }
 
@@ -71,7 +94,7 @@ describe('pluginApiFallback', () => {
     const { handler } = createPlugin(async () => undefined)
     const request = {
       method: 'GET',
-      url: new URL('https://signaling.xmcl.app/v1/multiplayer/rooms'),
+      url: new URL('https://edge.example.test/v1/multiplayer/rooms'),
       headers,
     }
 
@@ -96,7 +119,7 @@ describe('pluginApiFallback', () => {
     })
     const request = {
       method: 'POST',
-      url: new URL('https://signaling.xmcl.app/v1/rtc/official'),
+      url: new URL('https://edge.example.test/v1/rtc/official'),
       headers: {},
     }
     const response: Record<string, any> = { headers: {} }

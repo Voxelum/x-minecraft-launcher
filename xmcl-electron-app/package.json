@@ -1,19 +1,18 @@
 {
-    "name": "xmcl",
+    "name": "vardrynn",
     "private": true,
     "main": "./index.js",
     "version": "0.73.1",
-    "author": "ci010 <cijhn@hotmail.com>",
-    "description": "XMCL - An open-source launcher for Minecraft",
+    "author": "Vardrynn contributors",
+    "description": "Vardrynn - An open-source launcher for Minecraft, built on XMCL",
     "license": "MIT",
     "engines": {
         "node": ">=22.16.0"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/voxelum/x-minecraft-launcher"
+        "url": "https://github.com/MichaelOlave/x-minecraft-launcher"
     },
-    "msstoreCliAppId": "9MXJWHXTP4B9",
     "scripts": {
         "compile": "cross-env BUILD_TARGET=none tsx build.ts",
         "build": "cross-env NODE_ENV=production tsx build.ts",

@@ -85,8 +85,8 @@ backup:
   noInstancesFound: Лаунчерде инстанциялар табылмады.
   excludeLibrariesNotice: Негізгі кітапханалар, Minecraft ресурстары және уақытша кэштер мұрағат көлемін азайту үшін автоматты түрде қосылмайды.
   create: Сақтық көшірме жасау
-  createTitle: XMCL сақтық көшірме мұрағатын жасау
-  saveDialogTitle: XMCL сақтық көшірмесін сақтау
+  createTitle: Vardrynn сақтық көшірме мұрағатын жасау
+  saveDialogTitle: Vardrynn сақтық көшірмесін сақтау
   fileFilterName: 'XMCL сақтық көшірмесі (*.xmclbackup, *.zip)'
   createError: Сақтық көшірме жасау сәтсіз аяқталды
   loadManifestError: Сақтық көшірме мұрағатын оқу мүмкін болмады
@@ -394,21 +394,13 @@ commandPalette:
 feedback:
   channel: Арналар
   description: Мен қате таптым немесе ұсыныс жасағым келеді
-  discord: Discord
-  discordDescription: Discord арнасына қосылыңыз
-  discordJoin: Қосылу
   generateReport: Есеп жасау
   generateSaveAs: Есепті мына жерге сақтау
   github: Github мәселесі
   githubDescription: Ойыңызды айту үшін Github мәселесін ашыңыз
   githubOpenIssue: Github
   hint: Есеп жасау және әзірлеушілер тобымен байланысу үшін батырманы басыңыз. Есеп операциялық жүйе түрі, нұсқасы, пайдаланушы аты (сіздің ОЖ-ңызда) сияқты құрылғы ақпаратын қамтиды.
-  kook: Kook
-  kookDescription: Kook - Қытай материгіндегі пайдаланушылар үшін Discord-тың баламалы қосымшасы
   name: Кері байланыс
-  qq: QQ тобы
-  qqDescription: 'Кері байланыс QQ тобына кіріп, авторлармен тікелей сөйлесіңіз. Топ нөмірі: {number}'
-  qqEnterGroup: Қосылу
 fileDetail:
   fileSize: Файл өлшемі
   filesize: Файл өлшемі
@@ -436,7 +428,7 @@ importModpack:
   selectVersionDescription: 'Орнатылатын {name} нұсқасын таңдаңыз:'
   pmcProtected: Planet Minecraft сайты Cloudflare арқылы қорғалған. Беттен тікелей жүктеу сілтемесін немесе айна сілтемесін көшіріңіз.
   netdiskTitle: Бұлттық дискіден жүктеу
-  netdiskDescription: Модпактың бұл нұсқасы сыртқы бұлттық дискіде орналасқан. Жүктеу бетін браузерде ашу үшін төмендегі түймені басыңыз, содан кейін жүктелген .zip немесе .mrpack файлын XMCL терезесіне сүйреп апарыңыз.
+  netdiskDescription: Модпактың бұл нұсқасы сыртқы бұлттық дискіде орналасқан. Жүктеу бетін браузерде ашу үшін төмендегі түймені басыңыз, содан кейін жүктелген .zip немесе .mrpack файлын Vardrynn терезесіне сүйреп апарыңыз.
   openNetdisk: Бұлттық дискіні ашу
   netdiskOpened: Бұлттық диск сілтемесі браузерде ашылып, алмасу буферіне көшірілді.
   noReleasesFound: Бұл репозиторийде .mrpack немесе .zip пішіміндегі модпак шығарылымдары табылмады.
@@ -588,7 +580,7 @@ instances:
   addMMCDescription: Бар болып тұрған MultiMC жеке жағдайын импорттау. Сіз MultiMC-ден деректер қалтасын таңдауыңыз керек.
   addModrinthDescription: Бар болып тұрған Modrinth жеке жағдайын импорттау. Сіз Modrinth түбірлік деректер қалтасын таңдауыңыз керек.
   addVanilla: Vanilla тәрізді Minecraft-тан жасау
-  addVanillaDescription: Жалпы .minecraft қалтасынан импорттау. Бұл түпнұсқа ойын профилін XMCL-ге екі еселеп көшіреді.
+  addVanillaDescription: Жалпы .minecraft қалтасынан импорттау. Бұл түпнұсқа ойын профилін Vardrynn-ге екі еселеп көшіреді.
   fix: Жөндеу
   folder: Қалта
   folderSetting: Қалта баптаулары
@@ -735,6 +727,8 @@ loginError:
   requirePassword: Құпиясөз қажет
   requireUsername: Пайдаланушы аты қажет
   timeout: Кіру уақыты аяқталды. Қайталап көріңіз немесе желіңізді тексеріңіз.
+  openLoginGuide: Бұл мәселені қалай шешуге болады
+  openSupport: 'Әлі де көмек керек пе? Сұраныс ашыңыз'
 logsCrashes:
   crashes: Құлау есептері
   logs: Журналдар
@@ -1037,11 +1031,9 @@ modrinth:
 modrinthCard:
   currentVersion: Ағымдағы нұсқа
 multiplayer:
-  joinDiscord: Discord-қа қосылу
   openConsumerPortal: Тұтынушы порталын ашу
   refundHint: Қаражатты қайтару керек пе? Тапсырыстар мен жазылымдарды басқару үшін Waffo тұтынушы порталына кіріңіз.
-  togetherSupportHint: Көп ойыншы режимі жұмыс істемесе, Discord-қа қосылып, әзірлеушілер тобымен хабарласыңыз. Мәселені шешуге көмектесеміз.
-  autoShareAmbiguous: Бірнеше ойын іске қосылған. XMCL бөлісе алуы үшін LAN әлемін орналастырып тұрған дананы таңдаңыз.
+  autoShareAmbiguous: Бірнеше ойын іске қосылған. Vardrynn бөлісе алуы үшін LAN әлемін орналастырып тұрған дананы таңдаңыз.
   editSharingScope: Бөлісу ауқымын өзгерту
   gameAvailable: LAN ойыны қолжетімді
   joinGame: Ойынға қосылу
@@ -1455,7 +1447,7 @@ setting:
   aboutDenoDescription: XMCL серверсіз JavaScript қосымшалары үшін Deno Deploy-ның қиындықсыз платформасын пайдаланады
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Windows-та SignPath.io ұсынған тегін коды имзалау, SignPath Foundation сертификаты
-  aboutSponsors: 😇 Демеушілер 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Кеңейтілген Java опциялары
   advancedSettings: Кеңейтілген баптаулар
   advancedSettingsHint: Қауіпті аймақ - launcher деректерін қалпына келтіру немесе басқару
@@ -1512,7 +1504,7 @@ setting:
   developerMode: Әзірлеуші режимі
   developerModeDescription: Әзірлеуші режимі өз модтарыңызды тестеу үшін
   disableTelemetry: Телеметрияны өшіру
-  disableTelemetryDescription: XMCL ойынды іске қосу және пайдаланушы кіру оқиғаларын жинайды.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Арнайы графикалық процессорды тағайындау
   enableDedicatedGPUOptimizationDescription: Бұл опция Minecraft процесіне арнайы графикалық процессорды тағайындайды.
   enableDiscord: Discord қатысуын қосу
@@ -1637,7 +1629,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: Деректер түбірі әдеттегі .minecraft қалтасы емес. XMCL деректер қалтасының құрылымы vanilla-ден өзгеше болғандықтан, біз деректер түбірі ретінде әдеттегі .minecraft қалтасын қолдануға ұсынбаймыз.
+    description: Деректер түбірі әдеттегі .minecraft қалтасы емес. Vardrynn деректер қалтасының құрылымы vanilla-ден өзгеше болғандықтан, біз деректер түбірі ретінде әдеттегі .minecraft қалтасын қолдануға ұсынбаймыз.
     drives: Ұсынылған орындар
     name: Деректер қалтасын орнату
   defaultLayoutDescription: Әдепкі макет ойын "жеке жағдай" ұғымын күшейтуге тырысады. Ол Discord сияқты қосымшаларға ұқсайды. Ол сондай-ақ Steam сияқты басқа ойын іске қосқыш қосымшаларынан шабыт алған.
@@ -1762,7 +1754,7 @@ theme:
   selectImage: Суретті таңдау
   selectMusic: Музыканы таңдау
   selectVideo: Видеоны таңдау
-  title: XMCL
+  title: Vardrynn
 transportType:
   host: Хост кандидаты
   prflx: Қарым-қатынас рефлексивті кандидаты
@@ -2104,7 +2096,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

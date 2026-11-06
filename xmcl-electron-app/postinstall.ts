@@ -16,15 +16,5 @@ if (process.platform === 'win32') {
     .replace("Publisher='${publisher}'", 'Publisher="${publisher}"'), 'utf-8')
 }
 
-if (process.platform === 'linux' || process.platform === 'openbsd' || process.platform === 'freebsd') {
-  // Overwrite the linux electron-builder js code
-  const fpmTargetFilePath = './node_modules/app-builder-lib/out/targets/FpmTarget.js'
-  const linuxTargetHelperFilePath = './node_modules/app-builder-lib/out/targets/LinuxTargetHelper.js'
-  writeFileSync(fpmTargetFilePath, readFileSync(fpmTargetFilePath, 'utf-8')
-    // eslint-disable-next-line no-template-curly-in-string
-    .replace('installPrefix}/${appInfo.sanitizedProductName}', 'installPrefix}/xmcl'), 'utf-8')
-  writeFileSync(linuxTargetHelperFilePath, readFileSync(linuxTargetHelperFilePath, 'utf-8')
-    // eslint-disable-next-line no-template-curly-in-string
-    .replace('installPrefix}/${appInfo.sanitizedProductName}', 'installPrefix}/xmcl'), 'utf-8')
-  console.log('Patched linux build target')
-}
+// Linux packages install to electron-builder's default /opt/<productName> (/opt/Vardrynn), which
+// build/linux/*.tpl and the AppArmor profile expect. The upstream /opt/xmcl rewrite was removed.

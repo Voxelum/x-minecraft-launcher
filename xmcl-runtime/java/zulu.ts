@@ -85,20 +85,7 @@ export async function setupZuluCache(app: LauncherApp) {
     await writeFile(filePath, JSON.stringify(index, null, 2))
   }
 
-  const onDisk = await readJson(filePath).catch(() => undefined)
-  const content: ZuluCache = isHealthyZuluCache(onDisk) ? onDisk : index
-
-  const response = await app.fetch('https://raw.githubusercontent.com/Voxelum/xmcl-static-resource/refs/heads/main/zulu.json', {
-    headers: {
-      ['If-Modified-Since']: content.modified,
-    },
-  })
-  if (response.ok) {
-    const remote = await response.json().catch(() => undefined)
-    if (isHealthyZuluCache(remote)) {
-      await writeFile(filePath, JSON.stringify(remote, null, 2))
-    }
-  }
+  // The bundled index and any healthy local cache remain available offline.
 }
 
 /**

@@ -1,3 +1,4 @@
+import { LAUNCHER_NAME } from '../constant'
 import Drive from 'node-disk-info/dist/classes/drive'
 import { join, parse } from 'path'
 import { setTimeout } from 'timers/promises'
@@ -8,6 +9,7 @@ import { SetupWorker } from './setupWorker'
 // eslint-disable-next-line import/default
 import createSetupWorker from './setupWorkerEntry?worker'
 import { Exception } from '@xmcl/runtime-api'
+import { XmclImport } from './xmclImport'
 
 /**
  * Returns true if the drive is a real user-accessible filesystem suitable as
@@ -84,10 +86,19 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
     }
   }
 
+  const xmclImport = new XmclImport(app.appDataPath)
+  app.controller.handle('xmcl-import-preview', (_, source?: string) => xmclImport.preview(source))
+  app.controller.handle('xmcl-import-status', () => xmclImport.status())
+  app.controller.handle('xmcl-import-copy', () => xmclImport.copy())
+  app.controller.handle('xmcl-import-cancel', () => xmclImport.cancel())
+  app.controller.handle('xmcl-import-activate', () => xmclImport.activate())
+  app.controller.handle('xmcl-import-rollback', () => xmclImport.rollback())
+  app.controller.handle('xmcl-import-restart', () => app.relaunch())
+
   app.controller.handle('preset', async () => {
     // E2E isolation: when the harness provides a game-data root, use it as the
-    // onboarding default so the wizard never points at the real ~/.minecraftx.
-    const defaultPath = process.env.XMCL_E2E_GAME_DATA || join(app.host.getPath('home'), '.minecraftx')
+    // onboarding default so the wizard never points at the real game directory.
+    const defaultPath = process.env.XMCL_E2E_GAME_DATA || join(app.host.getPath('home'), `.${LAUNCHER_NAME}`)
     const getPath = (driveSymbol: string) => {
       const parsedHome = parse(defaultPath)
       if (
@@ -96,7 +107,7 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
       ) {
         return defaultPath
       }
-      return join(driveSymbol, '.minecraftx')
+      return join(driveSymbol, `.${LAUNCHER_NAME}`)
     }
     const getAllDrived = async () => {
       try {

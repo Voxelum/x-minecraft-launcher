@@ -93,8 +93,8 @@ backup:
   noInstancesFound: Nie znaleziono instancji w launcherze.
   excludeLibrariesNotice: Główne biblioteki, zasoby Minecrafta i tymczasowa pamięć podręczna są automatycznie pomijane, aby zmniejszyć rozmiar archiwum. Zostaną pobrane przy uruchomieniu gry.
   create: Utwórz kopię
-  createTitle: Utwórz archiwum kopii zapasowej XMCL
-  saveDialogTitle: Zapisz archiwum kopii zapasowej XMCL
+  createTitle: Utwórz archiwum kopii zapasowej Vardrynn
+  saveDialogTitle: Zapisz archiwum kopii zapasowej Vardrynn
   fileFilterName: 'Archiwum kopii zapasowej XMCL (*.xmclbackup, *.zip)'
   createError: Nie udało się utworzyć kopii zapasowej
   loadManifestError: Nie udało się odczytać archiwum kopii zapasowej
@@ -365,18 +365,10 @@ commandPalette:
 feedback:
   channel: Kanały
   description: Znalazłem błąd lub chcę coś zasugerować
-  discord: Discord
-  discordDescription: Dołącz do kanału Discord
-  discordJoin: Dołącz
   github: Problem Github
   githubDescription: Otwórz wątek na Github, aby podzielić się swoimi przemyśleniami
   githubOpenIssue: Github
-  kook: Kook
-  kookDescription: Kook to alternatywna aplikacja dla użytkownika Discord w Chinach kontynentalnych
   name: Informacje zwrotne
-  qq: Grupa QQ
-  qqDescription: 'Wejdź do grupy opinii QQ i rozmawiaj bezpośrednio z autorami. Numer grupy: {number}'
-  qqEnterGroup: Dołącz
 fileDetail:
   fileSize: Rozmiar pliku
   filesize: Rozmiar pliku
@@ -404,7 +396,7 @@ importModpack:
   selectVersionDescription: 'Wybierz wersję {name} do zainstalowania:'
   pmcProtected: Planet Minecraft jest chroniony przez Cloudflare. Skopiuj ze strony bezpośredni lub alternatywny link do pobrania.
   netdiskTitle: Pobieranie z dysku w chmurze
-  netdiskDescription: Ta wersja paczki modów znajduje się na zewnętrznym dysku w chmurze. Kliknij poniżej, aby otworzyć stronę pobierania w przeglądarce, a następnie przeciągnij pobrany plik .zip lub .mrpack do XMCL.
+  netdiskDescription: Ta wersja paczki modów znajduje się na zewnętrznym dysku w chmurze. Kliknij poniżej, aby otworzyć stronę pobierania w przeglądarce, a następnie przeciągnij pobrany plik .zip lub .mrpack do Vardrynn.
   openNetdisk: Otwórz dysk w chmurze
   netdiskOpened: Link do dysku w chmurze został otwarty w przeglądarce i skopiowany do schowka.
   noReleasesFound: Nie znaleziono wydań paczek modów .mrpack lub .zip w tym repozytorium.
@@ -569,7 +561,7 @@ instances:
     Zaimportuj istniejącą instancję Modrinth.
     Musisz wybrać główny folder danych Modrinth.
   addVanilla: Tworzenie z Minecrafta w stylu vanilla
-  addVanillaDescription: Import ze wspólnego folderu .minecraft. Spowoduje to zduplikowanie oryginalnego profilu gry do XMCL.
+  addVanillaDescription: Import ze wspólnego folderu .minecraft. Spowoduje to zduplikowanie oryginalnego profilu gry do Vardrynn.
   fix: Napraw
   folderSetting: Ustawienia folderów
   importFolderDescription: Importowanie Minecrafta do programu uruchamiającego
@@ -719,6 +711,8 @@ loginError:
   requirePassword: Wymagane jest hasło
   requireUsername: Nazwa użytkownika jest wymagana
   timeout: Limit czasu logowania. Spróbuj ponownie lub sprawdź sieć.
+  openLoginGuide: Jak rozwiązać ten problem
+  openSupport: 'Nadal potrzebujesz pomocy? Zgłoś problem'
 logsCrashes:
   crashes: Raporty o wypadkach
   logs: Dzienniki
@@ -1032,11 +1026,9 @@ modrinth:
 modrinthCard:
   currentVersion: Aktualna wersja
 multiplayer:
-  joinDiscord: Dołącz do Discorda
   openConsumerPortal: Otwórz portal klienta
   refundHint: Potrzebujesz zwrotu środków? Odwiedź portal klienta Waffo, aby zarządzać zamówieniami i subskrypcjami.
-  togetherSupportHint: Jeśli tryb wieloosobowy nie działa, dołącz do naszego Discorda i skontaktuj się z zespołem programistów. Pomożemy Ci rozwiązać problem.
-  autoShareAmbiguous: Uruchomionych jest wiele gier. Wybierz instancję hostującą świat LAN, aby XMCL mógł ją udostępnić.
+  autoShareAmbiguous: Uruchomionych jest wiele gier. Wybierz instancję hostującą świat LAN, aby Vardrynn mógł ją udostępnić.
   editSharingScope: Edytuj zakres udostępniania
   gameAvailable: Gra LAN jest dostępna
   joinGame: Dołącz do gry
@@ -1501,7 +1493,7 @@ setting:
   developerMode: Tryb dewelopera
   developerModeDescription: Tryb deweloperski jest przeznaczony do testowania własnych modów
   disableTelemetry: Wyłącz telemetrię
-  disableTelemetryDescription: XMCL będzie zbierać zdarzenia uruchomienia gry i logowania użytkownika.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Przypisanie dedykowanego układu GPU
   enableDedicatedGPUOptimizationDescription: Ta opcja przypisze dedykowany procesor graficzny do procesu Minecraft.
   enableDiscord: Włącz obecność Discord
@@ -1632,7 +1624,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: Korzeń danych nie jest zwykłym katalogiem .minecraft. Ponieważ struktura katalogów danych XMCL różni się od struktury katalogu vanilla, nie zalecamy używania wspólnego katalogu .minecraft jako katalogu głównego danych.
+    description: Korzeń danych nie jest zwykłym katalogiem .minecraft. Ponieważ struktura katalogów danych Vardrynn różni się od struktury katalogu vanilla, nie zalecamy używania wspólnego katalogu .minecraft jako katalogu głównego danych.
     drives: Polecane lokalizacje
     name: Ustaw katalog danych
   defaultLayoutDescription: Domyślny układ stara się wzmocnić koncepcję "instancji" gry. To przypomina aplikacje takie jak Discord. Jest również inspirowany innymi aplikacjami do uruchamiania gier jak Steam itp.
@@ -1759,8 +1751,8 @@ theme:
   selectImage: Wybierz obraz
   selectMusic: Wybierz muzykę
   selectVideo: Wybierz wideo
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Kandydat na gospodarza
   prflx: Refleksyjny kandydat na rówieśnika
@@ -2095,7 +2087,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

@@ -18,6 +18,7 @@ import { SpeedMonitor, TrackSpeedHandler } from './TrackSpeedHandler'
 import { kDownloadController, kDownloadOptions, kNetworkInterface } from './networkInterface'
 import { kInstallFileDownloader } from '~/install/InstallManifestService'
 import { createFileTransferInstallDownloader } from './FileTransferInstallDownloader'
+import { upstreamNetworkInterceptor } from './upstreamNetworkInterceptor'
 
 export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('NetworkInterface')
@@ -119,6 +120,8 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
             return patchPool(origin.toString(), new Pool(origin, opts))
           },
         }).compose(
+          // Innermost so redirected downloads are checked again before dispatch.
+          upstreamNetworkInterceptor,
           (dispatch) => {
             return function Intercept(opts, handler) {
               // Feed both the UI speed monitor and the snapshot monitor

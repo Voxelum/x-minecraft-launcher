@@ -4,7 +4,7 @@ import { findDeskGapRelease } from './updateFeed'
 const repository = 'Voxelum/x-minecraft-launcher'
 function githubRelease(version = '0.70.0', prerelease = false) {
   const tag = `v${version}`
-  const name = `xmcl-deskgap-${version}-win32-x64.exe`
+  const name = `vardrynn-deskgap-${version}-win32-x64.exe`
   return {
     tag_name: tag,
     prerelease,

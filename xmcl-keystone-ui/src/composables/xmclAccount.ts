@@ -94,5 +94,6 @@ export function useXmclAccount() {
     refreshAccount: () => run(service.refreshAccount),
     refreshSession: () => run(service.refreshSession),
     revokeSession: (allDevices = false) => run(() => service.revokeSession(allDevices)),
+    deleteAccount: () => run(service.deleteAccount),
   }
 }

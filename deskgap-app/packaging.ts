@@ -4,13 +4,13 @@ import { cp, mkdir, open, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { valid } from 'semver'
 
-export const productName = 'XMCL DeskGap'
+export const productName = 'Vardrynn DeskGap'
 
 export function assetNames(version: string) {
   if (typeof version !== 'string' || !/^\d/.test(version) || version.trim() !== version || !valid(version)) {
     throw new Error('DeskGap release version must be valid semver')
   }
-  return { runtime: `xmcl-deskgap-${version}-win32-x64.exe` }
+  return { runtime: `vardrynn-deskgap-${version}-win32-x64.exe` }
 }
 
 export async function stageApplication(dist: string, destination: string, version: string) {
@@ -26,11 +26,11 @@ export async function stageApplication(dist: string, destination: string, versio
     },
   })
   await writeFile(join(destination, 'package.json'), JSON.stringify({
-    name: 'xmcl-deskgap',
+    name: 'vardrynn-deskgap',
     productName,
     version,
     main: 'dist/main.cjs',
-    description: 'DeskGap host for X Minecraft Launcher',
+    description: 'DeskGap host for Vardrynn Launcher',
     license: 'MIT',
   }, null, 2) + '\n')
 }
@@ -100,7 +100,7 @@ export async function assertClickToRun(path: string, version: string) {
     if (identity.toString('utf8', 0, nameLength) !== productName ||
       identity.toString('utf8', nameLength, nameLength + entryLength) !== 'DeskGap.exe' ||
       identity.toString('utf8', nameLength + entryLength) !== version) {
-      throw new Error('Click-to-run has the wrong XMCL identity or version')
+      throw new Error('Click-to-run has the wrong DeskGap identity or version')
     }
     const hash = createHash('sha256')
     for await (const bytes of createReadStream(path, { start: identityOffset - Number(applicationSize), end: identityOffset - 1 })) {

@@ -10,7 +10,8 @@ import { move } from 'fs-extra'
 import { Kysely } from 'kysely'
 import { DatabaseSync } from 'node:sqlite'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { kTasks, type Tasks } from '~/infra'
+import { kFlights, kTasks, type Tasks } from '~/infra'
+import { getVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { jsonObjectFrom, NodeSqliteDialect } from '@xmcl/sqlite'
@@ -284,9 +285,10 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
   async #ensureDb() {
     if (this.db) return this.db
     const fetcher = (input: string, init?: RequestInit) => this.app.fetch(input, init)
+    const origin = getVardrynnApiOrigin(await this.app.registry.get(kFlights))
     const sha1 = await fetchDatabaseText(
       fetcher,
-      getModMetadataDownloadUrls('db.sqlite.sha1'),
+      getModMetadataDownloadUrls(origin, 'db.sqlite.sha1'),
     )
     if (!/^[a-f0-9]{40}$/i.test(sha1)) {
       throw new Error('The mod metadata database checksum is invalid')
@@ -294,7 +296,7 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
     const dbPath = this.getAppDataPath('db.sqlite')
     const actual = await checksumFromStream(createReadStream(dbPath), 'sha1').catch(() => '')
     if (actual !== sha1) {
-      const urls = getModMetadataDownloadUrls('db.sqlite')
+      const urls = getModMetadataDownloadUrls(origin, 'db.sqlite')
       const tempPath = `${dbPath}.download`
       const task = this.tasks.create<DownloadModMetadataDbTask>({
         type: 'downloadModMetadataDb',

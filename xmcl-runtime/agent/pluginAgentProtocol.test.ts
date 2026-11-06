@@ -1,9 +1,15 @@
-import { BUILTIN_AGENT_ENDPOINT } from '@xmcl/runtime-api'
+import { AGENT_PROXY_ENDPOINT } from '@xmcl/runtime-api'
 import { describe, expect, test, vi } from 'vitest'
+vi.mock('./AgentService', () => ({ AgentService: class {}, kResolvedAgentProvider: Symbol('resolved-provider') }))
+vi.mock('~/xmclAccount', () => ({ XmclAccountService: class {}, kXmclSessionAuthorization: Symbol('authorization') }))
 import type { Context } from '~/app'
 import { createAgentProtocolHandler } from './providerProtocol'
+import { LauncherProtocolHandler } from '../app/LauncherProtocolHandler'
+import { pluginCommonProtocol } from '../app/pluginCommonProtocol'
+import { pluginAgentProtocol } from './pluginAgentProtocol'
+import { kResolvedAgentProvider } from './AgentService'
 
-function context(url = BUILTIN_AGENT_ENDPOINT, headers: Record<string, any> = {}): Context {
+function context(url = AGENT_PROXY_ENDPOINT, headers: Record<string, any> = {}): Context {
   return {
     request: {
       method: 'POST',
@@ -17,6 +23,23 @@ function context(url = BUILTIN_AGENT_ENDPOINT, headers: Record<string, any> = {}
 }
 
 describe('agent protocol', () => {
+  test('dispatches the local renderer transport through the registered plugin to a custom provider', async () => {
+    const protocol = new LauncherProtocolHandler()
+    const fetch = vi.fn(async () => new Response('custom provider response'))
+    const app = {
+      protocol, fetch,
+      registry: { getOrCreate: async () => ({ [kResolvedAgentProvider]: async () => ({
+        mode: 'custom', endpoint: 'https://provider.example/v1/chat/completions', apiKey: 'custom-key', model: 'local-model',
+      }) }) },
+    }
+    pluginAgentProtocol(app as any, {} as any)
+    pluginCommonProtocol(app as any, {} as any)
+    const response = await protocol.handle({ url: 'http://launcher/agent/chat/completions', method: 'POST', body: '{}' })
+    expect(response.status).toBe(200)
+    expect(fetch).toHaveBeenCalledWith('https://provider.example/v1/chat/completions', expect.objectContaining({
+      headers: { authorization: 'Bearer custom-key' }, method: 'POST',
+    }))
+  })
   test('routes custom mode to its endpoint with its stored key', async () => {
     const handler = createAgentProtocolHandler(
       async () => ({
@@ -27,7 +50,7 @@ describe('agent protocol', () => {
       }),
       async () => ({ accessToken: 'xmcl-token', accountId: 'account-id' }),
     )
-    const ctx = context(BUILTIN_AGENT_ENDPOINT, {
+    const ctx = context('http://launcher/agent/chat/completions', {
       Authorization: 'Bearer renderer-value',
       'X-XMCL-Account-ID': 'renderer-account',
     })
@@ -44,7 +67,7 @@ describe('agent protocol', () => {
       async () => ({ mode: 'builtin' }),
       async () => ({ accessToken: 'xmcl-token', accountId: 'account-id' }),
     )
-    const ctx = context(BUILTIN_AGENT_ENDPOINT, { authorization: 'Bearer renderer-value' })
+    const ctx = context(AGENT_PROXY_ENDPOINT, { authorization: 'Bearer renderer-value' })
 
     await handler(ctx)
 
@@ -67,7 +90,7 @@ describe('agent protocol', () => {
       async () => ({ mode: 'builtin' }),
       resolveXmclAuthorization,
     )
-    const ctx = context(BUILTIN_AGENT_ENDPOINT, { authorization: 'stale' })
+    const ctx = context(AGENT_PROXY_ENDPOINT, { authorization: 'stale' })
 
     await handler(ctx)
 
@@ -111,7 +134,7 @@ describe('agent protocol', () => {
 
     expect(ctx.response.status).toBe(401)
     expect(ctx.response.handled).toBe(true)
-    expect(ctx.request.url.toString()).toBe(BUILTIN_AGENT_ENDPOINT)
+    expect(ctx.request.url.toString()).toBe(AGENT_PROXY_ENDPOINT)
     expect(resolveXmclAuthorization).not.toHaveBeenCalled()
   })
 

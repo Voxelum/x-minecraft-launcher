@@ -85,8 +85,8 @@ backup:
   noInstancesFound: Geen instanties gevonden in de launcher.
   excludeLibrariesNotice: Kernbibliotheken, Minecraft-assets en tijdelijke caches worden automatisch uitgesloten om het archief compact te houden.
   create: Back-up maken
-  createTitle: XMCL Back-uparchief maken
-  saveDialogTitle: XMCL Back-uparchief opslaan
+  createTitle: Vardrynn Back-uparchief maken
+  saveDialogTitle: Vardrynn Back-uparchief opslaan
   fileFilterName: 'XMCL Back-uparchief (*.xmclbackup, *.zip)'
   createError: Back-up maken mislukt
   loadManifestError: Back-uparchief lezen mislukt
@@ -394,21 +394,13 @@ commandPalette:
 feedback:
   channel: Kanalen
   description: Ik heb een bug gevonden of ik wil een suggestie doen
-  discord: Discord
-  discordDescription: Neem deel aan het Discord-kanaal
-  discordJoin: Deelnemen
   generateReport: Rapport Genereerren
   generateSaveAs: Sla het rapport op in
   github: Github Issue
   githubDescription: Open een Github Issue om uw gedachten te delen
   githubOpenIssue: Github
   hint: Klik op de knop om het rapport te maken en contact op te nemen met het ontwikkelaarsteam. Het rapport zal apparaatinformatie bevatten, inclusief besturingssysteemtype, versie, gebruikersnaam (in uw besturingssysteem), etc.
-  kook: Kook
-  kookDescription: Kook is een alternatieve app voor discord voor gebruikers in het vasteland van China
   name: Feedback
-  qq: QQ Groep
-  qqDescription: 'Betreed de feedback QQ-groep en praat direct met de auteurs. Groepsnummer: {number}'
-  qqEnterGroup: Deelnemen
 fileDetail:
   fileSize: Bestandsgrootte
   filesize: Bestandsgrootte
@@ -436,7 +428,7 @@ importModpack:
   selectVersionDescription: 'Kies de versie van {name} die je wilt installeren:'
   pmcProtected: Planet Minecraft wordt beschermd door Cloudflare. Kopieer de directe downloadlink of een mirrorlink van de pagina.
   netdiskTitle: Downloaden uit cloudopslag
-  netdiskDescription: Deze modpackversie staat op externe cloudopslag. Klik hieronder om de downloadpagina in je browser te openen en sleep daarna het gedownloade .zip- of .mrpack-bestand naar XMCL.
+  netdiskDescription: Deze modpackversie staat op externe cloudopslag. Klik hieronder om de downloadpagina in je browser te openen en sleep daarna het gedownloade .zip- of .mrpack-bestand naar Vardrynn.
   openNetdisk: Cloudopslag openen
   netdiskOpened: De cloudopslaglink is in je browser geopend en naar het klembord gekopieerd.
   noReleasesFound: Geen modpackreleases met .mrpack- of .zip-bestanden gevonden in deze repository.
@@ -588,7 +580,7 @@ instances:
   addMMCDescription: Importeer een bestaande MultiMC instance. U moet de datamap van MultiMC selecteren.
   addModrinthDescription: Importeer een bestaande Modrinth instance. U moet de Modrinth hoofddatamap selecteren.
   addVanilla: Aanmaken vanaf vanilla-achtige Minecraft
-  addVanillaDescription: Importeer vanuit een standaard .minecraft map. Dit zal het originele spelprofiel dupliceren naar XMCL.
+  addVanillaDescription: Importeer vanuit een standaard .minecraft map. Dit zal het originele spelprofiel dupliceren naar Vardrynn.
   fix: Repareren
   folder: Map
   folderSetting: Map Instellingen
@@ -735,6 +727,8 @@ loginError:
   requirePassword: Wachtwoord is verplicht
   requireUsername: Gebruikersnaam is verplicht
   timeout: Inloggen timeout. Probeer het opnieuw of controleer uw netwerk.
+  openLoginGuide: Zo los je dit probleem op
+  openSupport: 'Nog steeds hulp nodig? Open een issue'
 logsCrashes:
   crashes: Crash Rapporten
   logs: Logs
@@ -1037,11 +1031,9 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
-  joinDiscord: Deelnemen aan Discord
   openConsumerPortal: Consumentenportaal openen
   refundHint: Heb je een terugbetaling nodig? Ga naar het Waffo-consumentenportaal om je bestellingen en abonnementen te beheren.
-  togetherSupportHint: Werkt multiplayer niet? Neem dan deel aan onze Discord en neem contact op met het ontwikkelteam. We helpen je het probleem op te lossen.
-  autoShareAmbiguous: Er zijn meerdere spellen actief. Selecteer de instantie die de LAN-wereld host, zodat XMCL deze kan delen.
+  autoShareAmbiguous: Er zijn meerdere spellen actief. Selecteer de instantie die de LAN-wereld host, zodat Vardrynn deze kan delen.
   editSharingScope: Deelbereik bewerken
   gameAvailable: LAN-spel beschikbaar
   joinGame: Deelnemen aan spel
@@ -1455,7 +1447,7 @@ setting:
   aboutDenoDescription: XMCL maakt gebruik van het probleemloze platform van Deno Deploy voor serverloze JavaScript-toepassingen
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Gratis codetekening op Windows verzorgd door SignPath.io, certificaat door SignPath Foundation
-  aboutSponsors: 😇 Sponsors 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Geavanceerde Java Opties
   advancedSettings: Geavanceerde Instellingen
   advancedSettingsHint: Gevaarlijke zone - resetten of beheren van launcher data
@@ -1512,7 +1504,7 @@ setting:
   developerMode: Ontwikkelaarsmodus
   developerModeDescription: Ontwikkelaarsmodus is voor het testen van uw eigen mods
   disableTelemetry: Telemetrie Uitschakelen
-  disableTelemetryDescription: XMCL zal game-start en gebruikersinloggebeurtenissen verzamelen.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Toewijzen van Dedicated GPU
   enableDedicatedGPUOptimizationDescription: Deze optie zal een dedicated GPU toewijzen aan het Minecraft-proces.
   enableDiscord: Discord Presence Inschakelen
@@ -1637,7 +1629,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: De data root is geen gewone .minecraft map. Omdat de XMCL data mapstructuur anders is dan vanilla, raden we af om de gewone .minecraft map als data root te gebruiken.
+    description: De data root is geen gewone .minecraft map. Omdat de Vardrynn data mapstructuur anders is dan vanilla, raden we af om de gewone .minecraft map als data root te gebruiken.
     drives: Aanbevolen Locaties
     name: Stel Data Map In
   defaultLayoutDescription: De standaard lay-out probeert het game "instance" concept te versterken. Het ziet eruit als apps zoals Discord. Het is ook geïnspireerd door andere game launcher apps zoals Steam, etc.
@@ -1762,7 +1754,7 @@ theme:
   selectImage: Selecteer Afbeelding
   selectMusic: Selecteer Muziek
   selectVideo: Selecteer Video
-  title: XMCL
+  title: Vardrynn
 transportType:
   host: Host Kandidaat
   prflx: Peer Reflexive Kandidaat
@@ -2104,7 +2096,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

@@ -14,9 +14,9 @@ import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 import { kPeerFacade } from './PeerServiceFacade'
 import { kClientToken, kFlights, launcherSessionId } from '~/infra'
-import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
+import { requireVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import { kSettings } from '~/settings'
-import { XmclAccountService } from '~/xmclAccount'
+import { kXmclSessionAuthorization, XmclAccountService } from '~/xmclAccount'
 import { kMultiplayerHostFactory, type MultiplayerHost } from './MultiplayerHost'
 
 function isMultiplayerLogEvent(value: unknown): value is MultiplayerLogEvent {
@@ -105,10 +105,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   private async createMultiplayerHost(transport: MultiplayerTransport) {
     const factory = await this.app.registry.get(kMultiplayerHostFactory)
-    const settings = await this.app.registry.get(kSettings)
-    const accountState = await this.app.registry
-      .get(XmclAccountService)
-      .then((service) => service.getXmclAccountState())
     const host = await factory({
       transport,
       state: this.state,
@@ -116,8 +112,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       log: (event) => {
         void this.logMultiplayer(event)
       },
-      isTelemetryEnabled: () => !settings.disableTelemetry,
-      getTelemetryAccountId: () => accountState.account?.accountId,
+      getAuthorization: async () => {
+        const service = await this.app.registry.get(XmclAccountService)
+        return (await service[kXmclSessionAuthorization]())?.accessToken
+      },
       setDownloadPort: (port) => {
         this.downloadPort = port
       },
@@ -184,11 +182,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     const resourcePath = (await this.app.registry.get(kGameDataPath))()
     const sessionId = await this.app.registry.get(kClientToken)
     const flights = await this.app.registry.get(kFlights)
-    const signalingBaseUrl = resolveXmclApiEndpoints(flights.xmclApiBaseUrl, () =>
-      this.app
-        .getLogger('MultiplayerApi')
-        .warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
-    ).signaling
+    const signalingBaseUrl = requireVardrynnApiOrigin(flights)
     return {
       appDataPath: this.app.appDataPath,
       resourcePath,

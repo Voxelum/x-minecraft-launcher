@@ -14,18 +14,19 @@ const { InstanceService } = await import('./InstanceService')
 const roots: string[] = []
 afterEach(async () => { await Promise.all(roots.splice(0).map(root => rm(root, { recursive: true, force: true }))) })
 
-async function fixture() {
+async function fixture(name = 'original') {
   const root = await realpath(await mkdtemp(join(tmpdir(), 'xmcl-restore-instance-')))
   roots.push(root)
   const original = join(root, 'instances', 'original')
   await ensureDir(original)
-  await writeJson(join(original, 'instance.json'), InstanceSchema.parse({ name: 'original' }))
+  await writeJson(join(original, 'instance.json'), InstanceSchema.parse({ name }))
   await writeJson(join(root, 'instances.json'), {
     selectedInstance: 'original', instances: ['original'], groups: [{ id: 'group', name: 'Group', color: '', instances: ['original'] }],
   })
   const disposers: Array<() => Promise<void> | void> = []
   const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
   const app = {
+    host: { requestSingleInstanceLock: () => false },
     appDataPath: root, minecraftDataPath: root,
     getLogger: () => logger,
     registryDisposer: (fn: () => Promise<void> | void) => disposers.push(fn),
@@ -37,6 +38,14 @@ async function fixture() {
   await service.initialize()
   return { root, original, app, service, manager, dispose: async () => { for (const fn of disposers.reverse()) await fn() } }
 }
+
+test('keeps the selection when loading renames an instance directory to its name', async () => {
+  const f = await fixture('Renamed')
+  expect(await pathExists(join(f.root, 'instances', 'Renamed'))).toBe(true)
+  expect((await readJson(join(f.root, 'instances.json'))).selectedInstance).toBe('Renamed')
+  expect(JSON.parse(f.service.prepareRestoreInstances([]).toString()).selectedInstance).toBe('Renamed')
+  await f.dispose()
+})
 
 test('prepares relative launcher metadata without loading, renaming or writing prospective instances', async () => {
   const f = await fixture()

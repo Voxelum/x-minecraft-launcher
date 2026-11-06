@@ -86,7 +86,7 @@ Highly recommend to use the VSCode to open the project.
 Clone the project with submodule flag `--recurse-submodules`.
 
 ```bash
-git clone --recurse-submodules https://github.com/Voxelum/x-minecraft-launcher
+git clone --recurse-submodules https://github.com/MichaelOlave/x-minecraft-launcher
 ```
 
 If you forget to add `--recurse-submodules` flag, you need to initialize & update the git submodule manually.
@@ -208,14 +208,14 @@ UUID as described in [Apple TN3179](https://developer.apple.com/documentation/te
 
 The deb, rpm and pacman packages use the templates in
 `xmcl-electron-app/build/linux` for installation, removal and AppArmor.
-Keep their paths aligned with the existing `/opt/xmcl` package layout.
+Keep their paths aligned with electron-builder's `/opt/Vardrynn` package layout.
 Installation and upgrades configure only `chrome-sandbox` as `root:root`
 with mode `4755`, and reject symlinked, non-root-owned, or group-/other-writable
 installation directories. Do not determine desktop-user namespace support
 with a root-only `unshare` probe, or disable Chromium sandboxing to hide
 installation errors.
 
-The AppArmor profile grants `userns` to `/opt/xmcl/xmcl` on supported
+The AppArmor profile grants `userns` to `/opt/Vardrynn/vardrynn` on supported
 systems. Unsupported older AppArmor versions retain the SUID sandbox.
 The FPM `--after-upgrade` hook explicitly reuses the same install script;
 pacman does not invoke `post_install` on upgrades. These scripts must also
@@ -227,15 +227,16 @@ ASAR update cannot repair installed helper permissions or AppArmor policy.
 AppImage, tar.xz and the portable script installer are separate installation
 paths and are not changed by these system-package hooks.
 
-### DeskGap Windows EXE in the regular release
+### DeskGap Windows EXE (preview, not released)
 
-The normal `.github/workflows/build.yml` builds Electron and an additional
-`xmcl-deskgap-<version>-win32-x64.exe` in the **same `v<version>` draft release**.
-DeskGap ships a single Windows x64 executable. There is no separate DeskGap tag,
-update manifest, signing key, or published application-only archive.
+The normal `.github/workflows/build.yml` also builds
+`vardrynn-deskgap-<version>-win32-x64.exe` on Windows and uploads it as the
+separate `deskgap-preview` CI artifact. It is **not** part of the release build
+output or any draft release. There is no DeskGap tag, update feed, signing key,
+or published application-only archive; the updater reports `not-configured`.
 
-**Current status: UNSIGNED PREVIEW, manual installation only.** Download and
-run the DeskGap EXE manually; Windows may warn because it is not signed.
+**Current status: UNSIGNED PREVIEW, manual testing only.** Publishing DeskGap
+needs its own release feed, signing and a release review first.
 Production DeskGap signing and automatic updates are not enabled. The launcher
 still checks signatures and will reject unsigned preview EXEs as automatic
 updates; this is intentional, not a reason to disable verification.
@@ -243,7 +244,7 @@ updates; this is intentional, not a reason to disable verification.
 The pinned runtime version is `config.deskgapVersion` in
 `deskgap-app/package.json`. Windows CI obtains the runtime ZIP and `SHA256SUMS`
 from `Voxelum/DeskGap` release `v<runtime-version>` and the packaging helpers from
-that same tag. Missing releases or mismatched checksums fail the build; a local,
+that same tag (the upstream DeskGap runtime is a pinned, checksummed build input, not a runtime destination). Missing releases or mismatched checksums fail the build; a local,
 uncommitted runtime build is not a substitute for this release dependency.
 
 The runtime must provide `windowsExecutable.verifySignature` and `install`,
@@ -264,11 +265,11 @@ pnpm exec vitest run deskgap-app\packaging.test.ts
 ```
 
 `package` builds a production host and stages `deskgap-app/build/output/app`
-with identity `xmcl-deskgap` / **XMCL DeskGap**, root workspace version,
+with identity `vardrynn-deskgap` / **Vardrynn DeskGap**, root workspace version,
 `dist/main.cjs`, and the bundled renderer/native assets. The compressed application
 payload is internal to the EXE, not a separate release asset. Source maps and
 development files are excluded. Output is
-`deskgap-app/build/output/release/xmcl-deskgap-<version>-win32-x64.exe`.
+`deskgap-app/build/output/release/vardrynn-deskgap-<version>-win32-x64.exe`.
 
 The host bundle must be ASCII. esbuild's `charset: 'ascii'` does not escape
 regular expression literals; use Unicode escapes such as `\u00a7` for non-ASCII

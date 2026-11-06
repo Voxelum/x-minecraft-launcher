@@ -50,7 +50,7 @@ agent:
   suggestion2: المودات بتاعتي بتعمل كراش — اعرف لي السبب وقول لي أصلحه إزاي
   suggestion3: 'عمل حزمة مودات (Modpack): دور على مودات بمميزات معينة وثبتها في النسخة دي'
   thinking: بيفكر…
-  title: عميل XMCL
+  title: عميل Vardrynn
   toggleHint: للتبديل
 ago:
   day: من {duration} يوم | من {duration} يوم
@@ -117,8 +117,8 @@ backup:
   noInstancesFound: لم يتم العثور على نسخ في المشغل.
   excludeLibrariesNotice: يتم استبعاد ملفات المكتبات الأساسية وأصول ماينكرافت وذاكرة التخزين المؤقت تلقائيًا للحفاظ على صغر حجم الأرشيف.
   create: إنشاء نسخة احتياطية
-  createTitle: إنشاء أرشيف نسخ احتياطي XMCL
-  saveDialogTitle: حفظ أرشيف النسخ الاحتياطي XMCL
+  createTitle: إنشاء أرشيف نسخ احتياطي Vardrynn
+  saveDialogTitle: حفظ أرشيف النسخ الاحتياطي Vardrynn
   fileFilterName: 'أرشيف النسخ الاحتياطي XMCL (*.xmclbackup, *.zip)'
   createError: فشل إنشاء النسخة الاحتياطية
   loadManifestError: فشل قراءة أرشيف النسخة الاحتياطية
@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: القنوات
   description: لقيت مشكلة (Bug) أو عاوز أقول اقتراح
-  discord: ديسكورد
-  discordDescription: انضم لقناة الديسكورد
-  discordJoin: انضم
   generateReport: إنشاء تقرير
   generateSaveAs: حفظ التقرير في
   github: مشكلة على جيت هاب
   githubDescription: افتح تذكرة مشكلة (Issue) على جيت هاب وقول لنا رأيك
   githubOpenIssue: جيت هاب
   hint: اضغط على الزرار لعمل التقرير والتواصل مع فريق التطوير. التقرير بيحتوي على معلومات جهازك زي نوع نظام التشغيل وإصداره، واسم المستخدم (في النظام)، إلخ.
-  kook: Kook
-  kookDescription: تطبيق Kook هو بديل لديسكورد للمستخدمين في الصين
   name: الآراء والشكاوى
-  qq: جروب QQ
-  qqDescription: 'ادخل جروب QQ وتكلم مع المطورين مباشرة. رقم الجروب: {number}'
-  qqEnterGroup: انضم
 fileDetail:
   fileSize: حجم الملف
   filesize: حجم الملف
@@ -500,7 +492,7 @@ importModpack:
   selectVersionDescription: 'اختار إصدار {name} اللي عايز تثبّته:'
   pmcProtected: موقع Planet Minecraft محمي بـ Cloudflare. انسخ لينك التحميل المباشر أو لينك بديل من الصفحة.
   netdiskTitle: تحميل من التخزين السحابي
-  netdiskDescription: الإصدار ده من حزمة المودات موجود على خدمة تخزين سحابي خارجية. اضغط تحت عشان تفتح صفحة التحميل في المتصفح، وبعدها اسحب ملف .zip أو .mrpack اللي حمّلته وحطّه في XMCL.
+  netdiskDescription: الإصدار ده من حزمة المودات موجود على خدمة تخزين سحابي خارجية. اضغط تحت عشان تفتح صفحة التحميل في المتصفح، وبعدها اسحب ملف .zip أو .mrpack اللي حمّلته وحطّه في Vardrynn.
   openNetdisk: افتح التخزين السحابي
   netdiskOpened: لينك التخزين السحابي اتفتح في المتصفح واتنسخ في الحافظة.
   noReleasesFound: مفيش إصدارات حزم مودات بصيغة .mrpack أو .zip في المستودع ده.
@@ -664,7 +656,7 @@ instances:
   addModrinthDescription: استيراد نسخة Modrinth موجودة. لازم تختار مجلد البيانات الرئيسي لـ Modrinth.
   addPrismDescription: استيراد نسخة PrismLauncher موجودة.
   addVanilla: إنشاء من لعبة ماينكرافت فانيلا
-  addVanillaDescription: استيراد من مجلد .minecraft المعتاد. العملية دي هتكرر ملف اللعبة الأصلي لـ XMCL.
+  addVanillaDescription: استيراد من مجلد .minecraft المعتاد. العملية دي هتكرر ملف اللعبة الأصلي لـ Vardrynn.
   edition: الإصدار (Edition)
   editionJava: نسخة الجافا (Java Edition)
   editionBedrock: نسخة البيدروك (Bedrock Edition)
@@ -815,6 +807,8 @@ loginError:
   requirePassword: الباسورد مطلوب
   requireUsername: اسم المستخدم مطلوب
   timeout: انتهت مهلة تسجيل الدخول. يرجى إعادة المحاولة أو فحص الشبكة.
+  openLoginGuide: إزاي تحل المشكلة دي
+  openSupport: لسه محتاج مساعدة؟ افتح بلاغ
 logsCrashes:
   crashes: تقارير الكراش
   failures: أخطاء التشغيل
@@ -1151,11 +1145,9 @@ modrinth:
 modrinthCard:
   currentVersion: الإصدار الحالي
 multiplayer:
-  joinDiscord: انضم إلى Discord
   openConsumerPortal: افتح بوابة المستهلك
   refundHint: هل تحتاج إلى استرداد أموالك؟ تفضل بزيارة بوابة Waffo للمستهلك لإدارة طلباتك واشتراكاتك.
-  togetherSupportHint: إذا لم يعمل اللعب الجماعي، انضم إلى Discord وتواصل مع فريق التطوير. سنساعدك في حل المشكلة.
-  autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن XMCL من مشاركتها.
+  autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن Vardrynn من مشاركتها.
   editSharingScope: تحرير نطاق المشاركة
   gameAvailable: لعبة شبكة محلية متاحة
   joinGame: الانضمام إلى اللعبة
@@ -1646,7 +1638,7 @@ setting:
   aboutDenoDescription: XMCL بيستخدم منصة Deno Deploy المستقرة لتشغيل تطبيقات الجافا سكريبت بدون خوادم
   aboutLicense: ترخيص MIT
   aboutLicenseInfo: توقيع كود مجاني على ويندوز مقدم من SignPath.io، والشهادة من SignPath Foundation
-  aboutSponsors: 😇 الداعمون والرعاة 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: خيارات جافا المتقدمة
   advancedSettings: الإعدادات المتقدمة
   advancedSettingsHint: منطقة خطر - إعادة ضبط أو إدارة بيانات اللانشر
@@ -1726,7 +1718,7 @@ setting:
   developerMode: وضع المطور
   developerModeDescription: وضع المطور مخصص لاختبار المودات الخاصة بك
   disableTelemetry: تعطيل إرسال بيانات التشخيص (Telemetry)
-  disableTelemetryDescription: XMCL بيجمع بيانات تشغيل اللعبة وأحداث تسجيل دخول المستخدمين لتحسين الأداء.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: تخصيص كارت الشاشة الخارجي (Dedicated GPU)
   enableDedicatedGPUOptimizationDescription: الخيار ده هيخصص كارت الشاشة الخارجي القوي لعملية تشغيل ماينكرافت.
   enableDiscord: تفعيل التواجد على ديسكورد (Discord Presence)
@@ -1866,7 +1858,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: مجلد البيانات الرئيسي مش هو مجلد .minecraft المعتاد. عشان هيكل مجلد بيانات XMCL مختلف عن الفانيلا، مش بننصح باستخدام مجلد .minecraft المعتاد كمجلد رئيسي للبيانات.
+    description: مجلد البيانات الرئيسي مش هو مجلد .minecraft المعتاد. عشان هيكل مجلد بيانات Vardrynn مختلف عن الفانيلا، مش بننصح باستخدام مجلد .minecraft المعتاد كمجلد رئيسي للبيانات.
     drives: المواقع المقترحة
     name: تحديد مجلد البيانات
   defaultLayoutDescription: التخطيط الافتراضي بيحاول يعزز مفهوم "النسخة" للعبة. تصميمه قريب من تطبيقات زي ديسكورد، ومستوحى برضه من لانشرات ألعاب تانية زي Steam وغيره.
@@ -2278,7 +2270,7 @@ gamepad:
   steamAddedNotify: اللانشر انضاف لمكتبة Steam بنجاح! يا ريت ترستر Steam عشان تشوفه.
   steamAlreadyAddedNotify: اللانشر موجود بالفعل في مكتبة Steam بتاعتك.
   steamDeckTitle: تم اكتشاف جهاز Steam Deck
-  steamDeckDesc: اكتشفنا إنك بتشغل اللعبة على Steam Deck. تحب تضيف XMCL لمكتبة Steam كأداة مش من Steam عشان تستمتع بمميزات الـ Steam overlay ودعم الدراع الكامل في Gaming Mode؟
+  steamDeckDesc: اكتشفنا إنك بتشغل اللعبة على Steam Deck. تحب تضيف Vardrynn لمكتبة Steam كأداة مش من Steam عشان تستمتع بمميزات الـ Steam overlay ودعم الدراع الكامل في Gaming Mode؟
   steamDeckAddBtn: إضافة لـ Steam ({btn})
   steamDeckCancelBtn: إلغاء ({btn})
   disconnected: Controller Disconnected

@@ -4,18 +4,26 @@ import { download, getDownloadBaseOptions } from '@xmcl/file-transfer'
 import { onDownloadSingle } from '@xmcl/installer'
 import { app, session, windowsExecutable } from 'deskgap'
 import { join } from 'node:path'
-import { DeskGapUpdater, LocalDevelopmentUpdater, ManualDeskGapUpdater } from './updater'
+import { DeskGapUpdater, LocalDevelopmentUpdater, ManualDeskGapUpdater, UnconfiguredDeskGapUpdater } from './updater'
 import { getDeskGapUpdateCapability } from './updateCapability'
+
+/**
+ * GitHub `owner/name` that publishes signed DeskGap releases. Unset until Vardrynn
+ * publishes DeskGap builds; the upstream repository must never be used here.
+ */
+const DESKGAP_UPDATE_REPOSITORY: string | undefined = undefined
 
 export function createDeskGapUpdater(launcher: LauncherApp) {
   if (process.env.NODE_ENV !== 'production') return new LocalDevelopmentUpdater(launcher.version)
   if (getDeskGapUpdateCapability(process.platform, process.arch) === 'manual') {
     return new ManualDeskGapUpdater(launcher.version, process.platform, process.arch)
   }
+  const repository = DESKGAP_UPDATE_REPOSITORY
+  if (!repository) return new UnconfiguredDeskGapUpdater()
   const network = session.fromName('xmcl-network')
   return new DeskGapUpdater({
     version: launcher.version,
-    repository: 'Voxelum/x-minecraft-launcher',
+    repository,
     directory: join(app.getPath('localData'), 'xmcl-deskgap', 'updates'),
     fetch: (input, init) => network.fetch(input instanceof Request ? input.url : input, init),
     executable: windowsExecutable,

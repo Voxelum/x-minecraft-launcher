@@ -1,4 +1,5 @@
 import { pluginAutoUpdate } from './pluginAutoUpdate'
+import { pluginUpstreamNetworkPolicy } from './pluginUpstreamNetworkPolicy'
 import { pluginAgentDocuments } from './pluginAgentDocuments'
 import { pluginIconProtocol } from './pluginIconProtocol'
 import { pluginDiscreteGPULinux } from './pluginDiscreteGPULinux'
@@ -50,6 +51,7 @@ import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
 
 export const definedPlugins: LauncherAppPlugin[] = [
+  pluginUpstreamNetworkPolicy,
   pluginMultiplayer,
   pluginAgentDocuments,
   pluginAgentProtocol,

@@ -6,7 +6,7 @@ const { trackRendererException, loadTelemetry } = vi.hoisted(() => {
   return { trackRendererException, loadTelemetry: vi.fn(() => ({ trackRendererException })) }
 })
 vi.mock('@/telemetry', loadTelemetry)
-vi.mock('@xmcl/runtime-api', () => ({ resolveXmclApiEndpoints: () => ({ common: 'https://example.invalid' }) }))
+vi.mock('@xmcl/runtime-api', () => ({ VARDRYNN_API_ORIGIN_FLIGHT: 'vardrynnApiBaseUrl' }))
 vi.mock('./flights', () => ({ kFlights: Symbol(), useI18nSearchFlights: vi.fn() }))
 
 describe('community translation composable integration', () => {
@@ -21,7 +21,7 @@ describe('community translation composable integration', () => {
     const fetch = vi.fn().mockResolvedValue(new Response('private response', { status: 503 }))
     vi.stubGlobal('fetch', fetch)
     vi.stubGlobal('useI18n', () => ({ locale }))
-    vi.stubGlobal('inject', () => ({}))
+    vi.stubGlobal('inject', () => ({ vardrynnApiBaseUrl: 'https://example.invalid' }))
     vi.spyOn(console, 'warn').mockImplementation(() => {})
     vi.mocked(trackRendererException).mockRejectedValueOnce(new Error('telemetry unavailable'))
     const { useAutoI18nCommunityContent } = await import('./i18n')

@@ -146,6 +146,23 @@ export class LocalDevelopmentUpdater implements LauncherAppUpdater {
   }
 }
 
+/** No Vardrynn DeskGap release feed exists, so nothing may be checked or downloaded. */
+export class UnconfiguredDeskGapUpdater implements LauncherAppUpdater {
+  readonly capability: UpdateCapability = Object.freeze({ automatic: false, reason: 'not-configured' })
+
+  async checkUpdateTask(): Promise<ReleaseInfo> {
+    throw new Error('DeskGap updates are not configured: no Vardrynn release feed exists. No release check was performed.')
+  }
+
+  async downloadUpdate(): Promise<void> {
+    throw new Error('DeskGap updates are not configured.')
+  }
+
+  async installUpdateAndQuit(): Promise<void> {
+    throw new Error('DeskGap updates are not configured.')
+  }
+}
+
 /** Explicit unsupported capability; never manufacture release metadata. */
 export class UnsupportedUpdateError extends Error {
   constructor(version: string, platform: string, arch: string) {

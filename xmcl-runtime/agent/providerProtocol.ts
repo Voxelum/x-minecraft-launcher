@@ -1,8 +1,8 @@
-import { BUILTIN_AGENT_ENDPOINT } from '@xmcl/runtime-api'
+import { AGENT_PROXY_ENDPOINT } from '@xmcl/runtime-api'
 import type { Handler } from '~/app'
 import type { ResolvedAgentProvider } from './AgentService'
 
-const builtinUrl = new URL(BUILTIN_AGENT_ENDPOINT)
+const builtinUrl = new URL(AGENT_PROXY_ENDPOINT)
 const builtinProviderUrl = 'https://ai.xmcl.app/v1/chat/completions'
 
 export interface AgentXmclAuthorization {

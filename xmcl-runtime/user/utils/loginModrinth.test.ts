@@ -30,7 +30,7 @@ describe('loginModrinth', () => {
       },
       registry: {
         get: vi.fn().mockResolvedValue({
-          xmclApiBaseUrl: 'https://edge.example.test',
+          vardrynnApiBaseUrl: 'https://edge.example.test',
         }),
       },
       fetch: vi.fn().mockResolvedValue({

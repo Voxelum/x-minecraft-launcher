@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { getDeskGapUpdateCapability } from './updateCapability'
-import { ManualDeskGapUpdater, UnsupportedUpdateError } from './updater'
+import { ManualDeskGapUpdater, UnconfiguredDeskGapUpdater, UnsupportedUpdateError } from './updater'
 
 const native = vi.hoisted(() => ({
   fromName: vi.fn(() => { throw new Error('Unexpected network access') }),
@@ -36,6 +36,22 @@ describe('DeskGap platform capabilities', () => {
     await expect(updater.checkUpdateTask()).rejects.toThrow('No release check was performed')
     await expect(updater.downloadUpdate()).rejects.toThrow('not implemented')
     await expect(updater.installUpdateAndQuit()).rejects.toThrow('not implemented')
+  })
+  it('production Windows without a Vardrynn feed never reaches the network or upstream', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    const platform = vi.spyOn(process, 'platform', 'get').mockReturnValue('win32')
+    const arch = vi.spyOn(process, 'arch', 'get').mockReturnValue('x64')
+    try {
+      const updater = createDeskGapUpdater({ version: '0.66.2' } as LauncherApp)
+      expect(updater).toBeInstanceOf(UnconfiguredDeskGapUpdater)
+      expect(updater.capability).toEqual({ automatic: false, reason: 'not-configured' })
+      await expect(updater.checkUpdateTask()).rejects.toThrow('No release check was performed')
+      expect(native.fromName).not.toHaveBeenCalled()
+    } finally {
+      platform.mockRestore()
+      arch.mockRestore()
+      vi.unstubAllEnvs()
+    }
   })
   it('production Mac never accesses Windows APIs, network, paths, settings or auto-download', async () => {
     vi.stubEnv('NODE_ENV', 'production')

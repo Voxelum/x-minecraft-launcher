@@ -85,8 +85,8 @@ backup:
   noInstancesFound: No instances found in launcher.
   excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
   create: Mek Backup
-  createTitle: Create XMCL Backup Archive
-  saveDialogTitle: Save XMCL Backup Archive
+  createTitle: Create Vardrynn Backup Archive
+  saveDialogTitle: Save Vardrynn Backup Archive
   fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
@@ -394,21 +394,13 @@ commandPalette:
 feedback:
   channel: CHANNELZ
   description: I FOUND A BUG OR I WANT TO MAKE A SUGGESTSHUN
-  discord: DISCORD
-  discordDescription: JOIN DISCORD CHANNEL
-  discordJoin: JOIN
   generateReport: GENERATE REPORT
   generateSaveAs: SAVE DA REPORT TO
   github: GITHUB ISSUE
   githubDescription: OPEN AN GITHUB ISSUE TO TELL UR THOT
   githubOpenIssue: GITHUB
   hint: CLICK DA BUTTON TO MAKE DA REPORT AN CONTACT DA DEVELOPR TEAM. TEH REPORT WILL CONTAIN UR DEVICE INFO INCLUDING OPERATIN SYSTEM TYP, VERSHUN, USER NAME (IN UR OS), ETC.
-  kook: KOOK
-  kookDescription: KOOK IS AN ALTERNATE APP FUR DISCORD FUR CHINESE MAINLAND USERS
   name: FEEDBACK
-  qq: QQ GROUP
-  qqDescription: 'ENTER DA FEEDBACK QQ GROUP AN DIRECT TALK WITH AUTHORZ. GROUP NUMBR: {number}'
-  qqEnterGroup: JOIN
 fileDetail:
   fileSize: FILE SIZE
   filesize: FILE SIZE
@@ -436,7 +428,7 @@ importModpack:
   selectVersionDescription: 'PICK TEH VERSHUN OF {name} TO INSTALL:'
   pmcProtected: Planet Minecraft IZ GUARDED BY Cloudflare. PLZ COPY DIRECT DOWNLOD OR MIRROR LINK FROM TEH PAGE.
   netdiskTitle: CLOUD DRIVE DOWNLOD
-  netdiskDescription: DIS MODPACK VERSHUN LIVES ON AN OUTSIDE CLOUD DRIVE. CLICK BELOW TO OPEN DOWNLOD PAGE IN UR BROWSER, THEN DRAG AN DROP TEH DOWNLOADED .zip OR .mrpack INTO XMCL.
+  netdiskDescription: DIS MODPACK VERSHUN LIVES ON AN OUTSIDE CLOUD DRIVE. CLICK BELOW TO OPEN DOWNLOD PAGE IN UR BROWSER, THEN DRAG AN DROP TEH DOWNLOADED .zip OR .mrpack INTO Vardrynn.
   openNetdisk: OPEN CLOUD DRIVE
   netdiskOpened: CLOUD DRIVE LINK OPENED IN UR BROWSER AN COPIED TO CLIPBOARD.
   noReleasesFound: NO .mrpack OR .zip MODPACK RELEASEZ FOUND IN DIS REPO.
@@ -588,7 +580,7 @@ instances:
   addMMCDescription: IMPORT EXISTING MULTIMC INSTANCE. U NEED TO PICK DA DATA FOLDR FROM MULTIMC.
   addModrinthDescription: IMPORT EXISTING MODRINTH INSTANCE. U NEED TO PICK DA MODRINTH ROOT DATA FOLDR.
   addVanilla: MAKE FROM VANILLA-LIKE MINECWAFT
-  addVanillaDescription: IMPORT FROM COMMON .MINECRAFT FOLDR. THIS WILL DUPLCIATE DA ORIGINAL GAME PROFILE TO XMCL.
+  addVanillaDescription: IMPORT FROM COMMON .MINECRAFT FOLDR. THIS WILL DUPLCIATE DA ORIGINAL GAME PROFILE TO Vardrynn.
   fix: REPAIR
   folder: FOLDR
   folderSetting: FOLDR SETTINGZ
@@ -735,6 +727,8 @@ loginError:
   requirePassword: PASSWORD IS REQUIRED
   requireUsername: USERNAME IS REQUIRED
   timeout: LOGIN TIMEOUT. PLZ RETRY OR CHECK UR NETWORK.
+  openLoginGuide: HOW 2 FIX DIS
+  openSupport: 'STILL STUCK? OPEN AN ISHOO'
 logsCrashes:
   crashes: CRASH REPORTS
   logs: LOGS
@@ -1037,11 +1031,9 @@ modrinth:
 modrinthCard:
   currentVersion: CURREN VERSHUN
 multiplayer:
-  joinDiscord: JOIN DISCORD
   openConsumerPortal: OPEN CONSUMR PORTAL
   refundHint: NEED REFUND? VISIT WAFFO CONSUMR PORTAL TO MANAGE UR ORDERS AN SUBSCRIPSHUNS.
-  togetherSupportHint: IF MULTIPLAYR NO WERK, JOIN R DISCORD AN CONTACT TEH DEV TEAM. WE HALP FIX IT.
-  autoShareAmbiguous: MANY GAEMS R RUNNIN. CHOOZ TEH INSTANCE HOSTIN TEH LAN WORLD SO XMCL CAN SHARE IT.
+  autoShareAmbiguous: MANY GAEMS R RUNNIN. CHOOZ TEH INSTANCE HOSTIN TEH LAN WORLD SO Vardrynn CAN SHARE IT.
   editSharingScope: EDIT SHARIN RANGE
   gameAvailable: LAN GAEM IZ HERE
   joinGame: JOIN GAEM
@@ -1457,7 +1449,7 @@ setting:
   aboutDenoDescription: XMCL LEVERAGEZ DENO DEPLOY'S HASSEL-FRU PLATFURM FUR SERVERLUS JAVASCRIPT APPLICASHUNZ
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: FRU CUD SINING ON WUNDUZ PROVDED BI SIGNPATH.IO, CERTIFICAT BI SIGNPATH FUNDASHUN
-  aboutSponsors: 😇 SPONORZ 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: ADVANCED JAVA OPSHUNS
   advancedSettings: ADVANCED SETTINGZ
   advancedSettingsHint: DANGR ZONE - RESET OR MANAG LAUNCHER DATA
@@ -1514,7 +1506,7 @@ setting:
   developerMode: DEVELOPR MODE
   developerModeDescription: DEVELOPR MODE IS FUR TESTING UR OWN MODZ
   disableTelemetry: DISABL TELEMETRY
-  disableTelemetryDescription: XMCL WILL COLLECT DA GAME LAUNCH AN USER LOGIN EVENTS.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: ASSIGN DEDICATED GPU
   enableDedicatedGPUOptimizationDescription: THIS OPSHUN WILL ASSIGN DEDICATED GPU TO MINECWAFT PROCESS.
   enableDiscord: ENABL DISCORD PRESENCE
@@ -1639,7 +1631,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: TEH DATA ROOT IS NOT A COMMON .MINECRAFT DIRECTORY. SINCE XMCL DATA DIRECTORY STRUCTURE IS DIFFERENT FROM VANILLA, WE DO NOT RECOMMEND TO USE DA COMMON .MINECRAFT DIRECTORY AS A DATA ROOT.
+    description: TEH DATA ROOT IS NOT A COMMON .MINECRAFT DIRECTORY. SINCE Vardrynn DATA DIRECTORY STRUCTURE IS DIFFERENT FROM VANILLA, WE DO NOT RECOMMEND TO USE DA COMMON .MINECRAFT DIRECTORY AS A DATA ROOT.
     drives: RECOMMEND LOCASHUNS
     name: SET DATA DIRECTORY
   defaultLayoutDescription: TEH DEFAULT LAYOUT IS TRYING TO ENHANCE DA GAME "INSTANCE" CONCEPT. IT LOOKS LIKE APPS LIKE DISCORD. ITS ALSO INSPIRED BY OTHR GAME LAUNCHER APPS LIKE STEAM, ETC.
@@ -2101,7 +2093,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

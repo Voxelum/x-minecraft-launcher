@@ -88,7 +88,7 @@ export interface DownloadUpdateTrackerEvents {
 
 export interface DownloadUpdateTask extends Task {
   type: 'downloaUpdate'
-  operation: 'autoupdater' | 'asar' | 'appx' | 'manual' | 'deskgap'
+  operation: 'autoupdater' | 'asar' | 'appx' | 'manual' | 'deskgap' | 'verified'
   version: string
   substate:
     | SubState<DownloadUpdateTrackerEvents, 'download-update.asar'>

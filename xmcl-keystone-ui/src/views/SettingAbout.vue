@@ -1,47 +1,23 @@
 <template>
   <section class="about">
-    <XmclAccountPanel class="mb-4" />
     <SettingCard>
       <div class="pa-4">
         <!-- Logo & Header info -->
         <div class="d-flex align-center flex-wrap gap-4 mb-6">
           <v-img
             :src="logo"
-            alt="XMCL Logo"
+            alt="Vardrynn logo"
             width="64"
             height="64"
             class="mr-4 rounded-lg flex-grow-0 flex-shrink-0"
           ></v-img>
           <div>
-            <a
-              class="text-h5 font-weight-bold text-decoration-none"
-              href="https://www.xmcl.app"
-              target="_blank"
-              v-shared-tooltip="() => 'XMCL'"
-            >
-              XMCL
-            </a>
-            <div class="d-flex items-center gap-2 mt-2">
-              <a
-                href="https://afdian.com/a/ci010"
-                target="_blank"
-                aria-label="Sponsor ci010 on Afdian"
-                class="d-flex align-center"
-              >
-                <img
-                  height="24"
-                  alt="Sponsor - Afdian"
-                  src="https://img.shields.io/badge/%E8%B5%9E%E5%8A%A9-%E7%88%B1%E5%8F%91%E7%94%B5-946ce6?style=flat&logo=data:image/png;base64,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&logoSize=auto&labelColor=106ac4"
-                />
-              </a>
-              <a
-                href="https://ko-fi.com/ci010"
-                target="_blank"
-                aria-label="Support ci010 on Ko-fi"
-                class="d-flex align-center"
-              >
-                <img height="25" alt="Support on Ko-fi" :src="kofi" />
-              </a>
+            <div class="text-h5 font-weight-bold">Vardrynn Launcher</div>
+            <div class="text-caption opacity-70">
+              Built on <a :href="UPSTREAM_PROJECT_URL" target="_blank">XMCL</a> by Voxelum and contributors.
+              Support the upstream author on
+              <a href="https://afdian.com/a/ci010" target="_blank">Afdian</a> or
+              <a href="https://ko-fi.com/ci010" target="_blank">Ko-fi</a>.
             </div>
           </div>
           <v-spacer />
@@ -54,6 +30,10 @@
           NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
         </div>
 
+        <div class="text-caption mb-6" data-testid="vardrynn-service-status">
+          {{ t('setting.vardrynnService.label') }}: {{ t(`setting.vardrynnService.${serviceStatus}`) }}
+        </div>
+
         <!-- Debug Info Box -->
         <div class="mb-8">
           <div class="text-subtitle-2 font-weight-bold mb-2 opacity-80">
@@ -62,34 +42,6 @@
           <pre
             class="debug-info-code pa-4 text-caption font-mono"
           ><code>{{ debugInfo }}</code></pre>
-        </div>
-
-        <v-divider class="my-6 opacity-20" />
-
-        <!-- Contributors Section -->
-        <div class="mb-8">
-          <h3 :id="contributorsHeadingId" class="text-subtitle-1 font-weight-bold text-center mb-4">
-            {{ t('setting.aboutContributors') }}
-          </h3>
-          <div
-            v-roving-tabindex
-            role="group"
-            :aria-labelledby="contributorsHeadingId"
-            class="d-flex flex-wrap gap-2 justify-center py-2 max-h-48 overflow-y-auto"
-          >
-            <a
-              v-for="c in contributors"
-              :key="c.login"
-              v-shared-tooltip="() => c.login"
-              :href="c.html_url"
-              target="_blank"
-              class="contributor-avatar"
-            >
-              <v-avatar size="36" class="elevation-1 border border-opacity-10">
-                <v-img :src="c.avatar_url" alt="avatar"></v-img>
-              </v-avatar>
-            </a>
-          </div>
         </div>
 
         <v-divider class="my-6 opacity-20" />
@@ -165,13 +117,7 @@
                 class="sponsor-logo-link mb-3"
                 aria-label="Deno Deploy"
               >
-                <v-img
-                  src="https://deno.com/images/deno_logo_4.gif"
-                  max-width="120"
-                  height="32"
-                  contain
-                  alt="Deno"
-                ></v-img>
+                Deno Deploy
               </a>
               <div class="text-caption mt-1 opacity-80">
                 {{ t('setting.aboutDenoDescription') }}
@@ -186,13 +132,7 @@
                 class="sponsor-logo-link mb-3"
                 aria-label="BMCLAPI"
               >
-                <v-img
-                  src="https://bmclapidoc.bangbang93.com/assets/favicon.ico?v=1742218388684"
-                  max-width="32"
-                  height="32"
-                  contain
-                  alt="BMCLAPI"
-                ></v-img>
+                BMCLAPI
               </a>
               <div class="text-caption mt-1 opacity-80">
                 {{ t('setting.aboutBmclDescription') }}
@@ -206,25 +146,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import XmclAccountPanel from '@/components/XmclAccountPanel.vue'
+import { BaseServiceKey, UPSTREAM_PROJECT_URL, type VardrynnServiceState } from '@xmcl/runtime-api'
 import SettingCard from '@/components/SettingCard.vue'
 import { kEnvironment } from '@/composables/environment'
 import { kFlights } from '@/composables/flights'
-import { useSWRVConfig } from '@/composables/swrvConfig'
-import { vRovingTabindex } from '@/directives/rovingTabindex'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { useService } from '@/composables'
 import { injection } from '@/util/inject'
-import useSWRV from 'swrv'
 import { useId } from 'vue'
-import kofi from '../assets/kofi.webp'
-import logo from '../assets/logo.webp'
+import logo from '../assets/vardrynn-mark.png'
 
 const env = injection(kEnvironment)
 const flights = injection(kFlights)
 
-const contributorsHeadingId = useId()
 const sponsorsHeadingId = useId()
 
 const debugInfo = computed(() => {
@@ -234,12 +169,13 @@ const debugInfo = computed(() => {
 const { t } = useI18n()
 const version = computed(() => env.value?.version ?? '')
 
-const config = useSWRVConfig()
-const { data: contributors } = useSWRV<{ login: string; avatar_url: string; html_url: string }[]>(
-  'https://api.github.com/repos/voxelum/x-minecraft-launcher/contributors',
-  (e) => fetch(e).then((r) => r.json()),
-  config,
-)
+const { getVardrynnServiceStatus } = useService(BaseServiceKey)
+const serviceStatus = ref<VardrynnServiceState | 'checking'>('checking')
+onMounted(async () => {
+  serviceStatus.value = await getVardrynnServiceStatus()
+    .then(status => status.state, () => 'unreachable' as const)
+})
+
 </script>
 
 <style scoped>

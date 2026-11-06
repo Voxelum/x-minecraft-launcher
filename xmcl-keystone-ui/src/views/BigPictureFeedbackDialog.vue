@@ -39,8 +39,8 @@
             tabindex="0"
             role="button"
             data-gamepad-focusable
-            @click="openUrl('https://github.com/Voxelum/x-minecraft-launcher/issues')"
-            @keydown.enter="openUrl('https://github.com/Voxelum/x-minecraft-launcher/issues')"
+            @click="openUrl(VARDRYNN_ISSUES_URL)"
+            @keydown.enter="openUrl(VARDRYNN_ISSUES_URL)"
           >
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white">
@@ -51,48 +51,6 @@
               <div class="flex flex-col">
                 <div class="font-bold text-sm text-white">{{ t('feedback.github') }}</div>
                 <div class="text-xs text-white/50">{{ t('feedback.githubDescription') }}</div>
-              </div>
-            </div>
-            <v-icon size="20" class="text-white/40">open_in_new</v-icon>
-          </div>
-
-          <!-- Discord -->
-          <div
-            class="bp-setting-row !p-4 cursor-pointer"
-            tabindex="0"
-            role="button"
-            data-gamepad-focusable
-            @click="openUrl('https://discord.gg/WUm4HAqmBn')"
-            @keydown.enter="openUrl('https://discord.gg/WUm4HAqmBn')"
-          >
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-[#5865F2]/20 flex items-center justify-center">
-                <v-icon size="24">xmcl:discord</v-icon>
-              </div>
-              <div class="flex flex-col">
-                <div class="font-bold text-sm text-white">{{ t('feedback.discord') }}</div>
-                <div class="text-xs text-white/50">{{ t('feedback.discordDescription') }}</div>
-              </div>
-            </div>
-            <v-icon size="20" class="text-white/40">open_in_new</v-icon>
-          </div>
-
-          <!-- Reddit -->
-          <div
-            class="bp-setting-row !p-4 cursor-pointer"
-            tabindex="0"
-            role="button"
-            data-gamepad-focusable
-            @click="openUrl('https://www.reddit.com/r/XMCL/')"
-            @keydown.enter="openUrl('https://www.reddit.com/r/XMCL/')"
-          >
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-[#FF4500]/20 flex items-center justify-center">
-                <v-icon size="24" color="#FF4500">xmcl:reddit</v-icon>
-              </div>
-              <div class="flex flex-col">
-                <div class="font-bold text-sm text-white">{{ t('feedback.reddit') }}</div>
-                <div class="text-xs text-white/50">{{ t('feedback.redditDescription') }}</div>
               </div>
             </div>
             <v-icon size="20" class="text-white/40">open_in_new</v-icon>
@@ -143,7 +101,7 @@ import { useI18n } from 'vue-i18n'
 import { useDialog } from '@/composables/dialog'
 import { useService } from '@/composables/service'
 import { useGamepad } from '@/composables/gamepad'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, VARDRYNN_ISSUES_URL } from '@xmcl/runtime-api'
 
 const props = withDefaults(defineProps<{
   modelValue?: boolean

@@ -22,7 +22,7 @@ import { createDeskGapUpdater } from './updaterHost'
 
 const manifest = {
   name: 'X Minecraft Launcher',
-  description: 'The default XMCL interface hosted by DeskGap',
+  description: 'The default Vardrynn interface hosted by DeskGap',
   url: 'xmcl-deskgap://launcher/index.html',
   backgroundColor: '0x424242',
   minWidth: 800,
@@ -230,7 +230,7 @@ export class DeskGapLauncherApp extends LauncherApp {
     app.on('window-all-closed', () => this.emit('window-all-closed'))
     app.on('open-url', (event: unknown, url: string) => { void this.protocol.handle({ url }) })
     app.on('second-instance', (_event: unknown, argv: string[]) => {
-      const url = argv.find(value => value.startsWith('xmcl://'))
+      const url = argv.find(value => value.startsWith('vardrynn://'))
       if (url) void this.protocol.handle({ url })
       else this.emit('second-instance', argv)
     })

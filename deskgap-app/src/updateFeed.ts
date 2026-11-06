@@ -24,7 +24,7 @@ function releaseFromJSON(value: unknown, repository: string, allowPrerelease: bo
   if (!version || release.tag_name !== `v${version}`) return
   if (!allowPrerelease && (release.prerelease === true || prerelease(version))) return
   if (!Array.isArray(release.assets)) throw new Error('GitHub release is missing its assets')
-  const name = `xmcl-deskgap-${version}-win32-x64.exe`
+  const name = `vardrynn-deskgap-${version}-win32-x64.exe`
   const expectedURL = `https://github.com/${repository}/releases/download/${release.tag_name}/${name}`
   const executable = release.assets.find((asset: unknown) => asset && typeof asset === 'object' &&
     'name' in asset && asset.name === name)

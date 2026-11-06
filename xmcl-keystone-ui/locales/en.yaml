@@ -32,7 +32,7 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
-  accessRequiredHint: Subscribe to XMCL to use the built-in Agent, or configure your own AI provider in Settings.
+  accessRequiredHint: The built-in Agent is unavailable in Vardrynn. Configure your own AI provider in Settings.
   abort: Stop generation
   callingTool: calling {name}…
   confirmAccept: Continue
@@ -64,14 +64,14 @@ agent:
   passiveModInstalled: installed {version}
   reset: New conversation
   setupGuide: Setup guide
-  statusDisabled: Disabled — sign in or configure a provider
+  statusDisabled: Disabled — configure a provider in Settings
   statusReady: Ready
   statusWorking: Working…
   suggestion1: Upgrade this instance to a newer Minecraft version, and update the mods to match
   suggestion2: My mods are crashing — find the cause and tell me how to fix it
   suggestion3: 'Build a modpack: find mods for a feature I want and install them into this instance'
   thinking: thinking…
-  title: XMCL Agent
+  title: Vardrynn Agent
   toolArguments: Arguments
   toolResult: Result
   toolRunning: Waiting for result…
@@ -154,8 +154,8 @@ backup:
   noInstancesFound: No instances found in launcher.
   excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
   create: Create Backup
-  createTitle: Create XMCL Backup Archive
-  saveDialogTitle: Save XMCL Backup Archive
+  createTitle: Create Vardrynn Backup Archive
+  saveDialogTitle: Save Vardrynn Backup Archive
   fileFilterName: XMCL Backup Archive (*.xmclbackup, *.zip)
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
@@ -514,23 +514,13 @@ commandPalette:
 feedback:
   channel: Channels
   description: I found a Bug or I want to make a suggestion
-  discord: Discord
-  discordDescription: Join Discord Channel
-  discordJoin: Join
   generateReport: Generate Report
   generateSaveAs: Save the report to
   github: Github Issue
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
   hint: Click the button to create the report and contact the developer team. The report will contain your device info including operating system type, version, user name (in your os), etc.
-  kook: Kook
-  kookDescription: Kook is an alternate app for discord for Chinese Mainland users
   name: Feedback
-  qq: QQ Group
-  qqDescription: 'Enter the feedback QQ group and direct talk with authors. Group Number: {number}'
-  qqEnterGroup: Join
-  reddit: Reddit
-  redditDescription: Join the r/XMCL subreddit community
 fileDetail:
   fileSize: File Size
   filesize: File size
@@ -559,7 +549,7 @@ importModpack:
   selectVersionDescription: 'Choose the version of {name} to install:'
   pmcProtected: Planet Minecraft is protected by Cloudflare. Please copy the direct download or mirror link from the page.
   netdiskTitle: Cloud Drive Download
-  netdiskDescription: This modpack version is hosted on an external cloud drive. Click below to open the download page in your browser, then drag & drop the downloaded .zip or .mrpack into XMCL.
+  netdiskDescription: This modpack version is hosted on an external cloud drive. Click below to open the download page in your browser, then drag & drop the downloaded .zip or .mrpack into Vardrynn.
   openNetdisk: Open Cloud Drive
   netdiskOpened: Cloud drive link opened in your browser and copied to clipboard.
   noReleasesFound: No .mrpack or .zip modpack releases found for this repository.
@@ -727,7 +717,7 @@ instances:
   addModrinthDescription: Import existing Modrinth instance. You need to select the Modrinth root data folder.
   addPrismDescription: Import existing PrismLauncher instance.
   addVanilla: Create from vanilla-like Minecraft
-  addVanillaDescription: Import from common .minecraft folder. This will duplciate the original game profile to XMCL.
+  addVanillaDescription: Import from common .minecraft folder. This will duplciate the original game profile to Vardrynn.
   edition: Edition
   editionJava: Java Edition
   editionBedrock: Bedrock Edition
@@ -793,9 +783,9 @@ launchBlocked:
     description: The launcher doesn't have permission to execute the java <span class="highlight"> {javaPath} </span>. Either change the permission of the java file or raise the permission of launcher.
     title: No permission to launch
   launchLinuxDisplayUnavailable:
-    environmentMissing: XMCL could not recover the X11 display information from your desktop session. Restart XMCL from a terminal in the current desktop session, or sign out and sign in again.
-    noGraphicalSession: XMCL is not running in a graphical desktop session. Start XMCL from your desktop session before launching Minecraft.
-    sandboxDenied: The application sandbox cannot access X11. Grant XMCL access to the X11 socket in your Flatpak permissions, then restart XMCL.
+    environmentMissing: Vardrynn could not recover the X11 display information from your desktop session. Restart Vardrynn from a terminal in the current desktop session, or sign out and sign in again.
+    noGraphicalSession: Vardrynn is not running in a graphical desktop session. Start Vardrynn from your desktop session before launching Minecraft.
+    sandboxDenied: The application sandbox cannot access X11. Grant Vardrynn access to the X11 socket in your Flatpak permissions, then restart Vardrynn.
     title: X11 display unavailable
     xwaylandMissing: Minecraft needs XWayland in this Wayland session. Install the XWayland package provided by your Linux distribution, then sign out and sign in again.
     xwaylandNotRunning: XWayland is installed but no X11 display is running. Enable XWayland in your compositor configuration, then sign out and sign in again.
@@ -838,6 +828,7 @@ launcherUpdate:
   manualCheckHint: No release check has been performed. Check GitHub Releases for a compatible package and install it manually.
   manualCheckRequired: This host cannot check or install updates automatically. Use the GitHub Releases button to check manually.
   alreadyLatest: Up To Date
+  failed: The update was not installed
   installAndQuit: Restart to Install
   noUpdateAvailable: No Update Available
   updateToThisVersion: Download and Install
@@ -892,7 +883,7 @@ loginError:
   requestFailed: Login failed, we do not know the exact reason. Please retry.
   xboxErrorGuideHint: Having trouble signing in? Learn how to fix Microsoft & Xbox login issues.
   openLoginGuide: How to fix this issue
-  openDiscordSupport: Still need help? Join our Discord
+  openSupport: Still need help? Open an issue
   requireEmail: E-mail is required
   requirePassword: Password is required
   requireUsername: Username is required
@@ -916,22 +907,29 @@ migrateMinecraft:
   name: Migrate Minecraft Files
 xmclAccount:
   accountSummary: Account
-  confirmMerge: Confirm account merge
   createdAt: Created {date}
-  description: Your passwordless XMCL identity, separate from Minecraft game accounts.
+  deleteAction: Delete account
+  deleteConfirmText: This permanently deletes your Vardrynn account, unlinks every sign-in method and signs out all devices. Your Minecraft game accounts and local data are not affected. This cannot be undone.
+  deleteConfirmTitle: Delete your Vardrynn account?
+  deleteDescription: Removes the account and its sign-in methods for good.
+  deleteTitle: Delete account
+  description: Your passwordless Vardrynn identity, separate from Minecraft game accounts.
   expiresAt: Expires {date}
-  gameAccountsSeparate: Removing a game account does not unlink an XMCL login method.
-  guest: Guest
-  identityConflict: This {provider} login belongs to another XMCL Account. Accounts are never merged automatically.
-  linkAccountWith: Link account with
-  mergePreview: Review the resources that will move before confirming.
-  mergeNeedsSession: Sign in to the XMCL Account you want to keep before reviewing the merge.
-  mergeQueued: Account merge is in progress.
-  requestFailed: The XMCL Account service could not complete this request. Your game account is unchanged.
-  reviewMerge: Review merge
+  gameAccountsSeparate: Removing a game account does not unlink a Vardrynn sign-in method.
+  guest: Signed out
+  identityConflict: This {provider} login already belongs to another Vardrynn account. Accounts are never merged; sign out and sign in with {provider} to use that account.
+  link: Link {provider}
+  linkAction: Link
+  linked: Linked
+  linkedAs: '{provider} linked as {name}'
+  providerUnconfigured: This sign-in method is not available in this build.
+  requestFailed: The Vardrynn account service could not complete this request. Your game accounts are unchanged.
   session: Session
   sessionActive: Active
   sessionExpired: Expired
+  signInMethods: Sign-in methods
+  signInWith: Sign in with
+  signInWithProvider: Sign in with {provider}
   signOutAll: Sign out all devices
   signOutDevice: Sign out this device
   status:
@@ -939,7 +937,9 @@ xmclAccount:
     deleted: Deleted
     deletion_pending: Deletion pending
     merged: Merged
-  title: XMCL Account
+  timedOut: Sign-in timed out. Try again.
+  title: Vardrynn account
+  unconfigured: This build is not connected to a Vardrynn service, so accounts are unavailable.
 minecraftFriends:
   accept: Accept
   add: Add a friend
@@ -1394,7 +1394,7 @@ modrinthCard:
   currentVersion: Current Version
 multiplayer:
   addFunds: Add funds
-  autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so XMCL can share it.
+  autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so Vardrynn can share it.
   availableBalance: Available balance
   balanceHint: Available for XMCL Together services
   billing: Billing
@@ -1438,7 +1438,6 @@ multiplayer:
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: If your peer has already initiated a connection, you need to Join Connection.
-  joinDiscord: Join Discord
   joinGame: Join game
   joinManual: Join
   joinOrCreateGroup: Join/Create Group
@@ -1477,7 +1476,6 @@ multiplayer:
     cancelled: Cancelled
     payment_due: Payment due
   togetherName: Minecraft Together
-  togetherSupportHint: If multiplayer is not working, join our Discord and contact the development team. We will help you resolve the problem.
   trial:
     active: Trial active
     available: Free trial available
@@ -2035,13 +2033,38 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  xmclImport:
+    activate: Activate and restart
+    applied: Imported data is active. Undo restores the previous Vardrynn settings, instances and accounts; copied game files are kept.
+    cancel: Cancel
+    cancelled: The copy stopped before finishing. Nothing is active yet, and retrying continues where it left off.
+    choose: Choose folder
+    close: Close
+    closeXmcl: Close XMCL before copying. Your XMCL data is only read, never changed.
+    copying: Copying {files} of {total} files
+    description: Copy settings, instances and game files from an existing XMCL install. XMCL keeps working as before.
+    destination: Copy to
+    failed: The copy stopped. Check available disk space and close XMCL, then retry.
+    gameRoot: Game data
+    notFound: No XMCL data was found in the usual location. Choose its data folder instead.
+    pending: A change is waiting for a restart.
+    preview: Preview import
+    ready: The copy is complete. Activating restarts Vardrynn with the imported data. Accounts need to sign in again.
+    restart: Restart now
+    retry: Retry
+    rolledBack: The import was undone. The copied game files are kept in the import folder.
+    source: XMCL profile
+    start: Start copying
+    summary: 'Instances: {instances} · Accounts: {accounts} · Files: {files} ({size})'
+    title: Import from XMCL
+    undo: Undo import
   appImageUpdateMode: AppImage update ownership
   appImageExternalMode: External manager / manual replacement (default)
-  appImageSelfMode: XMCL self-managed (I own this AppImage)
+  appImageSelfMode: Vardrynn self-managed (I own this AppImage)
   appImageAutoDownload: Automatically download updates
   appImageAutoInstall: Install downloaded updates when quitting
-  appImageExternalUpdateHint: If installed through Shelly or another manager, update there and keep external mode. Otherwise replace the AppImage yourself at its existing path. XMCL does not download or install updates in external mode, and does not change manager records or desktop entries.
-  appImageSelfUpdateHint: Only choose self-managed for an AppImage you manage yourself, not one owned by Shelly or another manager. Built-in updates require an absolute AppImage path with no version number in the filename (for example xmcl.AppImage). If the name contains a version such as 0.73.0, quit XMCL, rename the file yourself, update your own desktop entry to that stable path, then launch it again. Until then updates remain manual. XMCL will not rename files for you. After changing modes, check for updates again.
+  appImageExternalUpdateHint: If installed through Shelly or another manager, update there and keep external mode. Otherwise replace the AppImage yourself at its existing path. Vardrynn does not download or install updates in external mode, and does not change manager records or desktop entries.
+  appImageSelfUpdateHint: Only choose self-managed for an AppImage you manage yourself, not one owned by Shelly or another manager. Built-in updates require an absolute AppImage path with no version number in the filename (for example vardrynn.AppImage). If the name contains a version such as 0.73.0, quit Vardrynn, rename the file yourself, update your own desktop entry to that stable path, then launch it again. Until then updates remain manual. Vardrynn will not rename files for you. After changing modes, check for updates again.
   multiplayerTransport: Together transport
   multiplayerTransportDescription: Choose the WebRTC implementation used by Together. Changing transport disconnects active peers.
   about: About
@@ -2050,7 +2073,16 @@ setting:
   aboutDenoDescription: XMCL leverages Deno Deploy's hassle-free platform for serverless JavaScript applications
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Free code signing on Windows provided by SignPath.io, certificate by SignPath Foundation
-  aboutSponsors: 😇 Sponsors 😇
+  aboutSponsors: XMCL upstream sponsors
+  vardrynnService:
+    label: Vardrynn services
+    checking: Checking
+    ok: Available
+    degraded: Degraded
+    maintenance: Under maintenance
+    unconfigured: Not configured
+    unreachable: Unreachable
+    incompatible: Update required
   advancedJavaOptions: Advanced Java Options
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
@@ -2138,7 +2170,7 @@ setting:
   developerMode: Developer Mode
   developerModeDescription: Developer Mode is for testing your own mods
   disableTelemetry: Disable Telemetry
-  disableTelemetryDescription: XMCL will collect the game launch and user login events.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Assign Dedicated GPU
   enableDedicatedGPUOptimizationDescription: This option will assign dedicated GPU to Minecraft process.
   enableDiscord: Enable Discord Presence
@@ -2278,7 +2310,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: The data root is not a common .minecraft directory. Since XMCL data directory structure is different from vanilla, we do not recommend to use the common .minecraft directory as a data root.
+    description: The data root is not a common .minecraft directory. Since Vardrynn data directory structure is different from vanilla, we do not recommend to use the common .minecraft directory as a data root.
     drives: Recommend Locations
     name: Set Data Directory
   defaultLayoutDescription: The default layout is trying to enhance the game "instance" concept. It looks like apps like Discord. It's also inspired by other game launcher apps like Steam, etc.
@@ -2417,8 +2449,8 @@ theme:
   selectImage: Select Image
   selectMusic: Select Music
   selectVideo: Select Video
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Host Candidate
   prflx: Peer Reflexive Candidate
@@ -2708,7 +2740,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
   disconnected: Controller Disconnected

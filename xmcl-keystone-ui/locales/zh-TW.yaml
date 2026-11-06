@@ -94,8 +94,8 @@ backup:
   noInstancesFound: 啟動器中找不到任何實例。
   excludeLibrariesNotice: 核心程式庫、Minecraft 資源與暫存快取會自動排除以保持備份精簡，啟動遊戲時會自動下載。
   create: 建立備份
-  createTitle: 建立 XMCL 備份封存檔
-  saveDialogTitle: 儲存 XMCL 備份封存檔
+  createTitle: 建立 Vardrynn 備份封存檔
+  saveDialogTitle: 儲存 Vardrynn 備份封存檔
   fileFilterName: 'XMCL 備份封存檔 (*.xmclbackup, *.zip)'
   createError: 建立備份失敗
   loadManifestError: 讀取備份封存檔失敗
@@ -404,21 +404,13 @@ commandPalette:
 feedback:
   channel: 聯絡管道
   description: 我找到了漏洞/我想提出建議
-  discord: Discord
-  discordDescription: 加入 Discord 頻道
-  discordJoin: 加入
   generateReport: 產生報告
   generateSaveAs: 將報告儲存至
   github: Github Issue
   githubDescription: 透過 Github Issue 來回饋您的想法
   githubOpenIssue: Github
   hint: 按一下按鈕產生報告並聯絡開發團隊。報告會包含您的裝置資訊，例如作業系統類型、版本、作業系統使用者名稱等。
-  kook: Kook
-  kookDescription: 加入 Kook (僅限大陸地區)
   name: 回饋
-  qq: QQ 群
-  qqDescription: 加入 QQ 回饋群直接和作者聊聊吧，群組號碼：{number}
-  qqEnterGroup: 加入
 fileDetail:
   fileSize: 檔案大小
   filesize: 檔案大小
@@ -446,7 +438,7 @@ importModpack:
   selectVersionDescription: 請選擇要安裝的 {name} 版本：
   pmcProtected: Planet Minecraft 受到 Cloudflare 保護。請從頁面複製直接下載連結或鏡像連結。
   netdiskTitle: 雲端硬碟下載
-  netdiskDescription: 此模組包版本存放於外部雲端硬碟。點擊下方按鈕在瀏覽器中開啟下載頁面，然後將下載的 .zip 或 .mrpack 檔案拖曳至 XMCL。
+  netdiskDescription: 此模組包版本存放於外部雲端硬碟。點擊下方按鈕在瀏覽器中開啟下載頁面，然後將下載的 .zip 或 .mrpack 檔案拖曳至 Vardrynn。
   openNetdisk: 開啟雲端硬碟
   netdiskOpened: 雲端硬碟連結已在瀏覽器中開啟並複製到剪貼簿。
   noReleasesFound: 此儲存庫中找不到 .mrpack 或 .zip 格式的模組包發行版本。
@@ -616,7 +608,7 @@ instances:
   addVanilla: 從原版 Minecraft 建立
   addVanillaDescription: |-
     從通用 .minecraft 資料夾匯入。
-    這會將原始遊戲設定檔案複製到 XMCL。
+    這會將原始遊戲設定檔案複製到 Vardrynn。
   fix: 修復
   folder: 資料夾
   folderSetting: 資料夾設定
@@ -768,6 +760,8 @@ loginError:
   requirePassword: 請輸入密碼
   requireUsername: 使用者名稱不能為空
   timeout: 登入超時，請重試或檢查您的網路！
+  openLoginGuide: 如何修正此問題
+  openSupport: 仍需要協助？提交問題回報
 logsCrashes:
   crashes: 當機報告
   logs: 日誌
@@ -1106,11 +1100,9 @@ modrinth:
 modrinthCard:
   currentVersion: 目前版本
 multiplayer:
-  joinDiscord: 加入 Discord
   openConsumerPortal: 開啟消費者入口網站
   refundHint: 如需退款，請前往 Waffo 消費者入口網站管理您的訂單與訂閱。
-  togetherSupportHint: 如果連線無法正常運作，請加入 Discord 聯絡開發團隊，我們會協助您解決問題。
-  autoShareAmbiguous: 有多個遊戲正在執行。請選擇主持區域網路世界的實例，讓 XMCL 可以分享它。
+  autoShareAmbiguous: 有多個遊戲正在執行。請選擇主持區域網路世界的實例，讓 Vardrynn 可以分享它。
   editSharingScope: 編輯分享範圍
   gameAvailable: 有可用的區域網路遊戲
   joinGame: 加入遊戲
@@ -1604,7 +1596,7 @@ setting:
   aboutDenoDescription: XMCL 使用 Deno Deploy 平台提供的無伺服器 JavaScript 應用程式
   aboutLicense: MIT 授權
   aboutLicenseInfo: Windows 代碼簽名由 SignPath.io 免費提供，簽署人為 SignPath Foundation
-  aboutSponsors: 😇 贊助商 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: 進階 Java 選項
   advancedSettings: 進階設定
   advancedSettingsHint: 危險區域 - 重置或管理啟動器資料
@@ -1674,11 +1666,11 @@ setting:
   developerMode: 開發者模式
   developerModeDescription: 開發者模式旨在協助您測試自己寫的模組
   disableTelemetry: 停用遙測
-  disableTelemetryDescription: XMCL 會收集遊戲啟動以及使用者登入事件
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: 分配專用 GPU
   enableDedicatedGPUOptimizationDescription: 此選項將為 Minecraft 程序分配專用 GPU。
   enableDiscord: 啟用 Discord Presence
-  enableDiscordDescription: 根據 XMCL 實時更新 Discord 的狀態
+  enableDiscordDescription: 根據 Vardrynn 實時更新 Discord 的狀態
   enterUrl: 輸入網址
   exportSettings: 匯出設定
   exportSettingsHint: 將目前設定儲存到檔案
@@ -1805,7 +1797,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: 資料儲存目錄不是常規的 .minecraft 目錄。因為 XMCL 的資料目錄格式特殊，不建議將常規 .minecraft 目錄設定為資料目錄。
+    description: 資料儲存目錄不是常規的 .minecraft 目錄。因為 Vardrynn 的資料目錄格式特殊，不建議將常規 .minecraft 目錄設定為資料目錄。
     drives: 推薦路徑
     name: 設定資料儲存目錄
   defaultLayoutDescription: |-
@@ -1946,8 +1938,8 @@ theme:
   selectImage: 選擇影象
   selectMusic: 選擇音樂
   selectVideo: 選擇影片
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: 公網位址
   prflx: 同伴反射位址
@@ -2300,7 +2292,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

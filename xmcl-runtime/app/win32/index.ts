@@ -1,3 +1,4 @@
+import { LAUNCHER_PROTOCOL, LAUNCHER_DISPLAY_NAME } from '~/constant'
 import { AppManifest, InstalledAppManifest } from '@xmcl/runtime-api'
 import { unlink, writeFile } from 'fs-extra'
 // import generateIco from 'icon-gen/dist/lib/ico'
@@ -5,20 +6,20 @@ import { join } from 'path'
 import { LauncherApp } from '../LauncherApp'
 
 export async function removeShortcut(outputDir: string, man: InstalledAppManifest) {
-  let outputPath = join(outputDir, `${man.name}.lnk`)
+  let outputPath = join(outputDir, `${man.name} - ${LAUNCHER_DISPLAY_NAME}.lnk`)
   await unlink(outputPath).catch(() => { })
-  outputPath = join(outputDir, `${man.name}.url`)
+  outputPath = join(outputDir, `${man.name} - ${LAUNCHER_DISPLAY_NAME}.url`)
   await unlink(outputPath).catch(() => { })
 }
 
 export async function createLinkWin32(app: LauncherApp, exePath: string, outputDir: string, man: InstalledAppManifest, globalShortcut: boolean): Promise<void> {
   const urlContent =
   `[InternetShortcut]
-  URL=xmcl://launcher/app?url=${man.url}
+  URL=${LAUNCHER_PROTOCOL}://launcher/app?url=${man.url}
   WorkingDirectory=.
   IconIndex=0
   IconFile=${man.iconSets.icon}`
-  await writeFile(join(outputDir, `${man.name}.url`), urlContent)
+  await writeFile(join(outputDir, `${man.name} - ${LAUNCHER_DISPLAY_NAME}.url`), urlContent)
 }
 
 export function createShortcutWin32(app: LauncherApp, exePath: string, outputDir: string, man: InstalledAppManifest, globalShortcut: boolean): boolean {
@@ -38,7 +39,7 @@ export function createShortcutWin32(app: LauncherApp, exePath: string, outputDir
   const cwd = ''
   // const windowMode = windowModes.normal.toString()
   // const hotkey = ''
-  const outputPath = join(outputDir, `${man.name}.lnk`)
+  const outputPath = join(outputDir, `${man.name} - ${LAUNCHER_DISPLAY_NAME}.lnk`)
 
   if (!icon) {
     if (

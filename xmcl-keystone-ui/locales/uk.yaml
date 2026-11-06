@@ -34,7 +34,7 @@ SettingMigrationDialog:
 agent:
   accessRequiredHint: Оформіть підписку XMCL, щоб використовувати вбудований Agent, або налаштуйте власного постачальника ШІ в налаштуваннях.
   subscribeXmcl: Оформити підписку XMCL
-  title: XMCL Agent
+  title: Vardrynn Agent
   statusReady: Готово
   statusWorking: Працюю…
   statusDisabled: Вимкнено — немає API key
@@ -116,7 +116,7 @@ backup:
   excludeLibrariesNotice: Бібліотеки (залежності ваніли та завантажувачів), ресурси та кеші виключаються автоматично, щоб зберегти місце на диску. Вони завантажуються автоматично під час запуску гри.
   create: Створити резервну копію
   createTitle: Створити архів резервної копії
-  saveDialogTitle: Зберегти резервну копію XMCL
+  saveDialogTitle: Зберегти резервну копію Vardrynn
   fileFilterName: Резервна копія XMCL (*.xmclbackup, *.zip)
   createError: Не вдалося створити резервну копію
   loadManifestError: Не вдалося прочитати архів резервної копії
@@ -428,23 +428,13 @@ commandPalette:
 feedback:
   channel: Канали
   description: Я знайшов помилку або хочу внести пропозицію
-  discord: Discord
-  discordDescription: Приєднатися до каналу Discord
-  discordJoin: Приєднатися
   generateReport: Сгенерувати звіт
   generateSaveAs: Зберегти звіт як
   github: Проблема на Github
   githubDescription: Відкрийте проблему на Github, щоб висловити свою думку
   githubOpenIssue: Github
   hint: Натисніть кнопку, щоб створити звіт і зв'язатися з командою розробників. Звіт міститиме інформацію про ваш пристрій, включаючи тип операційної системи, версію, ім'я користувача (у вашій ОС) тощо.
-  kook: Kook
-  kookDescription: Kook — це альтернативний додаток для Discord для користувачів з материкового Китаю
   name: Зворотний зв'язок
-  qq: Група QQ
-  qqDescription: 'Увійдіть до групи QQ для зворотного зв''язку та спілкуйтеся безпосередньо з авторами. Номер групи: {number}'
-  qqEnterGroup: Приєднатися
-  reddit: Reddit
-  redditDescription: Приєднатися до спільноти r/XMCL у Reddit
 fileDetail:
   fileSize: Розмір файлу
   filesize: Розмір файлу
@@ -473,7 +463,7 @@ importModpack:
   selectVersionDescription: 'Виберіть версію {name} для встановлення:'
   pmcProtected: Planet Minecraft захищений Cloudflare. Будь ласка, скопіюйте пряме посилання для завантаження або дзеркало зі сторінки.
   netdiskTitle: Завантаження з хмарного диску
-  netdiskDescription: Ця версія модпаку розміщена на хмарному диску (Quark / Baidu / 123pan). Натисніть кнопку нижче, щоб відкрити сторінку завантаження, а після звантаження перетягніть отриманий файл .zip або .mrpack у вікно XMCL.
+  netdiskDescription: Ця версія модпаку розміщена на хмарному диску (Quark / Baidu / 123pan). Натисніть кнопку нижче, щоб відкрити сторінку завантаження, а після звантаження перетягніть отриманий файл .zip або .mrpack у вікно Vardrynn.
   openNetdisk: Відкрити хмарний диск
   netdiskOpened: Посилання на хмарний диск скопійовано та відкрито у вашому браузері.
   noReleasesFound: У цьому репозиторії не знайдено релізів модпаків (.mrpack або .zip).
@@ -622,7 +612,7 @@ instances:
   addMMCDescription: Імпортувати наявний екземпляр MultiMC. Вам потрібно вибрати папку даних з MultiMC.
   addModrinthDescription: Імпортувати наявний екземпляр Modrinth. Вам потрібно вибрати кореневу папку даних Modrinth.
   addVanilla: Створити з ванільного Minecraft
-  addVanillaDescription: Імпортувати зі звичайної папки .minecraft. Це продублює оригінальний ігровий профіль в XMCL.
+  addVanillaDescription: Імпортувати зі звичайної папки .minecraft. Це продублює оригінальний ігровий профіль в Vardrynn.
   fix: Відновити
   folderSetting: Налаштування папки
   importFolderDescription: Імпортувати Minecraft в лаунчер
@@ -768,7 +758,7 @@ loginError:
   requestFailed: Помилка входу, точна причина невідома. Будь ласка, спробуйте ще раз.
   xboxErrorGuideHint: Виникла проблема із входом? Подивіться як це виправити.
   openLoginGuide: Як це виправити (Гайд)
-  openDiscordSupport: Не допомогло? Наш Discord
+  openSupport: Не допомогло? Створіть звернення
   requireEmail: Електронна пошта обов'язкова
   requirePassword: Пароль обов'язковий
   requireUsername: Ім'я користувача обов'язкове
@@ -1124,11 +1114,9 @@ modrinth:
 modrinthCard:
   currentVersion: Поточна версія
 multiplayer:
-  joinDiscord: Приєднатися до Discord
   openConsumerPortal: Відкрити портал клієнта
   refundHint: Потрібне повернення коштів? Перейдіть на клієнтський портал Waffo, щоб керувати замовленнями та підписками.
-  togetherSupportHint: Якщо багатокористувацький режим не працює, приєднайтеся до нашого Discord і зв’яжіться з командою розробників. Ми допоможемо вирішити проблему.
-  autoShareAmbiguous: Запущено кілька ігор. Виберіть збірку, у якій відкрито світ для локальної мережі, щоб XMCL міг нею поділитися.
+  autoShareAmbiguous: Запущено кілька ігор. Виберіть збірку, у якій відкрито світ для локальної мережі, щоб Vardrynn міг нею поділитися.
   editSharingScope: Змінити область поширення
   gameAvailable: Доступна гра в локальній мережі
   joinGame: Приєднатися до гри
@@ -1690,7 +1678,7 @@ setting:
   developerMode: Режим розробника
   developerModeDescription: Режим розробника призначений для тестування ваших власних модів
   disableTelemetry: Вимкнути телеметрію
-  disableTelemetryDescription: XMCL збиратиме події запуску гри та входу користувачів.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Призначити дискретну відеокарту
   enableDedicatedGPUOptimizationDescription: Ця опція призначить дискретну відеокарту процесу Minecraft.
   enableDiscord: Увімкнути присутність Discord
@@ -1821,7 +1809,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: Кореневий каталог даних - це не звичайний каталог .minecraft. Оскільки структура каталогу даних XMCL відрізняється від ванільної, ми не рекомендуємо використовувати звичайний каталог .minecraft як кореневий каталог даних.
+    description: Кореневий каталог даних - це не звичайний каталог .minecraft. Оскільки структура каталогу даних Vardrynn відрізняється від ванільної, ми не рекомендуємо використовувати звичайний каталог .minecraft як кореневий каталог даних.
     drives: Рекомендовані місця
     name: Встановити каталог даних
   defaultLayoutDescription: Типовий макет намагається покращити концепцію "екземпляра" гри. Він схожий на такі програми, як Discord. Він також натхненний іншими лаунчерами ігор, такими як Steam тощо.
@@ -1954,8 +1942,8 @@ theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику
   selectVideo: Вибрати відео
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Кандидат хоста
   prflx: Кандидат Peer Reflexive
@@ -2279,7 +2267,7 @@ gamepad:
   steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
   steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
   steamDeckTitle: Виявлено Steam Deck
-  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати XMCL до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
+  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати Vardrynn до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
   steamDeckAddBtn: Додати до Steam ({btn})
   steamDeckCancelBtn: Скасувати ({btn})
   connected: Геймпад підключено

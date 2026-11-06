@@ -2,7 +2,7 @@ import { LauncherApp } from '~/app'
 import { AnyError } from '@xmcl/utils'
 import { UserService } from '../UserService'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
-import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
+import { requireVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import { kFlights } from '~/infra'
 
 interface ModrinthOAuthResponse {
@@ -52,6 +52,8 @@ export async function loginModrinth(
   if (token) return
 
   if (!token) {
+    // The code exchange needs the service, so fail before sending the user to Modrinth.
+    const apiOrigin = requireVardrynnApiOrigin(await app.registry.get(kFlights))
     const redirect_uri = `http://127.0.0.1:${await app.serverPort}/modrinth-auth`
     const scopesString = scopes.join(' ')
     const url = new URL('https://modrinth.com/auth/authorize')
@@ -79,11 +81,7 @@ export async function loginModrinth(
         }
       })
     })
-    const flights = await app.registry.get(kFlights)
-    const authUrl = new URL(
-      '/modrinth/auth',
-      resolveXmclApiEndpoints(flights.xmclApiBaseUrl).common,
-    )
+    const authUrl = new URL('/modrinth/auth', apiOrigin)
     authUrl.searchParams.set('code', code)
     authUrl.searchParams.set('redirect_uri', redirect_uri)
     const response = await app.fetch(authUrl)

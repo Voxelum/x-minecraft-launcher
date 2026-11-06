@@ -9,7 +9,6 @@ import ElectronLauncherApp from './ElectronLauncherApp'
 import { ElectronController } from './ElectronController'
 import defaultApp from './defaultApp'
 import { createMainLocalNetwork, createMainSharedFiles } from './mainMultiplayerAdapters'
-import { createMultiplayerTelemetryReporter } from './multiplayerTelemetry'
 
 export const pluginMultiplayer: LauncherAppPlugin = (rawApp) => {
   const app = rawApp as ElectronLauncherApp
@@ -30,17 +29,16 @@ export const pluginMultiplayer: LauncherAppPlugin = (rawApp) => {
       })
     })
     const sharedFiles = createMainSharedFiles()
-    const telemetry = createMultiplayerTelemetryReporter({
-      baseUrl: options.init.signalingBaseUrl,
-      deviceId: options.init.sessionId,
-      launcherSessionId: options.init.launcherSessionId,
-      getAccountId: options.getTelemetryAccountId,
-      launcherVersion: app.version,
-      launcherBuild: String(app.build),
-      isEnabled: options.isTelemetryEnabled,
-      fetch: (url, init) => electronSession.fetch(url, init),
-      warn: (message) => app.getLogger('MultiplayerTelemetry').warn(message),
-    })
+    // Room and relay routes belong to a Vardrynn account. Diagnostics stay local: nothing is uploaded.
+    const signalingOrigin = new URL(options.init.signalingBaseUrl).origin
+    const authorizedFetch = async (url: string, init: RequestInit) => {
+      if (new URL(url).origin !== signalingOrigin) throw new Error('multiplayer_unexpected_origin')
+      const token = await options.getAuthorization()
+      if (!token) throw new Error('multiplayer_sign_in_required')
+      const headers = new Headers(init.headers)
+      headers.set('Authorization', `Bearer ${token}`)
+      return electronSession.fetch(url, { ...init, headers })
+    }
 
     let providerClosed: Promise<void> | undefined
     const peerConnectionProvider = options.transport === 'node-datachannel'
@@ -61,11 +59,10 @@ export const pluginMultiplayer: LauncherAppPlugin = (rawApp) => {
       peerConnectionProvider,
       waitForIceServersBeforePeer: options.transport === 'node-datachannel',
       logger: { emit: options.log },
-      createTelemetryAttempt: telemetry.beginAttempt,
       setDownloadPort: async (port) => options.setDownloadPort(port),
       roomApi: createTogetherRoomApi({
         getBaseUrl: () => options.init.signalingBaseUrl,
-        fetch: (url, init) => electronSession.fetch(url, init),
+        fetch: authorizedFetch,
       }),
     })
 
@@ -75,7 +72,6 @@ export const pluginMultiplayer: LauncherAppPlugin = (rawApp) => {
     } catch (error) {
       await multiplayer.dispose().catch(() => {})
       await localNetwork.dispose().catch(() => {})
-      await telemetry.dispose()
       throw error
     }
 
@@ -89,12 +85,8 @@ export const pluginMultiplayer: LauncherAppPlugin = (rawApp) => {
           try {
             await localNetwork.dispose()
           } finally {
-            try {
-              await telemetry.dispose()
-            } finally {
-              hosts.delete(host)
-              closed.resolve()
-            }
+            hosts.delete(host)
+            closed.resolve()
           }
         })
         return disposePromise

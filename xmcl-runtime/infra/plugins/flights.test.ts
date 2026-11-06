@@ -1,57 +1,23 @@
-import { describe, expect, it } from 'vitest'
-import {
-  applyDevelopmentApiFlight,
-  applyRemoteFlights,
-  DEVELOPMENT_XMCL_BILLING_API_BASE_URL,
-} from './flights'
+import { describe, expect, it, vi } from 'vitest'
+import { pluginFlights } from './flights'
 
-describe('applyDevelopmentApiFlight', () => {
-  it('forces local development onto the isolated staging API', () => {
-    const flights = applyDevelopmentApiFlight(
-      { xmclApiBaseUrl: 'https://api.xmcl.app', builtinAgent: true },
-      'development',
-    )
+function createApp() {
+  const handlers: Array<(context: any) => void> = []
+  const register = vi.fn()
+  const app = {
+    protocol: { registerHandler: vi.fn((_scheme, handler) => handlers.push(handler)) },
+    registry: { register },
+  }
+  return { app, handlers, register }
+}
 
-    expect(flights).toEqual({
-      xmclApiBaseUrl: 'https://api.xmcl.app',
-      xmclBillingApiBaseUrl: DEVELOPMENT_XMCL_BILLING_API_BASE_URL,
-      builtinAgent: true,
-    })
-  })
-
-  it('does not change production flights', () => {
-    const flights = { xmclApiBaseUrl: 'https://api.xmcl.app' }
-
-    expect(applyDevelopmentApiFlight(flights, 'production')).toBe(flights)
-    expect(flights.xmclApiBaseUrl).toBe('https://api.xmcl.app')
-  })
-
-  it('does not persist the development-only staging override', () => {
-    const effective: Record<string, any> = { builtinAgent: true }
-
-    const persisted = applyRemoteFlights(
-      effective,
-      { xmclApiBaseUrl: 'https://api.xmcl.app' },
-      'development',
-    )
-
-    expect(effective.xmclBillingApiBaseUrl).toBe(DEVELOPMENT_XMCL_BILLING_API_BASE_URL)
-    expect(persisted.xmclApiBaseUrl).toBe('https://api.xmcl.app')
-  })
-
-  it('removes an inherited development override when remote flights omit it', () => {
-    const effective: Record<string, any> = {
-      xmclBillingApiBaseUrl: DEVELOPMENT_XMCL_BILLING_API_BASE_URL,
-      builtinAgent: true,
-    }
-
-    const persisted = applyRemoteFlights(
-      effective,
-      { builtinAgent: true },
-      'development',
-    )
-
-    expect(effective.xmclBillingApiBaseUrl).toBe(DEVELOPMENT_XMCL_BILLING_API_BASE_URL)
-    expect(persisted).toEqual({ builtinAgent: true })
+describe('Vardrynn flights', () => {
+  it('serves only local defaults without fetching or reading persisted XMCL flags', async () => {
+    const { app, handlers, register } = createApp()
+    pluginFlights(app as any, {} as any)
+    expect(register).toHaveBeenCalledWith(expect.anything(), {})
+    const response = { headers: {} as Record<string, string>, status: 0, body: '', handled: false }
+    handlers[0]({ request: { url: new URL('http://launcher/flights') }, response })
+    expect(response).toMatchObject({ status: 200, body: 'window.flights = {}', handled: true })
   })
 })

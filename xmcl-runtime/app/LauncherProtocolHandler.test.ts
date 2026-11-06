@@ -2,6 +2,18 @@ import { describe, expect, test, vi } from 'vitest'
 import { LauncherProtocolHandler } from './LauncherProtocolHandler'
 
 describe('LauncherProtocolHandler', () => {
+  test('routes local callbacks through Vardrynn without handling XMCL links', async () => {
+    const protocol = new LauncherProtocolHandler()
+    protocol.registerHandler('vardrynn', ({ request, response }) => {
+      response.status = 200
+      response.body = request.url.href
+    })
+    expect(await protocol.handle({ url: '/auth?code=test' })).toMatchObject({
+      status: 200, body: 'vardrynn://launcher/auth?code=test',
+    })
+    expect((await protocol.handle({ url: 'xmcl://launcher/auth?code=test' })).status).toBe(404)
+  })
+
   test('can skip remaining interceptors while preserving the final sink', async () => {
     const protocol = new LauncherProtocolHandler()
     const controller = new AbortController()

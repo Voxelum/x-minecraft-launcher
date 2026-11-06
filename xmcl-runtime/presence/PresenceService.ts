@@ -4,11 +4,13 @@ import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kSettings } from '~/settings'
 import { LauncherApp } from '../app/LauncherApp'
+import { resolveDiscordAppId } from '~/app/vardrynnIntegrationIds'
 import { LaunchService } from '../launch/LaunchService'
 
 @ExposeServiceKey(PresenceServiceKey)
 export class PresenceService extends AbstractService implements IPresenceService {
   private discord: Client
+  private readonly appId = resolveDiscordAppId(process.env.VARDRYNN_DISCORD_APP_ID)
   private current: SetActivity = {
   }
   private runningGameCount = 0
@@ -18,7 +20,7 @@ export class PresenceService extends AbstractService implements IPresenceService
     @Inject(LaunchService) launchService: LaunchService,
   ) {
     super(app, async () => {
-      if (settings.discordPresence) {
+      if (settings.discordPresence && this.appId) {
         try {
           await this.discord.connect()
         } catch (e) {
@@ -29,10 +31,11 @@ export class PresenceService extends AbstractService implements IPresenceService
 
     // Initialize Discord client first before setting up event listeners
     this.discord = new Client({
-      clientId: '1075044884400054363',
+      clientId: this.appId ?? '',
     })
 
     settings.subscribe('discordPresenceSet', async (state) => {
+      if (state && !this.appId) return
       if (state) {
         await this.discord.connect().catch((e: any) => {
           this.warn('Fail to connect to discord. %o', e)
@@ -90,7 +93,7 @@ export class PresenceService extends AbstractService implements IPresenceService
   }
 
   async setActivity(activity: string): Promise<void> {
-    if (!this.settings.discordPresence) {
+    if (!this.settings.discordPresence || !this.appId) {
       return
     }
     // Don't update Discord presence if any game is running

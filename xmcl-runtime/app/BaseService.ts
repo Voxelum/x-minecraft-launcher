@@ -1,3 +1,4 @@
+import { LAUNCHER_DISPLAY_NAME } from '../constant'
 import {
   BaseServiceKey,
   type Environment,
@@ -11,6 +12,7 @@ import {
   type SharedState,
   DownloadUpdateTask,
   NetworkStatus,
+  type VardrynnServiceStatus,
 } from '@xmcl/runtime-api'
 import { readFile, readdir, stat, pathExists } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
@@ -23,6 +25,7 @@ import {
   getActiveRendererActionId,
   getActiveTraceparent,
   kClientToken,
+  kFlights,
   kGFW,
   kLogRoot,
   launcherSessionId,
@@ -39,6 +42,8 @@ import { HAS_DEV_SERVER } from '../constant'
 import { ZipFile } from 'yazl'
 import { getTracker } from '~/util/taskHelper'
 import { addSteamShortcutToVdf } from './steamShortcut'
+import { isSignedReleaseInfo } from './vardrynnRelease'
+import { fetchVardrynnServiceStatus, getVardrynnApiOrigin } from './vardrynnApiOrigin'
 import { writeFile as writeAtomically } from 'atomically'
 
 @ExposeServiceKey(BaseServiceKey)
@@ -64,6 +69,11 @@ export class BaseService extends AbstractService implements IBaseService {
     return this.app.registry.get(kNetworkInterface).then((s) => s.getNetworkStatus())
   }
 
+  async getVardrynnServiceStatus(): Promise<VardrynnServiceStatus> {
+    const flights = await this.app.registry.get(kFlights)
+    return fetchVardrynnServiceStatus((url, init) => this.app.fetch(url, init), getVardrynnApiOrigin(flights))
+  }
+
   async getSessionId() {
     return launcherSessionId
   }
@@ -78,6 +88,14 @@ export class BaseService extends AbstractService implements IBaseService {
 
   async getSettings(): Promise<SharedState<Settings>> {
     const settings = await this.app.registry.get(kSettings)
+    // Release metadata from XMCL (or a tampered settings file) carries no Vardrynn signature.
+    // Without a configured release source nothing stored can be acted on.
+    if (settings.updateInfo && (this.app.updater.capability || !isSignedReleaseInfo(settings.updateInfo))) {
+      settings.updateInfoSet(null)
+    }
+    if (!settings.updateInfo && settings.updateStatus !== 'none') {
+      settings.updateStatusSet('none')
+    }
     const capability = this.app.updater.capability
     if (settings.updateCapability?.automatic !== capability?.automatic || settings.updateCapability?.reason !== capability?.reason) {
       settings.updateCapabilitySet(capability)
@@ -121,7 +139,7 @@ export class BaseService extends AbstractService implements IBaseService {
   async makeDesktopShortcut() {
     const desktopDir = this.app.host.getPath('desktop')
     if (process.platform === 'win32') {
-      const shortcutPath = join(desktopDir, 'XMCL.lnk')
+      const shortcutPath = join(desktopDir, `${LAUNCHER_DISPLAY_NAME}.lnk`)
       return this.app.shell.createShortcut(shortcutPath, {
         target: this.app.host.getPath('exe'),
         args: process.execArgv.join(' '),
@@ -282,6 +300,7 @@ export class BaseService extends AbstractService implements IBaseService {
   @Singleton()
   async quitAndInstall() {
     const settings = await this.getSettings()
+    if (this.app.updater.capability) throw new Error('Vardrynn updates are unavailable')
     if (settings.updateStatus === 'ready' && settings.updateInfo) {
       const actionId = getActiveRendererActionId()
       if (actionId) {
@@ -291,7 +310,13 @@ export class BaseService extends AbstractService implements IBaseService {
           attributes: { 'update.phase': 'apply' },
         })
       }
-      await this.app.updater.installUpdateAndQuit(settings.updateInfo)
+      try {
+        await this.app.updater.installUpdateAndQuit(settings.updateInfo)
+      } catch (e) {
+        // The staged file may be gone, so offer the download again instead of a retry that cannot work.
+        settings.updateStatusSet('pending')
+        throw e
+      }
     } else {
       this.warn('There is no update available!')
     }
@@ -313,15 +338,17 @@ export class BaseService extends AbstractService implements IBaseService {
   @Singleton()
   async checkUpdate() {
     if (HAS_DEV_SERVER) return
+    const settings = await this.getSettings()
+    if (this.app.updater.capability) return
     try {
-      const settings = await this.getSettings()
       this.log('Check update')
       const info = await this.app.updater.checkUpdateTask()
       setActiveSpanAttributes({
         'update.available': info.newUpdate,
         'update.phase': 'check',
       })
-      const ready = settings.updateStatus === 'ready' && settings.updateInfo === info
+      const sameRelease = settings.updateInfo?.name === info.name
+      const ready = settings.updateStatus === 'ready' && sameRelease
       settings.updateInfoSet(info)
       settings.updateStatusSet(!info.newUpdate ? 'none' : ready ? 'ready' : 'pending')
     } catch (e) {
@@ -341,6 +368,7 @@ export class BaseService extends AbstractService implements IBaseService {
   @Singleton()
   async downloadUpdate() {
     const settings = await this.getSettings()
+    if (this.app.updater.capability) throw new Error('Vardrynn updates are unavailable')
     if (!settings.updateInfo) {
       throw new Error("Cannot download update if we don't check the version update!")
     }
@@ -362,7 +390,6 @@ export class BaseService extends AbstractService implements IBaseService {
         tracker: getTracker(task),
         abortSignal: task.controller.signal,
       }).then(() => {
-        // A host updater may swallow AbortError rather than reject its download.
         task.controller.signal.throwIfAborted()
       }),
     )

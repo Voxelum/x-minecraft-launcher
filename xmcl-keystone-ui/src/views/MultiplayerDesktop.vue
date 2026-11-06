@@ -30,12 +30,6 @@
             :title="t('setting.name')"
             @click="section = 'settings'"
           />
-          <v-list-item
-            :active="section === 'billing'"
-            prepend-icon="payments"
-            :title="t('multiplayer.billing')"
-            @click="section = 'billing'"
-          />
         </v-list>
       </div>
 
@@ -74,30 +68,6 @@
             {{ hideIp ? '***.***.***.***' : ips.join(', ') || '-' }}
           </span>
         </button>
-        <div v-if="relayAllowance" class="rail-relay mt-3">
-          <div class="flex items-center gap-2 text-caption text-success">
-            <v-icon size="16">cloud_done</v-icon>
-            <span>{{ t('multiplayer.relayServiceAvailable') }}</span>
-          </div>
-          <div class="mt-1 text-caption font-weight-medium">
-            {{ formatBytes(relayAllowance.remaining) }} / {{ formatBytes(relayAllowance.included) }}
-          </div>
-        </div>
-        <div v-if="hasTogetherHome" class="rail-support mt-3">
-          <div class="text-caption text-medium-emphasis">
-            {{ t('multiplayer.togetherSupportHint') }}
-          </div>
-          <v-btn
-            class="mt-2"
-            density="compact"
-            href="https://discord.gg/W5XVwYY7GQ"
-            prepend-icon="xmcl:discord"
-            target="browser"
-            variant="tonal"
-          >
-            {{ t('multiplayer.joinDiscord') }}
-          </v-btn>
-        </div>
       </div>
     </aside>
 
@@ -181,37 +151,6 @@
 
         <v-alert v-if="groupError" class="mt-3" density="compact" type="error" closable>
           {{ t('multiplayer.connectionError') }}: {{ groupError }}
-        </v-alert>
-        <v-alert
-          v-if="showTogetherRecommendation"
-          class="mt-3"
-          density="compact"
-          type="warning"
-          :icon="false"
-        >
-          <div class="flex w-full items-center gap-2">
-            <v-icon class="flex-shrink-0" size="small">warning</v-icon>
-            <span class="min-w-0 flex-1">
-              {{
-                hasProblematicNat
-                  ? t('multiplayer.natTogetherWarning')
-                  : t('multiplayer.connectionTogetherWarning')
-              }}
-            </span>
-            <v-btn
-              class="flex-shrink-0"
-              size="small"
-              variant="tonal"
-              :loading="togetherLoading"
-              @click="onTogetherAction"
-            >
-              {{
-                togetherRecommendationAction === 'try'
-                  ? t('multiplayer.tryTogether')
-                  : t('multiplayer.buyTogether')
-              }}
-            </v-btn>
-          </div>
         </v-alert>
       </section>
 
@@ -402,19 +341,6 @@
             </div>
           </div>
         </template>
-
-        <MultiplayerBilling
-          v-else
-          :overview="togetherOverview"
-          :order="togetherOrder"
-          :loading="togetherLoading"
-          :error="togetherError"
-          @refresh="refreshTogether"
-          @claim-trial="claimTogetherTrial"
-          @top-up="createTogetherTopUp"
-          @subscribe="subscribeTogether"
-          @cancel="cancelTogether"
-        />
       </section>
     </div>
 
@@ -466,26 +392,18 @@ import { generateBaseName, generateDistinctName } from '@/util/instanceName'
 import {
   findInstanceManifestMatch,
   getPeerInstanceUpdateCandidate,
-  getTogetherRecommendationAction,
   getVisibleRoomPeerMembers,
-  hasLongConnectionProblem,
-  isProblematicNatType,
-  isWaffoCheckoutUrl,
   mergeRoomPeerConnections,
-  shouldRecommendTogether,
-  updateConnectionProblemSince,
 } from '@/util/multiplayerTogether'
-import { useEventListener, useIntervalFn, useLocalStorage } from '@vueuse/core'
-import { BaseServiceKey, InstanceInstallServiceKey, InstanceManifestServiceKey, InstanceServiceKey, XmclAccountServiceKey, type Peer, type XmclTogetherOrder, type XmclTogetherOverview } from '@xmcl/runtime-api'
+import { useLocalStorage } from '@vueuse/core'
+import { BaseServiceKey, InstanceInstallServiceKey, InstanceManifestServiceKey, InstanceServiceKey, type Peer } from '@xmcl/runtime-api'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
-import MultiplayerBilling from './MultiplayerBilling.vue'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
 
-const section = ref<'connections' | 'settings' | 'billing'>('connections')
-const { t, locale } = useI18n()
+const section = ref<'connections' | 'settings'>('connections')
+const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
-const togetherService = useService(XmclAccountServiceKey)
 const { show: showInitiate } = useDialog('peer-initiate')
 const { show: showReceive } = useDialog('peer-receive')
 const { show: showShareInstance } = useDialog('share-instance')
@@ -573,37 +491,6 @@ const peerItems = computed(() => {
     }
   })
 })
-
-const connectionProblemSince = reactive(new Map<string, number>())
-const connectionClock = ref(Date.now())
-useIntervalFn(() => {
-  connectionClock.value = Date.now()
-}, 1_000)
-watchEffect(() => {
-  const now = Date.now()
-  if (groupRole.value !== 'master' || groupState.value !== 'connected') {
-    connectionProblemSince.clear()
-    return
-  }
-  updateConnectionProblemSince(
-    connectionProblemSince,
-    groupMembers.value
-      .filter((member) => member.peerId !== groupSelfPeerId.value)
-      .map((member) => ({
-        member,
-        connectionState: connections.value.find(
-          (connection) => connection.remoteId === member.peerId,
-        )?.connectionState,
-      })),
-    now,
-  )
-})
-const hasProblematicNat = computed(() => isProblematicNatType(natType.value))
-const hasLongRoomConnectionProblem = computed(
-  () =>
-    groupRole.value === 'master' &&
-    hasLongConnectionProblem(connectionProblemSince, connectionClock.value),
-)
 
 watch(group, (value) => {
   if (value) groupId.value = value
@@ -812,94 +699,11 @@ onScopeDispose(() => {
   resolveInstanceUpdate = undefined
 })
 
-const togetherOverview = shallowRef<XmclTogetherOverview>()
-const togetherOrder = shallowRef<XmclTogetherOrder>()
-const togetherLoading = ref(false)
-const togetherError = shallowRef<unknown>()
-async function runTogether(action: () => Promise<void>) {
-  if (togetherLoading.value) return
-  togetherLoading.value = true
-  togetherError.value = undefined
-  try { await action() } catch (error) { togetherError.value = error } finally { togetherLoading.value = false }
-}
-function refreshTogether() {
-  return runTogether(async () => {
-    if (togetherOrder.value?.status === 'pending') togetherOrder.value = await togetherService.getTogetherOrder(togetherOrder.value.orderId)
-    togetherOverview.value = await togetherService.getTogetherOverview()
-  })
-}
-function claimTogetherTrial() {
-  return runTogether(async () => {
-    await togetherService.claimTogetherTrial()
-    togetherOverview.value = await togetherService.getTogetherOverview()
-    await refreshIceServers()
-  })
-}
-function createTogetherTopUp(amountMinor: number) {
-  return runTogether(async () => {
-    togetherOrder.value = await togetherService.createTogetherOrder(amountMinor)
-    const approvalUrl = togetherOrder.value.approvalUrl
-    if (!approvalUrl || !isWaffoCheckoutUrl(approvalUrl)) {
-      throw new Error('invalid_waffo_checkout_url')
-    }
-    open(approvalUrl, '_blank')
-  })
-}
-function subscribeTogether() {
-  return runTogether(async () => {
-    await togetherService.subscribeTogether()
-    togetherOverview.value = await togetherService.getTogetherOverview()
-    await refreshIceServers()
-  })
-}
-function cancelTogether() {
-  return runTogether(async () => {
-    await togetherService.cancelTogether()
-    togetherOverview.value = await togetherService.getTogetherOverview()
-  })
-}
-const togetherRecommendationAction = computed(() =>
-  getTogetherRecommendationAction(togetherOverview.value?.trial.status),
-)
-const showTogetherRecommendation = computed(() =>
-  shouldRecommendTogether({
-    problematicNat: hasProblematicNat.value,
-    isMaster: groupRole.value === 'master',
-    longConnectionProblem: hasLongRoomConnectionProblem.value,
-    trialStatus: togetherOverview.value?.trial.status,
-    subscriptionStatus: togetherOverview.value?.subscription?.status,
-  }),
-)
-function onTogetherAction() {
-  if (togetherRecommendationAction.value === 'try') {
-    void claimTogetherTrial()
-  } else {
-    section.value = 'billing'
-  }
-}
 onMounted(() => {
-  void refreshTogether()
   void refreshNatType()
 })
-useEventListener(window, 'focus', () => {
-  if (togetherOrder.value?.status === 'pending') void refreshTogether()
-})
 
-const relayAllowance = computed(() =>
-  togetherOverview.value?.subscription?.status === 'active'
-    ? togetherOverview.value.allowances.turnEgressBytes
-    : undefined,
-)
-const hasTogetherHome = computed(() =>
-  togetherOverview.value?.subscription?.status === 'active',
-)
 const turnserverItems = computed(() => Object.entries(turnservers.value).map(([value, text]) => ({ value, text })))
-function formatBytes(bytes: number) {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  const index = bytes > 0 ? Math.min(Math.floor(Math.log(bytes) / Math.log(1000)), units.length - 1) : 0
-  return `${new Intl.NumberFormat(locale.value, { maximumFractionDigits: 2 }).format(bytes / 1000 ** index)} ${units[index]}`
-}
-
 useTutorial(
   computed(() => [
     {
@@ -1020,19 +824,6 @@ useTutorial(
   outline-offset: 1px;
 }
 
-.rail-relay {
-  padding: 9px 10px;
-  border: 1px solid rgba(var(--v-theme-success), 0.28);
-  border-radius: 6px;
-  background: rgba(var(--v-theme-success), 0.08);
-}
-
-.rail-support {
-  padding: 9px 10px;
-  border-left: 2px solid rgb(var(--v-theme-primary));
-  background: rgba(var(--v-theme-primary), 0.06);
-}
-
 .desktop-main {
   display: grid;
   min-width: 0;
@@ -1141,8 +932,7 @@ useTutorial(
   }
 
   .rail-network .rail-router,
-  .rail-network .rail-ip,
-  .rail-network .rail-relay {
+  .rail-network .rail-ip {
     display: none;
   }
 

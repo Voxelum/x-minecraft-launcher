@@ -1,7 +1,6 @@
 import { UpdateResourcePayload } from '@xmcl/resource'
 import {
   AGENT_TELEMETRY_FLIGHT,
-  APP_INSIGHT_KEY,
   Exception,
   LaunchService as ILaunchService,
   type RendererActionEnd,
@@ -9,14 +8,10 @@ import {
   type RendererExceptionTelemetry,
   type XmclAccountSnapshot,
 } from '@xmcl/runtime-api'
-import {
-  AzureMonitorLogExporter,
-  AzureMonitorTraceExporter,
-} from '@azure/monitor-opentelemetry-exporter'
 import { logs } from '@opentelemetry/api-logs'
 import { resourceFromAttributes } from '@opentelemetry/resources'
-import { BatchLogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs'
-import { BatchSpanProcessor, ParentBasedSampler } from '@opentelemetry/sdk-trace-base'
+import { LoggerProvider } from '@opentelemetry/sdk-logs'
+import { ParentBasedSampler } from '@opentelemetry/sdk-trace-base'
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
@@ -45,14 +40,12 @@ import { UserService } from '~/user'
 import { XmclAccountService } from '~/xmclAccount'
 import { ErrorDiagnose } from '../errors/ErrorDiagnose'
 import { getMinecraftExitTelemetry, getMinecraftStartTelemetry } from '../launchTelemetry'
-import { setupResourceTelemetryClient } from '../telemetry_resource'
 import {
   AGENT_SUCCESS_SAMPLE_RATE,
   DOWNLOAD_SESSION_SAMPLE_RATE,
   isDeterministicallySampled,
   XmclRootTraceSampler,
 } from '../telemetry_sampling'
-import { disableAzureMonitorDiagnostics } from '../telemetry_exporter'
 
 const installOperations: Record<string, ReadonlySet<string>> = {
   VersionInstallService: new Set(['install', 'installInstance']),
@@ -69,7 +62,6 @@ function getInstallOperation(serviceName: string, serviceMethod: string) {
 export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Telemtry')
   const diagnose = new ErrorDiagnose(app)
-  disableAzureMonitorDiagnostics()
 
   const clientSession = await app.registry.get(kClientToken)
   const isNewClient = await app.registry.get(kIsNewClient)
@@ -89,24 +81,12 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     sampler: new ParentBasedSampler({
       root: new XmclRootTraceSampler(),
     }),
-    spanProcessors: [
-      new BatchSpanProcessor(
-        new AzureMonitorTraceExporter({
-          connectionString: APP_INSIGHT_KEY,
-        }),
-      ),
-    ],
+    spanProcessors: [],
   })
   traceProvider.register()
   const logProvider = new LoggerProvider({
     resource,
-    processors: [
-      new BatchLogRecordProcessor({
-        exporter: new AzureMonitorLogExporter({
-          connectionString: APP_INSIGHT_KEY,
-        }),
-      }),
-    ],
+    processors: [],
   })
   logs.setGlobalLoggerProvider(logProvider)
   setRuntimeTelemetryIdentity(clientSession)
@@ -296,7 +276,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     })
 
     // resource data are enormous, so we need to handle them separately
-    setupResourceTelemetryClient(app, settings, clientSession)
+    // Resource diagnostics remain local until Vardrynn defines an opt-in destination.
 
     const sampleDownloadPerformance = isDeterministicallySampled(
       launcherSessionId,

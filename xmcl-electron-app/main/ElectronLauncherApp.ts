@@ -1,12 +1,14 @@
+import { configureAppIdentity } from './appIdentity'
 import { NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
 import { LauncherApp, Shell } from '@xmcl/runtime/app'
-import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
+import { LAUNCHER_NAME, LAUNCHER_PROTOCOL } from '@xmcl/runtime/constant'
 import { kFlights, runWithExternalHttpTrace } from '@xmcl/runtime/infra'
 import { AnyError } from '@xmcl/utils'
 import { Menu, app, net, shell } from 'electron'
 import { stat } from 'fs-extra'
 import { join } from 'path'
-import { fetch as ufetch, FormData as UndiciFormData } from 'undici'
+import { fetch as ufetch, FormData as UndiciFormData, getGlobalDispatcher } from 'undici'
+import { upstreamNetworkInterceptor } from '@xmcl/runtime/network/upstreamNetworkInterceptor'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
 import { ElectronSession } from './ElectronSession'
@@ -16,6 +18,7 @@ import { definedPlugins } from './definedPlugins'
 import { isReplayableFetchBody, splitFetchBody } from './fetchBody'
 import { getOzonePlatform } from './ozonePlatform'
 import { ElectronUpdater } from './utils/updater'
+import { isUpstreamLauncherUrl } from './upstreamNetworkPolicy'
 import { getWindowsUtils } from './utils/windowsUtils'
 
 class ElectronShell implements Shell {
@@ -166,6 +169,7 @@ export default class ElectronLauncherApp extends LauncherApp {
         // Electron may reject if app is already ready; fall back silently.
       }
     }
+    configureAppIdentity(app)
     super(app as any,
       new ElectronShell(),
       new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, IS_DEV ? 'secret-dev' : 'secret')),
@@ -208,6 +212,9 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   fetch: typeof fetch = async (...args: any[]) => {
+    if (isUpstreamLauncherUrl(args[0])) {
+      throw new Error(`Upstream launcher service is disabled: ${args[0]}`)
+    }
     const bodies = splitFetchBody(
       await adaptFormDataForElectron(args[1]?.body),
       isReplayableFetchBody(args[1]?.headers),
@@ -288,7 +295,10 @@ export default class ElectronLauncherApp extends LauncherApp {
             ? () => {
                 retryCount++
                 span?.setAttribute('http.request.resend_count', retryCount)
-                return ufetch(args[0], fallbackInit).catch(handlError)
+                return ufetch(args[0], {
+                  ...fallbackInit,
+                  dispatcher: getGlobalDispatcher().compose(upstreamNetworkInterceptor),
+                }).catch(handlError)
               }
             : undefined,
         )
@@ -328,7 +338,7 @@ export default class ElectronLauncherApp extends LauncherApp {
       this.protocol.handle({ url })
     }).on('second-instance', (e, argv) => {
       const last = argv[argv.length - 1]
-      if (last.startsWith('xmcl://')) {
+      if (last.startsWith(`${LAUNCHER_PROTOCOL}://`)) {
         this.protocol.handle({ url: last })
       } else {
         this.emit('second-instance', argv)

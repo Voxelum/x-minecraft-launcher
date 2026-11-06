@@ -426,7 +426,7 @@ function onServerExit(event: { pid: number; code?: number; signal?: string }) {
   const remainder = logRemainders.get(event.pid)
   if (remainder) localLogLines.value = localLogLines.value.concat(remainder)
   logRemainders.delete(event.pid)
-  localLogLines.value.push(`[XMCL] Server process exited (${event.code ?? event.signal ?? 'unknown'}).`)
+  localLogLines.value.push(`[Vardrynn] Server process exited (${event.code ?? event.signal ?? 'unknown'}).`)
 }
 
 async function loadLocalLog() {

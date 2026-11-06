@@ -202,8 +202,8 @@ export class Settings implements SettingSchema {
     if (typeof autoDownload === 'boolean') this.autoDownload = autoDownload
   }
 
-  updateInfoSet(updateInfo: ReleaseInfo) {
-    if (typeof updateInfo === 'object') this.updateInfo = updateInfo
+  updateInfoSet(updateInfo: ReleaseInfo | null) {
+    if (updateInfo === null || typeof updateInfo === 'object') this.updateInfo = updateInfo
   }
 
   apiSetsPreferenceSet(apiSetsPreference: 'mojang' | 'bmcl' | '') {

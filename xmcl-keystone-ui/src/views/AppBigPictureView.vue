@@ -8,9 +8,9 @@
     <header class="bp-header">
       <div class="bp-brand">
         <div class="bp-logo-icon">
-          <v-icon size="22" color="primary">videogame_asset</v-icon>
+          <img :src="vardrynnMark" alt="" width="30" height="30">
         </div>
-        <span class="bp-title">XMCL</span>
+        <span class="bp-title">Vardrynn</span>
         <span class="bp-tag">{{ t('bigPicture.title') }}</span>
       </div>
 
@@ -348,6 +348,7 @@ import BigPictureAddInstanceDialog from './BigPictureAddInstanceDialog.vue'
 import BigPictureInstanceSettingsDialog from './BigPictureInstanceSettingsDialog.vue'
 import BigPictureModsDrawer from './BigPictureModsDrawer.vue'
 import './bigPicture.css'
+import vardrynnMark from '@/assets/vardrynn-mark.png'
 
 const { t } = useI18n()
 const router = useRouter()

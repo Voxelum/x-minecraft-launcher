@@ -68,11 +68,12 @@ describe('zulu', () => {
   })
 
   describe('setupZuluCache', () => {
-    test('does not persist an unhealthy remote response over the cache', async () => {
+    test('uses bundled data without fetching upstream', async () => {
       const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ broken: true }), { status: 200 }))
       const app = makeApp(fetchImpl)
       try {
         await setupZuluCache(app as any)
+        expect(fetchImpl).not.toHaveBeenCalled()
         // Cache file must still resolve to a healthy index.
         const jre = await getZuluJRE(app as any, 'java-runtime-alpha')
         expect(jre).toBeDefined()
@@ -81,14 +82,16 @@ describe('zulu', () => {
       }
     })
 
-    test('persists a healthy remote response', async () => {
-      const remote = { ...bundledIndex, modified: 'updated-stamp' }
+    test('preserves a healthy local cache without fetching upstream', async () => {
+      const remote = { ...bundledIndex, modified: 'local-stamp' }
       const fetchImpl = vi.fn(async () => new Response(JSON.stringify(remote), { status: 200 }))
       const app = makeApp(fetchImpl)
       try {
+        writeFileSync(join(app.appDataPath, 'zulu.json'), JSON.stringify(remote))
         await setupZuluCache(app as any)
         const onDisk = require(join(app.appDataPath, 'zulu.json'))
-        expect(onDisk.modified).toBe('updated-stamp')
+        expect(onDisk.modified).toBe('local-stamp')
+        expect(fetchImpl).not.toHaveBeenCalled()
       } finally {
         app.dispose()
       }

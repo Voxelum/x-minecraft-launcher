@@ -111,7 +111,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           return path
         }
 
-        const selectedInstance = instanceConfig.selectedInstance || ''
+        let selectedInstance = instanceConfig.selectedInstance || ''
         this.selectedInstance = selectedInstance
 
         const groups = instanceConfig.groups.map((g) =>
@@ -124,8 +124,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         )
 
         if (rename.length > 0) {
-          // fix the group paths
+          // fix the selection and group paths
           for (const [oldPath, newPath] of rename) {
+            if ((isAbsolute(selectedInstance) ? selectedInstance : this.getPathUnder(selectedInstance)) === oldPath) {
+              selectedInstance = normalizeInstancePath(newPath)
+              this.selectedInstance = selectedInstance
+            }
             for (const group of groups) {
               if (typeof group === 'string') {
                 if (group === oldPath) {

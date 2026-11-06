@@ -64,7 +64,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement at
-emailing to cijhn@hotmail.com or feedback to discord https://discord.gg/W5XVwYY7GQ.
+opening an issue at https://github.com/MichaelOlave/x-minecraft-launcher/issues, or by contacting the repository owner privately through their GitHub profile for sensitive reports.
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the

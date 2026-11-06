@@ -50,7 +50,7 @@ agent:
   suggestion2: मम मोड्स पतन्ति — कारणम् अन्विष्य परिहारमार्गं वदतु
   suggestion3: 'मोडप्याक् (Modpack) रचयतु: मम इच्छितसुविधानां कृते मोड्स अन्विष्य अस्मिन् क्षणम् संस्थापयतु'
   thinking: विचिन्तयति...
-  title: XMCL प्रतिनिधिः
+  title: Vardrynn प्रतिनिधिः
   toggleHint: परिवर्तनाय
 ago:
   day: '{duration} दिनं पूर्वम् | {duration} दिनानि पूर्वम्'
@@ -117,8 +117,8 @@ backup:
   noInstancesFound: No instances found in launcher.
   excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
   create: रक्षितानुकृतिं रचयतु
-  createTitle: Create XMCL Backup Archive
-  saveDialogTitle: Save XMCL Backup Archive
+  createTitle: Create Vardrynn Backup Archive
+  saveDialogTitle: Save Vardrynn Backup Archive
   fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: वाहिन्यः
   description: मया त्रुटिः लब्धा अथवा अहं परामर्शं दातुम् इच्छामि
-  discord: Discord
-  discordDescription: Discord वाहिनीं संयुजतु
-  discordJoin: संयुजतु
   generateReport: विवरणं जनयतु
   generateSaveAs: विवरणम् अत्र रक्षतु
   github: Github समस्या
   githubDescription: स्वविचारान् वक्तुं Github समस्यां पञ्जीकरोतु
   githubOpenIssue: Github
   hint: विवरणं निर्मातुं विकासकदलेन सह सम्पर्कं कर्तुं च नुदतु।
-  kook: Kook
-  kookDescription: चीनदेशस्य प्रयोक्तृणां कृते Kook इति Discord इत्यस्य विकल्पः अस्ति
   name: प्रतिपुष्टिः
-  qq: QQ समूहः
-  qqDescription: 'QQ समूहे संयुज्य लेखकैः सह साक्षात् भाषताम्। समूहसङ्ख्या: {number}'
-  qqEnterGroup: संयुजतु
 fileDetail:
   fileSize: सञ्चिकाकारः
   filesize: सञ्चिकाकारः
@@ -500,7 +492,7 @@ importModpack:
   selectVersionDescription: 'स्थापनाय {name} इत्यस्य संस्करणं चिनोतु:'
   pmcProtected: Planet Minecraft इति जालस्थलं Cloudflare द्वारा सुरक्षितम् अस्ति। कृपया पृष्ठात् प्रत्यक्षावतारणसङ्केतम् अथवा वैकल्पिकसङ्केतं प्रतिलिपिं करोतु।
   netdiskTitle: मेघसञ्चयात् अवतारणम्
-  netdiskDescription: इदं मोड्पैक्-संस्करणं बाह्यमेघसञ्चये अस्ति। जालविचारके अवतारणपृष्ठं उद्घाटयितुम् अधः नुदतु, ततः अवतारितां .zip अथवा .mrpack सञ्चिकाम् XMCL मध्ये आकर्ष्य मुञ्चतु।
+  netdiskDescription: इदं मोड्पैक्-संस्करणं बाह्यमेघसञ्चये अस्ति। जालविचारके अवतारणपृष्ठं उद्घाटयितुम् अधः नुदतु, ततः अवतारितां .zip अथवा .mrpack सञ्चिकाम् Vardrynn मध्ये आकर्ष्य मुञ्चतु।
   openNetdisk: मेघसञ्चयम् उद्घाटयतु
   netdiskOpened: मेघसञ्चयसङ्केतः जालविचारके उद्घाटितः प्रतिलिपिफलके च प्रतिलिपीकृतः।
   noReleasesFound: अस्मिन् भाण्डागारे .mrpack अथवा .zip मोड्पैक्-प्रकाशनानि न प्राप्तानि।
@@ -815,6 +807,8 @@ loginError:
   requirePassword: सङ्केतशब्दः आवश्यकः
   requireUsername: प्रयोक्तृनाम आवश्यकम्
   timeout: प्रवेश-कालसमाप्तिः। कृपया पुनः प्रयतताम् अथवा जालं परीक्षताम्।
+  openLoginGuide: अस्याः समस्यायाः समाधानम्
+  openSupport: 'अद्यापि साहाय्यम् अपेक्षितम्? विषयं उद्घाटयतु'
 logsCrashes:
   crashes: पतन-विवरणानि
   failures: प्रवर्तन-विफलताः
@@ -1151,11 +1145,9 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमानसंस्करणम्
 multiplayer:
-  joinDiscord: Discord मध्ये सामील व्हा
   openConsumerPortal: ग्राहक पोर्टल उघडा
   refundHint: परतावा हवा आहे? तुमच्या ऑर्डर आणि सदस्यता व्यवस्थापित करण्यासाठी Waffo ग्राहक पोर्टलला भेट द्या.
-  togetherSupportHint: मल्टीप्लेअर काम करत नसल्यास, आमच्या Discord मध्ये सामील व्हा आणि विकास कार्यसंघाशी संपर्क साधा. आम्ही समस्या सोडविण्यात मदत करू.
-  autoShareAmbiguous: अनेकानि क्रीडनानि प्रचलन्ति। XMCL तद् सहभाजयितुं शक्नुयात् इति LAN-जगतः आतिथ्यं कुर्वन्तं दृष्टान्तं चिनुत।
+  autoShareAmbiguous: अनेकानि क्रीडनानि प्रचलन्ति। Vardrynn तद् सहभाजयितुं शक्नुयात् इति LAN-जगतः आतिथ्यं कुर्वन्तं दृष्टान्तं चिनुत।
   editSharingScope: सहभाजनसीमां सम्पादयतु
   gameAvailable: LAN-क्रीडनम् उपलब्धम्
   joinGame: क्रीडने सम्मिलतु
@@ -1646,7 +1638,7 @@ setting:
   aboutDenoDescription: XMCL Deno Deploy इत्यस्य उपयोगं करोति।
   aboutLicense: MIT अनुज्ञापत्रम्
   aboutLicenseInfo: विण्डोज इत्यत्र निःशुल्कं सङ्केत-हस्ताक्षरम् SignPath.io द्वारा दत्तम्।
-  aboutSponsors: 😇 प्रायोजकाः 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: प्रौढ-जावा-विकल्पाः
   advancedSettings: प्रौढविकल्पाः
   advancedSettingsHint: सङ्कटक्षेत्रम् - प्रवर्तकदत्तं पुनः स्थापयतु प्रबन्धयतु वा
@@ -1726,7 +1718,7 @@ setting:
   developerMode: विकासकप्रणाली
   developerModeDescription: विकासकप्रणाली स्वकीयमोड्स परीक्षणाय अस्ति
   disableTelemetry: टेलीमेट्री (Telemetry) निष्क्रियं करोतु
-  disableTelemetryDescription: XMCL क्रीडाप्रवर्तनस्य प्रवेशस्य च घटनाः सङ्ग्रहीष्यति।
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: विशिष्टं GPU विनियुङ्क्त
   enableDedicatedGPUOptimizationDescription: एषः विकल्पः माइनक्राफ्ट् प्रप्रक्रिये विशिष्टं GPU विनियुङ्क्ते।
   enableDiscord: Discord सक्रियं करोतु

@@ -14,6 +14,13 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - ".github/**"
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish a signed test release to the development bucket"
+        type: choice
+        options: [none, dev]
+        default: none
 
 jobs:
   build:
@@ -71,7 +78,11 @@ jobs:
           NODE_ENV: production
           RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-          PUBLISHER: CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US
+          # A dev test release must check the dev service, or it could never see its own update.
+          VARDRYNN_API_BASE_URL: ${{ inputs.publish == 'dev' && vars.VARDRYNN_DEV_API_BASE_URL || vars.VARDRYNN_API_BASE_URL }}
+          VARDRYNN_RELEASE_PUBLIC_KEY: ${{ vars.VARDRYNN_RELEASE_PUBLIC_KEY }}
+          VARDRYNN_MICROSOFT_CLIENT_ID: ${{ vars.VARDRYNN_MICROSOFT_CLIENT_ID }}
+          VARDRYNN_DISCORD_APP_ID: ${{ vars.VARDRYNN_DISCORD_APP_ID }}
       - name: Resolve pinned DeskGap runtime
         if: ${{ runner.os == 'Windows' }}
         id: deskgap
@@ -120,6 +131,8 @@ jobs:
         shell: pwsh
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+          VARDRYNN_MICROSOFT_CLIENT_ID: ${{ vars.VARDRYNN_MICROSOFT_CLIENT_ID }}
+          VARDRYNN_DISCORD_APP_ID: ${{ vars.VARDRYNN_DISCORD_APP_ID }}
           DESKGAP_VERSION: ${{ steps.deskgap.outputs.version }}
         run: |
           $source = Join-Path $env:GITHUB_WORKSPACE 'deskgap-runtime-source'
@@ -128,8 +141,14 @@ jobs:
           $bootstrap = Join-Path $extracted "DeskGapBootstrap-v$env:DESKGAP_VERSION-win32-x64.exe"
           pnpm --prefix=deskgap-app package "$source" "$runtime" "$bootstrap"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
-          Copy-Item "deskgap-app\build\output\release\xmcl-deskgap-$version-win32-x64.exe" xmcl-electron-app\build\output\
+      - name: Upload DeskGap preview (not part of the release)
+        # DeskGap is reviewed as a separate distribution target and is not published
+        # with Vardrynn releases. Keep it out of xmcl-electron-app/build/output.
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: deskgap-preview
+          path: deskgap-app/build/output/release/vardrynn-deskgap-*-win32-x64.exe
       - name: Upload Source Maps
         if: ${{ runner.os == 'Windows' }}
         uses: actions/upload-artifact@v6
@@ -139,9 +158,8 @@ jobs:
             xmcl-electron-app/dist/*.js.map
             xmcl-electron-app/dist/renderer/assets/*.js.map
       - name: Upload Build
-        # Windows .appx and DeskGap .exe in this artifact are UNSIGNED. The `release` job
-        # creates a draft; `Sign Release` signs APPX before publication.
-        # DeskGap signing is not enabled: its EXE remains a manual-install preview.
+        # Windows .appx in this artifact is UNSIGNED. The `release` job creates a
+        # draft; `Sign Release` signs APPX before publication. DeskGap is excluded.
         if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
         uses: actions/upload-artifact@v6
         with:
@@ -327,41 +345,23 @@ jobs:
           commit-message: "chore(release): version ${{ steps.version.outputs.version }}"
           title: Prepare Release ${{ steps.version.outputs.version }}
           body: ${{ steps.version.outputs.changelog }}
-          reviewers: ci010
-          assignees: ci010
           branch: prepare-release
 
-  upload-sourcemap:
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    steps:
-      - name: Download Source Map
-        uses: actions/download-artifact@v7
-        with:
-          name: sourcemap
-          path: sourcemap/${{github.run_number}}
-      - name: Upload Source Map to Azure
-        uses: ci010/upload-blob-to-azure@master
-        env:
-          AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
-        with:
-          account: xmcl
-          container: sourcemap
-          directory: ./sourcemap
-
+  # Signs the packages, keeps them as a workflow artifact, then publishes them: chore(release)
+  # commits go to the production bucket, a manual run with publish=dev to the development bucket.
+  # Secrets live on the `release` environment.
   release:
-    if: startsWith(github.event.head_commit.message, 'chore(release)')
+    if: startsWith(github.event.head_commit.message, 'chore(release)') || inputs.publish == 'dev'
     runs-on: ubuntu-latest
+    environment: release
     needs:
       - build
-      # - build-arch
+    env:
+      TARGET: ${{ inputs.publish == 'dev' && 'dev' || 'prod' }}
+      S3_ENDPOINT: ${{ vars.VARDRYNN_S3_ENDPOINT }}
+      S3_BUCKET: ${{ inputs.publish == 'dev' && vars.VARDRYNN_S3_DEV_BUCKET || vars.VARDRYNN_S3_PROD_BUCKET }}
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          # Treeless clone — see comment on `prepare-release`.
-          filter: blob:none
       - uses: pnpm/action-setup@v6
       - name: Use Node.js 22
         uses: actions/setup-node@v5
@@ -369,118 +369,40 @@ jobs:
           node-version: 22
           cache: "pnpm"
       - name: Install
-        run: |
-          pnpm install --frozen-lockfile --filter action-*
+        run: pnpm install --frozen-lockfile --filter ./.github/actions
       - name: Download Build
         uses: actions/download-artifact@v7
         with:
           pattern: build-*
           merge-multiple: true
           path: build
-      - name: Prepare Release
-        id: prepare_release
-        uses: Voxelum/semantic-version-bump-action@xmcl
-        with:
-          packages: |
-            ./packages/asm
-            ./packages/bore
-            ./packages/bytebuffer
-            ./packages/client
-            ./packages/core
-            ./packages/curseforge
-            ./packages/discord-rpc
-            ./packages/file-transfer
-            ./packages/forge-site-parser
-            ./packages/game-data
-            ./packages/gamesetting
-            ./packages/installer
-            ./packages/instance
-            ./packages/mod-parser
-            ./packages/model
-            ./packages/modrinth
-            ./packages/nat-api
-            ./packages/nbt
-            ./packages/oxlint-config
-            ./packages/resource
-            ./packages/resourcepack
-            ./packages/schematic
-            ./packages/semver
-            ./packages/sqlite
-            ./packages/system
-            ./packages/text-component
-            ./packages/undici-shim
-            ./packages/unzip
-            ./packages/user
-            ./packages/user-offline-uuid
-            ./packages/utils
-            ./packages/worker
-            ./packages/wrtc-multiplayer
-            ./packages/yauzl
-            ./xmcl-keystone-ui
-            ./xmcl-runtime
-            ./xmcl-runtime-api
-          root: "."
-          stage: "release"
-      - name: Create Tag
-        run: |
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/voxelum/x-minecraft-launcher.git"
-          git config user.name ci010
-          git config user.email cijhn@hotmail.com
-          git tag -f ${{ steps.prepare_release.outputs.tag }}
-          git push origin tag ${{ steps.prepare_release.outputs.tag }} -f
-      - name: Emit Version File
-        run: |
-          echo ${{ steps.prepare_release.outputs.version }}.${{ github.run_number }} > ./build/version
-      - name: Patch download links
-        uses: ./.github/actions/patch-release-note
-        id: release_note
-        with:
-          body: ${{ steps.prepare_release.outputs.changelog }}
-          version: ${{ steps.prepare_release.outputs.version }}
-      - name: Draft Release
-        id: create_release
-        uses: voxelum/create-release@xmcl
+      - name: Sign release manifest and checksums
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.prepare_release.outputs.tag }}
-          release_name: ${{ steps.prepare_release.outputs.tag }}
-          draft: true
-          prerelease: false
-          body: |
-            ${{ steps.release_note.outputs.body }}
-
-            ### DeskGap Windows x64 — UNSIGNED PREVIEW
-
-            [Download the DeskGap EXE](https://github.com/${{ github.repository }}/releases/download/${{ steps.prepare_release.outputs.tag }}/xmcl-deskgap-${{ steps.prepare_release.outputs.version }}-win32-x64.exe) for **manual installation only**.
-            This preview is not Authenticode-signed. Production DeskGap signing and automatic updates are not enabled; the launcher intentionally rejects unsigned EXEs as automatic updates.
-            Electron/APPX signing and publishing are unchanged. This preview is not evidence of a completed signed DeskGap update workflow.
-          asset_dir_path: ./build
-      - name: Checkout Website
-        uses: actions/checkout@v5
-        with:
-          repository: Voxelum/xmcl-page
-          path: xmcl-page
-          token: ${{ secrets.PAT_GITHUB_TOKEN }}
-      - name: Create Release Note
-        uses: ./.github/actions/generate-release-note
-        with:
-          body: ${{ steps.prepare_release.outputs.changelog }}
-          version: ${{ steps.prepare_release.outputs.version }}
-        env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-      - name: Push Release Note to xmcl-page
-        # Each release produces brand-new `<version>.md` files under
-        # `src/<locale>/changelogs/` and `docs/<locale>/changelogs/`, so
-        # there's no conflict risk. Skip the PR dance and push directly.
-        working-directory: xmcl-page
+          VARDRYNN_RELEASE_SIGNING_KEY: ${{ secrets.VARDRYNN_RELEASE_SIGNING_KEY }}
+          VARDRYNN_RELEASE_PUBLIC_KEY: ${{ vars.VARDRYNN_RELEASE_PUBLIC_KEY }}
+          NOTES_URL: ${{ vars.VARDRYNN_RELEASE_NOTES_URL || format('{0}/{1}/commit/{2}', github.server_url, github.repository, github.sha) }}
         run: |
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "No changelog changes to commit."
-            exit 0
-          fi
-          git config user.name ci010
-          git config user.email cijhn@hotmail.com
-          git add -A
-          git commit -m "docs: Update ${{ steps.prepare_release.outputs.version }} release note"
-          git push origin HEAD:master
+          set -euo pipefail
+          : "${S3_ENDPOINT:?set the VARDRYNN_S3_ENDPOINT variable}" "${S3_BUCKET:?set the bucket variable for $TARGET}"
+          version=$(node -p "require('./xmcl-electron-app/package.json').version")
+          mkdir -p release
+          # electron-builder output is nested; installers are the only files the manifest can match.
+          find build -maxdepth 3 -type f \( -name 'vardrynn-*.dmg' -o -name 'vardrynn-*.deb' \) -exec cp {} release/ \;
+          pnpm tsx scripts/vardrynn-release.ts manifest \
+            --version "$version" --channel "$TARGET" --dir release \
+            --download-base "${S3_ENDPOINT%/}/$S3_BUCKET/$version" --notes-url "$NOTES_URL" \
+            --out release/release.json
+          (cd release && sha256sum vardrynn-* > SHA256SUMS)
+      - name: Upload signed release
+        uses: actions/upload-artifact@v6
+        with:
+          name: vardrynn-release
+          path: release/
+      - name: Publish to the ${{ env.TARGET }} bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ inputs.publish == 'dev' && secrets.VARDRYNN_S3_DEV_ACCESS_KEY_ID || secrets.VARDRYNN_S3_PROD_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ inputs.publish == 'dev' && secrets.VARDRYNN_S3_DEV_SECRET_ACCESS_KEY || secrets.VARDRYNN_S3_PROD_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          # Production versions are immutable; the dev bucket may be overwritten by test runs.
+          ALLOW_REPUBLISH: ${{ inputs.publish == 'dev' && '1' || '' }}
+        run: bash scripts/vardrynn-publish.sh release

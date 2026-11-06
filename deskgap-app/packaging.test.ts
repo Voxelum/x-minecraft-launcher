@@ -63,7 +63,7 @@ describe('DeskGap single-executable packaging', () => {
     await writeFile(join(fixture, '.env'), 'PRIVATE SECRET')
     await stageApplication(dist, app, version)
     expect(JSON.parse(await readFile(join(app, 'package.json'), 'utf8'))).toMatchObject({
-      name: 'xmcl-deskgap', productName, version, main: 'dist/main.cjs',
+      name: 'vardrynn-deskgap', productName, version, main: 'dist/main.cjs',
     })
     expect(await readdir(app)).toEqual(['dist', 'package.json'])
     expect(await readdir(join(app, 'dist'))).toEqual(['main.cjs', 'native.node', 'renderer', 'worker.cjs'])
@@ -115,7 +115,7 @@ describe('DeskGap single-executable packaging', () => {
   })
 
   it('uses the standard release version in a Windows x64 EXE filename', () => {
-    expect(assetNames(version)).toEqual({ runtime: 'xmcl-deskgap-0.69.0-win32-x64.exe' })
+    expect(assetNames(version)).toEqual({ runtime: 'vardrynn-deskgap-0.69.0-win32-x64.exe' })
     for (const invalid of ['v0.69.0', 'deskgap-v0.69.0', '../bad', '']) {
       expect(() => assetNames(invalid)).toThrow('valid semver')
     }

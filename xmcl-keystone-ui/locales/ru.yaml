@@ -39,7 +39,7 @@ SettingMigrationDialog:
 agent:
   accessRequiredHint: Оформите подписку XMCL, чтобы использовать встроенный Agent, или настройте собственного поставщика ИИ в настройках.
   subscribeXmcl: Оформить подписку XMCL
-  title: XMCL Agent
+  title: Vardrynn Agent
   statusReady: Готов
   statusWorking: Работаю…
   statusDisabled: Отключено — нет API-ключа
@@ -308,9 +308,6 @@ commandPalette:
 feedback:
   channel: Каналы
   description: Сообщите о своей проблеме/идее здесь.
-  discord: Discord
-  discordDescription: Присоединяйтесь к каналу Discord.
-  discordJoin: Присоединиться
   generateReport: Создать отчёт
   generateSaveAs: Сохранить отчёт
   github: Проблема в Github
@@ -318,13 +315,7 @@ feedback:
   githubOpenIssue: Github
   hint: >-
     Нажмите на кнопку, чтобы создать отчёт и связаться с командой разработчиков. Отчёт будет содержать информацию о вашем устройстве, включая тип операционной системы, версию, имя пользователя (в операционной системе) и другие данные.
-  kook: Kook
-  kookDescription: Kook - это альтернатива Discord на территории материкового Китая
   name: Обратная связь
-  qq: Группа QQ
-  qqDescription: >-
-    Войдите в группу обратной связи QQ и напрямую поговорите с авторами. Номер группы: {number}
-  qqEnterGroup: Присоединиться
 fileDetail:
   fileSize: Размер файла
   filesize: Размер файла
@@ -352,7 +343,7 @@ importModpack:
   selectVersionDescription: 'Выберите версию {name} для установки:'
   pmcProtected: Planet Minecraft защищён Cloudflare. Скопируйте со страницы прямую ссылку на скачивание или ссылку на зеркало.
   netdiskTitle: Скачивание с облачного диска
-  netdiskDescription: Эта версия сборки размещена на внешнем облачном диске. Нажмите ниже, чтобы открыть страницу скачивания в браузере, затем перетащите скачанный файл .zip или .mrpack в XMCL.
+  netdiskDescription: Эта версия сборки размещена на внешнем облачном диске. Нажмите ниже, чтобы открыть страницу скачивания в браузере, затем перетащите скачанный файл .zip или .mrpack в Vardrynn.
   openNetdisk: Открыть облачный диск
   netdiskOpened: Ссылка на облачный диск открыта в браузере и скопирована в буфер обмена.
   noReleasesFound: В этом репозитории не найдены выпуски сборок модов в формате .mrpack или .zip.
@@ -524,7 +515,7 @@ instances:
     Вам необходимо выбрать корневую папку данных Modrinth.
   addVanilla: Создать из стандартного Minecraft
   addVanillaDescription: >-
-    Импортировать из обычной папки (.minecraft). Это дублирует оригинальный профиль экземпляра в XMCL.
+    Импортировать из обычной папки (.minecraft). Это дублирует оригинальный профиль экземпляра в Vardrynn.
   fix: Исправить
   folder: Папка
   folderSetting: Настройки папки
@@ -702,6 +693,8 @@ loginError:
   requireUsername: Требуется имя пользователя
   timeout: >-
     Время ожидания входа истекло. Пожалуйста, попробуйте ещё раз или проверьте соединение с сетью.
+  openLoginGuide: Как исправить эту проблему
+  openSupport: 'Всё ещё нужна помощь? Создайте обращение'
 logsCrashes:
   crashes: Отчёты об ошибках
   logs: Журналы
@@ -1047,11 +1040,9 @@ modrinth:
 modrinthCard:
   currentVersion: Текущая версия
 multiplayer:
-  joinDiscord: Присоединиться к Discord
   openConsumerPortal: Открыть портал клиента
   refundHint: Нужен возврат средств? Перейдите на клиентский портал Waffo, чтобы управлять заказами и подписками.
-  togetherSupportHint: Если многопользовательский режим не работает, присоединитесь к нашему Discord и свяжитесь с командой разработчиков. Мы поможем решить проблему.
-  autoShareAmbiguous: Запущено несколько игр. Выберите сборку, в которой открыт мир для локальной сети, чтобы XMCL мог поделиться ею.
+  autoShareAmbiguous: Запущено несколько игр. Выберите сборку, в которой открыт мир для локальной сети, чтобы Vardrynn мог поделиться ею.
   editSharingScope: Изменить область общего доступа
   gameAvailable: Доступна игра в локальной сети
   joinGame: Присоединиться к игре
@@ -1348,7 +1339,7 @@ setting:
   aboutDenoDescription: XMCL использует серверную платформу Deno Deploy для приложений JavaScript
   aboutLicense: Лицензия MIT
   aboutLicenseInfo: Благодарим SignPath.io за бесплатную подпись кода Windows
-  aboutSponsors: 😇 Спонсоры 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Расширенные параметры Java
   advancedSettings: Расширенные настройки
   advancedSettingsHint: Опасная зона - сброс или управление данными лаунчера
@@ -1417,8 +1408,8 @@ setting:
   developerMode: Режим разработчика
   developerModeDescription: Эта опция предназначена для тестирования ваших собственных модов.
   disableTelemetry: Отключить телеметрию
-  disableTelemetryDescription: >-
-    Если включено, XMCL будет собирать информацию о запуске экземпляра и входа пользователя.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
+    Если включено, Vardrynn будет собирать информацию о запуске экземпляра и входа пользователя.
   enableDedicatedGPUOptimization: Назначить выделенный графический процессор
   enableDedicatedGPUOptimizationDescription: Эта опция назначит выделенный графический процессор процессу Minecraft.
   enableDiscord: Включить активность Discord
@@ -1558,7 +1549,7 @@ setup:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      Корневая папка не является обычной папкой (.minecraft). Поскольку структура каталогов данных XMCL отличается от оригинальной, мы не рекомендуем использовать общую папку (.minecraft) в качестве корневой папки данных.
+      Корневая папка не является обычной папкой (.minecraft). Поскольку структура каталогов данных Vardrynn отличается от оригинальной, мы не рекомендуем использовать общую папку (.minecraft) в качестве корневой папки данных.
     drives: Рекомендуемые расположения
     name: Установить корневую папку
   defaultLayoutDescription: >-
@@ -1693,8 +1684,8 @@ theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
   selectVideo: Выберите видео
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Хост-кандидат
   prflx: Пиринг-рефлексивный кандидат

@@ -11,7 +11,6 @@ import createPrintPlugin from 'plugins/esbuild.print.plugin'
 import { createGzip } from 'zlib'
 import { pipeline } from 'stream'
 import { promisify } from 'util'
-import { buildAppInstaller } from './build/appinstaller-builder'
 import { config as electronBuilderConfig } from './build/electron-builder.config'
 import { resolveKoffiBinary } from './build/koffi'
 import esbuildConfig from './esbuild.config'
@@ -160,7 +159,7 @@ async function start() {
       const suffix = context.arch === 3 ? '-arm64' : context.arch === 0 ? '-ia32' : ''
       const platformName = (process.platform === 'win32' ? 'win' : process.platform === 'darwin' ? 'mac' : 'linux') + suffix
 
-      const dest = `build/output/app-${version}-${platformName}.asar`
+      const dest = `build/output/vardrynn-app-${version}-${platformName}.asar`
       const gzipDest = dest + '.gz'
       let src = join(context.appOutDir, 'resources/app.asar')
       if (!existsSync(src)) {
@@ -193,12 +192,6 @@ async function start() {
             path.join(__dirname, 'build', 'appx', f.substring(f.indexOf('@') + 1)),
           ] as const)
         await Promise.all(storeFiles.map(v => ensureFile(v[1]).then(() => copyFile(v[0], v[1]))))
-      }
-    },
-    async artifactBuildCompleted(context) {
-      if (!context.arch) return
-      if (context.target && context.target.name === 'appx') {
-        await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'), electronBuilderConfig.appx!.publisher!)
       }
     },
   }

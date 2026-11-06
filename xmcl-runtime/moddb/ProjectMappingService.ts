@@ -11,6 +11,8 @@ import { Inject, LauncherAppKey } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kSettings } from '~/settings'
+import { kFlights } from '~/infra'
+import { getVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import { NodeSqliteDialect } from '@xmcl/sqlite'
 import { LauncherApp } from '../app/LauncherApp'
 import { checksum } from '../util/fs'
@@ -97,13 +99,14 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
   private async ensureDatabaseFile(locale: string, forceDownload = false) {
     const app = this.app
     const fetcher = (input: string, init?: RequestInit) => app.fetch(input, init)
+    const origin = getVardrynnApiOrigin(await app.registry.get(kFlights))
 
     let filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
     await this.mutex.of('project-mapping').runExclusive(async () => {
       let assetLocale = locale
       const hasLocaleDb = await databaseAssetExists(
         fetcher,
-        getProjectMappingDownloadUrls(`${locale}.sqlite.sha256`),
+        getProjectMappingDownloadUrls(origin, `${locale}.sqlite.sha256`),
       )
 
       if (!hasLocaleDb) {
@@ -113,7 +116,7 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
 
       const sha256 = await fetchDatabaseText(
         fetcher,
-        getProjectMappingDownloadUrls(`${assetLocale}.sqlite.sha256`),
+        getProjectMappingDownloadUrls(origin, `${assetLocale}.sqlite.sha256`),
       )
       if (!/^[a-f0-9]{64}$/i.test(sha256)) {
         throw new Error('The project mapping database checksum is invalid')
@@ -125,7 +128,7 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
           const downloadOptions = await this.app.registry.get(kDownloadOptions)
           await download({
             ...downloadOptions,
-            url: getProjectMappingDownloadUrls(`${assetLocale}.sqlite.gz`),
+            url: getProjectMappingDownloadUrls(origin, `${assetLocale}.sqlite.gz`),
             destination: compressedPath,
             controller: createDatabaseDownloadController(),
           })

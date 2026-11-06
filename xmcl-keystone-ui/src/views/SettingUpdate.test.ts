@@ -47,22 +47,14 @@ function harness() {
 }
 
 describe('settings update capability UI', () => {
-  it('opens GitHub only when the user invokes the releases button', async () => {
-    const open = vi.fn()
-    vi.stubGlobal('window', { open })
-    try {
-      const { state, render, actions, capability } = harness()
-      state.value = { updateCapability: { automatic: false, reason: 'not-implemented' } }
-      await render()
-      await capability.checkUpdate()
-      expect(open).not.toHaveBeenCalled()
-      const releaseClick = actions.find(action => action.name === 'openReleases')
-      expect(releaseClick).toBeTypeOf('function')
-      releaseClick!()
-      expect(open).toHaveBeenCalledExactlyOnceWith('https://github.com/voxelum/x-minecraft-launcher/releases', 'browser')
-    } finally {
-      vi.unstubAllGlobals()
-    }
+  it('offers no upstream release action while Vardrynn updates are unavailable', async () => {
+    const { state, render, actions, capability } = harness()
+    state.value = { updateCapability: { automatic: false, reason: 'not-configured' } }
+    const html = await render()
+    await capability.checkUpdate()
+    expect(actions).toHaveLength(0)
+    expect(html).not.toContain('setting.githubRelease')
+    expect(html).not.toContain('github.com/voxelum')
   })
 
   it('does not render already-latest before settings arrive, then renders unsupported instead of release controls', async () => {
@@ -72,11 +64,11 @@ describe('settings update capability UI', () => {
     const html = await render()
     expect(html).toContain('launcherUpdate.automaticUnavailable')
     expect(html).toContain('launcherUpdate.automaticNotImplemented')
-    expect(html).toContain('setting.githubRelease')
+    expect(html).not.toContain('setting.githubRelease')
     expect(html).not.toContain('launcherUpdate.alreadyLatest')
     expect(html).not.toContain('launcherUpdate.installAndQuit')
     await capability.checkUpdate()
-    expect(await render()).toContain('launcherUpdate.manualCheckRequired')
+    expect(await render()).toContain('launcherUpdate.automaticUnavailable')
     expect(capability.checkingUpdate.value).toBe(false)
     expect(check).not.toHaveBeenCalled()
   })
@@ -88,5 +80,18 @@ describe('settings update capability UI', () => {
     state.value = { updateCapability: { automatic: false, reason: 'not-configured' } }
     expect(await render()).toContain('launcherUpdate.automaticNotConfigured')
     expect(await render()).not.toContain('launcherUpdate.alreadyLatest')
+  })
+})
+
+describe('update info dialog', () => {
+  const dialog = readFileSync(new URL('./SettingUpdateInfoDialog.vue', import.meta.url), 'utf8')
+
+  it('offers no upstream release destination', () => {
+    expect(dialog).not.toMatch(/xmcl\.app|voxelum/i)
+  })
+
+  it('reserves the redownload dead end for manual releases, not verified ones', () => {
+    expect(dialog).toContain("state.value?.updateInfo?.operation === 'manual'")
+    expect(dialog).toContain('v-if="!hintRedownload"')
   })
 })

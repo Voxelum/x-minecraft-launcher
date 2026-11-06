@@ -96,8 +96,8 @@ backup:
   noInstancesFound: 런처에서 인스턴스를 찾을 수 없습니다.
   excludeLibrariesNotice: 코어 라이브러리, 마인크래프트 에셋 및 임시 캐시는 용량 절약을 위해 자동 제외되며 게임 실행 시 자동으로 다운로드됩니다.
   create: 백업 생성
-  createTitle: XMCL 백업 아카이브 생성
-  saveDialogTitle: XMCL 백업 아카이브 저장
+  createTitle: Vardrynn 백업 아카이브 생성
+  saveDialogTitle: Vardrynn 백업 아카이브 저장
   fileFilterName: 'XMCL 백업 아카이브 (*.xmclbackup, *.zip)'
   createError: 백업 생성 실패
   loadManifestError: 백업 아카이브 읽기 실패
@@ -426,21 +426,13 @@ commandPalette:
 feedback:
   channel: 채널
   description: 버그를 발견했거나 제안을 하고 싶어요
-  discord: Discord
-  discordDescription: 디스코드 채널 참여
-  discordJoin: 참여
   generateReport: 보고서 생성
   generateSaveAs: 보고서 저장 위치
   github: Github 이슈
   githubDescription: 생각을 전하기 위해 Github 이슈 열기
   githubOpenIssue: Github
   hint: 버튼을 눌러 보고서를 생성하고 개발팀에 연락하세요. 보고서에는 운영체제 종류, 버전, 사용자 이름 등 기기 정보가 포함됩니다.
-  kook: Kook
-  kookDescription: Kook은 중국 본토 사용자를 위한 디스코드 대체 앱입니다
   name: 피드백
-  qq: QQ 그룹
-  qqDescription: 'QQ 피드백 그룹에 들어가 저자와 직접 대화하세요. 그룹 번호: {number}'
-  qqEnterGroup: 참여
 fileDetail:
   fileSize: 파일 크기
   filesize: 파일 크기
@@ -468,7 +460,7 @@ importModpack:
   selectVersionDescription: '설치할 {name} 버전을 선택하세요:'
   pmcProtected: Planet Minecraft는 Cloudflare로 보호됩니다. 페이지에서 직접 다운로드 링크 또는 미러 링크를 복사하세요.
   netdiskTitle: 클라우드 드라이브에서 다운로드
-  netdiskDescription: 이 모드팩 버전은 외부 클라우드 드라이브에 저장되어 있습니다. 아래 버튼을 눌러 브라우저에서 다운로드 페이지를 연 다음, 다운로드한 .zip 또는 .mrpack 파일을 XMCL로 끌어다 놓으세요.
+  netdiskDescription: 이 모드팩 버전은 외부 클라우드 드라이브에 저장되어 있습니다. 아래 버튼을 눌러 브라우저에서 다운로드 페이지를 연 다음, 다운로드한 .zip 또는 .mrpack 파일을 Vardrynn로 끌어다 놓으세요.
   openNetdisk: 클라우드 드라이브 열기
   netdiskOpened: 클라우드 드라이브 링크를 브라우저에서 열고 클립보드에 복사했습니다.
   noReleasesFound: 이 저장소에서 .mrpack 또는 .zip 모드팩 릴리스를 찾을 수 없습니다.
@@ -623,7 +615,7 @@ instances:
   addMMCDescription: 기존 MultiMC 인스턴스 가져오기. MultiMC의 데이터 폴더를 선택해야 합니다.
   addModrinthDescription: 기존 Modrinth 인스턴스 가져오기. Modrinth 루트 데이터 폴더를 선택해야 합니다.
   addVanilla: 바닐라 마인크래프트에서 생성
-  addVanillaDescription: 일반 .minecraft 폴더에서 가져오기. 원본 게임 프로필을 XMCL로 복제합니다.
+  addVanillaDescription: 일반 .minecraft 폴더에서 가져오기. 원본 게임 프로필을 Vardrynn로 복제합니다.
   fix: 수리
   folderSetting: 폴더 설정
   importFolderDescription: 마인크래프트를 런처로 가져오기
@@ -784,6 +776,8 @@ loginError:
   loginXboxFailedWithCode: Microsoft 토큰으로 Xbox에 로그인하지 못했습니다(XErr {code}). 해당 코드를 검색하여 도움을 받거나 나중에 다시 시도해 주세요.
   loginXboxNoXboxProfile: 이 Microsoft 계정에는 아직 Xbox 프로필이 없습니다. 브라우저에서 {url}을(를) 열어 프로필을 생성한 후 다시 시도해 주세요.
   loginXboxRegionLocked: 귀하의 계정 지역에서는 Xbox Live를 사용할 수 없습니다. Microsoft 계정 설정에서 국가/지역을 변경한 후 다시 시도해 주세요.
+  openLoginGuide: 이 문제 해결 방법
+  openSupport: '여전히 도움이 필요하신가요? 이슈를 등록하세요'
 logsCrashes:
   crashes: 크래시 리포트
   logs: 로그
@@ -1088,11 +1082,9 @@ modrinth:
 modrinthCard:
   currentVersion: 현재 버전
 multiplayer:
-  joinDiscord: Discord 참여
   openConsumerPortal: 소비자 포털 열기
   refundHint: 환불이 필요하신가요? Waffo 소비자 포털에서 주문과 구독을 관리하세요.
-  togetherSupportHint: 멀티플레이가 작동하지 않으면 Discord에 참여하여 개발팀에 문의하세요. 문제 해결을 도와드리겠습니다.
-  autoShareAmbiguous: 여러 게임이 실행 중입니다. XMCL이 공유할 수 있도록 LAN 월드를 호스팅하는 인스턴스를 선택하세요.
+  autoShareAmbiguous: 여러 게임이 실행 중입니다. Vardrynn이 공유할 수 있도록 LAN 월드를 호스팅하는 인스턴스를 선택하세요.
   editSharingScope: 공유 범위 편집
   gameAvailable: LAN 게임 사용 가능
   joinGame: 게임 참가
@@ -1532,7 +1524,7 @@ setting:
   aboutDenoDescription: XMCL은 서버리스 JavaScript 애플리케이션을 위해 Deno Deploy의 간편한 플랫폼을 활용합니다
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: SignPath.io가 제공하는 Windows의 무료 코드 서명, SignPath Foundation에서 인증
-  aboutSponsors: 😇 스폰서 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: 고급 Java 옵션
   advancedSettings: 고급 설정
   advancedSettingsHint: 위험 구역 - 런처 데이터 재설정 또는 관리
@@ -1590,7 +1582,7 @@ setting:
   developerMode: 개발자 모드
   developerModeDescription: 개발자 모드는 자신의 모드를 테스트하기 위한 것입니다
   disableTelemetry: 원격 분석 비활성화
-  disableTelemetryDescription: XMCL이 게임 실행 및 사용자 로그인 이벤트를 수집합니다.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: 전용 GPU 할당
   enableDedicatedGPUOptimizationDescription: 이 옵션은 마인크래프트 프로세스에 전용 GPU를 할당합니다.
   enableDiscord: Discord 상태 표시 활성화
@@ -1744,7 +1736,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: 최상위 폴더가 일반적인 .minecraft 디렉터리가 아닙니다.  XMCL 데이터 디렉터리 구조는 기본 버전과 다르기 때문에, 일반적인 .minecraft 디렉터리를 최상위 폴더로 사용하는 것을 권장하지 않습니다.
+    description: 최상위 폴더가 일반적인 .minecraft 디렉터리가 아닙니다.  Vardrynn 데이터 디렉터리 구조는 기본 버전과 다르기 때문에, 일반적인 .minecraft 디렉터리를 최상위 폴더로 사용하는 것을 권장하지 않습니다.
     drives: 권장 위치
     name: 데이터 디렉터리 설정
   defaultLayoutDescription: 기본 레이아웃은 게임 "인스턴스" 개념을 향상시키려고 합니다. Discord와 같은 앱처럼 보입니다. Steam과 같은 다른 게임 런처 앱에서도 영감을 받았습니다.
@@ -1876,8 +1868,8 @@ theme:
   selectImage: 이미지 선택
   selectMusic: 음악 선택
   selectVideo: 비디오 선택
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: 호스트 후보
   prflx: 피어 반사 후보
@@ -2158,7 +2150,7 @@ agent:
   suggestion2: 모드가 충돌합니다 — 원인을 찾고 해결 방법을 알려주세요.
   suggestion3: '모드팩 빌드: 원하는 기능이 있는 모드를 찾아 이 인스턴스에 설치해 주세요.'
   thinking: 생각 중…
-  title: XMCL 에이전트
+  title: Vardrynn 에이전트
   toggleHint: 토글하려면
 difficulty:
   easy: 쉬움

@@ -24,9 +24,9 @@ function existingShortcuts() {
 
 describe('addSteamShortcutToVdf', () => {
   const shortcut = {
-    executable: '"/home/deck/XMCL"',
+    executable: '"/home/deck/vardrynn"',
     startDir: '"/home/deck"',
-    icon: '/home/deck/XMCL',
+    icon: '/home/deck/vardrynn',
   }
 
   test('appends a shortcut without rewriting existing binary-VDF entries', () => {
@@ -39,11 +39,11 @@ describe('addSteamShortcutToVdf', () => {
       existing.subarray(0, existing.length - 1),
     )
     expect(updated![updated!.length - 1]).toBe(0x08)
-    expect(updated!.toString('utf8')).toContain('XMCL')
+    expect(updated!.toString('utf8')).toContain('Vardrynn')
   })
 
   test('does not add a second launcher shortcut', () => {
-    const launcher = object('0', string('AppName', 'XMCL'))
+    const launcher = object('0', string('AppName', 'Vardrynn'))
     const existing = Buffer.concat([
       Buffer.from([0x00, ...Buffer.from('shortcuts\0')]),
       launcher,
@@ -60,5 +60,17 @@ describe('addSteamShortcutToVdf', () => {
         shortcut,
       ),
     ).toThrow('Unexpected end')
+  })
+
+  test('preserves an XMCL shortcut and adds Vardrynn alongside it', () => {
+    const existing = Buffer.concat([
+      Buffer.from([0x00, ...Buffer.from('shortcuts\0')]),
+      object('0', string('AppName', 'XMCL')),
+      Buffer.from([0x08]),
+    ])
+    const updated = addSteamShortcutToVdf(existing, shortcut)!
+    expect(updated).toBeDefined()
+    expect(updated.subarray(0, existing.length - 1)).toEqual(existing.subarray(0, existing.length - 1))
+    expect(updated.toString('utf8')).toContain('Vardrynn')
   })
 })

@@ -50,7 +50,7 @@ agent:
   suggestion2: My mods are crashing — find the cause and tell me how to fix it
   suggestion3: 'Build a modpack: find mods for a feature I want and install them into this instance'
   thinking: thinking…
-  title: XMCL Agent
+  title: Vardrynn Agent
   toggleHint: to toggle
 ago:
   day: '{duration} day ago | {duration} days ago'
@@ -117,8 +117,8 @@ backup:
   noInstancesFound: No instances found in launcher.
   excludeLibrariesNotice: Core library files, Minecraft assets, and temporary caches are excluded automatically to keep the archive compact. They will be downloaded automatically when launched.
   create: Create Backup
-  createTitle: Create XMCL Backup Archive
-  saveDialogTitle: Save XMCL Backup Archive
+  createTitle: Create Vardrynn Backup Archive
+  saveDialogTitle: Save Vardrynn Backup Archive
   fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
@@ -458,21 +458,13 @@ commandPalette:
 feedback:
   channel: Channels
   description: I found a Bug or I want to make a suggestion
-  discord: Discord
-  discordDescription: Join Discord Channel
-  discordJoin: Join
   generateReport: Generate Report
   generateSaveAs: Save the report to
   github: Github Issue
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
   hint: Click the button to create the report and contact the developer team. The report will contain your device info including operating system type, version, user name (in your os), etc.
-  kook: Kook
-  kookDescription: Kook is an alternate app for discord for Chinese Mainland users
   name: Feedback
-  qq: QQ Group
-  qqDescription: 'Enter the feedback QQ group and direct talk with authors. Group Number: {number}'
-  qqEnterGroup: Join
 fileDetail:
   fileSize: File Size
   filesize: File size
@@ -500,7 +492,7 @@ importModpack:
   selectVersionDescription: 'Choose the version of {name} to install:'
   pmcProtected: Planet Minecraft is protected by Cloudflare. Please copy the direct download or mirror link from the page.
   netdiskTitle: Cloud Drive Download
-  netdiskDescription: This modpack version is hosted on an external cloud drive. Click below to open the download page in your browser, then drag and drop the downloaded .zip or .mrpack file into XMCL.
+  netdiskDescription: This modpack version is hosted on an external cloud drive. Click below to open the download page in your browser, then drag and drop the downloaded .zip or .mrpack file into Vardrynn.
   openNetdisk: Open Cloud Drive
   netdiskOpened: The cloud drive link has been opened in your browser and copied to the clipboard.
   noReleasesFound: No .mrpack or .zip modpack releases found for this repository.
@@ -664,7 +656,7 @@ instances:
   addModrinthDescription: Import existing Modrinth instance. You need to select the Modrinth root data folder.
   addPrismDescription: Import existing PrismLauncher instance.
   addVanilla: Create from vanilla-like Minecraft
-  addVanillaDescription: Import from common .minecraft folder. This will duplciate the original game profile to XMCL.
+  addVanillaDescription: Import from common .minecraft folder. This will duplciate the original game profile to Vardrynn.
   edition: Edition
   editionJava: Java Edition
   editionBedrock: Bedrock Edition
@@ -815,6 +807,8 @@ loginError:
   requirePassword: Password is required
   requireUsername: Username is required
   timeout: Login timeout. Please retry or check your network.
+  openLoginGuide: How to fix this issue
+  openSupport: 'Still need help? Open an issue'
 logsCrashes:
   crashes: Crash Reports
   failures: Launch Failures
@@ -1151,11 +1145,9 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
-  joinDiscord: Join Discord
   openConsumerPortal: Open Consumer Portal
   refundHint: Need a refund? Visit the Waffo Consumer Portal to manage your orders and subscriptions.
-  togetherSupportHint: If multiplayer is not working, join our Discord and contact the development team. We will help you resolve the problem.
-  autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so XMCL can share it.
+  autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so Vardrynn can share it.
   editSharingScope: Edit Sharing Scope
   gameAvailable: LAN game available
   joinGame: Join game
@@ -1648,7 +1640,7 @@ setting:
   aboutDenoDescription: XMCL leverages Deno Deploy's hassle-free platform for serverless JavaScript applications
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Free code signing on Windows provided by SignPath.io, certificate by SignPath Foundation
-  aboutSponsors: 😇 Sponsors 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Advanced Java Options
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
@@ -1728,7 +1720,7 @@ setting:
   developerMode: Developer Mode
   developerModeDescription: Developer Mode is for testing your own mods
   disableTelemetry: Disable Telemetry
-  disableTelemetryDescription: XMCL will collect the game launch and user login events.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Assign Dedicated GPU
   enableDedicatedGPUOptimizationDescription: This option will assign dedicated GPU to Minecraft process.
   enableDiscord: Enable Discord Presence
@@ -1868,7 +1860,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: The data root is not a common .minecraft directory. Since XMCL data directory structure is different from vanilla, we do not recommend to use the common .minecraft directory as a data root.
+    description: The data root is not a common .minecraft directory. Since Vardrynn data directory structure is different from vanilla, we do not recommend to use the common .minecraft directory as a data root.
     drives: Recommend Locations
     name: Set Data Directory
   defaultLayoutDescription: The default layout is trying to enhance the game "instance" concept. It looks like apps like Discord. It's also inspired by other game launcher apps like Steam, etc.
@@ -2000,8 +1992,8 @@ theme:
   selectImage: Select Image
   selectMusic: Select Music
   selectVideo: Select Video
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Host Candidate
   prflx: Peer Reflexive Candidate
@@ -2280,7 +2272,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
   disconnected: Controller Disconnected

@@ -1,3 +1,5 @@
+import { LAUNCHER_PROTOCOL } from '~/constant'
+import { resolveMicrosoftClientId } from '~/app/vardrynnIntegrationIds'
 import {
   XmclAccountServiceKey,
   XmclAccountState,
@@ -8,7 +10,7 @@ import {
 } from '@xmcl/runtime-api'
 import { createHash, randomBytes } from 'crypto'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
+import { requireVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { kFlights } from '~/infra'
@@ -33,7 +35,7 @@ import {
 } from './XmclAccountDpop'
 import { ProviderCredentialExchangeCache } from './ProviderCredentialExchangeCache'
 
-const MICROSOFT_LAUNCHER_CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
+const MICROSOFT_LAUNCHER_CLIENT_ID = resolveMicrosoftClientId(process.env.VARDRYNN_MICROSOFT_CLIENT_ID) ?? ''
 const SESSION_SERVICE = 'xmcl-xmcl-account'
 const SESSION_ACCOUNT = 'current-session'
 const DPOP_KEY_SERVICE = 'xmcl-xmcl-account'
@@ -109,28 +111,11 @@ export class XmclAccountService
     )
     this.api = new XmclAccountApi(
       (input, init) => app.fetch(input, init),
-      async () => {
-        const flights = await app.registry.get(kFlights)
-        return resolveXmclApiEndpoints(flights.xmclApiBaseUrl, () =>
-          app
-            .getLogger('ApiBaseUrl')
-            .warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
-        ).common
-      },
+      async () => requireVardrynnApiOrigin(await app.registry.get(kFlights)),
       () => this.getDpopKey(),
-      async () => {
-        const flights = await app.registry.get(kFlights)
-        return resolveXmclApiEndpoints(flights.xmclBillingApiBaseUrl, () =>
-          app
-            .getLogger('BillingApiBaseUrl')
-            .warn(
-              'Ignoring invalid xmclBillingApiBaseUrl flight; using the default XMCL API origin.',
-            ),
-        ).common
-      },
     )
 
-    app.protocol.registerHandler('xmcl', ({ request, response }) => {
+    app.protocol.registerHandler(LAUNCHER_PROTOCOL, ({ request, response }) => {
       if (request.url.host !== 'launcher' || request.url.pathname !== BROWSER_AUTH_CALLBACK_PATH)
         return
       const state = request.url.searchParams.get('state') ?? ''
@@ -226,7 +211,9 @@ export class XmclAccountService
     const { result } = await oauthClient.authenticate('', [MICROSOFT_GRAPH_USER_READ_SCOPE], {
       useNativeBroker: process.platform === 'win32',
     })
-    await this.bootstrapCredential('microsoft', result.accessToken)
+    // The service verifies the ID token's signature and audience; a Graph access token proves neither.
+    if (!result.idToken) throw new Error('microsoft_id_token_missing')
+    await this.bootstrapCredential('microsoft', result.idToken)
   }
 
   @Singleton()
@@ -344,6 +331,14 @@ export class XmclAccountService
     await this.initialize()
     const credential = await this.requireValidCredential()
     await this.api.revokeSession(credential, allDevices)
+    await this.clearSession(credential.sessionId)
+  }
+
+  @Singleton()
+  async deleteAccount(): Promise<void> {
+    await this.initialize()
+    const credential = await this.requireValidCredential()
+    await this.api.deleteAccount(credential)
     await this.clearSession(credential.sessionId)
   }
 

@@ -93,8 +93,8 @@ backup:
   noInstancesFound: Nem található példány az indítóban.
   excludeLibrariesNotice: Az alapvető könyvtárak, Minecraft-elemek és ideiglenes gyorsítótárak automatikusan kimaradnak a tömörség érdekében.
   create: Mentés létrehozása
-  createTitle: XMCL biztonsági mentés létrehozása
-  saveDialogTitle: XMCL biztonsági mentés mentése
+  createTitle: Vardrynn biztonsági mentés létrehozása
+  saveDialogTitle: Vardrynn biztonsági mentés mentése
   fileFilterName: 'XMCL biztonsági mentés (*.xmclbackup, *.zip)'
   createError: Nem sikerült létrehozni a biztonsági mentést
   loadManifestError: Nem sikerült beolvasni a biztonsági mentést
@@ -405,21 +405,13 @@ commandPalette:
 feedback:
   channel: Csatornák
   description: Találtam egy hibát, vagy szeretnék javasolni valamit
-  discord: Discord
-  discordDescription: Csatlakozz Discordra
-  discordJoin: Csatlakozás
   generateReport: Jelentés generálása
   generateSaveAs: Jelentés mentése ide
   github: Github problémák
   githubDescription: Nyiss egy Github problémát, hogy elmondd a gondolatodat
   githubOpenIssue: Github
   hint: Kattints a gombra a jelentés létrehozásához és a fejlesztői csapat eléréséhez. A jelentés tartalmazza az eszközadatokat, beleértve az operációs rendszer típusát, verzióját, felhasználónevedet stb.
-  kook: Kook
-  kookDescription: Kook egy alternatív app a Discordra Kínai felhasználóknak
   name: Visszajelzés
-  qq: QQ Csoport
-  qqDescription: 'Lépj be a visszajelző QQ-csoportba, és beszélgess közvetlenül a készítőkkel. Csoport száma: {number}'
-  qqEnterGroup: Csatlakozás
 fileDetail:
   fileSize: Fájl méret
   filesize: Fájl mérete
@@ -447,7 +439,7 @@ importModpack:
   selectVersionDescription: 'Válaszd ki a(z) {name} telepítendő verzióját:'
   pmcProtected: A Planet Minecraftot a Cloudflare védi. Másold ki az oldalról a közvetlen letöltési vagy tükörhivatkozást.
   netdiskTitle: Letöltés felhőtárhelyről
-  netdiskDescription: Ez a modcsomagverzió külső felhőtárhelyen található. Kattints alább a letöltési oldal böngészőben való megnyitásához, majd húzd a letöltött .zip vagy .mrpack fájlt az XMCL-be.
+  netdiskDescription: Ez a modcsomagverzió külső felhőtárhelyen található. Kattints alább a letöltési oldal böngészőben való megnyitásához, majd húzd a letöltött .zip vagy .mrpack fájlt az Vardrynn-be.
   openNetdisk: Felhőtárhely megnyitása
   netdiskOpened: A felhőtárhely hivatkozása megnyílt a böngészőben, és a vágólapra lett másolva.
   noReleasesFound: Nem található .mrpack vagy .zip modcsomagkiadás ebben a tárolóban.
@@ -612,7 +604,7 @@ instances:
     Importálja a meglévő Modrinth példányt.
     Ki kell választania a Modrinth gyökér adatmappát.
   addVanilla: Létrehozás vanilla-szerű Minecraftból
-  addVanillaDescription: Importálás a közös .minecraft mappából. Ez duplikálja az eredeti játékprofilt az XMCL-be.
+  addVanillaDescription: Importálás a közös .minecraft mappából. Ez duplikálja az eredeti játékprofilt az Vardrynn-be.
   fix: Javítás
   folder: Mappa
   folderSetting: Mappa beállításai
@@ -763,6 +755,8 @@ loginError:
   requirePassword: Jelszó szükséges
   requireUsername: Felhasználónév szükséges
   timeout: Bejelentkezési időtúllépés. Próbáld újra vagy ellenőrizd a hálózati kapcsolatot.
+  openLoginGuide: A probléma megoldása
+  openSupport: 'Még mindig segítség kell? Nyiss egy hibajegyet'
 logsCrashes:
   crashes: Hibanaplók
   logs: Naplók
@@ -1078,11 +1072,9 @@ modrinth:
 modrinthCard:
   currentVersion: Jelenlegi verzió
 multiplayer:
-  joinDiscord: Csatlakozás a Discordhoz
   openConsumerPortal: Ügyfélportál megnyitása
   refundHint: Visszatérítést szeretnél? Rendeléseid és előfizetéseid kezeléséhez keresd fel a Waffo ügyfélportálját.
-  togetherSupportHint: Ha a többjátékos mód nem működik, csatlakozz a Discordunkhoz, és lépj kapcsolatba a fejlesztőcsapattal. Segítünk megoldani a problémát.
-  autoShareAmbiguous: Több játék is fut. Válaszd ki a LAN-világot futtató példányt, hogy az XMCL megoszthassa.
+  autoShareAmbiguous: Több játék is fut. Válaszd ki a LAN-világot futtató példányt, hogy az Vardrynn megoszthassa.
   editSharingScope: Megosztási kör szerkesztése
   gameAvailable: LAN-játék érhető el
   joinGame: Csatlakozás a játékhoz
@@ -1500,7 +1492,7 @@ setting:
   aboutDenoDescription: Az XMCL a Deno Deploy egyszerű platformját használja kiszolgáló nélküli JavaScript alkalmazásokhoz
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: Ingyenes kódaláírás Windows alatt a SignPath.io által biztosított, SignPath Foundation által tanúsított
-  aboutSponsors: 😇 Szponzorok 😇
+  aboutSponsors: XMCL upstream sponsors
   advancedJavaOptions: Haladó Java beállítások
   advancedSettings: Speciális beállítások
   advancedSettingsHint: Veszélyes zóna - indító adatok visszaállítása vagy kezelése
@@ -1557,7 +1549,7 @@ setting:
   developerMode: Fejlesztői mód
   developerModeDescription: Fejlesztői mód a saját írt mod tesztelésére irányul
   disableTelemetry: Telemetria kikapcsolása
-  disableTelemetryDescription: Az XMCL összegyűjti a játékindítási és a felhasználói bejelentkezési eseményeket.
+  disableTelemetryDescription: Vardrynn keeps diagnostics local. No launcher telemetry is sent.
   enableDedicatedGPUOptimization: Dedikált GPU hozzárendelése
   enableDedicatedGPUOptimizationDescription: Ez az opció dedikált GPU-t rendel a Minecraft folyamathoz.
   enableDiscord: Discord státusz engedélyezése
@@ -1688,7 +1680,7 @@ setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: Az adatgyökér nem egy közös .minecraft könyvtár. Mivel az XMCL adatok könyvtárszerkezet különbözik a vanilla könyvtárszerkezettől, nem javasoljuk, hogy a a közös .minecraft könyvtárat adatgyökérként használni.
+    description: Az adatgyökér nem egy közös .minecraft könyvtár. Mivel az Vardrynn adatok könyvtárszerkezet különbözik a vanilla könyvtárszerkezettől, nem javasoljuk, hogy a a közös .minecraft könyvtárat adatgyökérként használni.
     drives: Ajánlott helyek
     name: Adatmappa beállítása
   defaultLayoutDescription: Az alapértelmezett elrendezés a játék "példány" koncepcióját próbálja erősíteni. Úgy néz ki, mint az olyan alkalmazások, mint a Discord. Más játékindító alkalmazások, mint a Steam stb. is inspirálták.
@@ -1816,8 +1808,8 @@ theme:
   selectImage: Válassza a Kép lehetőséget
   selectMusic: Válassza a Zene lehetőséget
   selectVideo: Válassza a Videó lehetőséget
-  title: XMCL
-title: XMCL
+  title: Vardrynn
+title: Vardrynn
 transportType:
   host: Kiszolgáló jelölt
   prflx: Peer Reflexív jelölt
@@ -2169,7 +2161,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add Vardrynn to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 bigPicture:

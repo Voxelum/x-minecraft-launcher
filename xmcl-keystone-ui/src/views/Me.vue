@@ -9,7 +9,7 @@ import { useInstanceGroup } from '@/composables/instanceGroup'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
 import { kLaunchButton } from '@/composables/launchButton'
-import { LauncherNews, useLauncherNews } from '@/composables/launcherNews'
+import { LauncherNews } from '@/composables/launcherNews'
 import { useMojangNews } from '@/composables/mojangNews'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { useGamepadInnerNav } from '@/composables/gamepad'
@@ -30,13 +30,10 @@ const { t } = useI18n()
 const { isDark } = injection(kTheme)
 const arrowColor = computed(() => (isDark.value ? 'white' : 'black'))
 const { news } = useMojangNews()
-const { news: launcherNews } = useLauncherNews()
 const { getDateString } = useDateString()
 
 const allNews = computed((): LauncherNews[] => {
-  const result: LauncherNews[] = [
-    ...launcherNews.value,
-    ...news.value.map((n) => ({
+  const result: LauncherNews[] = news.value.map((n) => ({
       title: n.title,
       category: n.tag,
       date: n.date,
@@ -47,8 +44,7 @@ const allNews = computed((): LauncherNews[] => {
         height: n.newsPageImage.dimensions.height,
       },
       link: n.readMoreLink,
-    })),
-  ]
+    }))
   return result.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
 })
 

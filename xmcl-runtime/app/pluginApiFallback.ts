@@ -2,7 +2,7 @@ import { kFlights } from '~/infra'
 import { kXmclSessionAuthorization, XmclAccountService } from '~/xmclAccount/XmclAccountService'
 import type { LauncherAppPlugin } from './LauncherAppPlugin'
 import type { Handler, Response as LauncherResponse } from './LauncherProtocolHandler'
-import { resolveXmclApiEndpoints } from './xmclApiBaseUrl'
+import { getVardrynnApiOrigin } from './vardrynnApiOrigin'
 
 function setHeader(headers: Record<string, any>, name: string, value?: string) {
   for (const key of Object.keys(headers)) {
@@ -25,7 +25,7 @@ function rejectAuthentication(
 export const pluginApiFallback: LauncherAppPlugin = (app) => {
   const handler: Handler = async ({ request, response }) => {
     const flights = await app.registry.get(kFlights).catch((): Record<string, any> => ({}))
-    const signalingOrigin = resolveXmclApiEndpoints(flights.xmclApiBaseUrl).signaling
+    const signalingOrigin = getVardrynnApiOrigin(flights)
     const isAuthenticatedSignalingPath =
       request.url.pathname === '/v1/rtc/official' ||
       request.url.pathname.startsWith('/v1/multiplayer/')

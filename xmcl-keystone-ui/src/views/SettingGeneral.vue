@@ -37,13 +37,15 @@
 
     <v-divider class="my-3" />
 
+    <!-- XMCL Import -->
+    <XmclImportPanel />
+
+    <v-divider class="my-3" />
+
     <!-- Privacy & Telemetry -->
-    <SettingItemSwitcher
-      v-model="disableTelemetry"
-      :title="t('setting.disableTelemetry')"
-      :description="t('setting.disableTelemetryDescription')"
-      icon="privacy_tip"
-    />
+    <v-alert type="info" variant="tonal" class="my-3" role="status">
+      Diagnostics remain on this device. Vardrynn does not send launcher telemetry.
+    </v-alert>
 
     <!-- GPU Optimization (Windows/Linux only) -->
     <template v-if="env?.os === 'linux' || env?.os === 'windows'">
@@ -141,6 +143,7 @@
       @update:model-value="replaceNative = !$event ? false : $event"
     />
 
+    <template v-if="AGENT_UI_ENABLED">
     <v-divider class="my-3" />
 
     <SettingItem id="agent-settings" :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
@@ -210,7 +213,7 @@
             density="compact"
             class="setting-item-input"
             hide-details
-            :placeholder="agentProviderMode === 'custom' ? t('setting.aiAgentModelPlaceholder') : agentResolvedModel"
+            :placeholder="agentProviderMode === 'builtin' ? agentResolvedModel : t('setting.aiAgentModelPlaceholder')"
           />
         </template>
     </SettingItem>
@@ -229,14 +232,16 @@
             density="compact"
             class="setting-item-input"
             hide-details
-            :placeholder="agentProviderMode === 'custom' ? t('setting.aiAgentEndpointPlaceholder') : agentResolvedEndpoint"
+            :placeholder="agentProviderMode === 'builtin' ? agentResolvedEndpoint : t('setting.aiAgentEndpointPlaceholder')"
           />
         </template>
     </SettingItem>
+    </template>
   </SettingCard>
 </template>
 
 <script lang="ts" setup>
+import { AGENT_UI_ENABLED } from '@/composables/agentChat'
 import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
@@ -248,6 +253,7 @@ import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
 import { formatShortcutDisplay } from '@/util/shortcut'
 import { useDialog } from '../composables/dialog'
+import XmclImportPanel from './XmclImportPanel.vue'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
 import { useBigPicture } from '@/composables/bigPicture'
@@ -269,7 +275,6 @@ const {
   developerMode,
   selectedLocale,
   replaceNative,
-  disableTelemetry,
   enableDiscord,
   quickActionShortcut,
   locales: rawLocales,

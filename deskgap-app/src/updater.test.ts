@@ -18,7 +18,7 @@ afterEach(async () => {
 })
 
 function githubRelease(version = '0.70.0') {
-  const name = `xmcl-deskgap-${version}-win32-x64.exe`
+  const name = `vardrynn-deskgap-${version}-win32-x64.exe`
   return {
     tag_name: `v${version}`, draft: false, prerelease: false,
     assets: [{ name, size: 100, browser_download_url: `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${version}/${name}` }],

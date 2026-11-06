@@ -3,6 +3,13 @@ import { useAgentConfirmation } from './agent/confirm'
 import { useAgentSettings } from './agent/settings'
 import { useOmniDialog } from './omniDialog'
 
+/**
+ * Master switch for every launcher-facing agent entry point (sidebar buttons,
+ * hotkey, omni-dialog tab, settings, CSS assistant, crash hint). Flip to true
+ * to bring the agent back; the agent code itself is untouched.
+ */
+export const AGENT_UI_ENABLED = false
+
 const agentChatRunning = ref(false)
 // Which agent the chat surface should select the next time it transitions
 // from hidden to shown; consumed and reset by AppAgentChat's open watcher.
@@ -58,7 +65,7 @@ export function useAgentChatEntry() {
 export function useAgentChatHotkey(enabled: Ref<boolean> = ref(true)) {
   const { open } = useAgentChatEntry()
   function onKeyDown(e: KeyboardEvent) {
-    if (!enabled.value) return
+    if (!AGENT_UI_ENABLED || !enabled.value) return
     const mod = e.ctrlKey || e.metaKey
     if (!mod || !e.shiftKey) return
     if (e.code === 'KeyA') {

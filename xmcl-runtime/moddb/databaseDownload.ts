@@ -1,24 +1,23 @@
-import type { DownloadController, DownloadSample } from '@xmcl/file-transfer'
+import type { DownloadController } from '@xmcl/file-transfer'
 
-const GITHUB_ORIGIN = 'https://github.com'
-const DATABASE_PROXY_ORIGIN = 'https://api.xmcl.app'
 const DATABASE_FETCH_TIMEOUT = 8_000
-const SLOW_DOWNLOAD_THRESHOLD = 128 * 1024
 
 type Fetcher = (input: string, init?: RequestInit) => Promise<Response>
 
-export function getModMetadataDownloadUrls(asset: 'db.sqlite' | 'db.sqlite.sha1') {
-  return [
-    `${GITHUB_ORIGIN}/Voxelum/minecraft-mods-database/releases/latest/download/${asset}`,
-    `${DATABASE_PROXY_ORIGIN}/downloads/databases/mod-metadata/${asset}`,
-  ]
+/**
+ * The databases come from the Vardrynn service (`/v1/databases/...`), which serves the copies
+ * kept by the mirror-databases workflow. A build without a service origin requests nothing.
+ */
+function getDatabaseDownloadUrls(origin: string | undefined, database: string, asset: string) {
+  return origin ? [new URL(`/v1/databases/${database}/${encodeURIComponent(asset)}`, origin).toString()] : []
 }
 
-export function getProjectMappingDownloadUrls(asset: string) {
-  return [
-    `${GITHUB_ORIGIN}/Voxelum/xmcl-commuity-content-i18n/releases/latest/download/${asset}`,
-    `${DATABASE_PROXY_ORIGIN}/downloads/databases/project-mapping/${asset}`,
-  ]
+export function getModMetadataDownloadUrls(origin: string | undefined, asset: 'db.sqlite' | 'db.sqlite.sha1') {
+  return getDatabaseDownloadUrls(origin, 'mod-metadata', asset)
+}
+
+export function getProjectMappingDownloadUrls(origin: string | undefined, asset: string) {
+  return getDatabaseDownloadUrls(origin, 'project-mapping', asset)
 }
 
 function createAttemptSignal(signal: AbortSignal | null | undefined) {
@@ -52,7 +51,7 @@ export async function fetchDatabaseText(fetcher: Fetcher, urls: string[], init: 
       errors.push(e)
     }
   }
-  throw new AggregateError(errors, 'All database metadata sources failed')
+  throw new AggregateError(errors, urls.length === 0 ? 'No database metadata source is configured' : 'All database metadata sources failed')
 }
 
 export async function databaseAssetExists(fetcher: Fetcher, urls: string[]) {
@@ -76,6 +75,7 @@ export async function databaseAssetExists(fetcher: Fetcher, urls: string[]) {
 }
 
 export function createDatabaseDownloadController(): DownloadController {
+  // One source, so a slow connection is left to finish rather than aborted.
   return {
     sampleInterval: 1_000,
     warmup: 5_000,
@@ -85,12 +85,6 @@ export function createDatabaseDownloadController(): DownloadController {
     ttfbDeadline: 8_000,
     stallTimeout: 10_000,
     rangeSplitThreshold: 0,
-    isAbortable: (origin) => origin === GITHUB_ORIGIN,
-    onSample: (sample: DownloadSample) =>
-      sample.origin === GITHUB_ORIGIN &&
-      sample.elapsed >= 5_000 &&
-      sample.speed < SLOW_DOWNLOAD_THRESHOLD
-        ? 'abort'
-        : 'continue',
+    isAbortable: () => false,
   }
 }

@@ -22,7 +22,7 @@ describe('XmclAccountApi', () => {
     const fetch = vi.fn(async (_input: string | URL, _init?: RequestInit) =>
       Response.json(M1_LOCAL_AUTH_FIXTURE),
     )
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const result = await api.launcherExchange('modrinth', 'provider-secret')
 
@@ -202,7 +202,7 @@ describe('XmclAccountApi', () => {
         expiresAt: '2026-07-22T01:00:00.000Z',
       })
     })
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const authorization = await api.beginBrowserAuthorization('google', {
       state: 'state-1',
@@ -234,7 +234,7 @@ describe('XmclAccountApi', () => {
         ]),
       )
       .mockResolvedValueOnce(Response.json(M1_SHARED_V1_POLICY_FIXTURE))
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const snapshot = await api.getSnapshot(M1_LOCAL_AUTH_FIXTURE.session)
 
@@ -247,7 +247,7 @@ describe('XmclAccountApi', () => {
 
   it('consumes only the published D1/D4 storage policy, not M6 accounting', async () => {
     const fetch = vi.fn(async () => Response.json(M1_SHARED_V1_POLICY_FIXTURE))
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const policy = await api.getBackupStoragePolicy(M1_LOCAL_AUTH_FIXTURE.session)
 
@@ -263,6 +263,7 @@ describe('XmclAccountApi', () => {
         ...M1_SHARED_V1_POLICY_FIXTURE,
         usedBytes: 1,
       }),
+      'https://edge.example.test/',
     )
 
     await expect(api.getBackupStoragePolicy(M1_LOCAL_AUTH_FIXTURE.session)).rejects.toThrow(
@@ -285,7 +286,7 @@ describe('XmclAccountApi', () => {
         { status: 409 },
       ),
     )
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const error = await api.launcherExchange('modrinth', 'provider-secret').catch((e) => e)
 
@@ -305,6 +306,7 @@ describe('XmclAccountApi', () => {
           status: 429,
           headers: { 'content-type': 'text/plain; charset=UTF-8' },
         }),
+      'https://edge.example.test/',
     )
 
     const error = await api.refreshSession(M1_LOCAL_AUTH_FIXTURE.session).catch((e) => e)
@@ -326,7 +328,7 @@ describe('XmclAccountApi', () => {
         }),
       )
       .mockResolvedValueOnce(Response.json({ taskId: 'task-1' }, { status: 202 }))
-    const api = new XmclAccountApi(fetch)
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
 
     const preview = await api.prepareMerge(M1_LOCAL_AUTH_FIXTURE.session, {
       provider: 'modrinth',
@@ -344,108 +346,26 @@ describe('XmclAccountApi', () => {
     expect((confirmHeaders as Headers).get('Idempotency-Key')).toBeTruthy()
   })
 
-  it('claims a Together trial and creates a Waffo checkout with authenticated idempotent requests', async () => {
-    const fetch = vi
-      .fn()
-      .mockResolvedValueOnce(
-        Response.json({
-          status: 'active',
-          durationSeconds: 604800,
-          turnEgressBytes: 1_000_000_000,
-          claimedAt: '2026-08-12T00:00:00.000Z',
-          expiresAt: '2026-08-19T00:00:00.000Z',
-        }),
-      )
-      .mockResolvedValueOnce(
-        Response.json({
-          orderId: 'order-1',
-          cashAmount: { currency: 'USD', amountMinor: 500 },
-          approvalUrl: 'https://checkout.waffo.ai/order-1',
-          status: 'pending',
-          createdAt: '2026-08-12T00:00:00.000Z',
-          updatedAt: '2026-08-12T00:00:00.000Z',
-        }),
-      )
-    const api = new XmclAccountApi(
-      fetch,
-      'https://account.example.test/',
-      undefined,
-      'https://billing.example.test/',
-    )
+  it('deletes the account with an authenticated DELETE', async () => {
+    const fetch = vi.fn(async (_input: string | URL, _init?: RequestInit) => new Response(null, { status: 204 }))
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
+    const credential = { ...M1_LOCAL_AUTH_FIXTURE.session, tokenType: 'Bearer' as const }
 
-    await api.claimTogetherTrial(M1_LOCAL_AUTH_FIXTURE.session)
-    await api.createTogetherOrder(M1_LOCAL_AUTH_FIXTURE.session, 500)
+    await api.deleteAccount(credential)
 
-    expect(String(fetch.mock.calls[0]![0])).toBe('https://billing.example.test/v1/xmcl-plus/trial')
-    expect(String(fetch.mock.calls[1]![0])).toBe(
-      'https://billing.example.test/v1/billing/waffo/orders',
-    )
-    const trialInit = fetch.mock.calls[0]![1]!
-    const orderInit = fetch.mock.calls[1]![1]!
-    expect(JSON.parse(String(orderInit.body))).toEqual({ amountMinor: 500 })
-    expect((trialInit.headers as Headers).get('Idempotency-Key')).toBeTruthy()
-    expect((orderInit.headers as Headers).get('Idempotency-Key')).toBeTruthy()
+    const [url, init] = fetch.mock.calls[0]!
+    expect(String(url)).toBe('https://edge.example.test/v1/account')
+    expect(init?.method).toBe('DELETE')
+    expect(new Headers(init?.headers).get('Authorization')).toBe(`Bearer ${credential.accessToken}`)
   })
 
-  it('keeps billing available when the deployment has not published the trial route', async () => {
-    const fetch = vi.fn(async (input: string | URL) => {
-      const path = new URL(input).pathname
-      if (path === '/v1/xmcl-plus/offer') {
-        return Response.json({
-          offerId: 'xmcl-plus',
-          displayName: 'XMCL Together Home',
-          monthlyPrice: { currency: 'USD', amountMinor: 299 },
-          aiUnitsPerPeriod: 2_000_000,
-          turnEgressBytesPerPeriod: 20_000_000_000,
-        })
-      }
-      if (path === '/v1/xmcl-plus/trial') {
-        return new Response('Not Found', { status: 404 })
-      }
-      if (path === '/v1/xmcl-plus/status') return Response.json(null)
-      if (path === '/v1/xmcl-plus/allowances') {
-        return Response.json({
-          sources: [],
-          aiUnits: {
-            included: 0,
-            consumed: 0,
-            remaining: 0,
-            meteringStatus: 'active',
-          },
-          turnEgressBytes: {
-            included: 20_000_000_000,
-            consumed: 2_500_000_000,
-            remaining: 17_500_000_000,
-            meteringStatus: 'active',
-          },
-        })
-      }
-      if (path === '/v1/billing/balance') {
-        return Response.json({
-          accountId: 'account-1',
-          available: { currency: 'USD', amountMinor: 0 },
-          reserved: { currency: 'USD', amountMinor: 0 },
-        })
-      }
-      return new Response('Unexpected request', { status: 500 })
-    })
+  it('refuses billing and subscription routes without sending a request', async () => {
+    const fetch = vi.fn(async (_input: string | URL, _init?: RequestInit) => Response.json({}))
     const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
+    const credential = { ...M1_LOCAL_AUTH_FIXTURE.session, tokenType: 'Bearer' as const }
 
-    await expect(api.getTogetherOverview(M1_LOCAL_AUTH_FIXTURE.session)).resolves.toMatchObject({
-      trial: {
-        status: 'unavailable',
-        durationSeconds: 604_800,
-        turnEgressBytes: 1_000_000_000,
-      },
-      subscription: null,
-      allowances: {
-        turnEgressBytes: {
-          included: 20_000_000_000,
-          consumed: 2_500_000_000,
-          remaining: 17_500_000_000,
-        },
-      },
-      balance: { available: { amountMinor: 0 } },
-    })
+    await expect(api.getTogetherOverview(credential)).rejects.toMatchObject({ code: 'billing_unavailable' })
+    await expect(api.claimTogetherTrial(credential)).rejects.toMatchObject({ code: 'billing_unavailable' })
+    expect(fetch).not.toHaveBeenCalled()
   })
 })

@@ -82,6 +82,7 @@
 
         <!-- Agent -->
         <AppSideBarNotchItem
+          v-if="AGENT_UI_ENABLED"
           data-testid="nav-agent"
           icon="smart_toy"
           :icon-size="iconSize"
@@ -153,7 +154,7 @@
 
 <script lang="ts" setup>
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
-import { useAgentChatEntry, useAgentChatStatus } from '@/composables/agentChat'
+import { AGENT_UI_ENABLED, useAgentChatEntry, useAgentChatStatus } from '@/composables/agentChat'
 import { useDialog } from '@/composables/dialog'
 import { useInstanceGroup } from '@/composables/instanceGroup'
 import { kMultiplayerEntry } from '@/composables/multiplayerEntry'

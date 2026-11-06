@@ -1,555 +1,202 @@
-import { HAS_DEV_SERVER } from '../constant'
+import { ElectronUpdateOperation, VARDRYNN_API_VERSION } from '@xmcl/runtime-api'
+import type { ReleaseFile, ReleaseInfo, UpdateCapability } from '@xmcl/runtime-api'
+import type { DownloadUpdateOptions, LauncherAppUpdater } from '@xmcl/runtime/app'
+import { resolveVardrynnApiOrigin } from '~/app/vardrynnApiOrigin'
 import {
-  DownloadBaseOptions,
-  ProgressTracker,
-  download,
-  getDownloadBaseOptions,
-} from '@xmcl/file-transfer'
-import { Tracker, onDownloadSingle } from '@xmcl/installer'
-import {
-  DownloadUpdateTrackerEvents,
-  ElectronUpdateOperation,
-  ReleaseInfo,
-} from '@xmcl/runtime-api'
-import { DownloadUpdateOptions, LauncherAppUpdater } from '@xmcl/runtime/app'
-import { AnyError, isSystemError } from '@xmcl/utils'
-import { spawn } from 'child_process'
-import { app, shell } from 'electron'
-import * as updater from 'electron-updater'
-import { AppUpdater, CancellationToken, UpdaterSignal } from 'electron-updater'
-import { createReadStream, createWriteStream } from 'fs'
-import { readFile, rename as renameAsync, unlink as unlinkAsync, writeFile } from 'fs-extra'
-import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
-import { platform } from 'os'
-import { basename, dirname, join } from 'path'
+  isNewerVersion,
+  parseVardrynnRelease,
+  parseVardrynnReleaseKey,
+  selectVerifiedAsset,
+  sha256File,
+  verifyReleaseSignature,
+} from '~/app/vardrynnRelease'
+import { createHash } from 'crypto'
+import { createWriteStream } from 'fs'
+import { mkdir, readdir, rename, rm } from 'fs/promises'
+import { basename, join } from 'path'
+import { Readable, Transform } from 'stream'
 import { pipeline } from 'stream/promises'
-import { setTimeout } from 'timers/promises'
-import { extract as extractTar } from 'tar-stream'
-import { promisify } from 'util'
-import { createGunzip } from 'zlib'
-import { Logger, kGFW } from '~/infra'
-import { kSettings } from '~/settings'
-import { checksum } from '~/util/fs'
 import type ElectronLauncherApp from '../ElectronLauncherApp'
-import { ensureElevateExe } from './elevate'
-import { isExternallyUpdatedAppImage } from './appImageUpdatePolicy'
+import { defaultInstallerHost, installInPlace, type InPlaceInstall } from './updateInstaller'
 
-const kPatched = Symbol('Patched')
+const CHECK_TIMEOUT = 10_000
 
-/**
- * Only download asar file update.
- *
- * If the this update is not a full update but an incremental update,
- * you can call this to download asar update
- */
-async function downloadAsarUpdate(
-  app: ElectronLauncherApp,
-  destination: string,
-  version: string,
-  options?: {
-    abortSignal?: AbortSignal
-    tracker?: Tracker<DownloadUpdateTrackerEvents>
-  } & DownloadBaseOptions,
-): Promise<void> {
-  version = version.startsWith('v') ? version.substring(1) : version
-  const pl = platform()
-  let platformFlag = pl === 'win32' ? 'win' : pl === 'darwin' ? 'mac' : 'linux'
-  if (process.arch === 'arm64') {
-    platformFlag += '-arm64'
-  } else if (process.arch === 'ia32') {
-    platformFlag += '-ia32'
-  }
-  const file = `app-${version}-${platformFlag}.asar`
-  const github = `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${version}/${file}`
-
-  // Skip the download entirely if the pending file already matches the
-  // published checksum.
-  try {
-    const sha256Response = await app.fetch(github + '.sha256', { signal: options?.abortSignal })
-    const sha256 = sha256Response.ok ? (await sha256Response.text()).trim() : ''
-    const actual = await checksum(destination, 'sha256').catch(() => '')
-    if (sha256 && sha256 === actual) {
-      return
-    }
-  } catch {
-    // Ignore — fall through to download.
-  }
-
-  const gfw = await app.registry.get(kGFW)
-  const errors: Error[] = []
-
-  const isAbort = (e: unknown) => e instanceof Error && e.name === 'AbortError'
-
-  // Inside the GFW, pull the asar from the npmmirror tarball of the
-  // per-platform `@xmcl/app-<platform>` package. npmmirror's per-file
-  // (`/files/`) endpoint is whitelist-only, but package tarballs are
-  // unrestricted, so we download the (small) tarball and extract `app.asar`.
-  if (gfw.inside) {
-    const tarball = `https://registry.npmmirror.com/@xmcl/app-${platformFlag}/-/app-${platformFlag}-${version}.tgz`
-    try {
-      await downloadAsarFromTarball(app, tarball, destination, options)
-      return
-    } catch (e) {
-      if (isAbort(e)) return
-      errors.push(Object.assign(e as Error, { name: 'UpdateAsarError', url: tarball }))
-    }
-  }
-
-  // Fall back to the GitHub release asset (gzipped when available).
-  try {
-    await downloadGzAsar(app, github, destination, options)
-    return
-  } catch (e) {
-    if (isAbort(e)) return
-    errors.push(Object.assign(e as Error, { name: 'UpdateAsarError', url: github }))
-  }
-
-  throw new AggregateError(
-    errors.flatMap((e) => (e instanceof AggregateError ? e.errors : e)),
-    'Fail to download asar update',
-  )
+export interface UpdaterOptions {
+  /** Vardrynn service origin; updates are off without one. */
+  origin?: string
+  /** Raw Ed25519 public key that release signatures must verify against. */
+  publicKey?: Buffer
+  version: string
+  platform: string
+  arch: string
+  stagingDirectory: string
+  fetch: typeof fetch
+  /** Hands a verified package to the OS. Resolves to an error message, or empty on success. */
+  open: (path: string) => Promise<string>
+  /** Installs a verified package over the running app when the platform allows it. */
+  install: (path: string) => Promise<InPlaceInstall>
+  quit: () => void
+  relaunch: () => void
 }
 
-/**
- * Download an npm package tarball and extract its `package/app.asar` entry to
- * `destination`. Used for the npmmirror mirror path (see `downloadAsarUpdate`).
- */
-async function downloadAsarFromTarball(
-  app: ElectronLauncherApp,
-  url: string,
-  destination: string,
-  options?: {
-    abortSignal?: AbortSignal
-    tracker?: Tracker<DownloadUpdateTrackerEvents>
-  } & DownloadBaseOptions,
-): Promise<void> {
-  const tempTgz = destination + '.tgz'
-  await download({
-    url,
-    destination: tempTgz,
-    tracker: onDownloadSingle(options?.tracker, 'download-update.asar', { url }),
-    signal: options?.abortSignal,
-    ...getDownloadBaseOptions(options),
+function defaultOptions(app?: ElectronLauncherApp): UpdaterOptions {
+  // Same inputs as `pluginFlights`, so both agree on whether the service is configured.
+  const origin = resolveVardrynnApiOrigin(process.env.VARDRYNN_API_BASE_URL, {
+    allowLoopback: process.env.NODE_ENV !== 'production',
   })
-  try {
-    await new Promise<void>((resolve, reject) => {
-      const tar = extractTar()
-      let found = false
-      tar.on('entry', (header, stream, next) => {
-        if (!found && (header.name === 'package/app.asar' || header.name.endsWith('/app.asar'))) {
-          found = true
-          const out = createWriteStream(destination)
-          out.on('error', reject)
-          out.on('finish', next)
-          stream.pipe(out)
-        } else {
-          stream.on('end', next)
-          stream.on('error', reject)
-          stream.resume()
-        }
-      })
-      tar.on('error', reject)
-      tar.on('finish', () => {
-        if (found) resolve()
-        else reject(new AnyError('UpdateAsarError', `No app.asar found in tarball ${url}`))
-      })
-      createReadStream(tempTgz).pipe(createGunzip()).pipe(tar)
-    })
-  } finally {
-    await unlinkAsync(tempTgz).catch(() => {})
+  return {
+    origin,
+    publicKey: parseVardrynnReleaseKey(process.env.VARDRYNN_RELEASE_PUBLIC_KEY),
+    version: app?.version ?? '0.0.0',
+    platform: process.platform,
+    arch: process.arch,
+    stagingDirectory: join(app?.appDataPath ?? '', 'updates'),
+    fetch: (input, init) => (app?.fetch ?? fetch)(input as any, init),
+    open: async (path) => (await import('electron')).shell.openPath(path),
+    install: async (path) => {
+      const { app: electron } = await import('electron')
+      return installInPlace(defaultInstallerHost(electron.isPackaged, app?.appDataPath ?? ''), path)
+    },
+    quit: () => app?.quit(),
+    relaunch: () => app?.relaunch(),
   }
 }
 
 /**
- * Download a raw asar (or its `.gz` sibling when present) and write it to
- * `destination`. Used for the GitHub release-asset path.
+ * Updates come only from the Vardrynn release endpoint and are accepted only with an
+ * Ed25519 signature from the key compiled into this build. The signature covers the
+ * file hash, version, platform and architecture; the download is then hashed in full.
+ * Installation replaces the app in place where possible (macOS bundle swap, Linux dpkg) and
+ * otherwise hands the verified package to the OS.
  */
-async function downloadGzAsar(
-  app: ElectronLauncherApp,
-  url: string,
-  destination: string,
-  options?: {
-    abortSignal?: AbortSignal
-    tracker?: Tracker<DownloadUpdateTrackerEvents>
-  } & DownloadBaseOptions,
-): Promise<void> {
-  const gzUrl = url + '.gz'
-  const gzResponse = await app
-    .fetch(gzUrl, { method: 'HEAD', signal: options?.abortSignal })
-    .catch(() => null)
-  const downloadUrl = gzResponse?.ok ? gzUrl : url
-
-  const tempFile = destination + '.tmp'
-  await download({
-    url: downloadUrl,
-    destination: tempFile,
-    tracker: onDownloadSingle(options?.tracker, 'download-update.asar', { url: downloadUrl }),
-    signal: options?.abortSignal,
-    ...getDownloadBaseOptions(options),
-  })
-
-  if (downloadUrl === gzUrl) {
-    await pipeline(createReadStream(tempFile), createGunzip(), createWriteStream(destination))
-    await unlinkAsync(tempFile)
-  } else {
-    await renameAsync(tempFile, destination)
-  }
-}
-
-async function hintUserDownload(): Promise<void> {
-  shell.openExternal('https://xmcl.app')
-}
-
-async function downloadAppInstaller(
-  launcherApp: ElectronLauncherApp,
-  options?: {
-    abortSignal?: AbortSignal
-    tracker?: Tracker<DownloadUpdateTrackerEvents>
-  } & DownloadBaseOptions,
-): Promise<void> {
-  const destination = join(app.getPath('downloads'), 'XMCL.appinstaller')
-  const url = 'https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller'
-
-  await download({
-    url,
-    destination,
-    tracker: onDownloadSingle(options?.tracker, 'download-update.appx', { url }),
-    signal: options?.abortSignal,
-    ...getDownloadBaseOptions(options),
-  })
-
-  shell.showItemInFolder(destination)
-  await setTimeout(1000)
-  await shell.openPath(destination)
-  launcherApp.exit()
-}
-
-async function getUpdateAsarViaBatArgs(
-  appAsarPath: string,
-  updateAsarPath: string,
-  appDataPath: string,
-  elevatePath?: string,
-): Promise<string[]> {
-  const psPath = join(appDataPath, 'AutoUpdate.bat')
-  await writeFile(
-    psPath,
-    [
-      '@echo off',
-      'chcp 65001',
-      '%WinDir%\\System32\\timeout.exe 2',
-      `taskkill /f /im "${basename(process.argv[0])}"`,
-      `copy /Y "${updateAsarPath}" "${appAsarPath}"`,
-      `start /b "" /d "${process.cwd()}" ${process.argv.map((s) => `"${s}"`).join(' ')}`,
-    ].join('\r\n'),
-  )
-
-  return elevatePath ? [elevatePath, psPath] : ['cmd.exe', '/c', psPath]
-}
-/**
- * Download the full update. This size can be larger as it carry the whole electron thing...
- */
-async function downloadFullUpdate(
-  app: ElectronLauncherApp,
-  appUpdater: AppUpdater,
-  options?: {
-    tracker?: Tracker<DownloadUpdateTrackerEvents>
-    abortSignal?: AbortSignal
-  },
-): Promise<void> {
-  const gfw = await app.registry.get(kGFW)
-
-  if (gfw.inside) {
-    // @ts-ignore
-    const executor = appUpdater.httpExecutor as any
-    if (!(kPatched in executor)) {
-      const createRequest = executor.createRequest.bind(executor)
-      Object.assign(executor, {
-        [kPatched]: true,
-        createRequest: (options: any, callback: any) => {
-          if (gfw.inside) {
-            options.hostname = 'files.0xc.cn'
-            options.pathname = `/Soft_Mirrors/github-release/Voxelum/x-minecraft-launcher/LatestRelease/${basename(options.pathname)}`
-            app.emit('download-cdn', 'electron', basename(options.pathname))
-          }
-          return createRequest(options, callback)
-        },
-      })
-    }
-  }
-
-  const tracker: ProgressTracker = {
-    progress: 0,
-    total: 0,
-    url: '',
-  }
-  options?.tracker?.({
-    phase: 'download-update.full',
-    payload: { progress: tracker },
-  })
-
-  const signal = new UpdaterSignal(appUpdater)
-  signal.progress((info) => {
-    tracker.progress = info.transferred
-    tracker.total = info.total
-    // tracker.speed = info.bytesPerSecond
-  })
-
-  const cancellationToken = new CancellationToken()
-  options?.abortSignal?.addEventListener('abort', () => {
-    cancellationToken.cancel()
-  })
-  await appUpdater.downloadUpdate(cancellationToken)
-}
-
-function isSameVersion(a: string, b: string) {
-  if (a.startsWith('v')) {
-    a = a.substring(1)
-  }
-  if (b.startsWith('v')) {
-    b = b.substring(1)
-  }
-  return a === b
-}
-
 export class ElectronUpdater implements LauncherAppUpdater {
-  private logger: Logger
+  readonly #options: UpdaterOptions
 
-  constructor(private app: ElectronLauncherApp) {
-    this.logger = app.getLogger('ElectronUpdater')
+  constructor(app?: ElectronLauncherApp, options?: Partial<UpdaterOptions>) {
+    this.#options = { ...defaultOptions(app), ...options }
   }
 
-  async #getUpdateFromSelfHost(): Promise<ReleaseInfo> {
-    const app = this.app
-    this.logger.log('Try get update from selfhost')
-    const { allowPrerelease, locale } = await app.registry.get(kSettings)
-    const queryString = `version=v${app.version}&prerelease=${allowPrerelease || false}`
-    const primary = await this.app
-      .fetch(`https://api.xmcl.app/latest?${queryString}`, {
-        headers: {
-          'Accept-Language': locale,
-        },
-      })
-      .catch(() => undefined)
-    // The Deno edge may return a regional 404. Fall back for any non-success
-    // response as well as a transport failure.
-    const response = primary?.ok
-      ? primary
-      : await this.app.fetch(`https://xmcl-core-api.azurewebsites.net/api/latest?${queryString}`, {
-        headers: {
-          'Accept-Language': locale,
-        },
-      })
-    if (!response.ok) {
-      throw new AnyError(
-        'UpdateError',
-        `Fail to get update from selfhost: ${await response.text()}`,
-        {},
-        { status: response.status },
-      )
-    }
-    const result = (await response.json()) as any
-    const files = result.assets.map((a: any) => ({
-      url: a.browser_download_url,
-      name: a.name,
-    })) as Array<{ url: string; name: string }>
-    const platformString =
-      app.platform.os === 'windows' ? 'win' : app.platform.os === 'osx' ? 'mac' : 'linux'
-    const version = result.tag_name.substring(1)
-    const updateInfo: ReleaseInfo = {
-      name: result.tag_name,
-      body: result.body,
-      date: result.published_at,
-      files,
-      newUpdate: !isSameVersion(app.version, result.tag_name),
-      operation: ElectronUpdateOperation.Manual,
-    }
-
-    const hasAsar = files.some((f) => f.name === `app-${version}-${platformString}.asar`)
-    if (this.app.platform.os === 'windows') {
-      if (this.app.env === 'appx') {
-        updateInfo.operation = ElectronUpdateOperation.Appx
-      } else {
-        updateInfo.operation = hasAsar
-          ? ElectronUpdateOperation.Asar
-          : ElectronUpdateOperation.Manual
-      }
-    } else if (this.app.platform.os === 'osx') {
-      updateInfo.operation = hasAsar ? ElectronUpdateOperation.Asar : ElectronUpdateOperation.Manual
-    } else {
-      updateInfo.operation =
-        hasAsar && this.app.env !== 'appimage'
-          ? ElectronUpdateOperation.Asar
-          : ElectronUpdateOperation.Manual
-    }
-
-    this.logger.log(`Got operation=${updateInfo.operation} update from selfhost`)
-
-    return updateInfo
+  get capability(): UpdateCapability | undefined {
+    return this.#options.origin && this.#options.publicKey
+      ? undefined
+      : { automatic: false, reason: 'not-configured' }
   }
 
-  async #getUpdateFromAutoUpdater(): Promise<ReleaseInfo> {
-    const autoUpdater = updater.autoUpdater
-
-    this.logger.log(`Check update via ${autoUpdater.getFeedURL()}`)
-    const info = await autoUpdater.checkForUpdates()
-    if (!info) throw new Error('No update info found')
-
-    const files = info.updateInfo.files.map((f) => ({ name: basename(f.url), url: f.url }))
-    const release: ReleaseInfo = {
-      name: info.updateInfo.version,
-      body: info.updateInfo.releaseNotes as string,
-      date: info.updateInfo.releaseDate,
-      files,
-      newUpdate: !isSameVersion(info.updateInfo.version, this.app.version),
-      operation: ElectronUpdateOperation.AutoUpdater,
+  #configured() {
+    const { origin, publicKey } = this.#options
+    if (!origin || !publicKey) {
+      throw new Error('Vardrynn updates are unavailable until a release source and signing key are configured')
     }
-
-    return release
+    return { origin, publicKey }
   }
 
-  private async quitAndInstallAsar() {
-    const appAsarPath = join(dirname(__dirname), 'app.asar')
-    const updateAsarPath = join(this.app.appDataPath, 'pending_update')
-
-    this.logger.log(`Install asar on ${this.app.platform.os} ${appAsarPath}`)
-    if (this.app.platform.os === 'windows') {
-      const elevatePath = await ensureElevateExe(this.app.appDataPath)
-
-      const appAsarPath = join(dirname(__dirname), 'app.asar')
-      const updateAsarPath = join(this.app.appDataPath, 'pending_update')
-
-      if (!existsSync(updateAsarPath)) {
-        throw new Error(`No update found: ${updateAsarPath}`)
-      }
-
-      let hasWriteAccess = await new Promise((resolve) => {
-        open(appAsarPath, 'a', (e, fd) => {
-          if (e) {
-            resolve(false)
-          } else {
-            closeSync(fd)
-            resolve(true)
-          }
-        })
-      })
-
-      // force elevation for now
-      hasWriteAccess = false
-      this.logger.log(
-        hasWriteAccess
-          ? `Process has write access to ${appAsarPath}`
-          : `Process does not have write access to ${appAsarPath}`,
-      )
-
-      const args = await getUpdateAsarViaBatArgs(
-        appAsarPath,
-        updateAsarPath,
-        this.app.appDataPath,
-        !hasWriteAccess ? elevatePath : undefined,
-      )
-      this.logger.log(`Install from windows: ${args.join(' ')}`)
-      const x = spawn(args[0], args.slice(1), {
-        cwd: this.app.appDataPath,
-        detached: true,
-        stdio: 'ignore',
-      })
-      x.unref()
-      this.app.quit()
-    } else {
-      await promisify(rename)(appAsarPath, appAsarPath + '.bk').catch(() => {})
-      try {
-        try {
-          await promisify(rename)(updateAsarPath, appAsarPath)
-        } catch (e) {
-          if (isSystemError(e) && e.code === 'EXDEV') {
-            await writeFile(appAsarPath, await readFile(updateAsarPath))
-          } else {
-            throw e
-          }
-        }
-        await promisify(unlink)(appAsarPath + '.bk').catch(() => {})
-        this.app.relaunch()
-      } catch (e) {
-        this.logger.error(
-          new AnyError('UpdateError', `Fail to rename update the file: ${appAsarPath}`, {
-            cause: e,
-          }),
-        )
-        await promisify(rename)(appAsarPath + '.bk', appAsarPath)
-      }
-    }
-  }
-
-  private async externallyUpdatedAppImage(): Promise<boolean> {
-    if (this.app.env !== 'appimage') return false
-    const settings = await this.app.registry.get(kSettings)
-    return isExternallyUpdatedAppImage(this.app.env, settings.appImageUpdateMode)
+  /** Staged packages for this or an older version were installed or are stale; they are large. */
+  async #pruneStaged() {
+    const entries = await readdir(this.#options.stagingDirectory).catch(() => [] as string[])
+    await Promise.all(entries
+      .filter((name) => !isNewerVersion(name, this.#options.version))
+      .map((name) => rm(join(this.#options.stagingDirectory, name), { recursive: true, force: true }).catch(() => undefined)))
   }
 
   async checkUpdateTask(): Promise<ReleaseInfo> {
-    // External or unstable-path AppImages only discover release metadata:
-    // checkForUpdates can start a download and register install-on-quit hooks.
-    if (await this.externallyUpdatedAppImage() || this.app.platform.os === 'windows' || this.app.platform.os === 'osx') {
-      return this.#getUpdateFromSelfHost()
+    const { origin, publicKey } = this.#configured()
+    await this.#pruneStaged()
+    const response = await this.#options.fetch(new URL(`/${VARDRYNN_API_VERSION}/releases/latest`, origin), {
+      // A redirect could leave the approved origin.
+      redirect: 'error',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(CHECK_TIMEOUT),
+    })
+    if (response.status === 404) throw new Error('No update info found')
+    if (!response.ok) throw new Error(`Vardrynn release service responded ${response.status}`)
+    const release = parseVardrynnRelease(await response.json().catch(() => undefined))
+    if (!release) throw new Error('Vardrynn release service returned an incompatible response')
+    const { platform, arch, version } = this.#options
+    const asset = selectVerifiedAsset(release, platform, arch, publicKey)
+    if (!asset) throw new Error(`No signed Vardrynn release for ${platform}-${arch}`)
+    return {
+      name: release.version,
+      body: release.notesUrl,
+      date: release.publishedAt,
+      files: [{
+        name: basename(new URL(asset.url).pathname),
+        url: asset.url,
+        platform: asset.platform,
+        arch: asset.arch,
+        sha256: asset.sha256,
+        signature: asset.signature,
+      }],
+      newUpdate: isNewerVersion(release.version, version),
+      operation: ElectronUpdateOperation.Verified,
     }
+  }
+
+  /** Never trust stored update info: re-check that the signature still verifies for this host. */
+  #verifiedFile(info: ReleaseInfo): ReleaseFile & { sha256: string } {
+    const { publicKey } = this.#configured()
+    const file = info.files[0]
+    if (
+      info.operation !== ElectronUpdateOperation.Verified ||
+      info.files.length !== 1 ||
+      !file?.sha256 || !file.signature || !file.platform || !file.arch ||
+      file.platform !== this.#options.platform || file.arch !== this.#options.arch ||
+      !verifyReleaseSignature(publicKey, info.name, file as any)
+    ) {
+      throw new Error('Update is not a signed Vardrynn release for this system')
+    }
+    const parsed = parseVardrynnRelease({
+      apiVersion: VARDRYNN_API_VERSION, version: info.name, channel: '', publishedAt: '', notesUrl: '',
+      assets: [file],
+    })
+    // A bad name could escape the staging directory; a bad url could reach an upstream host.
+    if (!parsed?.assets.length || file.name !== basename(file.name) || file.name.startsWith('.')) {
+      throw new Error('Update has an unsafe file reference')
+    }
+    return file as ReleaseFile & { sha256: string }
+  }
+
+  #stagedPath(info: ReleaseInfo, file: ReleaseFile) {
+    return join(this.#options.stagingDirectory, info.name, file.name)
+  }
+
+  async downloadUpdate(info: ReleaseInfo, options?: DownloadUpdateOptions): Promise<void> {
+    const file = this.#verifiedFile(info)
+    const destination = this.#stagedPath(info, file)
+    if (await sha256File(destination).then((h) => h === file.sha256, () => false)) return
+
+    await mkdir(join(this.#options.stagingDirectory, info.name), { recursive: true })
+    const partial = destination + '.partial'
+    const hash = createHash('sha256')
     try {
-      return await this.#getUpdateFromAutoUpdater()
+      const response = await this.#options.fetch(file.url, { signal: options?.abortSignal })
+      if (!response.ok || !response.body) throw new Error(`Update download responded ${response.status}`)
+      await pipeline(
+        Readable.fromWeb(response.body as any),
+        new Transform({ transform(chunk, _, done) { hash.update(chunk); done(null, chunk) } }),
+        createWriteStream(partial),
+        { signal: options?.abortSignal },
+      )
+      if (hash.digest('hex') !== file.sha256) throw new Error('Downloaded update does not match its signed checksum')
+      await rename(partial, destination)
     } catch (e) {
-      if (isSystemError(e) && e.code === 'ENOENT') {
-        return this.#getUpdateFromSelfHost()
-      }
-      this.logger.warn(e as Error)
+      await rm(partial, { force: true })
       throw e
     }
   }
 
-  async downloadUpdate(updateInfo: ReleaseInfo, options?: DownloadUpdateOptions): Promise<void> {
-    // Also guard stale/persisted AutoUpdater or Asar release information.
-    if (await this.externallyUpdatedAppImage()
-      || (this.app.env === 'appimage' && updateInfo.operation !== ElectronUpdateOperation.AutoUpdater)) {
-      await hintUserDownload()
-      return
+  async installUpdateAndQuit(info: ReleaseInfo): Promise<void> {
+    const file = this.#verifiedFile(info)
+    const path = this.#stagedPath(info, file)
+    // The staged file sat on disk since download, so it is hashed again before it runs.
+    if ((await sha256File(path).catch(() => undefined)) !== file.sha256) {
+      await rm(path, { force: true })
+      throw new Error('Staged update is missing or does not match its signed checksum; download it again')
     }
-    const tracker = options?.tracker
-    const abortSignal = options?.abortSignal
-
-    if (updateInfo.operation === ElectronUpdateOperation.AutoUpdater) {
-      await downloadFullUpdate(this.app, updater.autoUpdater, {
-        tracker,
-        abortSignal,
-      })
-    } else if (updateInfo.operation === ElectronUpdateOperation.Asar) {
-      const updatePath = join(this.app.appDataPath, 'pending_update')
-      await downloadAsarUpdate(this.app, updatePath, updateInfo.name, {
-        tracker,
-        abortSignal,
-      })
-    } else if (updateInfo.operation === ElectronUpdateOperation.Appx) {
-      await downloadAppInstaller(this.app, { tracker, abortSignal })
-    } else {
-      tracker?.({
-        phase: 'download-update.manual',
-        payload: {},
-      })
-      await hintUserDownload()
-    }
-  }
-
-  async installUpdateAndQuit(updateInfo: ReleaseInfo): Promise<void> {
-    if (await this.externallyUpdatedAppImage()
-      || (this.app.env === 'appimage' && updateInfo.operation !== ElectronUpdateOperation.AutoUpdater)) {
-      // Never invoke quitAndInstall, even with cached release metadata.
-      await hintUserDownload()
-      return
-    }
-    if (HAS_DEV_SERVER) {
-      this.logger.log('Currently is development environment. Skip to install update')
-      return
-    }
-    if (updateInfo.operation === ElectronUpdateOperation.Asar) {
-      await this.quitAndInstallAsar()
-    } else {
-      updater.autoUpdater.quitAndInstall()
-    }
+    const installed = await this.#options.install(path)
+    if (installed === 'relaunch') return this.#options.relaunch()
+    if (installed === 'quit') return this.#options.quit()
+    const failure = await this.#options.open(path)
+    if (failure) throw new Error(`Cannot open the update package: ${failure}`)
+    this.#options.quit()
   }
 }
