@@ -89,4 +89,18 @@ Behavior:
 - `DELETE /v1/account` erases identities and revokes all sessions at once. Recovery is signing in again with any linked provider; there are no passwords.
 - Billing and subscription routes (`/v1/xmcl-plus/*`, `/v1/billing/*`) do not exist; the launcher refuses them locally with `billing_unavailable`.
 
-Open: Microsoft Graph tokens for personal accounts are often opaque, so the application check only applies when the token is a readable JWT (a different issuer design, such as an ID token, would close this); no rate limiting on unauthenticated routes (add Cloudflare rules before enabling); Modrinth identity is not supported; D1 databases, `DB` bindings, all five OAuth settings and the three application registrations are provisioned (2026-11-05); real provider sign-in has not yet been exercised.
+Open: Microsoft Graph tokens for personal accounts are often opaque, so the application check only applies when the token is a readable JWT (a different issuer design, such as an ID token, would close this); no rate limiting on unauthenticated routes (add Cloudflare rules before enabling); Modrinth identity is not supported; D1 databases, `DB` bindings, all five OAuth settings and the three application registrations are provisioned (2026-11-05); production has not received the account code.
+
+### Development deployment and sign-in check (2026-11-06)
+
+`vardrynn-api-dev` runs `worker.js` and `accounts.js` from `cbfaf6d96`, uploaded by the Scripts API with `keep_bindings` for `d1`, `secret_text` and `plain_text`. A settings read before and after showed identical bindings: `DB`, the five OAuth secrets and the five S3 settings. Production (`vardrynn-api`) was not changed.
+
+Route checks on `https://dev-api.olaveapi.com`: `/v1/status` 200, `/v1/account` without a token 401, Google `authorize` returned Google's URL with the launcher's own loopback redirect, Discord `authorize` returned the service callback as redirect, the callback 302'd to the stored loopback port, a non-loopback redirect returned 400 `invalid_redirect_uri`, and a bad Microsoft token 401 `provider_rejected`.
+
+Real development launcher (`dev:main` with `VARDRYNN_API_BASE_URL=https://dev-api.olaveapi.com`, renderer on port 3010 because 3000 was taken), driven through the account service's IPC channel because no Vardrynn screen mounts the account panel yet (the multiplayer login dialog is disabled until phase 7):
+- Discord sign-in created an account (6.5 s); Google then linked by browser (14.6 s) and Microsoft by the in-app window (15.9 s), all on one account (`discord/web_link`, `google/web_link`, `microsoft/launcher_link`).
+- `refreshSession` extended the session; `getTogetherOverview` failed locally with `billing_unavailable`.
+- `revokeSession` cleared the main-process credential (`refreshAccount` then failed with `xmcl_account_session_missing`). Signing in with Discord again restored the same account with a new session and all three identities.
+- After restarting Electron, the stored session loaded and `refreshAccount` succeeded.
+
+Found: after sign-out, the renderer's synced account state still shows the old account and session IDs (identities are emptied), even after a page reload; the main process has no credential. The launcher needs an account screen before this matters, and the stale display should be fixed then. The test account (your Discord, Google and Microsoft identities) remains in `vardrynn-accounts-dev`.
