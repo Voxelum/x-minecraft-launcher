@@ -5,7 +5,6 @@
       height: `${totalHeight}px`,
       position: 'relative',
       width: '100%',
-      marginTop: `${-offsetTop}px`,
       zIndex: 0,
     }"
   >
@@ -25,7 +24,7 @@
         top: 0,
         left: 0,
         width: '100%',
-        transform: `translateY(${virtualRow.start}px)`,
+        transform: `translateY(${virtualRow.start - offsetTop}px)`,
         zIndex: 0,
       }"
     >
@@ -86,9 +85,20 @@ const { t } = useI18n()
 const containerRef = shallowRef<HTMLElement | null>(null)
 const offsetTop = ref(0)
 
-watch(containerRef, container => {
-  if (container) {
-    nextTick().then(() => { offsetTop.value = container.offsetTop })
+// Measure the container's offset inside the scroll element's content (not
+// `container.offsetTop`, which is relative to whatever positioned ancestor
+// happens to exist). This offset is used as the virtualizer's `scrollMargin`
+// so the rendered range and the row positions stay aligned with the real
+// scroll coordinates even when the tree is preceded by other content.
+watch([containerRef, () => props.scrollElement], ([container, scrollElement]) => {
+  if (container && scrollElement) {
+    nextTick().then(() => {
+      offsetTop.value = container.getBoundingClientRect().top
+        - scrollElement.getBoundingClientRect().top
+        + scrollElement.scrollTop
+    })
+  } else {
+    offsetTop.value = 0
   }
 })
 
@@ -195,7 +205,9 @@ const virtualizerOptions = computed(() => ({
   getScrollElement: () => props.scrollElement || null,
   estimateSize: () => 48,
   overscan: 10,
-  paddingStart: offsetTop.value,
+  // The container sits after other content inside the scroll element; teach
+  // the virtualizer about that offset so scroll coordinates map correctly.
+  scrollMargin: offsetTop.value,
 } satisfies Partial<VirtualizerOptions<HTMLElement, HTMLElement>>))
 
 // watch(virtualizerOptions, opt => {

@@ -78,7 +78,7 @@
       <div
         v-if="upgrade && !refreshing"
         ref="scrollRef"
-        class="visible-scroll flex flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden px-6 py-4"
+        class="visible-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden px-6 py-4"
       >
         <v-alert
           v-if="upgrade.incompatible && upgrade.incompatible.length > 0"
