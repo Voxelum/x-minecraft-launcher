@@ -279,13 +279,12 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
   }
 
   /**
-   * Disable the given mod files together with their dependency mods that are no
-   * longer required by any other enabled mod.
+   * Disable only the explicitly requested mod files, leaving dependencies enabled.
    */
   function disable(options: { path: string; files: string[] }) {
     const target = mods.value.filter(m => options.files.includes(m.path))
     const files = target.length > 0
-      ? resolveModsToDisable(target, mods.value).map(m => m.path)
+      ? resolveModsToDisable(target).map(m => m.path)
       : options.files
     return disableMods({ path: options.path, files })
   }
