@@ -7,7 +7,7 @@
   >
     <v-card class="select-none flex max-h-[90vh] flex-col overflow-hidden rounded-2xl border border-white/10 bg-surface/95 backdrop-blur-xl">
       <!-- Header -->
-      <div class="flex items-center px-6 pt-6 pb-4 border-b border-white/5">
+      <div class="flex shrink-0 items-center px-6 pt-6 pb-4 border-b border-white/5">
         <div class="flex items-center gap-3 flex-grow">
           <div
             class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -78,7 +78,7 @@
       <div
         v-if="upgrade && !refreshing"
         ref="scrollRef"
-        class="visible-scroll flex flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden px-6 py-4"
+        class="visible-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden px-6 py-4"
       >
         <v-alert
           v-if="upgrade.incompatible && upgrade.incompatible.length > 0"
@@ -226,7 +226,7 @@
           />
         </div>
 
-        <div class="rounded-xl border border-white/5 bg-surface-variant/15 p-2 overflow-hidden">
+        <div class="shrink-0 rounded-xl border border-white/5 bg-surface-variant/15 p-2 overflow-hidden">
           <InstanceManifestFileTree
             v-model="selected"
             :selectable="selectable"
@@ -274,7 +274,7 @@
 
       <v-divider class="mx-6 opacity-20" />
 
-      <div class="flex items-center px-6 py-4 border-t border-white/5 bg-surface-variant/5">
+      <div class="flex shrink-0 items-center px-6 py-4 border-t border-white/5 bg-surface-variant/5">
         <v-btn
           :disabled="refreshing"
           variant="text"
