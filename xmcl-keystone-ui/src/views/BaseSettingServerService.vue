@@ -65,10 +65,10 @@
         </v-btn>
       </div>
 
-      <v-alert v-if="status?.error" type="error" variant="tonal" density="compact">
-        {{ status.error }}
+      <v-alert v-if="operationError || status?.error" type="error" variant="tonal" density="compact">
+        {{ operationError || status?.error }}
       </v-alert>
-      <v-alert v-else-if="actionMessage" :type="actionMessage.ok ? 'success' : 'error'" variant="tonal" density="compact">
+      <v-alert v-if="actionMessage" :type="actionMessage.ok ? 'success' : 'error'" variant="tonal" density="compact">
         {{ actionMessage.message || t('server.remoteActionSuccess') }}
       </v-alert>
     </div>
@@ -82,6 +82,7 @@ import { kInstance } from '@/composables/instance'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { kInstanceServerLaunch } from '@/composables/instanceServerLaunch'
 import { kUserContext } from '@/composables/user'
+import { getErrorMessage } from '@/util/error'
 import { injection } from '@/util/inject'
 import type { InstanceServerConfig } from '@xmcl/instance'
 import { InstanceServiceKey, ServerServiceKey, type ServerServiceActionResult, type ServerServiceStatus } from '@xmcl/runtime-api'
@@ -101,6 +102,7 @@ const startCommand = ref('/bin/sh server.sh')
 const status = ref<ServerServiceStatus>()
 const actionMessage = ref<ServerServiceActionResult>()
 const statusLoading = ref(false)
+const operationError = ref('')
 
 const managerLabel = computed(() => status.value?.manager === 'windows-service'
   ? t('server.serviceWindows')
@@ -140,7 +142,7 @@ function getServerConfig(): InstanceServerConfig {
   }
 }
 
-async function saveDesiredService() {
+async function persistDesiredService() {
   const current = getServerConfig()
   await editInstance({
     instancePath: path.value,
@@ -155,23 +157,60 @@ async function saveDesiredService() {
   })
 }
 
-async function refreshStatus() {
+function clearFeedback() {
+  operationError.value = ''
+  actionMessage.value = undefined
+  if (status.value?.error) status.value = { ...status.value, error: undefined }
+}
+
+function reportError(error: unknown) {
+  operationError.value = getErrorMessage(error) || t('dataMigration.unknownError')
+}
+
+// Keep failures in the panel, including preparation failures before a service
+// action can return a structured result. Do not change global refresh semantics.
+function useServiceAction(action: () => Promise<void>) {
+  return useRefreshable(async () => {
+    clearFeedback()
+    try {
+      await action()
+    } catch (error) {
+      reportError(error)
+    }
+  })
+}
+
+async function saveDesiredService() {
+  clearFeedback()
+  try {
+    await persistDesiredService()
+  } catch (error) {
+    reportError(error)
+  }
+}
+
+async function fetchStatus() {
   if (!targetConfigured.value) {
     status.value = undefined
-    actionMessage.value = undefined
     return
   }
   statusLoading.value = true
   try {
     status.value = await service.getStatus(path.value, target)
+  } catch (error) {
+    reportError(error)
   } finally {
     statusLoading.value = false
   }
 }
 
-const { refresh: onInstall, refreshing: installing } = useRefreshable(async () => {
-  actionMessage.value = undefined
-  await saveDesiredService()
+async function refreshStatus() {
+  clearFeedback()
+  await fetchStatus()
+}
+
+const { refresh: onInstall, refreshing: installing } = useServiceAction(async () => {
+  await persistDesiredService()
   let launchOptions
   if (target === 'local') {
     const version = await serverLaunch.prepareServer()
@@ -184,24 +223,24 @@ const { refresh: onInstall, refreshing: installing } = useRefreshable(async () =
     startCommand: target === 'remote' ? startCommand.value : undefined,
     launchOptions,
   })
-  await refreshStatus()
+  await fetchStatus()
 })
 
-const { refresh: onStart, refreshing: starting } = useRefreshable(async () => {
+const { refresh: onStart, refreshing: starting } = useServiceAction(async () => {
   actionMessage.value = await service.start(path.value, target)
-  await refreshStatus()
+  await fetchStatus()
 })
-const { refresh: onStop, refreshing: stopping } = useRefreshable(async () => {
+const { refresh: onStop, refreshing: stopping } = useServiceAction(async () => {
   actionMessage.value = await service.stop(path.value, target)
-  await refreshStatus()
+  await fetchStatus()
 })
-const { refresh: onRestart, refreshing: restarting } = useRefreshable(async () => {
+const { refresh: onRestart, refreshing: restarting } = useServiceAction(async () => {
   actionMessage.value = await service.restart(path.value, target)
-  await refreshStatus()
+  await fetchStatus()
 })
-const { refresh: onUninstall, refreshing: uninstalling } = useRefreshable(async () => {
+const { refresh: onUninstall, refreshing: uninstalling } = useServiceAction(async () => {
   actionMessage.value = await service.uninstall(path.value, target)
-  await refreshStatus()
+  await fetchStatus()
 })
 
 watch([path, () => target, () => instance.value.remoteServer], () => {
