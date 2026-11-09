@@ -1432,6 +1432,22 @@ agent:
   accessRequiredHint: Assine o XMCL para usar o agente integrado ou configure seu próprio provedor de IA nas configurações.
   subscribeXmcl: Assinar o XMCL
   notConfiguredHint: Configure uma chave de API, modelo e endpoint compatível com OpenAI em Configurações → Geral → Agente de IA. Por exemplo, use OpenAI ou um gateway compatível com Claude.
+  telemetryConsentTitle: "Telemetria anônima"
+  telemetryConsentDescription: "Ajude a melhorar o XMCL enviando estatísticas de uso anônimas. Desativado por padrão e ativado apenas com sua permissão explícita."
+  telemetryConsentDetail: "Se você concordar, o XMCL envia: eventos de inicialização do aplicativo e do jogo (versão do Minecraft, mod loader), códigos de saída e sinais de falhas, identificadores com hash dos mods instalados, sistema operacional e arquitetura — para o Microsoft Azure Application Insights. O XMCL nunca envia suas senhas, tokens de sessão da Microsoft nem seus mundos salvos."
+  telemetryConsentAllow: "Permitir"
+  telemetryConsentDeny: "Não, obrigado"
+  telemetryConsentDecideLater: "Decidir depois"
+  telemetryConsentChangeAnytime: "Você pode mudar isso quando quiser: Configurações → Transparência de Dados."
+  telemetryConsentLearnMore: "Saiba mais"
+  transparencyTitle: "Transparência de Dados"
+  transparencyEndpoints: "Pontos de rede usados pelo launcher"
+  transparencyEvents: "Eventos enviados quando a telemetria está ativada"
+  transparencyOpenPolicy: "Abrir a Política de Privacidade"
+  aiAssistant: "Assistente de IA"
+  aiAssistantDescription: "Ative o agente de IA integrado e os modelos em nuvem. As solicitações são enviadas ao provedor de IA escolhido."
+  multiplayerTelemetry: "Telemetria multiplayer"
+  multiplayerTelemetryDescription: "Enviar diagnósticos de sessões multiplayer (identificadores de dispositivo e conta) ao serviço de sinalização. Parte da telemetria."
 setting:
   aiAgentApiKeyDescription: Configure um provedor compatível com OpenAI, como OpenAI ou um gateway para Claude. A chave é armazenada localmente neste dispositivo.
   aiAgentApiKeyPlaceholder: Chave de API do provedor OpenAI ou Claude

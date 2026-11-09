@@ -39,11 +39,18 @@
 
     <!-- Privacy & Telemetry -->
     <SettingItemSwitcher
-      v-model="disableTelemetry"
+      v-model="telemetryEnabled"
       :title="t('setting.disableTelemetry')"
-      :description="t('setting.disableTelemetryDescription')"
+      :description="t('setting.disableTelemetryDescriptionV2')"
       icon="privacy_tip"
     />
+    <a
+      class="ml-9 text-sm opacity-70 hover:opacity-100"
+      href="https://xmcl.app/en/privacy"
+      target="_blank"
+    >
+      {{ t('setting.transparencyOpenPolicy') }}
+    </a>
 
     <!-- GPU Optimization (Windows/Linux only) -->
     <template v-if="env?.os === 'linux' || env?.os === 'windows'">
@@ -269,7 +276,7 @@ const {
   developerMode,
   selectedLocale,
   replaceNative,
-  disableTelemetry,
+  telemetryEnabled,
   enableDiscord,
   quickActionShortcut,
   locales: rawLocales,

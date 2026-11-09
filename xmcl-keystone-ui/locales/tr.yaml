@@ -1522,6 +1522,22 @@ serverStatus:
   ping: Ping...
   refuse: §4Sunucu reddetti!
   timeout: §4Sunucu bağlantısı zaman aşımı!
+  telemetryConsentTitle: "Anonim telemetri"
+  telemetryConsentDescription: "Anonim kullanım istatistikleri göndererek XMCL'nin geliştirilmesine yardımcı ol. Varsayılan olarak kapalıdır ve yalnızca açık izninle çalışır."
+  telemetryConsentDetail: "Onaylarsan XMCL şunları gönderir: uygulama ve oyun başlatma olayları (Minecraft sürümü, mod yükleyici), çıkış kodları ve çökme işaretleri, yüklü modların karma (hash) kimlikleri, işletim sistemi ve mimari — Microsoft Azure Application Insights'a. XMCL asla şifrelerini, Microsoft oturum belirteçlerini veya dünya kayıtlarını göndermez."
+  telemetryConsentAllow: "İzin ver"
+  telemetryConsentDeny: "Hayır, teşekkürler"
+  telemetryConsentDecideLater: "Daha sonra karar ver"
+  telemetryConsentChangeAnytime: "Bunu istediğin zaman değiştirebilirsin: Ayarlar → Veri Şeffaflığı."
+  telemetryConsentLearnMore: "Daha fazla bilgi"
+  transparencyTitle: "Veri Şeffaflığı"
+  transparencyEndpoints: "Launcher'ın kullandığı ağ uç noktaları"
+  transparencyEvents: "Telemetri açıkken gönderilen olaylar"
+  transparencyOpenPolicy: "Gizlilik Politikasını Aç"
+  aiAssistant: "Yapay Zekâ Asistanı"
+  aiAssistantDescription: "Yerleşik AI ajanını ve bulut modellerini etkinleştir. İstekler seçilen AI sağlayıcısına gönderilir."
+  multiplayerTelemetry: "Çok Oyunculu Telemetrisi"
+  multiplayerTelemetryDescription: "Çok oyunculu oturum tanılamalarını (cihaz ve hesap kimlikleri) sinyal servisine gönder. Telemetrinin bir parçasıdır."
 setting:
   themeStore:
     name: Tema Deposu

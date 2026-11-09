@@ -1641,6 +1641,22 @@ serverStatus:
   ping: পিং করা হচ্ছে...
   refuse: §4সার্ভার প্রত্যাখ্যান করেছে!
   timeout: §4সার্ভারে সংযোগের সময়সীমা পার হয়ে গেছে!
+  telemetryConsentTitle: "বেনামী টেলিমেট্রি"
+  telemetryConsentDescription: "বেনামী ব্যবহারের পরিসংখ্যান পাঠিয়ে XMCL উন্নত করতে সাহায্য করুন। ডিফল্টভাবে বন্ধ থাকে এবং শুধুমাত্র আপনার স্পষ্ট অনুমতিতে চালু হয়।"
+  telemetryConsentDetail: "আপনি সম্মত হলে XMCL পাঠায়: অ্যাপ ও গেম চালুর ঘটনা (Minecraft সংস্করণ, mod loader), এক্সিট কোড ও ক্র্যাশ চিহ্ন, ইনস্টল করা মডের হ্যাশ-করা শনাক্তকারী, অপারেটিং সিস্টেম ও আর্কিটেকচার — Microsoft Azure Application Insights-এ। XMCL কখনোই আপনার পাসওয়ার্ড, Microsoft সেশন টোকেন বা সেভ করা বিশ্ব পাঠায় না।"
+  telemetryConsentAllow: "অনুমতি দিন"
+  telemetryConsentDeny: "না, ধন্যবাদ"
+  telemetryConsentDecideLater: "পরে সিদ্ধান্ত নিন"
+  telemetryConsentChangeAnytime: "যেকোনো সময় পরিবর্তন করা যাবে: সেটিংস → ডেটা স্বচ্ছতা।"
+  telemetryConsentLearnMore: "আরও জানুন"
+  transparencyTitle: "ডেটা স্বচ্ছতা"
+  transparencyEndpoints: "লঞ্চার যে নেটওয়ার্ক এন্ডপয়েন্ট ব্যবহার করে"
+  transparencyEvents: "টেলিমেট্রি চালু থাকলে যেসব ঘটনা পাঠানো হয়"
+  transparencyOpenPolicy: "গোপনীয়তা নীতি খুলুন"
+  aiAssistant: "AI সহকারী"
+  aiAssistantDescription: "বিল্ট-ইন AI এজেন্ট ও ক্লাউড মডেল চালু করুন। অনুরোধগুলো নির্বাচিত AI প্রোভাইডারের কাছে পাঠানো হয়।"
+  multiplayerTelemetry: "মাল্টিপ্লেয়ার টেলিমেট্রি"
+  multiplayerTelemetryDescription: "মাল্টিপ্লেয়ার সেশনের ডায়াগনস্টিক (ডিভাইস ও অ্যাকাউন্ট আইডি) সিগন্যালিং সার্ভিসে পাঠান। টেলিমেট্রির অংশ।"
 setting:
   about: সম্পর্কে
   aboutBmclDescription: BMCL API চীনের মূল ভূখণ্ডের ব্যবহারকারীদের জন্য সুবিধাজনক ডাউনলোডের সুবিধা প্রদান করে

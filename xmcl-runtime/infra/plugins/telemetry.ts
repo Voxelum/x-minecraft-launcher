@@ -7,7 +7,6 @@ import {
   type RendererActionEnd,
   type RendererActionStart,
   type RendererExceptionTelemetry,
-  type XmclAccountSnapshot,
 } from '@xmcl/runtime-api'
 import {
   AzureMonitorLogExporter,
@@ -33,7 +32,6 @@ import {
   startRendererAction,
   setRuntimeTelemetryEnabled,
   setRuntimeTelemetryIdentity,
-  setRuntimeTelemetryUserId,
   trackCompletedSpan,
 } from '~/infra'
 import { takeCompletedMigrationTelemetry } from '~/app/migrate'
@@ -42,7 +40,6 @@ import { createPostprocessTelemetryTracker } from '~/install/postprocessTelemetr
 import { kResourceDatabaseTelemetry, kResourceManager } from '~/resource'
 import { kSettings } from '~/settings'
 import { UserService } from '~/user'
-import { XmclAccountService } from '~/xmclAccount'
 import { ErrorDiagnose } from '../errors/ErrorDiagnose'
 import { getMinecraftExitTelemetry, getMinecraftStartTelemetry } from '../launchTelemetry'
 import { setupResourceTelemetryClient } from '../telemetry_resource'
@@ -176,7 +173,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       return
     }
     app.registry.get(kSettings).then((settings) => {
-      if (settings.disableTelemetry) return
+      if (settings.telemetryConsent !== 'granted') return
       app.registry.get(kFlights).then((flights) => {
         if (flights[AGENT_TELEMETRY_FLIGHT] !== true) return
         runtimeTelemetry.trackTrace({
@@ -215,27 +212,15 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   app.waitEngineReady().then(async () => {
     const settings = await app.registry.get(kSettings)
 
-    try {
-      const state = await app.registry
-        .get(XmclAccountService)
-        .then((service) => service.getXmclAccountState())
-      const setUserId = (accountId?: string) => {
-        setRuntimeTelemetryUserId(accountId)
-      }
-      state.subscribe('snapshot', (snapshot: XmclAccountSnapshot) => {
-        setUserId(snapshot.account?.accountId)
-      })
-      state.subscribe('guest', () => {
-        setUserId()
-      })
-      setUserId(state.account?.accountId)
-    } catch {
-      logger.warn('Failed to initialize account-aware telemetry identity')
+    // Account-free telemetry: identity stays device-scoped
+    // (`setRuntimeTelemetryIdentity(clientSession)` above); telemetry is
+    // never linked to the XMCL Together account.
+
+    // Fail-closed consent: telemetry runs only on explicit opt-in.
+    const updateTelemetryEnabled = (consent: 'unset' | 'granted' | 'denied') => {
+      setRuntimeTelemetryEnabled(consent === 'granted')
     }
-    const updateTelemetryEnabled = (disableTelemetry: boolean) => {
-      setRuntimeTelemetryEnabled(!disableTelemetry)
-    }
-    updateTelemetryEnabled(settings.disableTelemetry)
+    updateTelemetryEnabled(settings.telemetryConsent)
     const migration = takeCompletedMigrationTelemetry()
     if (migration) {
       trackCompletedSpan({
@@ -251,8 +236,8 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         },
       })
     }
-    settings.subscribe('disableTelemetrySet', updateTelemetryEnabled)
-    if (!settings.disableTelemetry) {
+    settings.subscribe('telemetryConsentSet', updateTelemetryEnabled)
+    if (settings.telemetryConsent === 'granted') {
       runtimeTelemetry.trackEvent({
         name: 'app-start',
         properties: {
@@ -282,7 +267,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       manager.context.event.on(
         'resourceUpdateMetadataError',
         (payload: UpdateResourcePayload, err: any) => {
-          if (settings.disableTelemetry) return
+          if (settings.telemetryConsent !== 'granted') return
           runtimeTelemetry.trackException({
             exception: err,
             properties: {
@@ -303,7 +288,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       DOWNLOAD_SESSION_SAMPLE_RATE,
     )
     app.on('download-performance', (payload) => {
-      if (settings.disableTelemetry) return
+      if (settings.telemetryConsent !== 'granted') return
       if (!sampleDownloadPerformance) return
       runtimeTelemetry.trackEvent({
         name: 'download-performance',
@@ -315,7 +300,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     app.on(
       'install-manifest',
       createPostprocessTelemetryTracker((payload) => {
-        if (settings.disableTelemetry) return
+        if (settings.telemetryConsent !== 'granted') return
         runtimeTelemetry.trackEvent({
           name: 'install-postprocess',
           properties: payload.properties,
@@ -327,7 +312,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     )
 
     app.on('microsoft-auth-telemetry', (payload) => {
-      if (settings.disableTelemetry) return
+      if (settings.telemetryConsent !== 'granted') return
       runtimeTelemetry.trackEvent({
         name: payload.name,
         properties: payload.properties,
@@ -342,7 +327,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     // is intentionally included so modpack/file installs are measured beside
     // game, loader, and Java installs. No payload or local paths are sent.
     app.on('service-call-end', (serviceName, serviceMethod, duration, success, failureCategory) => {
-      if (settings.disableTelemetry) return
+      if (settings.telemetryConsent !== 'granted') return
       const operation = getInstallOperation(serviceName, serviceMethod)
       if (operation) {
         runtimeTelemetry.trackEvent({
@@ -400,7 +385,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
             operationId: options.operationId,
             startedAt: Date.now(),
           })
-          if (settings.disableTelemetry) return
+          if (settings.telemetryConsent !== 'granted') return
           runtimeTelemetry.trackEvent({
             name: 'minecraft-start',
             properties: getMinecraftStartTelemetry(options),
@@ -409,7 +394,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         })
         .on('minecraft-window-ready', ({ pid }) => {
           const launch = activeLaunches.get(pid)
-          if (settings.disableTelemetry || !launch) return
+          if (settings.telemetryConsent !== 'granted' || !launch) return
           runtimeTelemetry.trackEvent({
             name: 'minecraft-window-ready',
             measurements: {
@@ -420,7 +405,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         })
         .on('minecraft-exit', ({ pid, code, signal, crashReport, operationId, duration }) => {
           activeLaunches.delete(pid)
-          if (settings.disableTelemetry) return
+          if (settings.telemetryConsent !== 'granted') return
           runtimeTelemetry.trackEvent({
             name: 'minecraft-exit',
             properties: getMinecraftExitTelemetry({ code, signal, crashReport }),
@@ -431,7 +416,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     })
 
     app.logEmitter.on('failure', (destination, tag, e: Error) => {
-      if (settings.disableTelemetry) return
+      if (settings.telemetryConsent !== 'granted') return
       if (e instanceof Exception) {
         // Skip for exception
         return
@@ -440,7 +425,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         return
       }
       setImmediate(() => {
-        if (settings.disableTelemetry || isErrorTelemetryRecorded(e)) return
+        if (settings.telemetryConsent !== 'granted' || isErrorTelemetryRecorded(e)) return
         runtimeTelemetry.trackException({
           exception: e,
           properties: {
@@ -454,7 +439,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     // Track user authority
     app.registry.get(UserService).then((service) => {
       service.on('user-login', (authority) => {
-        if (settings.disableTelemetry) return
+        if (settings.telemetryConsent !== 'granted') return
         const provider = classifyExternalProvider(authority)
         runtimeTelemetry.trackEvent({
           name: 'user-login',

@@ -1502,6 +1502,22 @@ agent:
   accessRequiredHint: Abonniere XMCL, um den integrierten Agenten zu verwenden, oder konfiguriere deinen eigenen KI-Anbieter in den Einstellungen.
   subscribeXmcl: XMCL abonnieren
   notConfiguredHint: Legen Sie einen API-Schlüssel, ein Modell und einen OpenAI-kompatiblen Endpunkt unter Einstellungen → Allgemein → KI-Agent fest. Verwenden Sie zum Beispiel OpenAI oder ein Claude-kompatibles Gateway.
+  telemetryConsentTitle: "Anonyme Telemetrie"
+  telemetryConsentDescription: "Hilf mit, XMCL zu verbessern, indem du anonyme Nutzungsstatistiken sendest. Standardmäßig deaktiviert und nur mit deiner ausdrücklichen Zustimmung aktiv."
+  telemetryConsentDetail: "Wenn du zustimmst, sendet XMCL: App- und Spielstart-Ereignisse (Minecraft-Version, Mod-Loader), Exit-Codes und Absturzmarkierungen, gehashte Kennungen installierter Mods, Betriebssystem und Architektur an Microsoft Azure Application Insights. XMCL sendet niemals deine Passwörter, Microsoft-Sitzungstoken oder Weltspeicherstände."
+  telemetryConsentAllow: "Zulassen"
+  telemetryConsentDeny: "Nein, danke"
+  telemetryConsentDecideLater: "Später entscheiden"
+  telemetryConsentChangeAnytime: "Jederzeit änderbar unter Einstellungen → Datentransparenz."
+  telemetryConsentLearnMore: "Mehr erfahren"
+  transparencyTitle: "Datentransparenz"
+  transparencyEndpoints: "Vom Launcher verwendete Netzwerk-Endpunkte"
+  transparencyEvents: "Gesendete Ereignisse bei aktivierter Telemetrie"
+  transparencyOpenPolicy: "Datenschutzrichtlinie öffnen"
+  aiAssistant: "KI-Assistent"
+  aiAssistantDescription: "Aktiviere den integrierten KI-Agenten und Cloud-Modelle. Anfragen werden an den gewählten KI-Anbieter gesendet."
+  multiplayerTelemetry: "Multiplayer-Telemetrie"
+  multiplayerTelemetryDescription: "Diagnosedaten zu Mehrspieler-Sitzungen (Geräte- und Konto-Kennungen) an den Signaldienst senden. Teil der Telemetrie."
 setting:
   aiAgentApiKeyDescription: Konfigurieren Sie einen OpenAI-kompatiblen Anbieter, z. B. OpenAI oder ein Gateway für Claude. Der Schlüssel wird lokal auf diesem Gerät gespeichert.
   aiAgentApiKeyPlaceholder: API-Schlüssel für OpenAI- oder Claude-Anbieter

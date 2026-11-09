@@ -27,7 +27,16 @@ export class Settings implements SettingSchema {
   globalResolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string } = {}
   discordPresence = false
   developerMode = false
+  /**
+   * @deprecated Legacy switch, kept so old settings files keep loading.
+   * Telemetry is enabled iff `telemetryConsent === 'granted'`.
+   */
   disableTelemetry = false
+  /**
+   * Explicit telemetry consent. Fail-closed: 'unset' and 'denied' both
+   * keep telemetry off until the user explicitly grants it.
+   */
+  telemetryConsent: 'unset' | 'granted' | 'denied' = 'unset'
   multiplayerTransport: import('../multiplayer').MultiplayerTransport = 'webrtc'
   agentEndpoint = DEFAULT_AGENT_ENDPOINT
   agentModel = DEFAULT_AGENT_MODEL
@@ -122,6 +131,7 @@ export class Settings implements SettingSchema {
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
+    this.telemetryConsent = config.telemetryConsent ?? 'unset'
     this.multiplayerTransport = config.multiplayerTransport
     this.agentEndpoint = config.agentEndpoint
     this.agentModel = config.agentModel
@@ -226,8 +236,19 @@ export class Settings implements SettingSchema {
     this.maxAPISockets = val
   }
 
+  /**
+   * @deprecated Legacy alias. Setting this only updates the persisted
+   * legacy field; the effective gate is `telemetryConsentSet`.
+   */
   disableTelemetrySet(disable: boolean) {
     this.disableTelemetry = disable
+  }
+
+  telemetryConsentSet(consent: 'unset' | 'granted' | 'denied') {
+    this.telemetryConsent = consent
+    // Keep the legacy field in sync so downgrades keep honoring the
+    // user's choice: consent implies the legacy disable flag.
+    this.disableTelemetry = consent !== 'granted'
   }
 
   multiplayerTransportSet(transport: import('../multiplayer').MultiplayerTransport) {

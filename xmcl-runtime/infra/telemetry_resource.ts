@@ -149,7 +149,7 @@ export async function setupResourceTelemetryClient(
   const resourceTelemetry = new ResourceTelemetryBatch(
     (sha1s) => modMetadataService.getLocalMetadataFactsFromSha1s(sha1s),
     (item) => {
-      if (settings.disableTelemetry) return
+      if (settings.telemetryConsent !== 'granted') return
       trackTrace(item.message, item.properties)
     },
     (error) =>
@@ -177,12 +177,12 @@ export async function setupResourceTelemetryClient(
     manager.context.event.on(
       'resourceParsed',
       (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
-        if (settings.disableTelemetry) return
+        if (settings.telemetryConsent !== 'granted') return
         resourceTelemetry.enqueue(getPayload(sha1, metadata, undefined, domain))
       },
     )
     manager.context.event.on('resourceUpdate', (payloads: UpdateResourcePayload[]) => {
-      if (settings.disableTelemetry) return
+      if (settings.telemetryConsent !== 'granted') return
       for (const payload of payloads) {
         if (payload.metadata) {
           const copy = { ...payload.metadata } as any

@@ -1639,6 +1639,22 @@ serverStatus:
   ping: पिङ्ग्...
   refuse: §4सेवाप्रदाता अस्वीकृतवान्!
   timeout: §4सम्पर्ककालः समाप्तः!
+  telemetryConsentTitle: "अनामकदूरमापनम् (टेलिमेट्री)"
+  telemetryConsentDescription: "अज्ञातनामप्रयोगसांख्यिकीं प्रेषयित्वा XMCL-उन्नयने साहाय्यं कुरु। ऊर्ध्वतः निष्क्रियं भवति, भवतः स्पष्टानुमत्या एव प्रचलति।"
+  telemetryConsentDetail: "यदि भवान् सम्मतः भवति, तर्हि XMCL प्रेषयति: अनुप्रयोगक्रीडायोः आरम्भघटनाः (Minecraft-संस्करणम्, mod loader), निर्गमकोडाः, विफलताचिह्नानि, प्रतिष्ठितमॉड्गणस्य हैशपहचानचिह्नानि, सञ्चालकतन्त्री वास्तुविन्यासश्च — Microsoft Azure Application Insights प्रति। XMCL कदापि भवतः गुह्यपदानि, Microsoft-सत्रटोकनानि, लोकसंरक्षणानि च न प्रेषयति।"
+  telemetryConsentAllow: "अनुमतिः"
+  telemetryConsentDeny: "नहि, धन्यवादः"
+  telemetryConsentDecideLater: "Decide later"
+  telemetryConsentChangeAnytime: "कदापि परिवर्तयितुं शक्यम्: विन्यासाः → दत्तपारदर्शिता।"
+  telemetryConsentLearnMore: "अधिकं जानीहि"
+  transparencyTitle: "दत्तपारदर्शिता"
+  transparencyEndpoints: "प्रक्षेपकेन उपयुञ्जन्ते जालस्य अन्त्यबिन्दवः"
+  transparencyEvents: "दूरमापनं सक्रिये सति प्रेषिताः घटनाः"
+  transparencyOpenPolicy: "गोपनीयतानीतिः उद्घाट्यताम्"
+  aiAssistant: "कृत्रिमबुद्धिसहायकः (AI)"
+  aiAssistantDescription: "निर्मितः AI-प्रतिनिधिः गगनमॉडल्गणश्च प्रकार्यन्ताम्। अनुरोधाः चितैः AI-प्रदातृभ्यः प्रेष्यन्ते।"
+  multiplayerTelemetry: "बहुक्रीडकदूरमापनम्"
+  multiplayerTelemetryDescription: "बहुक्रीडकसत्राणां निदानसूचनाः (उपकरणलेख्यानि) सिग्नलिङ्सेवायै प्रेषयतु। दूरमापनस्य अंशः।"
 setting:
   about: विषये
   aboutBmclDescription: BMCL API प्रदान करोति अवतरणानि चीनदेशे।

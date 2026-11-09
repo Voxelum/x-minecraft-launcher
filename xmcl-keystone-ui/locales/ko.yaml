@@ -1513,6 +1513,22 @@ serverStatus:
   ping: 핑 중...
   refuse: §4서버가 거부했습니다!
   timeout: §4서버 연결 시간 초과!
+  telemetryConsentTitle: "익명 텔레메트리"
+  telemetryConsentDescription: "익명 사용 통계를 보내 XMCL 개선에 도움을 주세요. 기본값은 꺼짐이며 명시적인 동의가 있을 때만 작동합니다."
+  telemetryConsentDetail: "동의하시면 XMCL이 다음을 Microsoft Azure Application Insights로 전송합니다: 앱 및 게임 시작 이벤트(Minecraft 버전, 모드 로더), 종료 코드 및 충돌 표식, 설치된 모드의 해시 식별자, 운영체제 및 아키텍처. XMCL은 비밀번호, Microsoft 세션 토큰, 월드 저장 데이터를 절대 전송하지 않습니다."
+  telemetryConsentAllow: "허용"
+  telemetryConsentDeny: "아니요, 괜찮습니다"
+  telemetryConsentDecideLater: "나중에 결정"
+  telemetryConsentChangeAnytime: "언제든지 변경할 수 있습니다: 설정 → 데이터 투명성."
+  telemetryConsentLearnMore: "자세히 보기"
+  transparencyTitle: "데이터 투명성"
+  transparencyEndpoints: "런처가 사용하는 네트워크 엔드포인트"
+  transparencyEvents: "텔레메트리가 켜져 있을 때 전송되는 이벤트"
+  transparencyOpenPolicy: "개인정보 처리방침 열기"
+  aiAssistant: "AI 어시스턴트"
+  aiAssistantDescription: "내장 AI 에이전트와 클라우드 모델을 활성화합니다. 요청은 선택한 AI 공급자에게 전송됩니다."
+  multiplayerTelemetry: "멀티플레이어 텔레메트리"
+  multiplayerTelemetryDescription: "멀티플레이어 세션 진단(기기 및 계정 ID)을 시그널링 서비스로 전송합니다. 텔레메트리의 일부입니다."
 setting:
   themeStore:
     name: 테마 저장소

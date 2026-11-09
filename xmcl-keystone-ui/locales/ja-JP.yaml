@@ -1528,6 +1528,22 @@ agent:
   accessRequiredHint: 内蔵エージェントを使用するには XMCL に登録するか、設定で独自の AI プロバイダーを構成してください。
   subscribeXmcl: XMCL に登録
   notConfiguredHint: 設定 → 一般 → AIエージェントで API キー、モデル、OpenAI 互換エンドポイントを設定してください。たとえば、OpenAI または Claude 互換ゲートウェイを使用します。
+  telemetryConsentTitle: "匿名テレメトリー"
+  telemetryConsentDescription: "匿名の利用統計を送信してXMCLの改善にご協力ください。既定ではオフで、明示的な同意がある場合にのみ動作します。"
+  telemetryConsentDetail: "同意すると、XMCLは以下をMicrosoft Azure Application Insightsへ送信します：アプリとゲームの起動イベント（Minecraftのバージョン、mod loader）、終了コードとクラッシュの兆候、インストール済みmodのハッシュ識別子、OSとアーキテクチャ。XMCLがパスワード、Microsoftセッショントークン、ワールドデータを送信することはありません。"
+  telemetryConsentAllow: "許可する"
+  telemetryConsentDeny: "いいえ、結構です"
+  telemetryConsentDecideLater: "後で決める"
+  telemetryConsentChangeAnytime: "いつでも変更できます：設定 → データ透明性。"
+  telemetryConsentLearnMore: "詳しく見る"
+  transparencyTitle: "データ透明性"
+  transparencyEndpoints: "ランチャーが使用するネットワークエンドポイント"
+  transparencyEvents: "テレメトリー有効時に送信されるイベント"
+  transparencyOpenPolicy: "プライバシーポリシーを開く"
+  aiAssistant: "AIアシスタント"
+  aiAssistantDescription: "内蔵AIエージェントとクラウドモデルを有効にします。リクエストは選択したAIプロバイダーに送信されます。"
+  multiplayerTelemetry: "マルチプレイヤーテレメトリー"
+  multiplayerTelemetryDescription: "マルチプレイヤーセッションの診断情報（デバイスIDとアカウントID）をシグナリングサービスへ送信します。テレメトリーの一部です。"
 setting:
   aiAgentApiKeyDescription: OpenAI や Claude 用ゲートウェイなど、OpenAI 互換プロバイダーを設定します。キーはこのデバイスにローカル保存されます。
   aiAgentApiKeyPlaceholder: OpenAI または Claude プロバイダーの API キー

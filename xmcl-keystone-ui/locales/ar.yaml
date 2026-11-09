@@ -1485,6 +1485,22 @@ agent:
   accessRequiredHint: اشترك في XMCL لاستخدام العميل المدمج، أو قم بتهيئة موفر الذكاء الاصطناعي الخاص بك في الإعدادات.
   subscribeXmcl: الاشتراك في XMCL
   notConfiguredHint: اضبط مفتاح API والنموذج ونقطة نهاية متوافقة مع OpenAI في الإعدادات → عام → عميل الذكاء الاصطناعي. على سبيل المثال، استخدم OpenAI أو بوابة متوافقة مع Claude.
+  telemetryConsentTitle: "قياس عن بُعد مجهول الهوية"
+  telemetryConsentDescription: "ساعد في تحسين XMCL بإرسال إحصاءات استخدام مجهولة. معطّل افتراضيًا ولا يعمل إلا بموافقتك الصريحة."
+  telemetryConsentDetail: "إذا وافقت، يرسل XMCL: أحداث تشغيل التطبيق واللعبة (إصدار Minecraft وloader المودات)، رموز الخروج ومؤشرات الأعطال، معرّفات مجزأة (hash) للمودات المثبتة، نظام التشغيل والبنية — إلى Microsoft Azure Application Insights. لا يرسل XMCL أبدًا كلمات المرور أو رموز جلسة Microsoft أو عوالمك المحفوظة."
+  telemetryConsentAllow: "السماح"
+  telemetryConsentDeny: "لا، شكرًا"
+  telemetryConsentDecideLater: "قرر لاحقاً"
+  telemetryConsentChangeAnytime: "يمكنك تغيير هذا في أي وقت: الإعدادات → شفافية البيانات."
+  telemetryConsentLearnMore: "اعرف المزيد"
+  transparencyTitle: "شفافية البيانات"
+  transparencyEndpoints: "نقاط النهاية الشبكية التي يستخدمها المشغّل"
+  transparencyEvents: "الأحداث المُرسلة عند تمكين القياس عن بُعد"
+  transparencyOpenPolicy: "افتح سياسة الخصوصية"
+  aiAssistant: "مساعد الذكاء الاصطناعي"
+  aiAssistantDescription: "تفعيل وكيل الذكاء الاصطناعي المدمج والنماذج السحابية. تُرسل الطلبات إلى مزوّد الذكاء الاصطناعي المختار."
+  multiplayerTelemetry: "قياس عن بُعد للعب الجماعي"
+  multiplayerTelemetryDescription: "إرسال بيانات تشخيص جلسات اللعب الجماعي (معرّفا الجهاز والحساب) إلى خدمة الإشارات. جزء من القياس عن بُعد."
 setting:
   aiAgentApiKeyDescription: قم بتكوين موفر متوافق مع OpenAI، مثل OpenAI أو بوابة لـ Claude. يتم تخزين المفتاح محليًا على هذا الجهاز.
   aiAgentApiKeyPlaceholder: مفتاح API لموفر OpenAI أو Claude

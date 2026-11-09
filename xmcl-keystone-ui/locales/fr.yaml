@@ -1471,6 +1471,22 @@ agent:
   accessRequiredHint: Abonnez-vous à XMCL pour utiliser l’agent intégré, ou configurez votre propre fournisseur d’IA dans les paramètres.
   subscribeXmcl: S’abonner à XMCL
   notConfiguredHint: Définissez une clé API, un modèle et un endpoint compatible OpenAI dans Paramètres → Général → Agent IA. Par exemple, utilisez OpenAI ou une passerelle compatible avec Claude.
+  telemetryConsentTitle: "Télémétrie anonyme"
+  telemetryConsentDescription: "Aidez à améliorer XMCL en envoyant des statistiques d'utilisation anonymes. Désactivé par défaut, activé uniquement avec votre accord explicite."
+  telemetryConsentDetail: "Si vous acceptez, XMCL envoie : les événements de lancement de l'application et du jeu (version de Minecraft, mod loader), les codes de sortie et indicateurs de plantage, les identifiants hachés des mods installés, le système d'exploitation et l'architecture — vers Microsoft Azure Application Insights. XMCL n'envoie jamais vos mots de passe, jetons de session Microsoft ni vos sauvegardes de mondes."
+  telemetryConsentAllow: "Autoriser"
+  telemetryConsentDeny: "Non, merci"
+  telemetryConsentDecideLater: "Décider plus tard"
+  telemetryConsentChangeAnytime: "Modifiable à tout moment : Paramètres → Transparence des données."
+  telemetryConsentLearnMore: "En savoir plus"
+  transparencyTitle: "Transparence des données"
+  transparencyEndpoints: "Points de terminaison réseau utilisés par le launcher"
+  transparencyEvents: "Événements envoyés lorsque la télémétrie est activée"
+  transparencyOpenPolicy: "Ouvrir la politique de confidentialité"
+  aiAssistant: "Assistant IA"
+  aiAssistantDescription: "Activer l'agent IA intégré et les modèles cloud. Les requêtes sont envoyées au fournisseur IA choisi."
+  multiplayerTelemetry: "Télémétrie multijoueur"
+  multiplayerTelemetryDescription: "Envoyer les diagnostics des sessions multijoueur (identifiants d'appareil et de compte) au service de signalisation. Fait partie de la télémétrie."
 setting:
   aiAgentApiKeyDescription: Configurez un fournisseur compatible OpenAI, comme OpenAI ou une passerelle pour Claude. La clé est stockée localement sur cet appareil.
   aiAgentApiKeyPlaceholder: Clé API du fournisseur OpenAI ou Claude

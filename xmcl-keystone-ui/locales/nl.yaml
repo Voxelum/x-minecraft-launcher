@@ -1432,6 +1432,22 @@ agent:
   accessRequiredHint: Abonneer je op XMCL om de ingebouwde agent te gebruiken, of configureer je eigen AI-provider in de instellingen.
   subscribeXmcl: Abonneren op XMCL
   notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
+  telemetryConsentTitle: "Anonieme telemetrie"
+  telemetryConsentDescription: "Help XMCL te verbeteren door anonieme gebruiksstatistieken te versturen. Standaard uitgeschakeld en alleen actief met jouw expliciete toestemming."
+  telemetryConsentDetail: "Als je akkoord gaat, stuurt XMCL: app- en gamestart-gebeurtenissen (Minecraft-versie, mod-loader), afsluitcodes en crashvlaggen, gehashte id's van geïnstalleerde mods, besturingssysteem en architectuur — naar Microsoft Azure Application Insights. XMCL stuurt nooit je wachtwoorden, Microsoft-sessietokens of wereldopslagen."
+  telemetryConsentAllow: "Toestaan"
+  telemetryConsentDeny: "Nee, bedankt"
+  telemetryConsentDecideLater: "Later beslissen"
+  telemetryConsentChangeAnytime: "Op elk moment te wijzigen: Instellingen → Datatransparantie."
+  telemetryConsentLearnMore: "Meer info"
+  transparencyTitle: "Datatransparantie"
+  transparencyEndpoints: "Netwerkeindpunten die de launcher gebruikt"
+  transparencyEvents: "Gebeurtenissen die worden verstuurd wanneer telemetrie aan staat"
+  transparencyOpenPolicy: "Privacybeleid openen"
+  aiAssistant: "AI-assistent"
+  aiAssistantDescription: "Schakel de ingebouwde AI-agent en cloudmodellen in. Verzoeken worden naar de gekozen AI-provider gestuurd."
+  multiplayerTelemetry: "Multiplayer-telemetrie"
+  multiplayerTelemetryDescription: "Stuur diagnostiek van multiplayer-sessies (apparaat- en account-id's) naar de signaaldienst. Onderdeel van telemetrie."
 setting:
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
   aiAgentApiKeyPlaceholder: API-sleutel van OpenAI- of Claude-provider

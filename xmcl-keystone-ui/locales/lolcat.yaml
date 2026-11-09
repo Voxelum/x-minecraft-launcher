@@ -1434,6 +1434,22 @@ agent:
   accessRequiredHint: SUBSCRIEB TO XMCL TO USE TEH BUILT-IN AGENT, OR CONFIGURE UR OWN AI PROVIDR IN SETTINGZ.
   subscribeXmcl: SUBSCRIEB TO XMCL
   notConfiguredHint: SET AN API KEY, MODEL AN OPENAI-COMPATIBL ENDPOINT IN SETTINGZ → GENERAL → AI AGENT. FUR EXAMPL, USE OPENAI OR A CLAUDE-COMPATIBL GATEWAY.
+  telemetryConsentTitle: "Anonimuss Telemetry"
+  telemetryConsentDescription: "Halo owt abowt XMCL by sendin anonimuss usij statistiks. Of by defalt, only wif ur purrmisshun."
+  telemetryConsentDetail: "If u sayz yes, XMCL sendz: app an gaem start evnts (Minecraft vershun, mod loader), exit cods an crash flagz, hashd idz of ur modz, OS an architekjur — to Microsoft Azure Application Insights. XMCL nevar sendz ur passwurdz, Microsoft tokenz, or saved worlz. Pinky promiss."
+  telemetryConsentAllow: "OK, send it"
+  telemetryConsentDeny: "Nah, tanks"
+  telemetryConsentDecideLater: "Decide latur"
+  telemetryConsentChangeAnytime: "Chaynj it ennytime: Settinz → Data Transparinsee."
+  telemetryConsentLearnMore: "Lern moar"
+  transparencyTitle: "Data Transparinsee"
+  transparencyEndpoints: "Netwurk endpoynts launcher uzez"
+  transparencyEvents: "Evnts sent wen telemetry iz on"
+  transparencyOpenPolicy: "Opin Privasee Policy"
+  aiAssistant: "AI Buddy"
+  aiAssistantDescription: "Turn on built-in AI aijent an cloowd moddels. Requezts go to chozen AI providur."
+  multiplayerTelemetry: "Multiplayur Telemetry"
+  multiplayerTelemetryDescription: "Send multiplayur seshun diagnOstiks (devis an akkownt idz) to signalin servis. Part of telemetry."
 setting:
   aiAgentApiKeyDescription: CONFIGUR AN OPENAI-COMPATIBL PROVIDR, SUCH AS OPENAI OR A GATEWAY FUR CLAUDE. TEH KEY IZ STORED LOCALY ON DIS DEVICE.
   aiAgentApiKeyPlaceholder: OPENAI OR CLAUDE PROVIDR API KEY

@@ -1641,6 +1641,22 @@ serverStatus:
   ping: पिंग किया जा रहा है...
   refuse: §4सर्वर ने अस्वीकार कर दिया!
   timeout: §4सर्वर से कनेक्शन टाइमआउट!
+  telemetryConsentTitle: "गुमनाम टेलीमेट्री"
+  telemetryConsentDescription: "गुमनाम उपयोग आँकड़े भेजकर XMCL को बेहतर बनाने में मदद करें। डिफ़ॉल्ट रूप से बंद और केवल आपकी स्पष्ट सहमति पर सक्रिय।"
+  telemetryConsentDetail: "यदि आप सहमत होते हैं, तो XMCL भेजता है: ऐप और गेम लॉन्च घटनाएँ (Minecraft संस्करण, mod loader), एग्जिट कोड और क्रैश संकेत, इंस्टॉल किए गए मॉड के हैश किए गए पहचानकर्ता, ऑपरेटिंग सिस्टम और आर्किटेक्चर — Microsoft Azure Application Insights को। XMCL कभी भी आपके पासवर्ड, Microsoft सेशन टोकन या सेव किए गए वर्ल्ड नहीं भेजता।"
+  telemetryConsentAllow: "अनुमति दें"
+  telemetryConsentDeny: "नहीं, धन्यवाद"
+  telemetryConsentDecideLater: "बाद में तय करें"
+  telemetryConsentChangeAnytime: "इसे कभी भी बदल सकते हैं: सेटिंग्स → डेटा पारदर्शिता।"
+  telemetryConsentLearnMore: "और जानें"
+  transparencyTitle: "डेटा पारदर्शिता"
+  transparencyEndpoints: "लॉन्चर द्वारा उपयोग किए जाने वाले नेटवर्क एंडपॉइंट"
+  transparencyEvents: "टेलीमेट्री चालू होने पर भेजे जाने वाले इवेंट"
+  transparencyOpenPolicy: "गोपनीयता नीति खोलें"
+  aiAssistant: "AI सहायक"
+  aiAssistantDescription: "बिल्ट-इन AI एजेंट और क्लाउड मॉडल सक्षम करें। अनुरोध चयनित AI प्रदाता को भेजे जाते हैं।"
+  multiplayerTelemetry: "मल्टीप्लेयर टेलीमेट्री"
+  multiplayerTelemetryDescription: "मल्टीप्लेयर सेशन की डायग्नॉस्टिक्स (डिवाइस और खाता आईडी) सिग्नलिंग सेवा को भेजें। टेलीमेट्री का हिस्सा।"
 setting:
   about: के बारे में
   aboutBmclDescription: BMCL API चीनी मुख्य भूमि के उपयोगकर्ताओं के लिए सुविधाजनक डाउनलोड प्रदान करता है

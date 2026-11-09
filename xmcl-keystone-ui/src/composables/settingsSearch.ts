@@ -162,10 +162,10 @@ export function useSettingsSearchItems() {
       group: groupGeneral.value,
       keywords: 'telemetry analytics privacy data collection',
       get value() {
-        return s.disableTelemetry
+        return s.telemetryConsent === 'granted'
       },
       set value(v: boolean) {
-        s.disableTelemetrySet(v)
+        s.telemetryConsentSet(v ? 'granted' : 'denied')
       },
     })
 

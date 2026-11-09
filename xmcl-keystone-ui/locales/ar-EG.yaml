@@ -1639,6 +1639,22 @@ serverStatus:
   ping: جاري البينج...
   refuse: §4السيرفر رفض الاتصال!
   timeout: §4انتهت مهلة الاتصال بالسيرفر!
+  telemetryConsentTitle: "قياس عن بُعد مجهول الهوية"
+  telemetryConsentDescription: "ساعد في تحسين XMCL بإرسال إحصاءات استخدام مجهولة. واقف افتراضيًا ومش هيشتغل غير بموافقتك الصريحة."
+  telemetryConsentDetail: "لو وافقت، XMCL هيبعت: أحداث تشغيل التطبيق واللعبة (إصدار Minecraft وloader المودات)، أكواد الخروج وعلامات الأعطال، معرّفات مجزأة (hash) للمودات المثبتة، نظام التشغيل والبنية — لـ Microsoft Azure Application Insights. XMCL عمرو ما هيبعت كلمات السر أو رموز جلسة Microsoft أو العوالم المحفوظة بتاعتك."
+  telemetryConsentAllow: "السماح"
+  telemetryConsentDeny: "لا، شكرًا"
+  telemetryConsentDecideLater: "قرر لاحقاً"
+  telemetryConsentChangeAnytime: "تقدر تغيّرها في أي وقت: الإعدادات → شفافية البيانات."
+  telemetryConsentLearnMore: "اعرف أكتر"
+  transparencyTitle: "شفافية البيانات"
+  transparencyEndpoints: "نقاط النهاية الشبكية اللي بيستخدمها المشغّل"
+  transparencyEvents: "الأحداث المُرسلة لما القياس عن بُعد يكون شغّال"
+  transparencyOpenPolicy: "افتح سياسة الخصوصية"
+  aiAssistant: "مساعد الذكاء الاصطناعي"
+  aiAssistantDescription: "تفعيل وكيل الذكاء الاصطناعي المدمج والنماذج السحابية. الطلبات بتتبعت لمزوّد الذكاء الاصطناعي المختار."
+  multiplayerTelemetry: "قياس عن بُعد للعب الجماعي"
+  multiplayerTelemetryDescription: "إرسال بيانات تشخيص جلسات اللعب الجماعي (معرّفا الجهاز والحساب) لخدمة الإشارات. جزء من القياس عن بُعد."
 setting:
   about: حول البرنامج
   aboutBmclDescription: خدمة BMCL API بتوفر تنزيلات سريعة للمستخدمين في الصين

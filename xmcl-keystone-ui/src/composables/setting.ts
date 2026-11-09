@@ -209,9 +209,9 @@ export function useSettings() {
     get: () => state.value?.developerMode ?? false,
     set: v => state.value?.developerModeSet(v),
   })
-  const disableTelemetry = computed({
-    get: () => state.value?.disableTelemetry ?? false,
-    set: v => state.value?.disableTelemetrySet(v),
+  const telemetryEnabled = computed({
+    get: () => state.value?.telemetryConsent === 'granted',
+    set: v => state.value?.telemetryConsentSet(v ? 'granted' : 'denied'),
   })
   const multiplayerTransport = computed({
     get: () => state.value?.multiplayerTransport ?? 'webrtc',
@@ -269,7 +269,7 @@ export function useSettings() {
     selectedLocale,
     apiSetsPreference,
     apiSets,
-    disableTelemetry,
+    telemetryEnabled,
     multiplayerTransport,
     error,
     isValidating,

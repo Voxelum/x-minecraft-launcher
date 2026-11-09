@@ -1329,6 +1329,22 @@ serverStatus:
   ping: Соединение...
   refuse: §4Сервер отказал!
   timeout: §4Вышло время подключения к серверу!
+  telemetryConsentTitle: "Анонимная телеметрия"
+  telemetryConsentDescription: "Помогите улучшить XMCL, отправляя анонимную статистику использования. По умолчанию отключена и работает только с вашего явного согласия."
+  telemetryConsentDetail: "Если вы согласны, XMCL отправляет: события запуска приложения и игры (версия Minecraft, мод-лоадер), коды выхода и признаки сбоев, хешированные идентификаторы установленных модов, операционную систему и архитектуру — в Microsoft Azure Application Insights. XMCL никогда не отправляет ваши пароли, токены сессии Microsoft или сохранения миров."
+  telemetryConsentAllow: "Разрешить"
+  telemetryConsentDeny: "Нет, спасибо"
+  telemetryConsentDecideLater: "Решить позже"
+  telemetryConsentChangeAnytime: "Это можно изменить в любой момент: Настройки → Прозрачность данных."
+  telemetryConsentLearnMore: "Подробнее"
+  transparencyTitle: "Прозрачность данных"
+  transparencyEndpoints: "Сетевые эндпоинты, используемые лаунчером"
+  transparencyEvents: "События, отправляемые при включённой телеметрии"
+  transparencyOpenPolicy: "Открыть политику конфиденциальности"
+  aiAssistant: "AI-ассистент"
+  aiAssistantDescription: "Включить встроенного AI-агента и облачные модели. Запросы отправляются выбранному AI-провайдеру."
+  multiplayerTelemetry: "Телеметрия мультиплеера"
+  multiplayerTelemetryDescription: "Отправлять диагностику многопользовательских сессий (идентификаторы устройства и аккаунта) в signaling-сервис. Часть телеметрии."
 setting:
   themeStore:
     name: Хранилище тем

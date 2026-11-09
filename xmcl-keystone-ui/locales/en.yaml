@@ -2042,6 +2042,22 @@ setting:
   appImageAutoInstall: Install downloaded updates when quitting
   appImageExternalUpdateHint: If installed through Shelly or another manager, update there and keep external mode. Otherwise replace the AppImage yourself at its existing path. XMCL does not download or install updates in external mode, and does not change manager records or desktop entries.
   appImageSelfUpdateHint: Only choose self-managed for an AppImage you manage yourself, not one owned by Shelly or another manager. Built-in updates require an absolute AppImage path with no version number in the filename (for example xmcl.AppImage). If the name contains a version such as 0.73.0, quit XMCL, rename the file yourself, update your own desktop entry to that stable path, then launch it again. Until then updates remain manual. XMCL will not rename files for you. After changing modes, check for updates again.
+  telemetryConsentTitle: "Anonymous Telemetry"
+  telemetryConsentDescription: "Help improve XMCL by sending anonymous usage statistics. This is off by default and works only with your explicit consent."
+  telemetryConsentDetail: "If you agree, XMCL sends: app and game launch events (Minecraft version, mod loader), exit codes and crash flags, hashed identifiers of installed mods, operating system and architecture, to Microsoft Azure Application Insights. XMCL never sends your passwords, Microsoft session tokens or world saves."
+  telemetryConsentAllow: "Allow"
+  telemetryConsentDeny: "No, thanks"
+  telemetryConsentDecideLater: "Decide later"
+  telemetryConsentChangeAnytime: "You can change this anytime in Settings -> Data Transparency."
+  telemetryConsentLearnMore: "Learn more"
+  transparencyTitle: "Data Transparency"
+  transparencyEndpoints: "Network endpoints used by the launcher"
+  transparencyEvents: "Events sent when telemetry is enabled"
+  transparencyOpenPolicy: "Open Privacy Policy"
+  aiAssistant: "AI Assistant"
+  aiAssistantDescription: "Enable the built-in AI agent and cloud models. Prompts are sent to the selected AI provider."
+  multiplayerTelemetry: "Multiplayer Telemetry"
+  multiplayerTelemetryDescription: "Send multiplayer session diagnostics (device and account identifiers) to the signaling service. Part of telemetry."
   multiplayerTransport: Together transport
   multiplayerTransportDescription: Choose the WebRTC implementation used by Together. Changing transport disconnects active peers.
   about: About

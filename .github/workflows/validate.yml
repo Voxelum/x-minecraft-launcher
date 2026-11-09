@@ -49,6 +49,9 @@ jobs:
     - name: Check
       run: |
         pnpm check
+    - name: Telemetry parity guard
+      run: |
+        npx tsx scripts/check-telemetry-parity.ts
     - name: Test
       run: |
         pnpm vitest run --exclude 'packages/**'

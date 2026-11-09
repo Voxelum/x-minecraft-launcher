@@ -1641,6 +1641,22 @@ serverStatus:
   ping: Ping...
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
+  telemetryConsentTitle: "Anonymous Telemetry"
+  telemetryConsentDescription: "Help improve XMCL by sending anonymous usage statistics. This is off by default and works only with your explicit consent."
+  telemetryConsentDetail: "If you agree, XMCL sends: app and game launch events (Minecraft version, mod loader), exit codes and crash flags, hashed identifiers of installed mods, operating system and architecture, to Microsoft Azure Application Insights. XMCL never sends your passwords, Microsoft session tokens or world saves."
+  telemetryConsentAllow: "Allow"
+  telemetryConsentDeny: "No, thank you"
+  telemetryConsentDecideLater: "Decide later"
+  telemetryConsentChangeAnytime: "You can change this anytime in Settings -> Data Transparency."
+  telemetryConsentLearnMore: "Learn more"
+  transparencyTitle: "Data Transparency"
+  transparencyEndpoints: "Network endpoints used by the launcher"
+  transparencyEvents: "Events sent when telemetry is enabled"
+  transparencyOpenPolicy: "Open Privacy Policy"
+  aiAssistant: "AI Assistant"
+  aiAssistantDescription: "Enable the built-in AI agent and cloud models. Prompts are sent to the selected AI provider."
+  multiplayerTelemetry: "Multiplayer Telemetry"
+  multiplayerTelemetryDescription: "Send multiplayer session diagnostics (device and account identifiers) to the signalling service. Part of telemetry."
 setting:
   about: About
   aboutBmclDescription: BMCL API provides convenient downloads for users in Chinese Mainland

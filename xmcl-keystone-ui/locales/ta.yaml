@@ -1641,6 +1641,22 @@ serverStatus:
   ping: பிங் செய்யப்படுகிறது...
   refuse: §4சேவையகம் மறுத்துவிட்டது!
   timeout: §4சேவையக இணைப்பு காலாவதியானது!
+  telemetryConsentTitle: "அநாமதேய டெலிமெட்ரி"
+  telemetryConsentDescription: "அநாமதேய பயன்பாட்டு புள்ளிவிவரங்களை அனுப்பி XMCL-ஐ மேம்படுத்த உதவுங்கள். இயல்பாக முடக்கப்பட்டுள்ளது, உங்கள் வெளிப்படையான ஒப்புதலுடன் மட்டுமே செயல்படும்."
+  telemetryConsentDetail: "நீங்கள் சம்மதித்தால், XMCL அனுப்புவது: ஆப் மற்றும் கேம் தொடக்க நிகழ்வுகள் (Minecraft பதிப்பு, mod loader), வெளியேறும் குறியீடுகள் மற்றும் செயலிழப்பு குறிகள், நிறுவப்பட்ட மாட்களின் ஹாஷ் அடையாளங்கள், இயக்க முறைமை மற்றும் கட்டமைப்பு — Microsoft Azure Application Insights-க்கு. XMCL உங்கள் கடவுச்சொற்கள், Microsoft அமர்வு டோக்கன்கள் அல்லது உலக சேமிப்புகளை ஒருபோதும் அனுப்பாது."
+  telemetryConsentAllow: "அனுமதி"
+  telemetryConsentDeny: "இல்லை, நன்றி"
+  telemetryConsentDecideLater: "பின்னர் முடிவெடுக்கவும்"
+  telemetryConsentChangeAnytime: "எப்போது வேண்டுமானாலும் மாற்றலாம்: அமைப்புகள் → தரவு வெளிப்படைத்தன்மை."
+  telemetryConsentLearnMore: "மேலும் அறிக"
+  transparencyTitle: "தரவு வெளிப்படைத்தன்மை"
+  transparencyEndpoints: "லாஞ்சர் பயன்படுத்தும் நெட்வொர்க் இறுதிப்புள்ளிகள்"
+  transparencyEvents: "டெலிமெட்ரி இயக்கப்பட்டிருக்கும்போது அனுப்பப்படும் நிகழ்வுகள்"
+  transparencyOpenPolicy: "தனியுரிமைக் கொள்கையைத் திற"
+  aiAssistant: "AI உதவியாளர்"
+  aiAssistantDescription: "உள்ளமைந்த AI முகவர் மற்றும் கிளவுட் மாடல்களை இயக்கவும். கோரிக்கைகள் தேர்ந்தெடுத்த AI வழங்குநருக்கு அனுப்பப்படும்."
+  multiplayerTelemetry: "மல்டிபிளேயர் டெலிமெட்ரி"
+  multiplayerTelemetryDescription: "மல்டிபிளேயர் அமர்வு நோயறிதல் தகவல்களை (சாதனம் மற்றும் கணக்கு ஐடிகள்) சிக்னலிங் சேவைக்கு அனுப்பவும். டெலிமெட்ரியின் ஒரு பகுதி."
 setting:
   about: பற்றி
   aboutBmclDescription: சீன நிலப்பரப்பில் உள்ள பயனர்களுக்கு வசதியான பதிவிறக்கங்களை BMCL API வழங்குகிறது

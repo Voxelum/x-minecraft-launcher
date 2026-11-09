@@ -41,6 +41,13 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
   await readJson(settingJsonPath).catch(() => ({})).then((rawData) => {
     // SettingSchema uses .catch() for each field, so invalid fields fallback to defaults automatically
     const data = SettingSchema.parse(rawData)
+    // Fail-closed migration: settings files written before explicit
+    // telemetry consent have no `telemetryConsent`. Users who consciously
+    // disabled telemetry (`disableTelemetry: true`) are mapped to 'denied';
+    // everyone else stays 'unset' (telemetry off until an explicit opt-in).
+    if (rawData.telemetryConsent === undefined) {
+      data.telemetryConsent = data.disableTelemetry ? 'denied' : 'unset'
+    }
     data.locale = normalizeLocale(data.locale)
     state.config(data)
   }).catch((e) => {

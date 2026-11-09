@@ -89,8 +89,19 @@ export const SettingSchema = z.object({
   discordPresence: z.boolean().catch(true),
   /** Developer mode setting */
   developerMode: z.boolean().catch(false),
-  /** Disable telemetry setting */
+  /**
+   * Legacy telemetry switch kept so old settings files keep loading.
+   * It no longer gates telemetry by itself: telemetry is enabled if and
+   * only if `telemetryConsent === 'granted'`. Users who consciously set
+   * `disableTelemetry: true` are migrated to `telemetryConsent: 'denied'`.
+   */
   disableTelemetry: z.boolean().catch(false),
+  /**
+   * Explicit telemetry consent state. Fail-closed: telemetry only runs
+   * when this is 'granted'. 'unset' means the user has not decided yet
+   * (telemetry stays off; the consent dialog may be shown again).
+   */
+  telemetryConsent: z.enum(['unset', 'granted', 'denied']).catch('unset'),
   /** WebRTC implementation used by Together. */
   multiplayerTransport: z.enum(['webrtc', 'node-datachannel']).catch('webrtc'),
   /** OpenAI-compatible agent endpoint (the API key is stored separately). */

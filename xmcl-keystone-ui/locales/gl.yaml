@@ -1433,6 +1433,22 @@ agent:
   accessRequiredHint: Subscríbete a XMCL para usar o axente integrado ou configura o teu propio provedor de IA nos axustes.
   subscribeXmcl: Subscribirse a XMCL
   notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
+  telemetryConsentTitle: "Telemetría anónima"
+  telemetryConsentDescription: "Axuda a mellorar XMCL enviando estatísticas de uso anónimas. Desactivada por defecto e activa só co teu permiso explícito."
+  telemetryConsentDetail: "Se aceptas, XMCL envía: eventos de inicio da app e do xogo (versión de Minecraft, mod loader), códigos de saída e sinais de fallos, identificadores con hash dos mods instalados, sistema operativo e arquitectura — a Microsoft Azure Application Insights. XMCL nunca envía os teus contrasinais, tokens de sesión de Microsoft nin os teus mundos gardados."
+  telemetryConsentAllow: "Permitir"
+  telemetryConsentDeny: "Non, grazas"
+  telemetryConsentDecideLater: "Decidir máis tarde"
+  telemetryConsentChangeAnytime: "Podes cambialo en calquera momento: Axustes → Transparencia de datos."
+  telemetryConsentLearnMore: "Saber máis"
+  transparencyTitle: "Transparencia de datos"
+  transparencyEndpoints: "Puntos de conexión de rede usados polo launcher"
+  transparencyEvents: "Eventos enviados cando a telemetría está activada"
+  transparencyOpenPolicy: "Abrir a política de privacidade"
+  aiAssistant: "Asistente de IA"
+  aiAssistantDescription: "Activa o axente de IA integrado e os modelos na nube. As solicitudes envíanse ao provedor de IA elixido."
+  multiplayerTelemetry: "Telemetría multixogador"
+  multiplayerTelemetryDescription: "Enviar diagnósticos de sesións multixogador (identificadores de dispositivo e conta) ao servizo de sinalización. Parte da telemetría."
 setting:
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
   aiAgentApiKeyPlaceholder: API-sleutel van OpenAI- of Claude-provider

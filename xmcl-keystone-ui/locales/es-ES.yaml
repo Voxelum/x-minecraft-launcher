@@ -1576,6 +1576,22 @@ serverStatus:
   ping: Realizando ping...
   refuse: §4¡El servidor lo ha rechazado!
   timeout: §4¡Conexión al servidor agotada!
+  telemetryConsentTitle: "Telemetría anónima"
+  telemetryConsentDescription: "Ayuda a mejorar XMCL enviando estadísticas de uso anónimas. Desactivada por defecto y activa solo con tu permiso explícito."
+  telemetryConsentDetail: "Si aceptas, XMCL envía: eventos de inicio de la app y del juego (versión de Minecraft, mod loader), códigos de salida y señales de fallos, identificadores hasheados de los mods instalados, sistema operativo y arquitectura — a Microsoft Azure Application Insights. XMCL nunca envía tus contraseñas, tokens de sesión de Microsoft ni tus mundos guardados."
+  telemetryConsentAllow: "Permitir"
+  telemetryConsentDeny: "No, gracias"
+  telemetryConsentDecideLater: "Decidir más tarde"
+  telemetryConsentChangeAnytime: "Puedes cambiarlo en cualquier momento: Ajustes → Transparencia de datos."
+  telemetryConsentLearnMore: "Saber más"
+  transparencyTitle: "Transparencia de datos"
+  transparencyEndpoints: "Puntos de conexión de red usados por el launcher"
+  transparencyEvents: "Eventos enviados cuando la telemetría está activada"
+  transparencyOpenPolicy: "Abrir la política de privacidad"
+  aiAssistant: "Asistente de IA"
+  aiAssistantDescription: "Activa el agente de IA integrado y los modelos en la nube. Las solicitudes se envían al proveedor de IA elegido."
+  multiplayerTelemetry: "Telemetría multijugador"
+  multiplayerTelemetryDescription: "Enviar diagnósticos de sesiones multijugador (identificadores de dispositivo y cuenta) al servicio de señalización. Parte de la telemetría."
 setting:
   themeStore:
     name: Almacén de temas

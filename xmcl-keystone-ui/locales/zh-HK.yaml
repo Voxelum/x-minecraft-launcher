@@ -1714,6 +1714,22 @@ serverStatus:
   ping: 延遲
   refuse: 伺服器中斷咗連線！
   timeout: 伺服器響應超時！
+  telemetryConsentTitle: "匿名遙測"
+  telemetryConsentDescription: "傳送匿名使用統計數據，協助改善 XMCL。預設關閉，只會在您明確同意後啟用。"
+  telemetryConsentDetail: "如你同意，XMCL 會向 Microsoft Azure Application Insights 傳送：應用程式及遊戲啟動事件（Minecraft 版本、mod loader）、結束代碼及崩潰標記、已安裝模組的雜湊識別碼、作業系統及架構。XMCL 絕不會傳送你的密碼、Microsoft 工作階段權杖或世界存檔。"
+  telemetryConsentAllow: "允許"
+  telemetryConsentDeny: "唔使，唔該"
+  telemetryConsentDecideLater: "稍後再決定"
+  telemetryConsentChangeAnytime: "隨時可以更改：設定 → 資料透明度。"
+  telemetryConsentLearnMore: "了解更多"
+  transparencyTitle: "資料透明度"
+  transparencyEndpoints: "啟動器使用的網絡端點"
+  transparencyEvents: "啟用遙測後傳送的事件"
+  transparencyOpenPolicy: "開啟私隱政策"
+  aiAssistant: "AI 助手"
+  aiAssistantDescription: "啟用內置 AI 代理及雲端模型。請求會傳送至所選的 AI 供應商。"
+  multiplayerTelemetry: "多人遊戲遙測"
+  multiplayerTelemetryDescription: "向訊號服務傳送多人連線診斷資料（裝置及帳戶識別碼）。屬遙測一部分。"
 setting:
   about: 關於
   aboutBmclDescription: BMCL API 為中國地區用戶提供便捷嘅下載服務

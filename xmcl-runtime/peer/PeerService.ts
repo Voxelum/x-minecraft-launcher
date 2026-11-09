@@ -106,9 +106,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   private async createMultiplayerHost(transport: MultiplayerTransport) {
     const factory = await this.app.registry.get(kMultiplayerHostFactory)
     const settings = await this.app.registry.get(kSettings)
-    const accountState = await this.app.registry
-      .get(XmclAccountService)
-      .then((service) => service.getXmclAccountState())
     const host = await factory({
       transport,
       state: this.state,
@@ -116,8 +113,8 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       log: (event) => {
         void this.logMultiplayer(event)
       },
-      isTelemetryEnabled: () => !settings.disableTelemetry,
-      getTelemetryAccountId: () => accountState.account?.accountId,
+      isTelemetryEnabled: () => settings.telemetryConsent === 'granted',
+      getTelemetryAccountId: () => undefined,
       setDownloadPort: (port) => {
         this.downloadPort = port
       },

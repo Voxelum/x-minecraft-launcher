@@ -1477,6 +1477,22 @@ agent:
   accessRequiredHint: Fizess elő az XMCL-re a beépített ügynök használatához, vagy állítsd be a saját AI-szolgáltatódat a beállításokban.
   subscribeXmcl: Előfizetés az XMCL-re
   notConfiguredHint: Állítson be egy API-kulcsot, modellt és OpenAI-kompatibilis végpontot a Beállítások → Általános → AI ügynök alatt. Használhat például OpenAI-t vagy Claude-kompatibilis átjárót.
+  telemetryConsentTitle: "Anonim telemetria"
+  telemetryConsentDescription: "Segítsd az XMCL fejlesztését anonim használati statisztikák küldésével. Alapból ki van kapcsolva, és csak a kifejezett hozzájárulásoddal működik."
+  telemetryConsentDetail: "Ha beleegyezel, az XMCL elküldi: az alkalmazás- és játékindítási eseményeket (Minecraft-verzió, mod loader), kilépési kódokat és összeomlási jelzéseket, a telepített modok hash-elt azonosítóit, az operációs rendszert és az architektúrát — a Microsoft Azure Application Insights szolgáltatásnak. Az XMCL soha nem küldi el a jelszavaidat, Microsoft-munkamenet-tokenjeidet vagy világmentéseidet."
+  telemetryConsentAllow: "Engedélyezés"
+  telemetryConsentDeny: "Nem, köszönöm"
+  telemetryConsentDecideLater: "Később döntök"
+  telemetryConsentChangeAnytime: "Bármikor megváltoztatható: Beállítások → Adatátláthatóság."
+  telemetryConsentLearnMore: "Tudj meg többet"
+  transparencyTitle: "Adatátláthatóság"
+  transparencyEndpoints: "A launcher által használt hálózati végpontok"
+  transparencyEvents: "A telemetria bekapcsolásakor küldött események"
+  transparencyOpenPolicy: "Adatvédelmi nyilatkozat megnyitása"
+  aiAssistant: "AI-asszisztens"
+  aiAssistantDescription: "A beépített AI-ügynök és a felhőmodellek engedélyezése. A kérések a kiválasztott AI-szolgáltatóhoz kerülnek."
+  multiplayerTelemetry: "Multiplayer-telemetria"
+  multiplayerTelemetryDescription: "Többjátékos munkamenetek diagnosztikájának (eszköz- és fiókazonosítók) küldése a jelzőszolgáltatásnak. A telemetria része."
 setting:
   aiAgentApiKeyDescription: Állítson be OpenAI-kompatibilis szolgáltatót, például OpenAI-t vagy Claude-hoz használható átjárót. A kulcs helyileg, ezen az eszközön lesz tárolva.
   aiAgentApiKeyPlaceholder: OpenAI- vagy Claude-szolgáltató API-kulcsa

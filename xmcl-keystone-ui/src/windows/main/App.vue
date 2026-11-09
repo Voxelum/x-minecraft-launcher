@@ -28,6 +28,7 @@
     <AppGameExitDialog />
     <AppUnauthenticatedWarningDialog />
     <AppMultiplayerLoginDialog />
+    <AppTelemetryConsentDialog @consent="onTelemetryConsent" />
     <AppImageDialog />
     <InstanceScreenshots />
     <AppSharedTooltip />
@@ -59,7 +60,7 @@ import { useAuthProfileImportNotification } from '@/composables/authProfileImpor
 import { useAgentChatHotkey } from '@/composables/agentChat'
 import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
-import { kDialogModel } from '@/composables/dialog'
+import { kDialogModel, useDialog } from '@/composables/dialog'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceLaunchCoordinator, useInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
@@ -80,6 +81,7 @@ import AppOmniDialog from '@/views/AppOmniDialog.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
 import AppMultiplayerLoginDialog from '@/views/AppMultiplayerLoginDialog.vue'
+import AppTelemetryConsentDialog from '@/views/AppTelemetryConsentDialog.vue'
 import AppUnauthenticatedWarningDialog from '@/views/AppUnauthenticatedWarningDialog.vue'
 import UserProfileDialog from '@/components/UserProfileDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
@@ -210,6 +212,17 @@ const { appBarColor, dark } = injection(kTheme)
 watch(dark, (newVal) => {
   state.value?.themeSet(newVal === 'system' ? newVal : newVal ? 'dark' : 'light')
 }, { immediate: true })
+
+// First-run telemetry consent: shown once until the user makes a choice;
+// telemetry itself stays off while consent is 'unset'.
+const { show: showTelemetryConsentDialog } = useDialog('telemetry-consent')
+const telemetryConsentPending = computed(() => state.value?.telemetryConsent === 'unset' && !localStorage.getItem('telemetryConsentPrompted'))
+watch(telemetryConsentPending, (v) => {
+  if (v) showTelemetryConsentDialog()
+}, { immediate: true })
+function onTelemetryConsent(value: 'granted' | 'denied') {
+  state.value?.telemetryConsentSet(value)
+}
 
 const tutor = injection(kTutorial)
 // Set theme and start tutorial

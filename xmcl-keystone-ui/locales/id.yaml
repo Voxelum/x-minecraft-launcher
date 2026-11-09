@@ -1641,6 +1641,22 @@ serverStatus:
   ping: Ping...
   refuse: §4Server menolak!
   timeout: §4Batas waktu koneksi server habis!
+  telemetryConsentTitle: "Telemetri anonim"
+  telemetryConsentDescription: "Bantu tingkatkan XMCL dengan mengirim statistik penggunaan anonim. Mati secara bawaan dan hanya aktif dengan izin eksplisit Anda."
+  telemetryConsentDetail: "Jika Anda setuju, XMCL mengirim: peristiwa peluncuran aplikasi dan gim (versi Minecraft, mod loader), kode keluar dan penanda crash, pengidentifikasi ter-hash dari mod yang terpasang, sistem operasi dan arsitektur — ke Microsoft Azure Application Insights. XMCL tidak pernah mengirim kata sandi, token sesi Microsoft, atau data dunia Anda."
+  telemetryConsentAllow: "Izinkan"
+  telemetryConsentDeny: "Tidak, terima kasih"
+  telemetryConsentDecideLater: "Putuskan nanti"
+  telemetryConsentChangeAnytime: "Bisa diubah kapan saja: Pengaturan → Transparansi Data."
+  telemetryConsentLearnMore: "Pelajari selengkapnya"
+  transparencyTitle: "Transparansi Data"
+  transparencyEndpoints: "Titik akhir jaringan yang dipakai launcher"
+  transparencyEvents: "Peristiwa yang dikirim saat telemetri aktif"
+  transparencyOpenPolicy: "Buka Kebijakan Privasi"
+  aiAssistant: "Asisten AI"
+  aiAssistantDescription: "Aktifkan agen AI bawaan dan model cloud. Permintaan dikirim ke penyedia AI pilihan Anda."
+  multiplayerTelemetry: "Telemetri Multipemain"
+  multiplayerTelemetryDescription: "Kirim diagnostik sesi multipemain (ID perangkat dan akun) ke layanan signaling. Bagian dari telemetri."
 setting:
   about: Tentang
   aboutBmclDescription: BMCL API menyediakan unduhan yang nyaman bagi pengguna di Tiongkok Daratan

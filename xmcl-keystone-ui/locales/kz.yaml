@@ -1432,6 +1432,22 @@ agent:
   accessRequiredHint: Кірістірілген агентті пайдалану үшін XMCL қызметіне жазылыңыз немесе баптауларда өз ЖИ провайдеріңізді реттеңіз.
   subscribeXmcl: XMCL қызметіне жазылу
   notConfiguredHint: Баптаулар → Жалпы → ЖИ агенті бөлімінде API кілтін, модельді және OpenAI-мен үйлесімді соңғы нүктені орнатыңыз. Мысалы, OpenAI немесе Claude-пен үйлесімді шлюзді қолданыңыз.
+  telemetryConsentTitle: "Анонимдік телеметрия"
+  telemetryConsentDescription: "Анонимдік пайдалану статистикасын жіберу арқылы XMCL жақсартуға көмектесіңіз. Әдепкі бойынша өшірулі және тек сіздің нақты келісіміңізбен жұмыс істейді."
+  telemetryConsentDetail: "Келіссеңіз, XMCL жібереді: қосымша мен ойынның іске қосылу оқиғалары (Minecraft нұсқасы, mod loader), шығу кодтары және қателік белгілері, орнатылған модтардың хэшленген идентификаторлары, операциялық жүйе және архитектура — Microsoft Azure Application Insights қызметіне. XMCL ешқашан құпиясөздеріңізді, Microsoft сессия токендерін немесе сақталған әлемдерді жібермейді."
+  telemetryConsentAllow: "Рұқсат ету"
+  telemetryConsentDeny: "Жоқ, рахмет"
+  telemetryConsentDecideLater: "Кейін шешемін"
+  telemetryConsentChangeAnytime: "Кез келген уақытта өзгертуге болады: Параметрлер → Деректер ашықтығы."
+  telemetryConsentLearnMore: "Толығырақ"
+  transparencyTitle: "Деректер ашықтығы"
+  transparencyEndpoints: "Лаунчер қолданатын желілік эндпоинттер"
+  transparencyEvents: "Телеметрия қосулы кезде жіберілетін оқиғалар"
+  transparencyOpenPolicy: "Құпиялық саясатын ашу"
+  aiAssistant: "AI көмекшісі"
+  aiAssistantDescription: "Кірістірілген AI агенті мен бұлттық модельдерді қосу. Сұраулар таңдалған AI провайдеріне жіберіледі."
+  multiplayerTelemetry: "Мультиплеер телеметриясы"
+  multiplayerTelemetryDescription: "Мультиплеер сессияларының диагностикасын (құрылғы мен аккаунт идентификаторлары) signaling қызметіне жіберу. Телеметрияның бөлігі."
 setting:
   aiAgentApiKeyDescription: OpenAI-мен үйлесімді провайдерді баптаңыз, мысалы OpenAI немесе Claude үшін шлюз. Кілт осы құрылғыда жергілікті сақталады.
   aiAgentApiKeyPlaceholder: OpenAI немесе Claude провайдерінің API кілті

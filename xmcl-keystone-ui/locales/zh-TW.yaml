@@ -1581,6 +1581,22 @@ agent:
   accessRequiredHint: 訂閱 XMCL 即可使用內建 AI 助手，或前往設定自行配置 AI 供應商。
   subscribeXmcl: 訂閱 XMCL
   notConfiguredHint: 請在設定 → 基本設定 → AI 助手中設定 API 金鑰、模型和 OpenAI 相容端點，例如 OpenAI 或相容 Claude 的閘道。
+  telemetryConsentTitle: "匿名遙測"
+  telemetryConsentDescription: "傳送匿名使用統計資料，協助改進 XMCL。預設關閉，僅在您明確同意後才會啟用。"
+  telemetryConsentDetail: "若您同意，XMCL 將向 Microsoft Azure Application Insights 傳送：應用程式與遊戲啟動事件（Minecraft 版本、mod loader）、結束代碼與當機標記、已安裝模組的雜湊識別碼、作業系統與架構。XMCL 絕不會傳送您的密碼、Microsoft 工作階段權杖或世界存檔。"
+  telemetryConsentAllow: "允許"
+  telemetryConsentDeny: "不用了，謝謝"
+  telemetryConsentDecideLater: "稍後再決定"
+  telemetryConsentChangeAnytime: "隨時可以變更：設定 → 資料透明度。"
+  telemetryConsentLearnMore: "深入了解"
+  transparencyTitle: "資料透明度"
+  transparencyEndpoints: "啟動器使用的網路端點"
+  transparencyEvents: "啟用遙測後傳送的事件"
+  transparencyOpenPolicy: "開啟隱私權政策"
+  aiAssistant: "AI 助理"
+  aiAssistantDescription: "啟用內建 AI 代理與雲端模型。請求將傳送至所選的 AI 服務商。"
+  multiplayerTelemetry: "多人遊戲遙測"
+  multiplayerTelemetryDescription: "將多人連線作業階段的診斷資訊（裝置與帳戶識別碼）傳送至訊號服務。屬於遙測的一部分。"
 setting:
   aiAgentApiKeyDescription: 配置 OpenAI 相容供應商，例如 OpenAI 或 Claude 閘道。API 金鑰僅儲存在本機裝置。
   aiAgentApiKeyPlaceholder: OpenAI 或 Claude 供應商 API 金鑰

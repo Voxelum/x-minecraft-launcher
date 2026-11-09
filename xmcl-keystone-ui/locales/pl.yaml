@@ -1427,6 +1427,22 @@ agent:
   accessRequiredHint: Zasubskrybuj XMCL, aby używać wbudowanego agenta, lub skonfiguruj własnego dostawcę AI w ustawieniach.
   subscribeXmcl: Subskrybuj XMCL
   notConfiguredHint: Ustaw klucz API, model i endpoint zgodny z OpenAI w Ustawienia → Ogólne → Agent AI. Na przykład użyj OpenAI albo bramki zgodnej z Claude.
+  telemetryConsentTitle: "Anonimowa telemetria"
+  telemetryConsentDescription: "Pomóż ulepszać XMCL, wysyłając anonimowe statystyki użycia. Domyślnie wyłączone, działa wyłącznie za Twoją wyraźną zgodą."
+  telemetryConsentDetail: "Jeśli się zgodzisz, XMCL wysyła: zdarzenia uruchomienia aplikacji i gry (wersja Minecraft, mod loader), kody wyjścia i sygnały awarii, hashowane identyfikatory zainstalowanych modów, system operacyjny i architekturę — do Microsoft Azure Application Insights. XMCL nigdy nie wysyła Twoich haseł, tokenów sesji Microsoft ani zapisów światów."
+  telemetryConsentAllow: "Zezwól"
+  telemetryConsentDeny: "Nie, dziękuję"
+  telemetryConsentDecideLater: "Zdecyduję później"
+  telemetryConsentChangeAnytime: "Możesz to zmienić w każdej chwili: Ustawienia → Przejrzystość danych."
+  telemetryConsentLearnMore: "Dowiedz się więcej"
+  transparencyTitle: "Przejrzystość danych"
+  transparencyEndpoints: "Punkty końcowe sieci używane przez launcher"
+  transparencyEvents: "Zdarzenia wysyłane, gdy telemetria jest włączona"
+  transparencyOpenPolicy: "Otwórz politykę prywatności"
+  aiAssistant: "Asystent AI"
+  aiAssistantDescription: "Włącz wbudowanego agenta AI i modele chmurowe. Zapytania są wysyłane do wybranego dostawcy AI."
+  multiplayerTelemetry: "Telemetria multiplayer"
+  multiplayerTelemetryDescription: "Wysyłaj diagnostykę sesji multiplayer (identyfikatory urządzenia i konta) do usługi sygnalizacyjnej. Część telemetrii."
 setting:
   aiAgentApiKeyDescription: Skonfiguruj dostawcę zgodnego z OpenAI, takiego jak OpenAI lub bramka dla Claude. Klucz jest przechowywany lokalnie na tym urządzeniu.
   aiAgentApiKeyPlaceholder: Klucz API dostawcy OpenAI lub Claude

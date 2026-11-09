@@ -19,6 +19,7 @@ import type {
   ServiceCallTraceContext,
 } from '@xmcl/runtime-api'
 import { createHash, randomUUID } from 'crypto'
+import { redactStack, redactText } from './telemetry_redact'
 
 export const launcherSessionId = randomUUID()
 
@@ -101,13 +102,14 @@ export function trackRuntimeExceptionOnce(
   return true
 }
 
-export function setRuntimeTelemetryIdentity(nextDeviceId: string, nextUserId?: string) {
+/**
+ * Telemetry identity is strictly device-scoped: a pseudonymous
+ * `device:<id>` value derived from the random client token. Telemetry is
+ * never linked to the XMCL Together account identifier.
+ */
+export function setRuntimeTelemetryIdentity(nextDeviceId: string) {
   deviceId = nextDeviceId
-  userId = nextUserId ?? `device:${nextDeviceId}`
-}
-
-export function setRuntimeTelemetryUserId(nextUserId?: string) {
-  userId = nextUserId ?? `device:${deviceId}`
+  userId = `device:${nextDeviceId}`
 }
 
 function serializeAttribute(value: unknown): string | number | boolean | undefined {
@@ -188,14 +190,19 @@ export const runtimeTelemetry = {
               ? telemetry.exception
               : JSON.stringify(telemetry.exception),
           )
+    // Never export raw diagnostics: redact the user's home directory and
+    // credential-shaped tokens from the message and stack trace.
+    const message = redactText(exception.message) ?? ''
     logger.emit({
-      body: exception.message,
+      body: message,
       severityNumber: SeverityNumber.ERROR,
       attributes: createAttributes({
         ...telemetry.properties,
         'exception.type': exception.name,
-        'exception.message': exception.message,
-        'exception.stacktrace': exception.stack ?? `${exception.name}: ${exception.message}`,
+        'exception.message': message,
+        'exception.stacktrace': exception.stack
+          ? redactStack(exception.stack)
+          : `${exception.name}: ${message}`,
       }),
     })
   },
@@ -256,9 +263,9 @@ export function endRendererAction(action: RendererActionEnd) {
     }),
   )
   if (action.outcome === 'error') {
-    const error = new Error(action.error?.message ?? 'Renderer action failed')
+    const error = new Error(redactText(action.error?.message) ?? 'Renderer action failed')
     error.name = action.error?.name ?? 'RendererActionError'
-    if (action.error?.stack) error.stack = action.error.stack
+    if (action.error?.stack) error.stack = redactStack(action.error.stack)
     if (action.error?.origin === 'runtime-service') {
       active.span.setStatus({ code: SpanStatusCode.ERROR })
     } else {
@@ -399,9 +406,9 @@ export function trackCompletedSpan(telemetry: CompletedSpanTelemetry) {
     parentContext,
   )
   if (telemetry.outcome === 'error') {
-    const error = new Error(telemetry.error?.message ?? 'Operation failed')
+    const error = new Error(redactText(telemetry.error?.message) ?? 'Operation failed')
     error.name = telemetry.error?.name ?? 'Error'
-    if (telemetry.error?.stack) error.stack = telemetry.error.stack
+    if (telemetry.error?.stack) error.stack = redactStack(telemetry.error.stack)
     trackRuntimeExceptionOnce(error, {
       'error.operation': telemetry.name,
     })
@@ -436,7 +443,7 @@ export async function runWithServiceTrace<T>(
       } catch (error) {
         span.setStatus({
           code: SpanStatusCode.ERROR,
-          message: error instanceof Error ? error.message : String(error),
+          message: redactText(error instanceof Error ? error.message : String(error))!,
         })
         trackRuntimeExceptionOnce(error, {
           'error.operation': 'service-transport',
@@ -519,7 +526,7 @@ export async function runWithRendererServiceTrace<T>(
       } catch (error) {
         span.setStatus({
           code: SpanStatusCode.ERROR,
-          message: error instanceof Error ? error.message : String(error),
+          message: redactText(error instanceof Error ? error.message : String(error))!,
         })
         throw error
       } finally {

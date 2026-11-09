@@ -1641,6 +1641,22 @@ serverStatus:
   ping: Đang ping...
   refuse: §4Máy chủ từ chối!
   timeout: §4Kết nối máy chủ hết thời gian!
+  telemetryConsentTitle: "Truyền dữ liệu ẩn danh"
+  telemetryConsentDescription: "Giúp cải thiện XMCL bằng cách gửi thống kê sử dụng ẩn danh. Mặc định tắt và chỉ hoạt động khi bạn đồng ý rõ ràng."
+  telemetryConsentDetail: "Nếu bạn đồng ý, XMCL sẽ gửi: sự kiện khởi chạy ứng dụng và trò chơi (phiên bản Minecraft, mod loader), mã thoát và dấu hiệu sự cố, định danh đã băm của các mod đã cài, hệ điều hành và kiến trúc — tới Microsoft Azure Application Insights. XMCL không bao giờ gửi mật khẩu, mã thông báo phiên Microsoft hay thế giới đã lưu của bạn."
+  telemetryConsentAllow: "Cho phép"
+  telemetryConsentDeny: "Không, cảm ơn"
+  telemetryConsentDecideLater: "Quyết định sau"
+  telemetryConsentChangeAnytime: "Có thể thay đổi bất cứ lúc nào: Cài đặt → Minh bạch dữ liệu."
+  telemetryConsentLearnMore: "Tìm hiểu thêm"
+  transparencyTitle: "Minh bạch dữ liệu"
+  transparencyEndpoints: "Các điểm cuối mạng launcher sử dụng"
+  transparencyEvents: "Sự kiện được gửi khi truyền dữ liệu đang bật"
+  transparencyOpenPolicy: "Mở Chính sách quyền riêng tư"
+  aiAssistant: "Trợ lý AI"
+  aiAssistantDescription: "Bật AI agent tích hợp và mô hình đám mây. Yêu cầu được gửi đến nhà cung cấp AI đã chọn."
+  multiplayerTelemetry: "Truyền dữ liệu nhiều người chơi"
+  multiplayerTelemetryDescription: "Gửi chẩn đoán phiên chơi mạng (định danh thiết bị và tài khoản) đến dịch vụ signaling. Một phần của truyền dữ liệu."
 setting:
   about: Giới thiệu
   aboutBmclDescription: BMCL API cung cấp các bản tải xuống thuận tiện cho người dùng tại Trung Quốc Đại Lục
