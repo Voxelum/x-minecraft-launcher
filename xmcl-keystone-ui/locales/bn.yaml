@@ -52,6 +52,43 @@ agent:
   thinking: ভাবছে…
   title: XMCL এজেন্ট
   toggleHint: টগল করার জন্য
+  abort: উৎপাদন বন্ধ করুন
+  confirmAccept: চালিয়ে যান
+  confirmAllowAll: সব অনুমোদন করুন
+  confirmCancel: বাতিল করুন
+  confirmPending: নিশ্চিতকরণের জন্য অপেক্ষা করা হচ্ছে
+  confirmTitle: এজেন্টের কাজ নিশ্চিত করুন
+  errorTitle: এজেন্টে একটি ত্রুটি ঘটেছে
+  passiveGameCrashed: গেম ক্র্যাশ করেছে
+  passiveGameExitCode: এক্সিট কোড {code}
+  passiveGameExited: গেম প্রস্থান করেছে
+  passiveGameExitSignal: সিগন্যাল {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: কোনো এক্সিট স্ট্যাটাস নেই
+  reasoning: যুক্তি (Reasoning)
+  passiveGameStarted: গেম শুরু হয়েছে
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: মড সামঞ্জস্যতা রিপোর্ট
+  passiveModDiagnosisError: সামঞ্জস্যতা নির্ণয় ব্যর্থ হয়েছে
+  passiveModDiagnosisSummary: '{checked}টি মড পরীক্ষা করা হয়েছে · {incompatibilities}টি অসামঞ্জস্য · {duplicates}টি প্রতিলিপি'
+  passiveModDuplicate: 'প্রতিলিপি {mod}: {files}'
+  passiveModInstalled: '{version} ইনস্টল করা হয়েছে'
+  toolArguments: প্যারামিটার (Arguments)
+  toolResult: ফলাফল
+  toolRunning: ফলাফলের জন্য অপেক্ষা করা হচ্ছে…
+  marketConfirmMessage: বর্তমান ইনস্ট্যান্সে {name} ইনস্টল করবেন?
+  marketConfirmTarget: 'টার্গেট: {instance}'
+  marketConfirmTitle: '{type} ইনস্টল করুন'
+  marketInstall: ইনস্টল করুন
+  marketInstalled: ইনস্টল করা হয়েছে
+  marketInstallFailed: '{type} ইনস্টল করতে ব্যর্থ হয়েছে'
+  marketType:
+    datapack: ডেটা প্যাক
+    mod: মড
+    modpack: মডপ্যাক
+    resourcepack: রিসোর্স প্যাক
+    shader: শেডার প্যাক
+  marketResultCount: '{count}টি ফলাফল'
 ago:
   day: '{duration} দিন আগে | {duration} দিন আগে'
   hour: '{duration} ঘণ্টা আগে | {duration} ঘণ্টা আগে'
@@ -100,13 +137,13 @@ backup:
   includeSettingsHint: General preferences, language, developer mode, and appearance settings
   includeCollectionsTitle: Saved Collections
   includeCollectionsHint: Launcher-managed mod and resource collections
-  includeThemesTitle: 'Custom Themes & Media'
+  includeThemesTitle: Custom Themes & Media
   includeThemesHint: Theme colors, custom CSS styles, and background media
   instances: Instances
   selectAll: Select All
   deselectAll: Deselect All
   instanceDataOptions: Instance Data Options
-  includeConfigs: 'Configs & Options'
+  includeConfigs: Configs & Options
   includeSaves: Saves (Worlds)
   includeResourcePacks: Resource Packs
   includeShaderPacks: Shader Packs
@@ -119,7 +156,7 @@ backup:
   create: ব্যাকআপ তৈরি করুন
   createTitle: Create XMCL Backup Archive
   saveDialogTitle: Save XMCL Backup Archive
-  fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL Backup Archive (*.xmclbackup, *.zip)
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
   restore: পুনরুদ্ধার করুন
@@ -130,7 +167,7 @@ backup:
   elapsedTime: Elapsed
   remainingTime: Estimated remaining
   calculatingRemaining: Calculating...
-  lessThanMinute: '< 1 min'
+  lessThanMinute: < 1 min
   itemsProgress: '{current}/{total}'
   savesCategory: Saves
   modsCategory: Mods
@@ -142,16 +179,16 @@ backup:
   copiedLog: Log copied to clipboard
   openFolder: Show in Folder
   done: সম্পন্ন
-  backupDone: 'Backup Complete!'
+  backupDone: Backup Complete!
   backupDoneHint: Your backup archive has been created and verified.
-  restoreDone: 'Restore Complete!'
+  restoreDone: Restore Complete!
   restoreDoneHint: All selected data and instances have been restored successfully.
   timeTaken: 'Time taken: {time}'
   destinationFile: 'Saved to: {path}'
   stagePreparing: Preparing
   stageSettings: Launcher Settings
   stageCollections: Saved Collections
-  stageThemes: 'Themes & Media'
+  stageThemes: Themes & Media
   stageInstances: Game Instances
   stageCompressing: Compressing Archive
   stageComplete: Complete
@@ -161,14 +198,14 @@ backup:
   selectBackupFileDescription: Choose a .xmclbackup or .zip file containing your saved XMCL data and instances.
   selectFile: Choose File
   selectBackupFileTitle: Open XMCL Backup Archive
-  createdOn: 'Created on {date}'
+  createdOn: Created on {date}
   changeFile: Change File
   dataToRestore: Data to Restore
   restoreSettings: Restore Settings
   restoreSettingsHint: Overwrite current launcher preferences with the backup copy
   restoreCollections: Restore Collections
   restoreCollectionsHint: Import and merge saved collections into the launcher
-  restoreThemes: 'Restore Themes & Media'
+  restoreThemes: Restore Themes & Media
   restoreThemesHint: Reinstall themes, custom CSS, and background media
   noLauncherDataInBackup: No launcher settings or themes found in this backup archive.
   conflictStrategyTitle: Instance Name Conflict Handling
@@ -178,9 +215,9 @@ backup:
   restoreError: Failed to restore backup
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Create Backup
   createBackupDescription: Save your launcher settings, collections, custom themes, and instances to a single portable archive file.
   restoreBackupTitle: Restore Backup
@@ -218,9 +255,27 @@ backup:
   interval6h: প্রতি ৬ ঘণ্টায়
   interval12h: প্রতি ১২ ঘণ্টায়
   interval24h: প্রতি ২৪ ঘণ্টায়
-  keepCount: 'শেষ {count}টি ব্যাকআপ রাখুন'
+  keepCount: শেষ {count}টি ব্যাকআপ রাখুন
 baseSetting:
   title: ইনস্ট্যান্স সেটিংস
+  info:
+    address: ঠিকানা
+    changes: পরিবর্তনসমূহ
+    custom: কাস্টম
+    disabled: নিষ্ক্রিয়
+    enabled: সক্রিয়
+    exportFormats: রপ্তানি ফরম্যাট
+    inherited: উত্তরাধিকার সূত্রে প্রাপ্ত
+    modLoader: মড লোডার
+    notConfigured: কনফিগার করা হয়নি
+    notSet: সেট করা হয়নি
+    offline: অফলাইন সংরক্ষণাগার
+    projectId: প্রকল্প আইডি (Project ID)
+    running: চলমান
+    saved: সংরক্ষিত
+    status: স্থিতি
+    stopped: বন্ধ
+    vanilla: ভ্যানিলা
 browseApp:
   createShortcut: শর্টকাট তৈরি করুন
   default: ডিফল্ট
@@ -455,6 +510,7 @@ commandPalette:
   hintEnter: প্রবেশ করুন
   hintBack: ফিরে যান
   hintClose: বন্ধ করুন
+  hintAskAgent: এজেন্টকে জিজ্ঞাসা করুন
 feedback:
   channel: চ্যানেলসমূহ
   description: আমি একটি বাগ পেয়েছি বা আমি একটি পরামর্শ দিতে চাই
@@ -473,6 +529,8 @@ feedback:
   qq: QQ গ্রুপ
   qqDescription: 'মতামত জানাতে QQ গ্রুপে প্রবেশ করুন এবং লেখকদের সাথে সরাসরি কথা বলুন। গ্রুপ নম্বর: {number}'
   qqEnterGroup: যোগ দিন
+  reddit: Reddit
+  redditDescription: r/XMCL সাবরেডিট কমিউনিটিতে যোগ দিন
 fileDetail:
   fileSize: ফাইলের আকার
   filesize: ফাইলের আকার
@@ -554,7 +612,7 @@ instance:
   deleteFailedPermission: অন্য একটি প্রোগ্রাম ফাইলটি ব্যবহার করছে
   deleteFile: ইনস্ট্যান্সের ফাইলগুলি মুছে ফেলুন
   deleteHint: ইনস্ট্যান্স ডেটা ডিস্ক থেকে চিরতরে মুছে ফেলা হবে। আপনি কি নিশ্চিত?
-  deleteHintBedrock: Minecraft Bedrock সংস্করণ এবং এর সমস্ত ডেটা আপনার কম্পিউটার থেকে সম্পূর্ণরূপে মুছে ফেলা হবে। আপনি কি নিশ্চিত?
+  deleteHintBedrock: Minecraft Bedrock Edition এবং এর সমস্ত ডেটা আপনার কম্পিউটার থেকে সম্পূর্ণরূপে মুছে ফেলা হবে। আপনি কি নিশ্চিত?
   duplicate: গেমের অনুলিপি তৈরি করুন
   duplicatedName: অনুলিপিকৃত নাম
   envVarKey: কী
@@ -610,6 +668,10 @@ instance:
   vmVar: এনভায়রনমেন্ট ভেরিয়েবলসমূহ
   vmVarHint: এনভায়রনমেন্ট ভেরিয়েবল যোগ করতে + বোতামে ক্লিক করুন
   width: প্রস্থ
+  monitor: ফুলস্ক্রিন মনিটর
+  monitorDefault: ডিফল্ট (প্রধান মনিটর)
+  monitorNumber: মনিটর {number}
+  monitorPrimary: প্রধান
 instanceAge:
   older: পুরানো
   threeDay: তিন দিনের মধ্যে
@@ -675,6 +737,10 @@ instances:
   folderSetting: ফোল্ডার সেটিংস
   importFolderDescription: লঞ্চারে Minecraft ইম্পোর্ট করুন
   loadingFiles: মডপ্যাক ফাইল লোড হচ্ছে
+  instanceCount: '{count}টি ইনস্ট্যান্স'
+  linkSharedFolders: ইনস্ট্যান্সগুলোর মধ্যে ফোল্ডার শেয়ার করুন
+  linkSharedFoldersHint: এই ফোল্ডারগুলোকে লঞ্চারের শেয়ার করা ফোল্ডারের লিংক হিসেবে তৈরি করুন যাতে এই ইনস্ট্যান্স অন্যান্য সমস্ত সংযুক্ত ইনস্ট্যান্সের সাথে কন্টেন্ট শেয়ার করতে পারে। এটি কোনো কপি নয় — একটি ইনস্ট্যান্সে হওয়া পরিবর্তন সবগুলোতে দৃশ্যমান হবে। টিক না দেওয়া ফোল্ডারগুলো এই ইনস্ট্যান্সের নিজস্ব থাকবে।
+  linkFailed: '{folder} ফোল্ডারটি শেয়ার করা ফোল্ডারের সাথে লিংক করতে ব্যর্থ হয়েছে'
 items:
   count: '{count}টি আইটেম'
   total: মোট {total}টি
@@ -736,6 +802,13 @@ launchBlocked:
     description: অনুগ্রহ করে আপনার জাভা চেক করুন, অথবা লঞ্চারকে আরও অনুমতি দিয়ে পুনরায় চেষ্টা করুন। যদি এটি তবুও কাজ না করে, তবে অনুগ্রহ করে ডেভলপারদের সাথে যোগাযোগ করুন।
     title: গেম প্রসেস শুরু করতে ব্যর্থ
   unexpectedText: এটি অপ্রত্যাশিত। সমস্যাটি প্রশমিত করতে আপনি লঞ্চারটি পুনরায় চালু করতে পারেন। যদি এই সমস্যাটি আবার ঘটে তবে অনুগ্রহ করে লেখকের সাথে যোগাযোগ করুন।
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL আপনার ডেস্কটপ সেশন থেকে X11 ডিসপ্লে তথ্য পুনরুদ্ধার করতে পারেনি। বর্তমান ডেস্কটপ সেশনের একটি টার্মিনাল থেকে XMCL পুনরায় চালু করুন, অথবা সাইন আউট করে আবার সাইন ইন করুন।
+    noGraphicalSession: XMCL কোনো গ্রাফিকাল ডেস্কটপ সেশনে চলছে না। Minecraft চালু করার আগে আপনার ডেস্কটপ সেশন থেকে XMCL চালু করুন।
+    sandboxDenied: অ্যাপ্লিকেশন স্যান্ডবক্স X11 অ্যাক্সেস করতে পারছে না। আপনার Flatpak অনুমতিতে XMCL-কে X11 সকেটের অ্যাক্সেস দিন, তারপর XMCL পুনরায় চালু করুন।
+    title: X11 ডিসপ্লে অনুপলব্ধ
+    xwaylandMissing: এই Wayland সেশনে Minecraft-এর জন্য XWayland প্রয়োজন। আপনার Linux ডিস্ট্রিবিউশন দ্বারা প্রদত্ত XWayland প্যাকেজটি ইনস্টল করুন, তারপর সাইন আউট করে আবার সাইন ইন করুন।
+    xwaylandNotRunning: XWayland ইনস্টল করা আছে কিন্তু কোনো X11 ডিসপ্লে চলছে না। আপনার কম্পোজিটর কনফিগারেশনে XWayland সক্ষম করুন, তারপর সাইন আউট করে আবার সাইন ইন করুন।
 launchFailed:
   crash: গেম ক্র্যাশ করেছে!!
   description: কোনো ক্র্যাশ রিপোর্ট নেই। এটি হচ্ছে ত্রুটি লগ এবং সর্বশেষ লগ।
@@ -763,6 +836,11 @@ launcherUpdate:
   installAndQuit: ইনস্টল করতে পুনরায় চালু করুন
   noUpdateAvailable: কোনো আপডেট উপলব্ধ নেই
   updateToThisVersion: ডাউনলোড এবং ইনস্টল করুন
+  automaticUnavailable: স্বয়ংক্রিয় আপডেট অনুপলব্ধ
+  automaticNotImplemented: এই লঞ্চার হোস্টের জন্য স্বয়ংক্রিয় আপডেট সমর্থিত নয়।
+  automaticNotConfigured: এই লঞ্চার হোস্টের জন্য স্বয়ংক্রিয় আপডেট কনফিগার করা নেই।
+  manualCheckHint: কোনো রিলিজ পরীক্ষা করা হয়নি। উপযুক্ত প্যাকেজের জন্য GitHub Releases দেখুন এবং এটি ম্যানুয়ালি ইনস্টল করুন।
+  manualCheckRequired: এই হোস্ট স্বয়ংক্রিয়ভাবে আপডেট পরীক্ষা বা ইনস্টল করতে পারে না। ম্যানুয়ালি পরীক্ষা করতে GitHub Releases বোতামটি ব্যবহার করুন।
 localVersion:
   auto: স্বয়ংক্রিয়ভাবে গণনা করা হয়েছে
   empty: কোনো সংস্করণ ইনস্টল করা নেই
@@ -815,6 +893,10 @@ loginError:
   requirePassword: পাসওয়ার্ড প্রয়োজন
   requireUsername: ইউজারনেম প্রয়োজন
   timeout: লগইনের সময়সীমা পার হয়ে গেছে। অনুগ্রহ করে আবার চেষ্টা করুন বা আপনার নেটওয়ার্ক পরীক্ষা করুন।
+  loginCanceled: Microsoft সাইন-ইন বাতিল করা হয়েছে।
+  xboxErrorGuideHint: সাইন ইন করতে সমস্যা হচ্ছে? Microsoft এবং Xbox লগইন সমস্যা সমাধানের উপায় জানুন।
+  openLoginGuide: কীভাবে এই সমস্যার সমাধান করবেন
+  openDiscordSupport: এখনও সাহায্য প্রয়োজন? আমাদের Discord-এ যোগ দিন
 logsCrashes:
   crashes: ক্র্যাশ রিপোর্ট
   failures: লঞ্চ ব্যর্থতা
@@ -844,6 +926,8 @@ minecraftFriends:
     inviteRejected: সেই খেলোয়াড়ের বন্ধু তালিকা সক্রিয় নেই অথবা তিনি আমন্ত্রণ গ্রহণ করছেন না।
     tokenExpired: আপনার মাইক্রোসফ্ট সেশনের মেয়াদ শেষ হয়ে গেছে। অনুগ্রহ করে আবার লগইন করুন।
     unknownProfile: আমরা ওই নামের কোনো খেলোয়াড় খুঁজে পাইনি।
+    friendsDisabled: আপনার Minecraft অ্যাকাউন্টে বন্ধু সুবিধা নিষ্ক্রিয় রয়েছে বা এটি ব্যবহার করা যাবে না। Minecraft অ্যাকাউন্ট সেটিংসে বন্ধু সুবিধা সক্ষম করুন, তারপর আবার চেষ্টা করুন।
+    invalidName: Minecraft ব্যবহারকারীর নাম অবশ্যই ৩ থেকে ১৬ অক্ষরের মধ্যে হতে হবে।
   expiresRelative: মেয়াদ শেষ হবে {time}
   friends: বন্ধুরা
   heroEmptyHint: বন্ধুর অনুরোধ পাঠাতে উপরে ইউজারনেম দিয়ে মাইনক্রাফ্ট খেলোয়াড় যোগ করুন।
@@ -924,6 +1008,23 @@ mod:
   syncGroupRules: গ্রুপ করার নিয়মাবলী সংরক্ষণ করুন
   toUpdate: '{count}টি আপডেট'
   ungroup: গ্রুপ মুক্ত করুন
+  autoCategorize: স্বয়ংক্রিয়ভাবে ফোল্ডারে সাজান
+  autoCategorizeHint: মডগুলোকে স্বয়ংক্রিয়ভাবে ক্যাটাগরি ফোল্ডারে সাজান (অপ্টিমাইজেশন, লাইব্রেরি, বিশ্ব, গেমপ্লে, ইত্যাদি)
+  autoCategorizeSuccess: মডগুলো স্বয়ংক্রিয়ভাবে {count}টি ফোল্ডারে সাজানো হয়েছে
+  collapseAll: সব ফোল্ডার সংকুচিত করুন
+  expandAll: সব ফোল্ডার প্রসারিত করুন
+  folderSetting: ফোল্ডার সেটিংস
+  folderColor: ফোল্ডারের রঙ
+  folderIcon: ফোল্ডারের আইকন
+  pinGroup: শীর্ষে পিন করুন
+  pinToTop: শীর্ষে পিন করুন
+  pinToTopHint: ফোল্ডারটি তালিকার শীর্ষে প্রদর্শিত হবে
+  pinned: পিন করা হয়েছে
+  unpinGroup: ফোল্ডার আনপিন করুন
+  customColor: কাস্টম রঙ
+  preview: প্রিভিউ
+  ungroupAll: সব আনগ্রুপ করুন
+  organization: ফোল্ডার বিন্যাস
 modFilter:
   clear: ফিল্টার মুছে ফেলুন
   dependenciesInstallOnly: শুধুমাত্র বাদ পড়া ডিপেন্ডেন্সি মডগুলো দেখান
@@ -952,6 +1053,7 @@ modInstall:
   skipVersion: ভিন্ন Minecraft সংস্করণের মডগুলো এড়িয়ে যান
   source: মডের উৎস
   switch: সংস্করণ পরিবর্তন করুন
+  scanUnusedLibraries: অব্যবহৃত লাইব্রেরি স্ক্যান করুন
 modSearch:
   noLocalModsFound: আপনার অনুসন্ধানের সাথে মিলে যায় এমন কোনো স্থানীয় মড পাওয়া যায়নি।
   noModsFound: কোনো মড পাওয়া যায়নি
@@ -987,6 +1089,112 @@ modpack:
   overrides: ওভাররাইড
   url: ইউআরএল
   urlHint: আপনার মডপ্যাকের হোম পেজ ইউআরএল
+  emitCurseforgeDescription: CurseForge এর জন্য আদর্শ জিপ মডপ্যাক আর্কাইভ
+  emitModrinthDescription: দ্রুত CDN ডাউনলোড সহ হালকা অফিসিয়াল ফরম্যাট
+  emitPackwiz: Packwiz মডপ্যাক রপ্তানি করুন
+  emitPackwizDescription: হালকা গিট-বান্ধব ফরম্যাট (pack.toml, index.toml, এবং .pw.toml ফাইলসমূহ)
+  exportSuccess: মডপ্যাক সফলভাবে রপ্তানি করা হয়েছে!
+  exportSuccessWithWarnings: সতর্কতাসহ মডপ্যাক রপ্তানি করা হয়েছে
+  exportSkippedFiles: রপ্তানির সময় {count}টি অপাঠ্য বা লক করা ফাইল এড়িয়ে যাওয়া হয়েছে
+  exportFailed: মডপ্যাক রপ্তানি করতে ব্যর্থ হয়েছে
+  skippedFilesDialogTitle: কিছু ফাইল রপ্তানি করা যায়নি
+  skippedFilesDialogDescription: মডপ্যাক তৈরি হয়েছে, তবে {count}টি ফাইল বাদ পড়েছে
+  skippedReasonEperm: অনুমতি অস্বীকৃত (ওএস বা অন্য প্রক্রিয়া দ্বারা লক করা)
+  skippedReasonEbusy: ফাইলটি অন্য একটি প্রোগ্রাম দ্বারা ব্যবহৃত হচ্ছে
+  skippedReasonEnoent: ফাইল পাওয়া যায়নি বা ক্ষতিগ্রস্ত
+  skippedFilesNotice: আপনার বাকি ফাইলগুলো সফলভাবে মডপ্যাকে যুক্ত করা হয়েছে। উইন্ডোজ সিস্টেমের সীমাবদ্ধতা বা অ্যাক্সেস অনুমতির অভাবে উপরের ফাইলগুলো বাদ পড়েছে।
+  openExportFolder: মডপ্যাক ফোল্ডার খুলুন
+  closeDialog: বুঝেছি
+  expandAll: সব ফোল্ডার প্রসারিত করুন
+  collapseAll: সব ফোল্ডার সংকুচিত করুন
+  modpackVersionHint: 'শব্দার্থিক সংস্করণ স্ট্রিং (যেমন: 1.0.0)। প্যাচ/মাইনর বাড়াতে + ব্যবহার করুন'
+  modrinthProject: Modrinth প্রকল্প
+  selectDefaultFiles: ডিফল্ট ফাইল নির্বাচন করুন
+  selectAllFiles: সব ফাইল নির্বাচন করুন
+  deselectAllFiles: সব ফাইলের নির্বাচন বাতিল করুন
+  bindProject: প্রকল্প যুক্ত করুন (Bind)
+  bindProjectHint: বর্তমান অ্যাকাউন্ট দ্বারা পরিচালিত একটি Modrinth মডপ্যাক প্রকল্প নির্বাচন করুন।
+  bindProjectTypeImmutableHint: Modrinth একটি প্রকল্পের ধরন নির্ধারণ করে যখন এর প্রথম সংস্করণ আপলোড করা হয়, এবং পরবর্তীতে এটি পরিবর্তন করা যায় না। সংস্করণহীন ড্রাফট প্রকল্প এখানে যুক্ত করা যেতে পারে, তবে মড/রিসোর্স প্যাক হিসেবে প্রকাশিত প্রকল্পকে মডপ্যাকে রূপান্তর করা যাবে না — এর পরিবর্তে "নতুন প্রকল্প তৈরি করুন" ব্যবহার করুন।
+  bindProjectNoProjects: আপনার অ্যাকাউন্টের জন্য কোনো Modrinth প্রকল্প পাওয়া যায়নি।
+  unbindProject: প্রকল্প বিযুক্ত করুন
+  unbindProjectConfirmTitle: Modrinth প্রকল্প বিযুক্ত করবেন?
+  unbindProjectConfirmMessage: এটি কেবল এই ইনস্ট্যান্স এবং Modrinth প্রকল্পের মধ্যকার স্থানীয় সংযোগ মুছে ফেলে। Modrinth-এ থাকা প্রকল্পটি এবং এর সংস্করণগুলি প্রভাবিত হবে না।
+  editProject: প্রকল্প সম্পাদনা করুন
+  projectDiscovery: আবিষ্কার ও সামঞ্জস্যতা
+  projectGallery: গ্যালারি
+  projectGalleryAdd: ছবি যোগ করুন
+  projectGalleryEmpty: এখনও কোনো গ্যালারি ছবি নেই।
+  projectGalleryFeatured: বৈশিষ্ট্যযুক্ত
+  projectGalleryFromScreenshots: স্ক্রিনশট বেছে নিন
+  projectGalleryHint: সর্বোচ্চ ৫ মেগাবাইট পর্যন্ত ছবি যোগ করুন এবং বৈশিষ্ট্যযুক্ত প্রকল্পের ছবি বেছে নিন।
+  projectGallerySelectScreenshot: একটি ইনস্ট্যান্স স্ক্রিনশট নির্বাচন করুন
+  projectIdentity: পরিচয় এবং বিবরণ
+  projectLinks: প্রকল্পের লিঙ্কসমূহ
+  projectLoadFailed: সংযুক্ত Modrinth প্রকল্প লোড করতে ব্যর্থ হয়েছে।
+  projectNoChanges: কোনো অসংরক্ষিত প্রকল্প পরিবর্তন নেই।
+  projectNotBound: কোনো Modrinth প্রকল্প যুক্ত নেই
+  projectNotBoundHint: একটি বিদ্যমান প্রকল্প যুক্ত করুন, অথবা একটি নতুন Modrinth প্রকল্প তৈরি করুন।
+  projectUnsavedChanges: '{count}টি প্রকল্পের ক্ষেত্র পরিবর্তিত হয়েছে'
+  projectLatestDraft: খসড়া (Draft)
+  projectVersions: সংস্করণসমূহ
+  publish: প্রকাশ করুন
+  publishCategories: বিভাগসমূহ (কমা দিয়ে পৃথককৃত)
+  publishChannel: রিলিজ চ্যানেল
+  publishChangelog: পরিবর্তন বিবরণী (Changelog)
+  publishChangelogGenerate: এআই দিয়ে তৈরি করুন
+  publishConfirmProjectChanges: প্রকল্পের পরিবর্তন নিশ্চিত করুন
+  publishCreateProject: প্রকল্প তৈরি করুন
+  publishCreateDraft: বিল্ড এবং খসড়া তৈরি করুন
+  publishCustomVersion: কাস্টম
+  publishDescription: প্রকল্পের বিবরণ
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: খসড়া সংস্করণ আপলোড করা হয়েছে।
+  publishSubmitted: পর্যালোচনার জন্য সংস্করণ জমা দেওয়া হয়েছে।
+  publishExistingProject: বিদ্যমান প্রকল্প
+  publishIcon: প্রকল্পের আইকন
+  publishIconHint: PNG, JPEG, বা WebP
+  publishIconKeep: নতুন ছবি নির্বাচন না করা পর্যন্ত অপরিবর্তিত রাখুন
+  publishIconUseInstance: ইনস্ট্যান্স আইকন ব্যবহার করুন
+  publishIssuesUrl: ইস্যু ট্র্যাকার URL
+  publishLicense: লাইসেন্স আইডি
+  publishLogin: Modrinth-এ সাইন ইন করুন
+  publishFiles: নির্বাচিত ফাইলসমূহ
+  publishLinkageSummary: '{total}টি মড/রিসোর্স প্যাক/শেডার প্যাকের মধ্যে {linked}টি আপলোড করার বদলে সরাসরি Modrinth ডাউনলোড লিংকের সাথে যুক্ত করা হবে।'
+  publishLinkageEmbeddedSummary: '{count}টি ফাইল লিঙ্ক করা যাচ্ছে না এবং এই সংস্করণের সাথে আপলোড (এমবেড) করা হবে।'
+  publishLinkageShowFiles: যেসব ফাইল আপলোড করতে হবে তা দেখান
+  publishLinkageReason:
+    missing-file: ডিস্কে ফাইলটি পাওয়া যায়নি
+    not-linked-to-modrinth: Modrinth রিসোর্স হিসেবে চিহ্নিত নয়
+    no-downloadable-url: পুনর্বিতরণযোগ্য কোনো ডাউনলোড URL পাওয়া যায়নি
+  publishModrinth: Modrinth-এ প্রকাশ করুন
+  publishNewProject: নতুন প্রকল্প
+  publishOpenProject: প্রকল্প খুলুন
+  publishOpenVersion: সংস্করণ খুলুন
+  publishProfile: MRPack প্রোফাইল
+  publishProfileClient: কেবল ক্লায়েন্ট
+  publishProfileServer: কেবল সার্ভার
+  publishProfileSplit: সর্বজনীন + পৃথক ক্লায়েন্ট/সার্ভার ফাইলসমূহ
+  publishProfileUniversal: সর্বজনীন (Universal)
+  publishProject: প্রকল্প
+  publishProjectDetailsTab: প্রকল্পের বিবরণ
+  publishProjectName: প্রকল্পের নাম
+  publishProjectRequired: প্রকাশ করার আগে একটি প্রকল্প নির্বাচন করুন।
+  publishProjectSlug: প্রকল্প স্লাগ (Slug)
+  publishProjectUrl: প্রকল্পের URL (ঐচ্ছিক)
+  publishProjectUrlHint: '{slug} ব্যবহার করতে ফাঁকা রাখুন।'
+  publishProjectSaved: প্রকল্পের বিবরণ আপডেট করা হয়েছে।
+  publishSourceUrl: সোর্স কোড URL
+  publishSubmit: পর্যালোচনার জন্য খসড়া জমা দিন
+  publishSummary: সংক্ষিপ্ত সারসংক্ষেপ
+  publishSummaryMinWords: সারসংক্ষেপে অন্তত ৩টি শব্দ থাকতে হবে।
+  publishVersionTitle: সংস্করণের শিরোনাম
+  publishVersionTab: সংস্করণ প্রকাশ করুন
+  publishVersion: সংস্করণ প্রকাশ করুন
+  publishVisibility: দৃশ্যমানতা
+  publishWikiUrl: উইকি URL
+  visibilityPrivate: ব্যক্তিগত (Private)
+  visibilityPublic: সর্বজনীন (Public)
+  visibilityUnlisted: তালিকাভুক্ত নয় (Unlisted)
 modpackImportConfirm:
   description: লঞ্চারে একটি ফাইল ড্রপ করার বিষয়টি সনাক্ত করা গেছে। আপনি কি একটি মডপ্যাক ইম্পোর্ট করার চেষ্টা করছেন?
   title: আপনি কি একটি মডপ্যাক ইম্পোর্ট করার চেষ্টা করছেন?
@@ -1244,6 +1452,16 @@ multiplayer:
   sharing: ফাইল শেয়ার করা হচ্ছে...
   start: শুরু করুন
   startNewP2PConnection: একটি নতুন পিয়ার সংযোগ তৈরি করতে শুরু করুন বোতামে ক্লিক করুন
+  connectedToMaster: রুম মাস্টারের সাথে সংযুক্ত
+  directConnection: সরাসরি
+  master: মাস্টার
+  masterHostsGameHint: রুম মাস্টার হলো সংযোগের কেন্দ্র এবং তাকে অবশ্যই Minecraft LAN বিশ্ব হোস্ট করতে হবে। হোস্ট পরিবর্তন করার আগে মাস্টার ট্রান্সফার করুন।
+  member: সদস্য
+  joinCreatesMissingRoomHint: যদি এই রুমটির অস্তিত্ব না থাকে, আপনি এটি তৈরি করবেন এবং এর মাস্টার হবেন।
+  relayConnection: রিলে
+  relayAllowanceSummary: এই মেয়াদে {total} এর মধ্যে {remaining} অবশিষ্ট
+  relayServiceAvailable: XMCL Together রিলে পরিষেবা উপলব্ধ
+  waitingForMaster: রুম মাস্টার পুনরায় সংযুক্ত হওয়ার জন্য অপেক্ষা করা হচ্ছে
 myStuff: আমার জিনিসপত্র
 natType:
   blocked: অবরুদ্ধ
@@ -1290,6 +1508,11 @@ presence:
   save: '{instance} এ সেভ ফাইলসমূহ দেখা হচ্ছে'
   setting: সেটিংস পৃষ্ঠা দেখা হচ্ছে
   shaderPack: '{instance} এ শেডার প্যাকসমূহ দেখা হচ্ছে'
+  away: দূরে
+  offline: অফলাইন
+  online: অনলাইন
+  playing: '{game} খেলছেন'
+  playingGeneric: খেলছেন
 proxy:
   host: হোস্ট
   port: পোর্ট
@@ -1477,6 +1700,109 @@ screenshots:
   openFolder: স্ক্রিনশট ফোল্ডার খুলুন
   playRandom: এলোমেলো করুন
   playSequence: ক্রমানুসারে চালান
+  title: স্ক্রিনশট ও ছবিসমূহ
+  manage: স্ক্রিনশট ম্যানেজার
+  emptyTitle: এখনও কোনো স্ক্রিনশট নেই
+  emptyDescription: স্ক্রিনশট নিতে গেমে F2 চাপুন, অথবা আপনার ছবিগুলো ম্যানুয়ালি আমদানি করুন।
+  dropHint: গ্যালারিতে যোগ করতে এখানে ফটো বা স্ক্রিনশট ড্রপ করুন
+  backToHome: হোমে ফিরে যান
+  import: ছবি যোগ করুন
+  images: ছবিসমূহ
+  importSuccess: সফলভাবে {count}টি ছবি আমদানি করা হয়েছে
+  copy: ছবি কপি করুন
+  copied: ক্লিপবোর্ডে কপি করা হয়েছে!
+  setWallpaper: ব্যাকগ্রাউন্ড হিসেবে সেট করুন
+  setWallpaperSuccess: ইনস্ট্যান্স ব্যাকগ্রাউন্ড ছবি হিসেবে সেট করা হয়েছে!
+  setIcon: আইকন হিসেবে সেট করুন
+  setIconSuccess: ইনস্ট্যান্স আইকন হিসেবে সেট করা হয়েছে!
+  export: ফাইল সংরক্ষণ করুন
+  exportSuccess: স্ক্রিনশট সফলভাবে সংরক্ষিত হয়েছে!
+  exportSelected: নির্বাচিতগুলো রপ্তানি করুন
+  exportSelectedTitle: রপ্তানি ফোল্ডার নির্বাচন করুন
+  exportSelectedSuccess: সফলভাবে {count}টি স্ক্রিনশট রপ্তানি করা হয়েছে
+  deleteConfirmTitle: স্ক্রিনশটগুলো মুছে ফেলবেন?
+  deleteConfirmMessage: আপনি কি নিশ্চিত যে আপনি {count}টি স্ক্রিনশট মুছে ফেলতে চান? এটি পূর্বাবস্থায় ফেরানো যাবে না।
+  deleteSuccess: স্ক্রিনশট সফলভাবে মুছে ফেলা হয়েছে
+  selectedCount: 'নির্বাচিত: {count}'
+  selectAll: সব নির্বাচন করুন
+  clearSelection: সব নির্বাচন বাতিল করুন
+  countLabel: '{count}টি স্ক্রিনশট'
+  searchPlaceholder: নাম দিয়ে অনুসন্ধান করুন...
+  noSearchResults: কোনো মিল পাওয়া যায়নি
+  noSearchResultsHint: আপনার অনুসন্ধান শব্দ পরিবর্তন করে চেষ্টা করুন
+  sort: সাজান
+  sortDateDesc: নতুনগুলো আগে
+  sortDateAsc: পুরানোগুলো আগে
+  sortSizeDesc: বড়গুলো আগে
+  sortSizeAsc: ছোটগুলো আগে
+  sortNameAsc: নাম (A-Z)
+  sortNameDesc: নাম (Z-A)
+  viewGrid: বড় গ্রিড
+  viewGridCompact: কমপ্যাক্ট গ্রিড
+  viewList: তালিকা দৃশ্য
+  edit: সম্পাদনা করুন
+  editorTitle: স্ক্রিনশট সম্পাদনা করুন
+  layer: স্তর (Layer)
+  dragToMove: স্থানান্তর করতে টেনে আনুন
+  transformHint: সরানোর জন্য টানুন • আকার পরিবর্তন করতে হ্যান্ডেল টানুন • প্রয়োগ করতে Enter চাপুন
+  customColor: কাস্টম রঙ
+  fill: ভরাট (Fill)
+  brushPreview: ব্রাশের আকার প্রিভিউ
+  fontPreview: ফন্টের আকার প্রিভিউ
+  textBgNone: কিছুই না
+  textBgShadow: ছায়া (Shadow)
+  textBgBox: বাক্স (Box)
+  cropHint: ক্রপ এরিয়া নির্বাচন করতে বাউন্ডিং বক্সটি টানুন।
+  textPlacementHint: বসাতে Enter চাপুন • বাতিল করতে Esc চাপুন
+  layerMoveUp: উপরে সরান
+  layerMoveDown: নিচে সরান
+  layerCopy: '{name} কপি'
+  pixels: px
+  saveCopy: কপি সংরক্ষণ করুন
+  saveOverwrite: প্রতিস্থাপন করুন (Overwrite)
+  saveSuccess: স্ক্রিনশট সংরক্ষিত হয়েছে!
+  saveCopySuccess: নতুন স্ক্রিনশট হিসেবে সংরক্ষিত হয়েছে!
+  toolSelect: নির্বাচন / প্যান
+  toolMove: সরানো এবং রূপান্তর (Ctrl+T / V)
+  toolPan: প্যান (Space+টেনে আনুন)
+  layers: স্তরসমূহ (Layers)
+  layerAdd: স্তর যোগ করুন
+  layerDuplicate: স্তর ডুপ্লিকেট করুন
+  layerDelete: স্তর মুছে ফেলুন
+  layerOpacity: অস্বচ্ছতা (Opacity)
+  transformLayer: মুক্ত রূপান্তর
+  applyTransform: রূপান্তর প্রয়োগ করুন (Enter)
+  cancelTransform: বাতিল করুন (Esc)
+  layerBackground: পটভূমি
+  layerPaint: অঙ্কন
+  layerText: পাঠ্য (Text)
+  layerBlur: ঝাপসা (Blur)
+  toolPen: পেন
+  toolArrow: তীর (Arrow)
+  toolRect: আয়তক্ষেত্র
+  toolCircle: বৃত্ত
+  toolLine: রেখা
+  toolText: পাঠ্য (Text)
+  toolHighlighter: হাইলাইটার
+  toolBlur: পিক্সেলেট / ঝাপসা
+  toolCrop: ক্রপ
+  applyCrop: ক্রপ প্রয়োগ করুন
+  cancelCrop: ক্রপ বাতিল করুন
+  strokeWidth: রেখার প্রস্থ
+  fontSize: ফন্টের আকার
+  color: রঙ
+  undo: পূর্বাবস্থায় ফেরান (Undo)
+  redo: পুনরায় করুন (Redo)
+  clear: সব মুছুন
+  textPlaceholder: টেক্সট লিখতে ক্লিক করুন...
+  fontFamily: ফন্ট
+  fontBold: বোল্ড
+  fontItalic: ইটালিক
+  textApply: টেক্সট বসান
+  textBg: পটভূমি
+  zoomIn: জুম ইন
+  zoomOut: জুম আউট
+  resetZoom: জুম রিসেট করুন
 search:
   favorate: সংগ্রহ
   local: ইনস্টল করা হয়েছে
@@ -1711,7 +2037,7 @@ setting:
     sideBarColor: সাইড বার
     warningColor: ওয়ার্নিং কালার
   customCss:
-    advancedDescription: আপনাক নিজস্ব সিএসএস (CSS) দিয়ে লঞ্চারের বর্তমান স্টাইলিং ওভাররাইড করুন।
+    advancedDescription: আপনার নিজস্ব CSS দিয়ে লঞ্চারের বর্তমান স্টাইল ওভাররাইড করুন।
     assistantHint: আপনি যে রূপ চান তা বর্ণনা করুন এবং আমি আপনার জন্য সিএসএস লিখে দেব।
     assistantSuggestion1: সাইডবারটিকে আধা-স্বচ্ছ করুন
     assistantSuggestion2: কার্ডগুলিতে একটি হালকা গ্রেডিয়েন্ট ব্যাকগ্রাউন্ড যুক্ত করুন
@@ -1855,6 +2181,23 @@ setting:
   useProxy: HTTP প্রক্সি
   useProxyDescription: http অনুরোধের জন্য প্রক্সি সার্ভার ঠিকানা
   viewBackgroundMusic: মিউজিক দেখুন
+  multiplayerTransport: Together ট্রান্সপোর্ট
+  multiplayerTransportDescription: Together দ্বারা ব্যবহৃত WebRTC বাস্তবায়ন বেছে নিন। ট্রান্সপোর্ট পরিবর্তন করলে সক্রিয় সংযোগগুলো বিচ্ছিন্ন হবে।
+  aiAgentApiKeyClear: কী মুছুন
+  aiAgentApiKeyEmpty: আপনার API কী পেস্ট করুন
+  aiAgentApiKeyNotNeeded: প্রয়োজন নেই
+  aiAgentApiKeyNotNeededHint: এই প্রদানকারী স্থানীয়ভাবে চলে এবং এর জন্য কোনো API কী প্রয়োজন হয় না
+  aiAgentApiKeySaved: সংরক্ষিত হয়েছে
+  aiAgentApiKeyStored: কী সংরক্ষিত হয়েছে - পরিবর্তন করতে টাইপ করুন
+  aiAgentBuiltin: বিল্ট-ইন
+  aiAgentCustom: কাস্টম
+  appImageUpdateMode: AppImage আপডেট ব্যবস্থাপনা
+  appImageExternalMode: বাহ্যিক ব্যবস্থাপক / ম্যানুয়াল প্রতিস্থাপন (ডিফল্ট)
+  appImageSelfMode: XMCL স্ব-পরিচালিত (আমি এই AppImage নিয়ন্ত্রণ করি)
+  appImageAutoDownload: স্বয়ংক্রিয়ভাবে আপডেট ডাউনলোড করুন
+  appImageAutoInstall: প্রস্থান করার সময় ডাউনলোড করা আপডেট ইনস্টল করুন
+  appImageExternalUpdateHint: যদি Shelly বা অন্য ম্যানেজারের মাধ্যমে ইনস্টল করা হয়, তবে সেখানে আপডেট করুন। অন্যথায় বিদ্যমান পাথে নিজে AppImage প্রতিস্থাপন করুন। XMCL বাহ্যিক মোডে আপডেট ডাউনলোড করে না।
+  appImageSelfUpdateHint: কেবলমাত্র নিজের পরিচালিত AppImage-এর জন্য স্ব-পরিচালিত মোড বেছে নিন। অন্তর্নির্মিত আপডেটের জন্য ফাইলের নামে কোনো সংস্করণ নম্বর ছাড়া পরম পাথ প্রয়োজন (যেমন xmcl.AppImage)।
 settingLabel:
   global: গ্লোবাল
   globalHint: এই সেটিংটি গ্লোবাল সেটিং অনুসরণ করবে
@@ -1947,6 +2290,14 @@ shared:
   skipForNow: আপাতত এড়িয়ে যান
   'yes': হ্যাঁ
   delete: মুছে ফেলুন
+  openFolder: ফোল্ডার খুলুন
+  reset: রিসেট করুন
+  missing: অনুপস্থিত
+  healthy: ঠিক আছে
+  unused: অব্যবহৃত
+  failed: ব্যর্থ
+  view: দেখুন
+  upgrade: আপগ্রেড করুন
 sidebar:
   pin: পিন করুন
   unpin: আনপিন করুন
@@ -2241,6 +2592,9 @@ userSkin:
   skinDeleteFailed: স্কিনটি আলমারি থেকে সরানো যায়নি
   edit: সম্পাদনা করুন
   fetch: লোড করুন
+  invalidImage: একটি বৈধ Minecraft স্কিন ছবি বেছে নিন।
+  invalidImageTitle: অবৈধ স্কিন ছবি
+  uploadRejected: Minecraft এই স্কিন আপলোড প্রত্যাখ্যান করেছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।
 version:
   checkIntegrity: অখণ্ডতা যাচাই করুন
   name: সংস্করণ | সংস্করণসমূহ
@@ -2404,3 +2758,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: অ্যাকাউন্ট
+  confirmMerge: অ্যাকাউন্ট একত্রীকরণ নিশ্চিত করুন
+  createdAt: 'তৈরির তারিখ: {date}'
+  description: আপনার পাসওয়ার্ডবিহীন XMCL পরিচয়, যা Minecraft গেম অ্যাকাউন্ট থেকে পৃথক।
+  expiresAt: 'মেয়াদ উত্তীর্ণের তারিখ: {date}'
+  gameAccountsSeparate: একটি গেম অ্যাকাউন্ট সরিয়ে দিলে XMCL লগইন মাধ্যম বিচ্ছিন্ন হয় না।
+  guest: অতিথি
+  identityConflict: এই {provider} লগইনটি অন্য একটি XMCL অ্যাকাউন্টের সাথে যুক্ত। অ্যাকাউন্টগুলি কখনোই স্বয়ংক্রিয়ভাবে একত্রিত হয় না।
+  linkAccountWith: এর সাথে অ্যাকাউন্ট লিংক করুন
+  mergePreview: নিশ্চিত করার আগে স্থানান্তরিত হতে যাওয়া সম্পদগুলো পর্যালোচনা করুন।
+  mergeNeedsSession: একত্রীকরণ পর্যালোচনা করার আগে আপনি যে XMCL অ্যাকাউন্টটি রাখতে চান তাতে সাইন ইন করুন।
+  mergeQueued: অ্যাকাউন্ট একত্রীকরণ প্রক্রিয়াধীন রয়েছে।
+  requestFailed: XMCL অ্যাকাউন্ট পরিষেবা এই অনুরোধটি সম্পূর্ণ করতে পারেনি। আপনার গেম অ্যাকাউন্ট অপরিবর্তিত রয়েছে।
+  reviewMerge: একত্রীকরণ পর্যালোচনা করুন
+  session: সেশন
+  sessionActive: সক্রিয়
+  sessionExpired: মেয়াদোত্তীর্ণ
+  signOutAll: সমস্ত ডিভাইস থেকে সাইন আউট করুন
+  signOutDevice: এই ডিভাইস থেকে সাইন আউট করুন
+  status:
+    active: সক্রিয়
+    deleted: মুছে ফেলা হয়েছে
+    deletion_pending: মুছে ফেলার অপেক্ষায়
+    merged: একত্রিত করা হয়েছে
+  title: XMCL অ্যাকাউন্ট
+modCategory:
+  optimization: অপ্টিমাইজেশন এবং কর্মক্ষমতা
+  libraries: লাইব্রেরি এবং এপিআই
+  utilities: ইউজার ইন্টারফেস ও টুলস
+  world: বিশ্ব এবং বায়োম
+  visual: ভিজ্যুয়াল এবং অডিও
+  gameplay: গেমপ্লে এবং কনটেন্ট
+  miscellaneous: বিবিধ
+localCollection:
+  title: লঞ্চার সংগ্রহসমূহ
+  newCollection: নতুন সংগ্রহ
+  namePlaceholder: সংগ্রহের নাম
+  addToCollection: সংগ্রহে যোগ করুন
+  empty: এখনও কোনো লঞ্চার সংগ্রহ নেই
+  corrupted: আপনার সংরক্ষিত সংগ্রহগুলো পড়া যায়নি এবং রিসেট করা হয়েছে। ডেটা ফাইলের পাশে একটি ব্যাকআপ রাখা হয়েছে।
+  modrinthSection: Modrinth অ্যাকাউন্ট
+  installAll: সব ইনস্টল করুন
+  incompatibleAlert: '১টি প্রকল্প বর্তমান ইনস্ট্যান্সের সাথে সামঞ্জস্যপূর্ণ নয় এবং এড়িয়ে যাওয়া হয়েছে: | {count}টি প্রকল্প বর্তমান ইনস্ট্যান্সের সাথে সামঞ্জস্যপূর্ণ নয় এবং এড়িয়ে যাওয়া হয়েছে:'
+  projects: কোনো প্রকল্প নেই | {count}টি প্রকল্প | {count}টি প্রকল্প
+  saveCurrentMods: ইনস্টল করা মড সংগ্রহ হিসেবে সংরক্ষণ করুন
+  saveCurrentModsSuccess: '"{name}" সংগ্রহে {count}টি মড সংরক্ষিত হয়েছে'
+  viewMods: মডগুলো দেখুন
+  editCollection: সংগ্রহ সম্পাদনা করুন
+  collectionDescription: সংগ্রহের বিবরণ
+  noModsInCollection: এই সংগ্রহে এখনও কোনো মড নেই
+  exportCollection: সংগ্রহ রপ্তানি করুন
+  importCollection: সংগ্রহ আমদানি করুন
+  removeEntryConfirm: সংগ্রহ থেকে সরান
+  addMods: মড যোগ করুন
+  addModsTo: '"{name}"-এ মড যোগ করুন'
+  addModsHint: আপনার ইনস্ট্যান্স থেকে ইনস্টল করা মড যোগ করুন বা মড যোগ করতে মার্কেটের বুকমার্ক বোতামে ক্লিক করুন।
+  addModsDialogDesc: এই সংগ্রহে অন্তর্ভুক্ত করার জন্য এই ইনস্ট্যান্স থেকে ইনস্টল করা মডগুলো নির্বাচন করুন।
+  addAllCurrent: বর্তমান সব মড যোগ করুন
+  addedModsSuccess: সংগ্রহে {count}টি মড যোগ করা হয়েছে
+  searchMods: মড খুঁজুন...
+  selectAll: সব নির্বাচন করুন
+  deselectAll: সব নির্বাচন বাতিল করুন
+  selected: নির্বাচিত
+  alreadyInCollection: যুক্ত হয়েছে
+  noMatchingMods: আপনার অনুসন্ধানের সাথে কোনো মড মেলেনি
+  addSelectedMods: '{count}টি মড যোগ করুন'

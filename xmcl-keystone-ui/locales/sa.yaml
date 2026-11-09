@@ -52,6 +52,43 @@ agent:
   thinking: विचिन्तयति...
   title: XMCL प्रतिनिधिः
   toggleHint: परिवर्तनाय
+  abort: जननं स्थगयतु
+  confirmAccept: अनुवर्तताम्
+  confirmAllowAll: सर्वम् अनुमन्यताम्
+  confirmCancel: निरस्यतु
+  confirmPending: दृढीकरणं प्रतीक्षते
+  confirmTitle: प्रतिनिधिकार्यं संदृढयतु
+  errorTitle: प्रतिनिधौ दोषः उत्पन्नः
+  passiveGameCrashed: क्रीडा अकस्मात् स्थगिता (Crashed)
+  passiveGameExitCode: निर्गमसंकेतः {code}
+  passiveGameExited: क्रीडा निर्गता
+  passiveGameExitSignal: संकेतः {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: निर्गमस्थितिः नास्ति
+  reasoning: तर्कः (Reasoning)
+  passiveGameStarted: क्रीडा प्रारब्धा
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: मोड-अनुकूलता-विवरणम्
+  passiveModDiagnosisError: अनुकूलता-निदानं विफलम्
+  passiveModDiagnosisSummary: '{checked} मोड्स परीक्षिताः · {incompatibilities} असंगताः · {duplicates} प्रतिकृतयः'
+  passiveModDuplicate: 'प्रतिकृतिः {mod}: {files}'
+  passiveModInstalled: '{version} संस्थापितम्'
+  toolArguments: तर्काः (Arguments)
+  toolResult: परिणामः
+  toolRunning: परिणामं प्रतीक्षते…
+  marketConfirmMessage: वर्तमान-दृष्टान्ते {name} संस्थापनीयम् किम्?
+  marketConfirmTarget: 'लक्ष्यम्: {instance}'
+  marketConfirmTitle: '{type} संस्थापयतु'
+  marketInstall: संस्थापयतु
+  marketInstalled: संस्थापितम्
+  marketInstallFailed: '{type} संस्थापने विफलम्'
+  marketType:
+    datapack: दत्तसङ्ग्रहः (Data Pack)
+    mod: मोडः (Mod)
+    modpack: मोडसङ्ग्रहः (Modpack)
+    resourcepack: साधनसङ्ग्रहः (Resource Pack)
+    shader: शेडरपेक् (Shader Pack)
+  marketResultCount: '{count} परिणामाः'
 ago:
   day: '{duration} दिनं पूर्वम् | {duration} दिनानि पूर्वम्'
   hour: '{duration} होरा पूर्वम् | {duration} होराः पूर्वम्'
@@ -100,13 +137,13 @@ backup:
   includeSettingsHint: General preferences, language, developer mode, and appearance settings
   includeCollectionsTitle: Saved Collections
   includeCollectionsHint: Launcher-managed mod and resource collections
-  includeThemesTitle: 'Custom Themes & Media'
+  includeThemesTitle: Custom Themes & Media
   includeThemesHint: Theme colors, custom CSS styles, and background media
   instances: Instances
   selectAll: Select All
   deselectAll: Deselect All
   instanceDataOptions: Instance Data Options
-  includeConfigs: 'Configs & Options'
+  includeConfigs: Configs & Options
   includeSaves: Saves (Worlds)
   includeResourcePacks: Resource Packs
   includeShaderPacks: Shader Packs
@@ -119,7 +156,7 @@ backup:
   create: रक्षितानुकृतिं रचयतु
   createTitle: Create XMCL Backup Archive
   saveDialogTitle: Save XMCL Backup Archive
-  fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL Backup Archive (*.xmclbackup, *.zip)
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
   restore: पुनस्स्थापयतु
@@ -130,7 +167,7 @@ backup:
   elapsedTime: Elapsed
   remainingTime: Estimated remaining
   calculatingRemaining: Calculating...
-  lessThanMinute: '< 1 min'
+  lessThanMinute: < 1 min
   itemsProgress: '{current}/{total}'
   savesCategory: Saves
   modsCategory: Mods
@@ -142,16 +179,16 @@ backup:
   copiedLog: Log copied to clipboard
   openFolder: Show in Folder
   done: सिद्धम्
-  backupDone: 'Backup Complete!'
+  backupDone: Backup Complete!
   backupDoneHint: Your backup archive has been created and verified.
-  restoreDone: 'Restore Complete!'
+  restoreDone: Restore Complete!
   restoreDoneHint: All selected data and instances have been restored successfully.
   timeTaken: 'Time taken: {time}'
   destinationFile: 'Saved to: {path}'
   stagePreparing: Preparing
   stageSettings: Launcher Settings
   stageCollections: Saved Collections
-  stageThemes: 'Themes & Media'
+  stageThemes: Themes & Media
   stageInstances: Game Instances
   stageCompressing: Compressing Archive
   stageComplete: Complete
@@ -161,14 +198,14 @@ backup:
   selectBackupFileDescription: Choose a .xmclbackup or .zip file containing your saved XMCL data and instances.
   selectFile: Choose File
   selectBackupFileTitle: Open XMCL Backup Archive
-  createdOn: 'Created on {date}'
+  createdOn: Created on {date}
   changeFile: Change File
   dataToRestore: Data to Restore
   restoreSettings: Restore Settings
   restoreSettingsHint: Overwrite current launcher preferences with the backup copy
   restoreCollections: Restore Collections
   restoreCollectionsHint: Import and merge saved collections into the launcher
-  restoreThemes: 'Restore Themes & Media'
+  restoreThemes: Restore Themes & Media
   restoreThemesHint: Reinstall themes, custom CSS, and background media
   noLauncherDataInBackup: No launcher settings or themes found in this backup archive.
   conflictStrategyTitle: Instance Name Conflict Handling
@@ -178,9 +215,9 @@ backup:
   restoreError: Failed to restore backup
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Create Backup
   createBackupDescription: Save your launcher settings, collections, custom themes, and instances to a single portable archive file.
   restoreBackupTitle: Restore Backup
@@ -203,8 +240,8 @@ backup:
   autoBackupDestination: Auto-Backup Folder
   browse: Browse
   autoBackupContentLabel: Content to Include in Background Backups
-  instanceSaves: 'Worlds & Saves'
-  instanceConfigs: 'Configs & Options'
+  instanceSaves: Worlds & Saves
+  instanceConfigs: Configs & Options
   instanceMods: Mods
   instanceResourcePacks: Resource Packs
   instanceShaderPacks: Shader Packs
@@ -218,9 +255,27 @@ backup:
   interval6h: Every 6 hours
   interval12h: Every 12 hours
   interval24h: Every 24 hours
-  keepCount: 'Keep last {count} backups'
+  keepCount: Keep last {count} backups
 baseSetting:
   title: क्षणविकल्पाः
+  info:
+    address: सङ्केतः
+    changes: परिवर्तनानि
+    custom: इष्टम् (Custom)
+    disabled: अक्षमम्
+    enabled: सक्षमम्
+    exportFormats: निर्यातप्रारूपाणि
+    inherited: उत्तराधिकारप्राप्तम्
+    modLoader: मोड-भारकम् (Mod Loader)
+    notConfigured: न विन्यस्तम्
+    notSet: न निर्धारितम्
+    offline: ऑफलाइन-अभिलेखागारः
+    projectId: परियोजना-अभिज्ञापकम् (Project ID)
+    running: चलति
+    saved: रक्षितम्
+    status: स्थितिः
+    stopped: स्थगितम्
+    vanilla: वेनिला (Vanilla)
 browseApp:
   createShortcut: लघुमार्गं सृजतु
   default: पूर्वनिर्धारितम्
@@ -455,6 +510,7 @@ commandPalette:
   hintEnter: प्रवेशः
   hintBack: प्रतिगमनम्
   hintClose: पिधानम्
+  hintAskAgent: प्रतिनिधिं पृच्छतु
 feedback:
   channel: वाहिन्यः
   description: मया त्रुटिः लब्धा अथवा अहं परामर्शं दातुम् इच्छामि
@@ -473,6 +529,8 @@ feedback:
   qq: QQ समूहः
   qqDescription: 'QQ समूहे संयुज्य लेखकैः सह साक्षात् भाषताम्। समूहसङ्ख्या: {number}'
   qqEnterGroup: संयुजतु
+  reddit: Reddit
+  redditDescription: r/XMCL सबरेडिट-समुदाये सम्मिलतु
 fileDetail:
   fileSize: सञ्चिकाकारः
   filesize: सञ्चिकाकारः
@@ -554,7 +612,7 @@ instance:
   deleteFailedPermission: अन्येन कार्यक्रमेण सञ्चिका व्यापृता
   deleteFile: क्षणसञ्चिकाः लोपयतु
   deleteHint: क्षणदत्तं डिस्क तः सदा कृते निष्कास्यते। किं भवान् निश्चितः?
-  deleteHintBedrock: माइनक्राफ्ट् बेडरॉक् संस्करणं तस्य सर्वं दत्तं च सङ्गणकात् पूर्णतया विनश्यति। किं भवान् निश्चितः?
+  deleteHintBedrock: Minecraft Bedrock Edition तस्य सर्वाणि दत्तांशानि च भवतः संगणकात् पूर्णतया अपमroleष्यन्ते। किं भवान् दृढनिश्चयी?
   duplicate: क्रीडायाः प्रतिकृतिं करोतु
   duplicatedName: पुनरावृत्तं नाम
   envVarKey: कुञ्जी
@@ -610,6 +668,10 @@ instance:
   vmVar: पर्यावरणचराः
   vmVarHint: पर्यावरणचरानां योजनाय + नुदतु
   width: विस्तारः
+  monitor: पूर्णपटल-प्रदर्शकम्
+  monitorDefault: पूर्वनिर्धारितम् (मुख्यप्रदर्शकम्)
+  monitorNumber: प्रदर्शकम् {number}
+  monitorPrimary: मुख्यम्
 instanceAge:
   older: पुरातनम्
   threeDay: दिनत्रये
@@ -675,6 +737,10 @@ instances:
   folderSetting: कोशविकल्पाः
   importFolderDescription: माइनक्राफ्ट् प्रवर्तके आयातयतु
   loadingFiles: मोडप्याक् सञ्चिकाः भारयति
+  instanceCount: '{count} दृष्टान्ताः'
+  linkSharedFolders: दृष्टान्तानां मध्ये सञ्चिकाकोशान् संविभजतु
+  linkSharedFoldersHint: एतान् सञ्चिकाकोशान् प्रचालकस्य संविभक्तसञ्चिकाकोशानां सम्बद्धकत्वेन रचयतु यथा अयं दृष्टान्तः अन्यैः सर्वैः संयुक्तदृष्टान्तैः सह स्वविषयं संविभजते। एषा न प्रतिकृतिः — एकस्मिन् दृष्टान्ते कृतानि परिवर्तनानि सर्वेषु दृश्यन्ते। अचयनितसञ्चिकाकोशाः अस्य दृष्टान्तस्य कृते एव तिष्ठन्ति।
+  linkFailed: '{folder} सञ्चिकाकोशं संविभक्तसञ्चिकाकोशेन सह संयोजयितुं विफलम्'
 items:
   count: '{count} वस्तूनि'
   total: '{total} आहत्य'
@@ -736,6 +802,13 @@ launchBlocked:
     description: कृपया स्वकीयं जावा परीक्षताम्, अथवा प्रवर्तकाय अधिकाः अनुमतीः दत्त्वा पुनः प्रयतताम्।
     title: क्रीडाप्रक्रियाम् आरब्धुं न शक्तम्
   unexpectedText: क्रीडाप्रक्रियाम् आरब्धुं न शक्तम्।
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL भवतः डेस्कटॉप-सत्रात् X11 दृश्यसूचनां प्राप्तुं न अशक्नोत्। वर्तमाने डेस्कटॉप-सत्रे निर्गमपटलात् (Terminal) XMCL पुनः आरभताम्, अथवा निष्क्रम्य पुनः प्रविशतु।
+    noGraphicalSession: XMCL कस्मिंश्चित् चित्रात्मकडेस्कटॉप-सत्रे न चलति। Minecraft प्रारम्भात् पूर्वं स्वडेस्कटॉप-सत्रात् XMCL आरभताम्।
+    sandboxDenied: अनुप्रयोग-रेतसङ्ग्रहः (Sandbox) X11 अभिगमनं कर्तुं न शक्नोति। स्व Flatpak अनुमतिषु XMCL कृते X11 सॉकेट् अभिगमनं प्रयच्छतु, ततः XMCL पुनः आरभताम्।
+    title: X11 दृश्यपटलम् अनुपलब्धम्
+    xwaylandMissing: अस्मिन् Wayland सत्रे Minecraft कृते XWayland आवश्यकम्। स्व Linux वितरकेन प्रदत्तं XWayland संकुलं संस्थापयतु, ततः निष्क्रम्य पुनः प्रविशतु।
+    xwaylandNotRunning: XWayland संस्थापितम् अस्ति किन्तु किमपि X11 दृश्यपटलम् न चलति। स्व कंपोज़िटर-विन्यासे XWayland सक्षमीकृत्य निष्क्रम्य पुनः प्रविशतु।
 launchFailed:
   crash: क्रीडा पतिता!!
   description: कोऽपि पतनविवरणं नास्ति। एषः दोषवृत्तलेखः अद्यतनवृत्तलेखः च अस्ति।
@@ -763,6 +836,11 @@ launcherUpdate:
   installAndQuit: संस्थापनाय पुनः आरभताम्
   noUpdateAvailable: किमपि नवीकरणं न उपलब्धम्
   updateToThisVersion: अवतीर्य संस्थापयतु
+  automaticUnavailable: स्वचालितं नवीकरणम् अनुपलब्धम्
+  automaticNotImplemented: अस्मै प्रचालकाय स्वचालितनवीकरणं न कल्पितम्।
+  automaticNotConfigured: अस्मै प्रचालकाय स्वचालितनवीकरणं न विन्यस्तम्।
+  manualCheckHint: किमपि प्रकाशनपरीक्षणं न कृतम्। सङ्गतसङ्कुलाय GitHub Releases पश्यतु तथा स्वयं तत् संस्थापयतु।
+  manualCheckRequired: अयं प्रचालकः स्वयमेव नवीकरणानि परीक्षितुं संस्थापयितुं वा न शक्नोति। स्वयं परीक्षितुं GitHub Releases कुञ्जीं प्रयुङ्क्ताम्।
 localVersion:
   auto: स्वयं गणितम्
   empty: किमपि संस्करणं न संस्थापितम्
@@ -815,6 +893,10 @@ loginError:
   requirePassword: सङ्केतशब्दः आवश्यकः
   requireUsername: प्रयोक्तृनाम आवश्यकम्
   timeout: प्रवेश-कालसमाप्तिः। कृपया पुनः प्रयतताम् अथवा जालं परीक्षताम्।
+  loginCanceled: Microsoft प्रवेशः निरस्तः।
+  xboxErrorGuideHint: प्रवेशे क्लेशः भवति किम्? Microsoft तथा Xbox प्रवेशसमस्यानां समाधानं ज्ञातुम् अत्र पश्यतु।
+  openLoginGuide: अस्याः समस्यायाः समाधानं कथम्
+  openDiscordSupport: अद्यापि साहाय्यम् आवश्यकम्? अस्माकं Discord मध्ये आगच्छतु
 logsCrashes:
   crashes: पतन-विवरणानि
   failures: प्रवर्तन-विफलताः
@@ -844,6 +926,8 @@ minecraftFriends:
     inviteRejected: तस्य क्रीडकस्य मित्रसक्रियता नास्ति अथवा सः अनुरोधं न स्वीकरोति।
     tokenExpired: भवतः माइक्रोसॉफ्ट सत्रं समाप्तम्। कृपया पुनः प्रविशतु।
     unknownProfile: वयम् एतेन नाम्ना क्रीडकं न लब्धवन्तः।
+    friendsDisabled: भवतः Minecraft लेखायां मित्राणि अक्षमीकृतानि सन्ति अथवा मित्राणां प्रयोगः न शक्यते। Minecraft लेखाविन्यासे मित्राणि सक्षमीकृत्य पुनः प्रयतताम्।
+    invalidName: Minecraft उपयोक्तृनाम ३ तः १६ वर्णानां मध्ये भवेत्।
   expiresRelative: समाप्तिः {time}
   friends: मित्राणि
   heroEmptyHint: मित्रानुरोधं प्रेषयितुं उपरि माइनक्राफ्ट् प्रयोक्तृनाम्ना मित्रं योजयतु।
@@ -924,6 +1008,23 @@ mod:
   syncGroupRules: समूहनिर्देशान् रक्षतु
   toUpdate: '{count} नवीकरणानि'
   ungroup: समूहात् बहिः करोतु
+  autoCategorize: सञ्चिकाकोशेषु स्वयमेव क्रमयतु
+  autoCategorizeHint: मोड्स स्वयमेव वर्गसञ्चिकाकोशेषु समूहीकरोतु (अनुकूलनम्, ग्रन्थालयाः, जगत्, क्रीडाविधिः, इत्यादयः)
+  autoCategorizeSuccess: मोड्स स्वयमेव {count} सञ्चिकाकोशेषु क्रमिताः
+  collapseAll: सर्वान् सञ्चिकाकोशान् सङ्कुचतु
+  expandAll: सर्वान् सञ्चिकाकोशान् विस्तारयतु
+  folderSetting: सञ्चिकाकोश-विन्यासाः
+  folderColor: सञ्चिकाकोशस्य वर्णः
+  folderIcon: सञ्चिकाकोशस्य चिह्नम्
+  pinGroup: उपरि कीलयतु (Pin)
+  pinToTop: उपरि कीलयतु
+  pinToTopHint: सञ्चिकाकोशः सूच्याः उपरि दृश्यते
+  pinned: कीलितम्
+  unpinGroup: सञ्चिकाकोशम् अकीलितं करोतु
+  customColor: इष्टवर्णः
+  preview: पूर्वावलोकनम्
+  ungroupAll: सर्वं समूहात् विमोचयतु
+  organization: सञ्चिकाकोश-सङ्गठनम्
 modFilter:
   clear: शोधकम् मार्जयतु
   dependenciesInstallOnly: केवलम् अनुपस्थिताधीनतायुक्तान् मोड्स दर्शयतु
@@ -952,6 +1053,7 @@ modInstall:
   skipVersion: भिन्न-माइनक्राफ्ट्-संस्करणयुक्तान् मोड्स त्यजतु
   source: मोड-स्रोतः
   switch: संस्करणं परिवर्तयतु
+  scanUnusedLibraries: अप्रयुक्तान् ग्रन्थालयान् अन्विषतु
 modSearch:
   noLocalModsFound: अन्वेषणसदृशाः स्थानिकाः मोड्स न लब्धाः।
   noModsFound: कोऽपि मोडः न लब्धः
@@ -987,6 +1089,112 @@ modpack:
   overrides: अतिलेखनानि (Overrides)
   url: URL
   urlHint: भवतः मोडप्याक् इत्यस्य मुख्यपृष्ठसङ्केतः
+  emitCurseforgeDescription: CurseForge कृते मानकं zip मोडसङ्ग्रह-अभिलेखागारम्
+  emitModrinthDescription: शीघ्र CDN अवतरणैः सह लघु आधिकारिकं प्रारूपम्
+  emitPackwiz: Packwiz मोडसङ्ग्रहं निर्यापयतु
+  emitPackwizDescription: Git-अनुकूलं लघु प्रारूपम् (pack.toml, index.toml, तथा .pw.toml सञ्चिकाः)
+  exportSuccess: मोडसङ्ग्रहः सफलतापूर्वकं निर्यापितः!
+  exportSuccessWithWarnings: चेतावनीभिः सह मोडसङ्ग्रहः निर्यापितः
+  exportSkippedFiles: निर्याते {count} अपठनीयाः कीलिताः वा सञ्चिकाः त्यक्ताः
+  exportFailed: मोडसङ्ग्रहस्य निर्याते विफलम्
+  skippedFilesDialogTitle: काश्चन सञ्चिकाः निर्यापयितुं न शकिताः
+  skippedFilesDialogDescription: मोडसङ्ग्रहः रचितः, किन्तु {count} सञ्चिकाः त्यक्ताः
+  skippedReasonEperm: अभिगमनं निषिद्धम् (OS अथवा अन्यप्रक्रियया कीलितम्)
+  skippedReasonEbusy: सञ्चिका अन्यकार्यक्रमेण प्रयुक्ता अस्ति
+  skippedReasonEnoent: सञ्चिका न प्राप्ता त्रुटिता वा
+  skippedFilesNotice: भवतः अन्याः सञ्चिकाः सफलतापूर्वकं मोडसङ्ग्रहे बद्धाः। उपरितनाः सञ्चिकाः Windows नियमानाम् अथवा अनुमतेः अभावात् त्यक्ताः।
+  openExportFolder: मोडसङ्ग्रह-सञ्चिकाकोशम् उद्घाटयतु
+  closeDialog: अवगतम्
+  expandAll: सर्वान् सञ्चिकाकोशान् विस्तारयतु
+  collapseAll: सर्वान् सञ्चिकाकोशान् सङ्कुचतु
+  modpackVersionHint: आर्थिकी आवृत्तिः (उदा. 1.0.0)। वर्धयितुं + प्रयुङ्क्ताम्
+  modrinthProject: Modrinth परियोजना
+  selectDefaultFiles: पूर्वनिर्धारिताः सञ्चिकाः चिनोतु
+  selectAllFiles: सर्वाः सञ्चिकाः चिनोतु
+  deselectAllFiles: सर्वाः सञ्चिकाः अचयनितं करोतु
+  bindProject: परियोजनां बध्नातु (Bind)
+  bindProjectHint: वर्तमानलेखया प्रबन्धितं Modrinth मोडसङ्ग्रहपरियोजनां चिनोतु।
+  bindProjectTypeImmutableHint: यदा प्रथमा आवृत्तिः उपारोप्यते तदा Modrinth परियोजनायाः प्रकारं स्थिरीकरोति, पश्चात् तत् परिवर्तयितुं न शक्यते। यासु आवृत्तिः नास्ति ताः प्रारूपपरियोजनाः अत्र बद्धुं शक्यन्ते, किन्तु पूर्वमेव मोड/साधनसङ्ग्रहरूपेण प्रकाशिता परियोजना मोडसङ्ग्रहे परिवर्तयितुं न शक्यते — "नवीनां परियोजनां रचयतु" प्रयुङ्क्ताम्।
+  bindProjectNoProjects: भवतः लेखायाः कृते कापि Modrinth परियोजना न प्राप्ता।
+  unbindProject: परियोजनाबन्धनं मोचयतु
+  unbindProjectConfirmTitle: Modrinth परियोजनाबन्धनं मोचयितुम् इच्छति किम्?
+  unbindProjectConfirmMessage: इदं केवलम् अस्य दृष्टान्तस्य तथा Modrinth परियोजनायाः मध्ये स्थानीयसम्बन्धम् अपसारयति। Modrinth इत्यत्र परियोजना तस्याः आवृत्तयः च न प्रभाविताः भवन्ति।
+  editProject: परियोजनां संपादयतु
+  projectDiscovery: अन्वेषणम् तथा अनुकूलता
+  projectGallery: वीथिका (Gallery)
+  projectGalleryAdd: चित्रं योजयतु
+  projectGalleryEmpty: अद्यापि वीथिकाचित्राणि न सन्ति।
+  projectGalleryFeatured: विशेषचित्रेण प्रदर्शितम्
+  projectGalleryFromScreenshots: छायाचित्रं चिनोतु
+  projectGalleryHint: 5 MiB पर्यन्तं चित्राणि योजयित्वा मुख्यपरियोजनाचित्रं चिनोतु।
+  projectGallerySelectScreenshot: दृष्टान्तस्य छायाचित्रं चिनोतु
+  projectIdentity: परिचयः तथा विवरणम्
+  projectLinks: परियोजनासम्बद्धाः
+  projectLoadFailed: बद्धायाः Modrinth परियोजनायाः भरणे विफलम्।
+  projectNoChanges: अरक्षितानि परिवर्तनानि न सन्ति।
+  projectNotBound: कापि Modrinth परियोजना न बद्धा
+  projectNotBoundHint: विद्यमानां परियोजनां बध्नातु, अथवा नवीनां Modrinth परियोजनां रचयतु।
+  projectUnsavedChanges: '{count} परियोजनाक्षेत्राणि परिवर्तितानि'
+  projectLatestDraft: प्रारूपम् (Draft)
+  projectVersions: आवृत्तयः
+  publish: प्रकाशयतु
+  publishCategories: वर्गाः (अल्पविरामेन पृथक्कृताः)
+  publishChannel: प्रकाशनमार्गः (Channel)
+  publishChangelog: परिवर्तनविवरणम् (Changelog)
+  publishChangelogGenerate: AI द्वारा उत्पादयतु
+  publishConfirmProjectChanges: परियोजनापरिवर्तनानि संदृढयतु
+  publishCreateProject: परियोजनां रचयतु
+  publishCreateDraft: निर्माय प्रारूपं रचयतु
+  publishCustomVersion: इष्टम्
+  publishDescription: परियोजनाविवरणम्
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: प्रारूपावृत्तिः उपारोपिता।
+  publishSubmitted: पुनरावलोकनाय आवृत्तिः समर्पिता।
+  publishExistingProject: विद्यमाना परियोजना
+  publishIcon: परियोजनाचिह्नम्
+  publishIconHint: PNG, JPEG, अथवा WebP
+  publishIconKeep: यावत् नवीनचित्रं न चीयते तावत् अपरिवर्तितं स्थापयतु
+  publishIconUseInstance: दृष्टान्तचिह्नं प्रयुङ्क्ताम्
+  publishIssuesUrl: समस्यासम्बन्धः (Issues URL)
+  publishLicense: अनुज्ञप्ति-आईडी (License ID)
+  publishLogin: Modrinth मध्ये प्रविशतु
+  publishFiles: चयनितसञ्चिकाः
+  publishLinkageSummary: '{total} मोड्स/साधनसङ्ग्रहाणां/शेडर्स मध्ये {linked} उपारोपणात् स्थाने साक्षात् Modrinth अवतरणेन संयोजयिष्यन्ते।'
+  publishLinkageEmbeddedSummary: '{count} सञ्चिकाः संयोजितुं न शक्यन्ते तथा अस्याम् आवृत्तौ उपारोपयिष्यन्ते (अन्तर्निहिताः)।'
+  publishLinkageShowFiles: उपारोपणीयाः सञ्चिकाः दर्शयतु
+  publishLinkageReason:
+    missing-file: पटले सञ्चिका न प्राप्ता
+    not-linked-to-modrinth: Modrinth संसाधनत्वेन न अभिज्ञातम्
+    no-downloadable-url: पुनर्वितरणीयम् अवतरण-URL न प्राप्तम्
+  publishModrinth: Modrinth इत्यत्र प्रकाशयतु
+  publishNewProject: नवीना परियोजना
+  publishOpenProject: परियोजनाम् उद्घाटयतु
+  publishOpenVersion: आवृत्तिम् उद्घाटयतु
+  publishProfile: MRPack विवरणिका
+  publishProfileClient: केवलम् उपयोक्ता (Client)
+  publishProfileServer: केवलम् वितरकः (Server)
+  publishProfileSplit: सार्वत्रिकम् + पृथक् उपयोक्तृ/वितरक सञ्चिकाः
+  publishProfileUniversal: सार्वत्रिकम् (Universal)
+  publishProject: परियोजना
+  publishProjectDetailsTab: परियोजनाविस्तारः
+  publishProjectName: परियोजनानाम
+  publishProjectRequired: प्रकाशात् पूर्वं परियोजनां चिनोतु।
+  publishProjectSlug: परियोजना-स्लग (Slug)
+  publishProjectUrl: परियोजना URL (ऐच्छिकम्)
+  publishProjectUrlHint: '{slug} प्रयोक्तुं रिक्तं त्यजतु।'
+  publishProjectSaved: परियोजनाविवरणानि नवीकृतानि।
+  publishSourceUrl: मूलस्रोत-URL
+  publishSubmit: समीक्षार्थं प्रारूपं समर्पयतु
+  publishSummary: लघुसारांशः
+  publishSummaryMinWords: सारांशे न्यूनातिन्यूनं ३ शब्दाः भवेयुः।
+  publishVersionTitle: आवृत्तिशीर्षकम्
+  publishVersionTab: आवृत्तिं प्रकाशयतु
+  publishVersion: आवृत्तिं प्रकाशयतु
+  publishVisibility: दृश्यता
+  publishWikiUrl: विकी URL
+  visibilityPrivate: व्यक्तिगतम् (Private)
+  visibilityPublic: सार्वजनिकम् (Public)
+  visibilityUnlisted: असूचीबद्धम् (Unlisted)
 modpackImportConfirm:
   description: भवता सञ्चिका प्रवर्तके क्षिप्यते। किं भवान् मोडप्याक् आयातयितुं प्रयतते?
   title: किं भवान् मोडप्याक् आयातयितुं प्रयतते?
@@ -1242,6 +1450,16 @@ multiplayer:
   sharing: सञ्चिकाः साझयति...
   start: आरम्भः
   startNewP2PConnection: नूतन-सहयोगि-सम्पर्कं निर्मातुं आरम्भ-नुदं नुदतु
+  connectedToMaster: कक्ष-स्वामिना सह संयुक्तम्
+  directConnection: प्रत्यक्षम्
+  master: स्वामी
+  masterHostsGameHint: कक्षस्वामी संयोजनकेन्द्रम् अस्ति तथा तेन Minecraft LAN जगत् आयोजितव्यम्। आयोजकपरिवर्तनात् पूर्वं स्वामित्त्वं हस्तान्तरयतु।
+  member: सदस्यः
+  joinCreatesMissingRoomHint: यदि अयं कक्षः न विद्यते, तर्हि भवान् इमं निर्मास्यति तथा अस्य स्वामी भविष्यति।
+  relayConnection: रिले (Relay)
+  relayAllowanceSummary: अस्मिन् अवधौ {total} मध्ये {remaining} अवशिष्टम्
+  relayServiceAvailable: XMCL Together रिले सेवा उपलभ्यते
+  waitingForMaster: कक्षस्वामिनः पुनःसंयोजनं प्रतीक्षते
 myStuff: मम सामग्री
 natType:
   blocked: अवरुद्धम्
@@ -1288,6 +1506,11 @@ presence:
   save: '{instance} मध्ये रक्षितक्रीडाः पश्यति'
   setting: विकल्पपृष्ठं पश्यति
   shaderPack: '{instance} मध्ये छायाकारसञ्चयान् पश्यति'
+  away: दूरे
+  offline: ऑफलाइन
+  online: ऑनलाइन
+  playing: '{game} क्रीडति'
+  playingGeneric: क्रीडति
 proxy:
   host: यजमानः (Host)
   port: पोर्ट (Port)
@@ -1475,6 +1698,109 @@ screenshots:
   openFolder: छायाचित्रकोशं उद्घाटयतु
   playRandom: क्रमहीनं क्रीडतु
   playSequence: क्रमेण क्रीडतु
+  title: छायाचित्राणि तथा चित्राणि
+  manage: छायाचित्रप्रबन्धकः
+  emptyTitle: अद्यापि छायाचित्राणि न सन्ति
+  emptyDescription: छायाचित्रग्रहणात् क्रीडायां F2 नुदतु, अथवा स्वचित्राणि स्वयं आयापयतु।
+  dropHint: वीथिकायां योजयितुं चित्राणि छायाचित्राणि वा अत्र निक्षिपतु
+  backToHome: गृहं प्रतिगच्छतु
+  import: चित्राणि योजयतु
+  images: चित्राणि
+  importSuccess: सफलतापूर्वकं {count} चित्राणि आयापितानि
+  copy: चित्रं प्रतिलिखतु
+  copied: फलके प्रतिलिखितम्!
+  setWallpaper: पृष्ठभूमित्वेन स्थापयतु
+  setWallpaperSuccess: दृष्टान्तस्य पृष्ठभूचित्रत्वेन स्थापितम्!
+  setIcon: चिह्नत्वेन स्थापयतु
+  setIconSuccess: दृष्टान्तचिह्नत्वेन स्थापितम्!
+  export: सञ्चिकां रक्षतु
+  exportSuccess: छायाचित्रं सफलतापूर्वकं रक्षितम्!
+  exportSelected: चयनितं निर्यापयतु
+  exportSelectedTitle: निर्यातसञ्चिकाकोशं चिनोतु
+  exportSelectedSuccess: सफलतापूर्वकं {count} छायाचित्राणि निर्यापितानि
+  deleteConfirmTitle: छायाचित्राणि विलोपयितुम् इच्छति किम्?
+  deleteConfirmMessage: किं भवान् {count} छायाचित्राणि सत्यमेव विलोपयितुम् इच्छति? इदं पुनः न प्राप्यते।
+  deleteSuccess: छायाचित्राणि सफलतापूर्वकं विलोपितानि
+  selectedCount: 'चयनितम्: {count}'
+  selectAll: सर्वं चिनोतु
+  clearSelection: सर्वाणि अचयनितं करोतु
+  countLabel: '{count} छायाचित्राणि'
+  searchPlaceholder: नाम्ना अन्विषतु...
+  noSearchResults: मेलनं छायाचित्रं न प्राप्तम्
+  noSearchResultsHint: स्व-अन्वेषणशब्दं परिवर्त्य प्रयतताम्
+  sort: क्रमयतु
+  sortDateDesc: नूतनतमं प्रथमम्
+  sortDateAsc: पुरातनतमं प्रथमम्
+  sortSizeDesc: बृहत्तमं प्रथमम्
+  sortSizeAsc: लघुतमं प्रथमम्
+  sortNameAsc: नाम (A-Z)
+  sortNameDesc: नाम (Z-A)
+  viewGrid: बृहज्जाली
+  viewGridCompact: सङ्क्षिप्तजाली
+  viewList: सूचीदृश्यम्
+  edit: संपादयतु
+  editorTitle: छायाचित्रं संपादयतु
+  layer: स्तरः (Layer)
+  dragToMove: चालयितुं कर्षतु
+  transformHint: चालयितुं चयनं कर्षतु • परिमाणं परिवर्तयितुं ग्रन्थीन् कर्षतु • दृढीकर्तुं Enter नुदतु
+  customColor: इष्टवर्णः
+  fill: पूरयतु (Fill)
+  brushPreview: तूलिकापरिमाणस्य पूर्वावलोकनम्
+  fontPreview: अक्षरपरिमाणस्य पूर्वावलोकनम्
+  textBgNone: किमपि न
+  textBgShadow: छाया
+  textBgBox: कोष्ठकम्
+  cropHint: कर्तनक्षेत्रं चेतुं सीमारेखाकोष्ठकं कर्षतु।
+  textPlacementHint: स्थापयितुं Enter • निरसितुं Esc
+  layerMoveUp: उपरि चालयतु
+  layerMoveDown: अधः चालयतु
+  layerCopy: '{name} प्रतिकृतिः'
+  pixels: px
+  saveCopy: प्रतिकृतिं रक्षतु
+  saveOverwrite: अधिलिखतु (Overwrite)
+  saveSuccess: छायाचित्रं रक्षितम्!
+  saveCopySuccess: नवीनछायाचित्ररूपेण रक्षितम्!
+  toolSelect: चिनोतु / चालयतु
+  toolMove: चालनम् तथा रूपान्तरणम् (Ctrl+T / V)
+  toolPan: पैन (Space+कर्षणम्)
+  layers: स्तराः (Layers)
+  layerAdd: स्तरं योजयतु
+  layerDuplicate: स्तरस्य प्रतिकृतिं करोतु
+  layerDelete: स्तरं विलोपयतु
+  layerOpacity: अपारदर्शिता (Opacity)
+  transformLayer: स्वतन्त्ररूपान्तरणम्
+  applyTransform: रूपान्तरणं प्रयुङ्क्ताम् (Enter)
+  cancelTransform: निरस्यतु (Esc)
+  layerBackground: पृष्ठभूमिः
+  layerPaint: चित्रणम्
+  layerText: पाठ्यम् (Text)
+  layerBlur: अस्पष्टता (Blur)
+  toolPen: लेखनी
+  toolArrow: बाणः (Arrow)
+  toolRect: दीर्घचतुरस्रम्
+  toolCircle: वृत्तम्
+  toolLine: रेखा
+  toolText: पाठ्यम् (Text)
+  toolHighlighter: उद्भासकम् (Highlighter)
+  toolBlur: पिक्सेलीकरणम् / अस्पष्टम्
+  toolCrop: कर्तनम् (Crop)
+  applyCrop: कर्तनं प्रयुङ्क्ताम्
+  cancelCrop: कर्तनं निरस्यतु
+  strokeWidth: रेखाविस्तारः
+  fontSize: अक्षरपरिमाणम्
+  color: वर्णः
+  undo: पूर्ववत् करोतु (Undo)
+  redo: पुनः करोतु (Redo)
+  clear: सर्वं मार्जयतु
+  textPlaceholder: पाठ्यं लेखितुं नोदनं करोतु...
+  fontFamily: अक्षरशैली (Font)
+  fontBold: स्थूलम् (Bold)
+  fontItalic: तिर्यक् (Italic)
+  textApply: पाठ्यं स्थापयतु
+  textBg: पृष्ठभूमिः
+  zoomIn: आकारं वर्धयतु
+  zoomOut: आकारं ह्रासयतु
+  resetZoom: परिमाणं पूर्ववत् कुरु
 search:
   favorate: सङ्ग्रहः
   local: संस्थापितम्
@@ -1672,7 +1998,7 @@ setting:
   backgroundImage: पृष्ठभूमिचित्रम्
   backgroundImageClear: मार्जयतु
   backgroundImageDescription: पृष्ठभूमिरूपेण चित्रं चिनोतु अथवा मार्जयतु
-  useDesktopBackground: वर्तमान-पटलभित्तिचित्रं प्रयुङ्क्त
+  useDesktopBackground: वर्तमानस्य डेस्कटॉप-पृष्ठभूमिचित्रं प्रयुङ्क्ताम्
   backgroundImageFit:
     contain: अन्तरभावयतु
     cover: आच्छादयतु
@@ -1709,7 +2035,7 @@ setting:
     sideBarColor: पार्श्वपट्टिका
     warningColor: चेतावनीवर्णः
   customCss:
-    advancedDescription: स्वकीयेन CSS द्वारा प्रवर्तकस्य शैल्याः अतिलेखनं करोतु।
+    advancedDescription: स्वकीयेन CSS द्वारा प्रचालकस्य वर्तमानशैलीम् अधिलिखतु।
     assistantHint: भवतः इच्छितं रूपं वर्णयतु, अहं भवतः कृते CSS लेखिष्यामि।
     assistantSuggestion1: पार्श्वपट्टिकाम् अर्धपारदर्शिकां करोतु
     assistantSuggestion2: पत्रेषु मन्दं वर्णक्रमं योजयतु
@@ -1853,6 +2179,23 @@ setting:
   useProxy: HTTP प्रॉक्सी
   useProxyDescription: HTTP अनुरोधाय प्रॉक्सीसङ्केतः
   viewBackgroundMusic: ध्वनीन् पश्यतु
+  multiplayerTransport: Together संवहनम् (Transport)
+  multiplayerTransportDescription: Together द्वारा प्रयुक्तं WebRTC विधानं चिनोतु। संवहनपरिवर्तनेन सक्रियाः सहचराः विच्छिद्यन्ते।
+  aiAgentApiKeyClear: कुञ्जीं मार्जयतु
+  aiAgentApiKeyEmpty: स्व API कुञ्जीं लेपयतु
+  aiAgentApiKeyNotNeeded: न आवश्यकम्
+  aiAgentApiKeyNotNeededHint: अयं प्रदाता स्थानीयतया चलति तथा अस्य कृते API कुञ्जी न आवश्यकी
+  aiAgentApiKeySaved: रक्षितम्
+  aiAgentApiKeyStored: कुञ्जी रक्षिता - परिवर्तयितुं टङ्कयतु
+  aiAgentBuiltin: अन्तर्निर्मितम् (Built-in)
+  aiAgentCustom: इष्टम्
+  appImageUpdateMode: AppImage नवीनीकरण स्वामित्वम्
+  appImageExternalMode: बाह्यप्रबन्धकः / हस्तचालितप्रतिस्थापनम् (मूलभूतम्)
+  appImageSelfMode: XMCL स्वप्रबन्धितम् (अहम् अस्य AppImage स्वामी अस्मि)
+  appImageAutoDownload: नवीनीकरणानि स्वयमेव अधोगच्छन्तु
+  appImageAutoInstall: निर्गमने सति अधोगतानि नवीनीकरणानि स्थापयन्तु
+  appImageExternalUpdateHint: यदि Shelly अथवा अन्यप्रबन्धकेन स्थापितम्, तत्रैव नवीकुर्वन्तु बाह्यप्रकारं च रक्षन्तु। अन्यथा स्वयमेव AppImage प्रतिस्थापयन्तु।
+  appImageSelfUpdateHint: केवलं स्वप्रबन्धितस्य AppImage कृते एतत् चिनुत। अन्तर्निर्मितनवीनीकरणाय सञ्चिकानाम्नि संस्करणसंख्यारहितः पूर्णमार्गः आवश्यकः (यथा xmcl.AppImage)।
 settingLabel:
   global: वैश्विकम्
   globalHint: एषः विकल्पः वैश्विकविकल्पम् अनुसरेत्
@@ -1946,6 +2289,13 @@ shared:
   upgrade: नवीकरोतु
   'yes': आम्
   delete: लोपयतु
+  openFolder: सञ्चिकाकोशम् उद्घाटयतु
+  reset: पुनर्निर्धारयतु
+  missing: लुप्तम्
+  healthy: समीचीनम्
+  unused: अप्रयुक्तम्
+  failed: विफलम्
+  view: पश्यतु
 sidebar:
   pin: कीलयतु
   unpin: अकीलनं करोतु
@@ -2240,6 +2590,9 @@ userSkin:
   skinDeleteFailed: त्वचां वेषागारात् निष्कासयितुं न शक्तम्
   edit: सम्पादयतु
   fetch: आनयतु
+  invalidImage: मान्यं Minecraft त्वक्-चित्रं चिनोतु।
+  invalidImageTitle: अमान्यं त्वक्-चित्रम्
+  uploadRejected: Minecraft इत्यनेन अस्य त्वक्-चित्रस्य उपारोपणम् अस्वीकृतम्। कृपया पश्चात् पुनः प्रयतताम्।
 version:
   checkIntegrity: अखण्डतां परीक्षताम्
   name: संस्करणम् | संस्करणाणि
@@ -2403,3 +2756,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: लेखा
+  confirmMerge: लेखासंयोजनं संदृढयतु
+  createdAt: 'निर्मितम्: {date}'
+  description: भवतः कूटशब्दरहिता XMCL अनन्यता, या Minecraft क्रीडालेखाभ्यः पृथक् अस्ति।
+  expiresAt: 'समाप्तिः: {date}'
+  gameAccountsSeparate: क्रीडालेखायाः निष्कासनेन XMCL प्रवेशपद्धतिः न विच्छिद्यते।
+  guest: अतिथिः
+  identityConflict: अयं {provider} प्रवेशः अन्यस्य XMCL लेखायाः अस्ति। लेखाः कदापि स्वयमेव न संयोज्यन्ते।
+  linkAccountWith: अनेन सह लेखां संयोजयतु
+  mergePreview: दृढीकरणात् पूर्वं स्थानान्तरितान् संसाधनान् अवलोकयतु।
+  mergeNeedsSession: संयोजनावलोकनात् पूर्वं यं XMCL लेखां रक्षितुम् इच्छति तस्मिन् प्रविशतु।
+  mergeQueued: लेखासंयोजनं प्रचलति।
+  requestFailed: XMCL लेखासेवा इमम् अनुरोधं पूरयितुं न अशक्नोत्। भवतः क्रीडालेखा अपरिवर्तिता अस्ति।
+  reviewMerge: संयोजनम् अवलोकयतु
+  session: सत्रम्
+  sessionActive: सक्रियम्
+  sessionExpired: कालावधिः समाप्तः
+  signOutAll: सर्वेभ्यः यन्त्रेभ्यः निष्क्रमतु
+  signOutDevice: अस्मात् यन्त्रात् निष्क्रमतु
+  status:
+    active: सक्रियम्
+    deleted: अपसारितम्
+    deletion_pending: अपसारणं प्रतीक्षते
+    merged: संयोजितम्
+  title: XMCL लेखा
+modCategory:
+  optimization: अनुकूलनम् तथा कार्यक्षमता
+  libraries: ग्रन्थालयाः तथा API
+  utilities: यूआई तथा उपयोगाः
+  world: जगत् तथा बायोम्स
+  visual: दृश्यम् तथा श्रव्यम्
+  gameplay: क्रीडाविधिः तथा विषयवस्तु
+  miscellaneous: विविधम्
+localCollection:
+  title: प्रचालकसङ्ग्रहाः
+  newCollection: नवीनः सङ्ग्रहः
+  namePlaceholder: सङ्ग्रहनाम
+  addToCollection: सङ्ग्रहे योजयतु
+  empty: अद्यापि प्रचालकसङ्ग्रहाः न सन्ति
+  corrupted: भवतः रक्षिताः सङ्ग्रहाः पठितुं न शकिताः तथा पूर्वस्थितौ स्थापिताः। सञ्चिकायाः समीपे एकम् आपत्कालीन-रक्षणम् स्थापितम्।
+  modrinthSection: Modrinth लेखा
+  installAll: सर्वं संस्थापयतु
+  incompatibleAlert: '१ परियोजना वर्तमाने दृष्टान्ते असङ्गता अस्ति तथा त्यक्ता: | {count} परियोजनाः वर्तमाने दृष्टान्ते असङ्गताः सन्ति तथा त्यक्ताः:'
+  projects: कापि परियोजना नास्ति | {count} परियोजना | {count} परियोजनाः
+  saveCurrentMods: संस्थापितान् मोड्स सङ्ग्रहरूपेण रक्षतु
+  saveCurrentModsSuccess: '"{name}" सङ्ग्रहे {count} मोड्स रक्षिताः'
+  viewMods: मोड्स पश्यतु
+  editCollection: सङ्ग्रहं संपादयतु
+  collectionDescription: सङ्ग्रहविवरणम्
+  noModsInCollection: अस्मिन् सङ्ग्रहे अद्यापि मोड्स न सन्ति
+  exportCollection: सङ्ग्रहं निर्यापयतु
+  importCollection: सङ्ग्रहम् आयापयतु
+  removeEntryConfirm: सङ्ग्रहात् अपसारयतु
+  addMods: मोड्स योजयतु
+  addModsTo: '"{name}" मध्ये मोड्स योजयतु'
+  addModsHint: स्वदृष्टान्तात् संस्थापितान् मोड्स योजयतु अथवा आपणमध्ये चिह्नकुञ्जीं नुदतु।
+  addModsDialogDesc: अस्मिन् सङ्ग्रहे योजयितुं स्वदृष्टान्तात् संस्थापितान् मोड्स चिनोतु।
+  addAllCurrent: सर्वान् वर्तमानमोड्स योजयतु
+  addedModsSuccess: सङ्ग्रहे {count} मोड्स योजिताः
+  searchMods: मोड्स अन्विषतु...
+  selectAll: सर्वं चिनोतु
+  deselectAll: सर्वम् अचयनितं करोतु
+  selected: चयनितम्
+  alreadyInCollection: योजितम्
+  noMatchingMods: भवतः अन्वेषणेन सह कोऽपि मोडः न मिलति
+  addSelectedMods: '{count} मोड्स योजयतु'

@@ -52,6 +52,43 @@ agent:
   thinking: सोच रहा है...
   title: XMCL एजेंट
   toggleHint: टॉगल करने के लिए
+  abort: उत्पादन रोकें
+  confirmAccept: जारी रखें
+  confirmAllowAll: सभी को अनुमति दें
+  confirmCancel: रद्द करें
+  confirmPending: पुष्टि की प्रतीक्षा है
+  confirmTitle: एजेंट कार्रवाई की पुष्टि करें
+  errorTitle: एजेंट में एक त्रुटि आई
+  passiveGameCrashed: गेम क्रैश हो गया
+  passiveGameExitCode: एग्ज़िट कोड {code}
+  passiveGameExited: गेम बंद हो गया
+  passiveGameExitSignal: सिग्नल {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: कोई निकास स्थिति नहीं
+  reasoning: तर्क (Reasoning)
+  passiveGameStarted: गेम शुरू हो गया
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: मॉड संगतता रिपोर्ट
+  passiveModDiagnosisError: संगतता निदान विफल रहा
+  passiveModDiagnosisSummary: '{checked} मॉड जाँचे गए · {incompatibilities} असंगतताएँ · {duplicates} डुप्लिकेट'
+  passiveModDuplicate: 'डुप्लिकेट {mod}: {files}'
+  passiveModInstalled: '{version} इंस्टॉल किया गया'
+  toolArguments: तर्क (Arguments)
+  toolResult: परिणाम
+  toolRunning: परिणाम की प्रतीक्षा है…
+  marketConfirmMessage: क्या वर्तमान इंस्टेंस में {name} इंस्टॉल करें?
+  marketConfirmTarget: 'लक्ष्य: {instance}'
+  marketConfirmTitle: '{type} इंस्टॉल करें'
+  marketInstall: इंस्टॉल करें
+  marketInstalled: इंस्टॉल हो गया
+  marketInstallFailed: '{type} इंस्टॉल करने में विफल'
+  marketType:
+    datapack: डेटा पैक
+    mod: मॉड
+    modpack: मॉडपैक
+    resourcepack: रिसोर्स पैक
+    shader: शेडर पैक
+  marketResultCount: '{count} परिणाम'
 ago:
   day: '{duration} दिन पहले | {duration} दिन पहले'
   hour: '{duration} घंटे पहले | {duration} घंटे पहले'
@@ -119,7 +156,7 @@ backup:
   create: बैकअप बनाएं
   createTitle: XMCL बैकअप आर्काइव बनाएं
   saveDialogTitle: XMCL बैकअप आर्काइव सहेजें
-  fileFilterName: 'XMCL बैकअप आर्काइव (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL बैकअप आर्काइव (*.xmclbackup, *.zip)
   createError: बैकअप बनाने में विफल
   loadManifestError: बैकअप आर्काइव पढ़ने में विफल
   restore: रीस्टोर करें
@@ -130,7 +167,7 @@ backup:
   elapsedTime: बीता समय
   remainingTime: अनुमानित शेष समय
   calculatingRemaining: गणना हो रही है...
-  lessThanMinute: '< 1 मिनट'
+  lessThanMinute: < 1 मिनट
   itemsProgress: '{current}/{total}'
   savesCategory: वर्ल्ड
   modsCategory: मॉड्स
@@ -142,9 +179,9 @@ backup:
   copiedLog: लॉग क्लिपबोर्ड पर कॉपी हो गया
   openFolder: फ़ोल्डर में दिखाएं
   done: पूर्ण
-  backupDone: 'बैकअप पूर्ण!'
+  backupDone: बैकअप पूर्ण!
   backupDoneHint: आपका बैकअप आर्काइव बना और सत्यापित कर दिया गया है।
-  restoreDone: 'रीस्टोर पूर्ण!'
+  restoreDone: रीस्टोर पूर्ण!
   restoreDoneHint: सभी चयनित डेटा और इंस्टेंस सफलतापूर्वक रीस्टोर हो गए हैं।
   timeTaken: 'लगा समय: {time}'
   destinationFile: 'यहाँ सहेजा गया: {path}'
@@ -178,9 +215,9 @@ backup:
   restoreError: बैकअप रीस्टोर करने में विफल
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: बैकअप बनाएं
   createBackupDescription: अपनी लॉन्चर सेटिंग्स, कलेक्शन, कस्टम थीम और इंस्टेंस को एक पोर्टेबल आर्काइव फ़ाइल में सहेजें।
   restoreBackupTitle: बैकअप रीस्टोर करें
@@ -218,9 +255,27 @@ backup:
   interval6h: हर 6 घंटे
   interval12h: हर 12 घंटे
   interval24h: हर 24 घंटे
-  keepCount: 'अंतिम {count} बैकअप रखें'
+  keepCount: अंतिम {count} बैकअप रखें
 baseSetting:
   title: इंस्टेंस सेटिंग्स
+  info:
+    address: पता
+    changes: परिवर्तन
+    custom: कस्टम
+    disabled: अक्षम
+    enabled: सक्षम
+    exportFormats: निर्यात प्रारूप
+    inherited: विरासत में मिला
+    modLoader: मॉड लोडर
+    notConfigured: कॉन्फ़िगर नहीं किया गया
+    notSet: सेट नहीं है
+    offline: ऑफ़लाइन संग्रह
+    projectId: प्रोजेक्ट आईडी
+    running: चल रहा है
+    saved: सहेजा गया
+    status: स्थिति
+    stopped: रोका गया
+    vanilla: वेनिला
 browseApp:
   createShortcut: शॉर्टकट बनाएं
   default: डिफ़ॉल्ट
@@ -455,6 +510,7 @@ commandPalette:
   hintEnter: प्रवेश करें
   hintBack: पीछे
   hintClose: बंद करें
+  hintAskAgent: एजेंट से पूछें
 feedback:
   channel: चैनल
   description: मुझे एक बग मिला है या मैं एक सुझाव देना चाहता हूँ
@@ -473,6 +529,8 @@ feedback:
   qq: QQ समूह
   qqDescription: 'प्रतिक्रिया QQ समूह में प्रवेश करें और लेखकों से सीधे बात करें। समूह संख्या: {number}'
   qqEnterGroup: जुड़ें
+  reddit: Reddit
+  redditDescription: r/XMCL सबरेडिट समुदाय में शामिल हों
 fileDetail:
   fileSize: फ़ाइल का आकार
   filesize: फ़ाइल का आकार
@@ -554,7 +612,7 @@ instance:
   deleteFailedPermission: अन्य प्रोग्राम ने फ़ाइल पर कब्ज़ा कर रखा है
   deleteFile: इंस्टेंस फ़ाइलें हटाएं
   deleteHint: इंस्टेंस डेटा हमेशा के लिए डिस्क से हटा दिया जाएगा। क्या आप सुनिश्चित हैं?
-  deleteHintBedrock: माइनक्राफ्ट बेडरोक संस्करण और उसका सारा डेटा आपके कंप्यूटर से पूरी तरह से हटा दिया जाएगा। क्या आप सुनिश्चित हैं?
+  deleteHintBedrock: Minecraft Bedrock Edition और इसका सारा डेटा आपके कंप्यूटर से पूरी तरह हटा दिया जाएगा। क्या आप वाकई ऐसा करना चाहते हैं?
   duplicate: गेम की प्रतिलिपि बनाएँ
   duplicatedName: डुप्लिकेट नाम
   envVarKey: कुंजी (Key)
@@ -610,6 +668,10 @@ instance:
   vmVar: पर्यावरण चर (Environment Variables)
   vmVarHint: पर्यावरण चर जोड़ने के लिए + बटन पर क्लिक करें
   width: चौड़ाई
+  monitor: फुलस्क्रीन मॉनिटर
+  monitorDefault: डिफ़ॉल्ट (प्राथमिक मॉनिटर)
+  monitorNumber: मॉनिटर {number}
+  monitorPrimary: प्राथमिक
 instanceAge:
   older: पुराना
   threeDay: तीन दिनों में
@@ -675,6 +737,10 @@ instances:
   folderSetting: फ़ोल्डर सेटिंग्स
   importFolderDescription: माइनक्राफ्ट को लॉन्चर में आयात करें
   loadingFiles: मॉडपैक फ़ाइलें लोड हो रही हैं
+  instanceCount: '{count} इंस्टेंस'
+  linkSharedFolders: इंस्टेंस के बीच फ़ोल्डर साझा करें
+  linkSharedFoldersHint: इन फ़ोल्डरों को लॉन्चर के साझा फ़ोल्डरों के लिंक के रूप में बनाएं ताकि यह इंस्टेंस अपनी सामग्री अन्य सभी लिंक किए गए इंस्टेंस के साथ साझा कर सके। यह कोई कॉपी नहीं है — एक इंस्टेंस में किए गए बदलाव सभी में दिखाई देंगे। अनचेक किए गए फ़ोल्डर इस इंस्टेंस के लिए निजी रहेंगे।
+  linkFailed: '{folder} फ़ोल्डर को साझा फ़ोल्डर से लिंक करने में विफल'
 items:
   count: '{count} आइटम'
   total: '{total} कुल'
@@ -736,6 +802,13 @@ launchBlocked:
     description: कृपया अपना जावा जांचें, या लॉन्चर को अधिक अनुमतियां दें और पुनः प्रयास करें। यदि यह अभी भी काम नहीं करता है, तो कृपया डेवलपर्स से संपर्क करें।
     title: गेम प्रक्रिया शुरू करने में विफल
   unexpectedText: यह अप्रत्याशित है। आप इस समस्या को कम करने के लिए लॉन्चर को पुनरारंभ कर सकते हैं। यदि यह समस्या दोबारा आती है तो कृपया लेखक से संपर्क करें।
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL आपके डेस्कटॉप सत्र से X11 डिस्प्ले जानकारी पुनर्प्राप्त नहीं कर सका। वर्तमान डेस्कटॉप सत्र में टर्मिनल से XMCL को पुनः प्रारंभ करें, या साइन आउट करके पुनः साइन इन करें।
+    noGraphicalSession: XMCL किसी ग्राफिकल डेस्कटॉप सत्र में नहीं चल रहा है। Minecraft लॉन्च करने से पहले अपने डेस्कटॉप सत्र से XMCL प्रारंभ करें।
+    sandboxDenied: एप्लिकेशन सैंडबॉक्स X11 तक नहीं पहुँच सकता। अपनी Flatpak अनुमतियों में XMCL को X11 सॉकेट तक पहुँच प्रदान करें, फिर XMCL को पुनरारंभ करें।
+    title: X11 डिस्प्ले अनुपलब्ध है
+    xwaylandMissing: Minecraft को इस Wayland सत्र में XWayland की आवश्यकता है। अपने Linux वितरण द्वारा प्रदान किया गया XWayland पैकेज इंस्टॉल करें, फिर साइन आउट करके पुनः साइन इन करें।
+    xwaylandNotRunning: XWayland इंस्टॉल है लेकिन कोई X11 डिस्प्ले नहीं चल रहा है। अपने कंपोज़िटर कॉन्फ़िगरेशन में XWayland सक्षम करें, फिर साइन आउट करके पुनः साइन इन करें।
 launchFailed:
   crash: गेम क्रैश हो गया!!
   description: कोई क्रैश रिपोर्ट नहीं है। यह त्रुटि लॉग और नवीनतम लॉग है।
@@ -763,6 +836,11 @@ launcherUpdate:
   installAndQuit: स्थापित करने के लिए पुनरारंभ करें
   noUpdateAvailable: कोई अपडेट उपलब्ध नहीं
   updateToThisVersion: डाउनलोड और इंस्टॉल करें
+  automaticUnavailable: स्वचालित अपडेट अनुपलब्ध
+  automaticNotImplemented: इस लॉन्चर होस्ट के लिए स्वचालित अपडेट लागू नहीं है।
+  automaticNotConfigured: इस लॉन्चर होस्ट के लिए स्वचालित अपडेट कॉन्फ़िगर नहीं है।
+  manualCheckHint: कोई रिलीज़ जाँच नहीं की गई है। संगत पैकेज के लिए GitHub Releases देखें और इसे मैन्युअल रूप से इंस्टॉल करें।
+  manualCheckRequired: यह होस्ट स्वचालित रूप से अपडेट की जाँच या इंस्टॉल नहीं कर सकता। मैन्युअल रूप से जाँच करने के लिए GitHub Releases बटन का उपयोग करें।
 localVersion:
   auto: स्वचालित रूप से गणना की गई
   empty: कोई संस्करण स्थापित नहीं
@@ -815,6 +893,10 @@ loginError:
   requirePassword: पासवर्ड आवश्यक है
   requireUsername: यूज़रनेम आवश्यक है
   timeout: लॉग इन टाइमआउट। कृपया पुनः प्रयास करें या अपना नेटवर्क जांचें।
+  loginCanceled: Microsoft साइन-इन रद्द कर दिया गया था।
+  xboxErrorGuideHint: साइन इन करने में समस्या आ रही है? Microsoft और Xbox लॉगिन समस्याओं को ठीक करने का तरीका जानें।
+  openLoginGuide: इस समस्या को कैसे ठीक करें
+  openDiscordSupport: फिर भी मदद चाहिए? हमारे Discord से जुड़ें
 logsCrashes:
   crashes: क्रैश रिपोर्ट
   failures: लॉन्च की विफलताएं
@@ -844,6 +926,8 @@ minecraftFriends:
     inviteRejected: उस खिलाड़ी के पास मित्र सुविधा सक्षम नहीं है या वह निमंत्रण स्वीकार नहीं करता है।
     tokenExpired: आपका माइक्रोसॉफ्ट सत्र समाप्त हो गया। कृपया पुनः लॉग इन करें।
     unknownProfile: हमें उस नाम का कोई खिलाड़ी नहीं मिला।
+    friendsDisabled: आपके Minecraft खाते में मित्र अक्षम हैं या मित्रों का उपयोग नहीं कर सकते। Minecraft खाता सेटिंग्स में मित्रों को सक्षम करें, फिर पुनः प्रयास करें।
+    invalidName: Minecraft उपयोगकर्ता नाम 3 से 16 वर्णों के बीच होना चाहिए।
   expiresRelative: '{time} समाप्त हो रहा है'
   friends: मित्र
   heroEmptyHint: मित्र अनुरोध भेजने के लिए ऊपर यूज़रनेम द्वारा एक माइनक्राफ्ट खिलाड़ी जोड़ें।
@@ -924,6 +1008,23 @@ mod:
   syncGroupRules: समूहीकरण नियम सहेजें
   toUpdate: '{count} अपडेट'
   ungroup: समूह से बाहर करें
+  autoCategorize: फ़ोल्डरों में स्वचालित क्रमबद्ध करें
+  autoCategorizeHint: मॉड को श्रेणी फ़ोल्डरों में स्वचालित रूप से समूहित करें (ऑप्टिमाइज़ेशन, लाइब्रेरी, विश्व, गेमप्ले, आदि)
+  autoCategorizeSuccess: मॉड स्वचालित रूप से {count} फ़ोल्डरों में क्रमबद्ध किए गए
+  collapseAll: सभी फ़ोल्डर समेटें
+  expandAll: सभी फ़ोल्डर फैलाएँ
+  folderSetting: फ़ोल्डर सेटिंग्स
+  folderColor: फ़ोल्डर का रंग
+  folderIcon: फ़ोल्डर आइकन
+  pinGroup: शीर्ष पर पिन करें
+  pinToTop: शीर्ष पर पिन करें
+  pinToTopHint: फ़ोल्डर सूची के शीर्ष पर दिखाई देगा
+  pinned: पिन किया गया
+  unpinGroup: फ़ोल्डर अनपिन करें
+  customColor: कस्टम रंग
+  preview: पूर्वावलोकन
+  ungroupAll: सभी को समूह से अलग करें
+  organization: फ़ोल्डर संगठन
 modFilter:
   clear: फ़िल्टर साफ़ करें
   dependenciesInstallOnly: केवल छूटे हुए निर्भरता वाले मॉड दिखाएं
@@ -952,6 +1053,7 @@ modInstall:
   skipVersion: विभिन्न माइनक्राफ्ट संस्करण वाले मॉड छोड़ें
   source: मॉड स्रोत
   switch: संस्करण बदलें
+  scanUnusedLibraries: अप्रयुक्त लाइब्रेरी स्कैन करें
 modSearch:
   noLocalModsFound: आपकी खोज से मेल खाने वाले कोई स्थानीय मॉड नहीं मिले।
   noModsFound: कोई मॉड नहीं मिला
@@ -987,6 +1089,112 @@ modpack:
   overrides: ओवरराइड्स
   url: यूआरएल
   urlHint: आपके मॉडपैक का होम पेज यूआरएल
+  emitCurseforgeDescription: CurseForge के लिए मानक ज़िप मॉडपैक संग्रह
+  emitModrinthDescription: तेज़ CDN डाउनलोड के साथ हल्का आधिकारिक प्रारूप
+  emitPackwiz: Packwiz मॉडपैक निर्यात करें
+  emitPackwizDescription: हल्का गिट-अनुकूल प्रारूप (pack.toml, index.toml, और .pw.toml फाइलें)
+  exportSuccess: मॉडपैक सफलतापूर्वक निर्यात किया गया!
+  exportSuccessWithWarnings: चेतावनियों के साथ मॉडपैक निर्यात किया गया
+  exportSkippedFiles: निर्यात के दौरान {count} अपठनीय या लॉक की गई फ़ाइलों को छोड़ दिया गया
+  exportFailed: मॉडपैक निर्यात करने में विफल
+  skippedFilesDialogTitle: कुछ फ़ाइलों को निर्यात नहीं किया जा सका
+  skippedFilesDialogDescription: मॉडपैक बनाया गया, लेकिन {count} फ़ाइलें छोड़ दी गईं
+  skippedReasonEperm: पहुँच अस्वीकृत (ओएस या अन्य प्रक्रिया द्वारा लॉक किया गया)
+  skippedReasonEbusy: फ़ाइल किसी अन्य प्रोग्राम द्वारा उपयोग में है
+  skippedReasonEnoent: फ़ाइल नहीं मिली या क्षतिग्रस्त है
+  skippedFilesNotice: आपकी बाकी फ़ाइलें सफलतापूर्वक मॉडपैक में पैक कर दी गईं। उपरोक्त फ़ाइलें Windows सिस्टम प्रतिबंधों या अनुमतियों की कमी के कारण छोड़ दी गईं।
+  openExportFolder: मॉडपैक फ़ोल्डर खोलें
+  closeDialog: समझ गया
+  expandAll: सभी फ़ोल्डर फैलाएँ
+  collapseAll: सभी फ़ोल्डर समेटें
+  modpackVersionHint: सिमेंटिक संस्करण स्ट्रिंग (उदा. 1.0.0)। पैच/माइनर बढ़ाने के लिए + का उपयोग करें
+  modrinthProject: Modrinth प्रोजेक्ट
+  selectDefaultFiles: डिफ़ॉल्ट फ़ाइलें चुनें
+  selectAllFiles: सभी फ़ाइलें चुनें
+  deselectAllFiles: सभी फ़ाइलें अचयनित करें
+  bindProject: प्रोजेक्ट बाँधें (Bind)
+  bindProjectHint: वर्तमान खाते द्वारा प्रबंधित Modrinth मॉडपैक प्रोजेक्ट चुनें।
+  bindProjectTypeImmutableHint: Modrinth किसी प्रोजेक्ट का प्रकार तब तय करता है जब उसका पहला संस्करण अपलोड किया जाता है, और बाद में इसे बदला नहीं जा सकता। बिना किसी संस्करण वाले ड्राफ्ट प्रोजेक्ट को अभी भी यहाँ बाँधा जा सकता है, लेकिन पहले से मॉड/रिसोर्स पैक के रूप में प्रकाशित प्रोजेक्ट को मॉडपैक में नहीं बदला जा सकता — इसके बजाय "नया प्रोजेक्ट बनाएँ" का उपयोग करें।
+  bindProjectNoProjects: आपके खाते के लिए कोई Modrinth प्रोजेक्ट नहीं मिला।
+  unbindProject: प्रोजेक्ट अनबाइंड करें
+  unbindProjectConfirmTitle: Modrinth प्रोजेक्ट अनबाइंड करें?
+  unbindProjectConfirmMessage: यह केवल इस इंस्टेंस और Modrinth प्रोजेक्ट के बीच स्थानीय जुड़ाव को हटाता है। Modrinth पर प्रोजेक्ट और उसके संस्करण प्रभावित नहीं होते हैं।
+  editProject: प्रोजेक्ट संपादित करें
+  projectDiscovery: खोज और संगतता
+  projectGallery: गैलरी
+  projectGalleryAdd: छवि जोड़ें
+  projectGalleryEmpty: अभी तक कोई गैलरी छवि नहीं है।
+  projectGalleryFeatured: विशेष रुप से प्रदर्शित
+  projectGalleryFromScreenshots: स्क्रीनशॉट चुनें
+  projectGalleryHint: 5 MiB तक की छवियां जोड़ें और विशेष रुप से प्रदर्शित प्रोजेक्ट छवि चुनें।
+  projectGallerySelectScreenshot: एक इंस्टेंस स्क्रीनशॉट चुनें
+  projectIdentity: पहचान और विवरण
+  projectLinks: प्रोजेक्ट लिंक
+  projectLoadFailed: बाध्य Modrinth प्रोजेक्ट लोड करने में विफल।
+  projectNoChanges: कोई सहेजा नहीं गया प्रोजेक्ट परिवर्तन नहीं।
+  projectNotBound: कोई Modrinth प्रोजेक्ट बाध्य नहीं है
+  projectNotBoundHint: किसी मौजूदा प्रोजेक्ट को बाँधें, या एक नया Modrinth प्रोजेक्ट बनाएँ।
+  projectUnsavedChanges: '{count} प्रोजेक्ट फ़ील्ड बदले गए'
+  projectLatestDraft: ड्राफ्ट
+  projectVersions: संस्करण
+  publish: प्रकाशित करें
+  publishCategories: श्रेणियाँ (अल्पविराम से अलग की गई)
+  publishChannel: रिलीज़ चैनल
+  publishChangelog: चेंजलॉग
+  publishChangelogGenerate: एआई से उत्पन्न करें
+  publishConfirmProjectChanges: प्रोजेक्ट परिवर्तनों की पुष्टि करें
+  publishCreateProject: प्रोजेक्ट बनाएँ
+  publishCreateDraft: बिल्ड करें और ड्राफ्ट बनाएँ
+  publishCustomVersion: कस्टम
+  publishDescription: प्रोजेक्ट विवरण
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: ड्राफ्ट संस्करण अपलोड किया गया।
+  publishSubmitted: समीक्षा के लिए संस्करण सबमिट किया गया।
+  publishExistingProject: मौजूदा प्रोजेक्ट
+  publishIcon: प्रोजेक्ट आइकन
+  publishIconHint: PNG, JPEG, या WebP
+  publishIconKeep: जब तक नई छवि नहीं चुनी जाती तब तक अपरिवर्तित रखें
+  publishIconUseInstance: इंस्टेंस आइकन का उपयोग करें
+  publishIssuesUrl: समस्याएँ (Issues) URL
+  publishLicense: लाइसेंस आईडी
+  publishLogin: Modrinth में साइन इन करें
+  publishFiles: चयनित फ़ाइलें
+  publishLinkageSummary: '{total} में से {linked} मॉड/रिसोर्स पैक/शेडर पैक अपलोड होने के बजाय सीधे उनके Modrinth डाउनलोड से लिंक होंगे।'
+  publishLinkageEmbeddedSummary: '{count} फ़ाइल(फ़ाइलों) को लिंक नहीं किया जा सकता और इस संस्करण के साथ अपलोड (एम्बेड) किया जाएगा।'
+  publishLinkageShowFiles: वे फ़ाइलें दिखाएँ जिन्हें अपलोड किया जाना चाहिए
+  publishLinkageReason:
+    missing-file: डिस्क पर फ़ाइल नहीं मिली
+    not-linked-to-modrinth: Modrinth संसाधन के रूप में पहचाना नहीं गया
+    no-downloadable-url: कोई पुनर्वितरण योग्य डाउनलोड URL नहीं मिला
+  publishModrinth: Modrinth पर प्रकाशित करें
+  publishNewProject: नया प्रोजेक्ट
+  publishOpenProject: प्रोजेक्ट खोलें
+  publishOpenVersion: संस्करण खोलें
+  publishProfile: MRPack प्रोफ़ाइल
+  publishProfileClient: केवल क्लाइंट
+  publishProfileServer: केवल सर्वर
+  publishProfileSplit: यूनिवर्सल + अलग क्लाइंट/सर्वर फ़ाइलें
+  publishProfileUniversal: यूनिवर्सल
+  publishProject: प्रोजेक्ट
+  publishProjectDetailsTab: प्रोजेक्ट विवरण
+  publishProjectName: प्रोजेक्ट का नाम
+  publishProjectRequired: प्रकाशित करने से पहले एक प्रोजेक्ट चुनें।
+  publishProjectSlug: प्रोजेक्ट स्लग
+  publishProjectUrl: प्रोजेक्ट URL (वैकल्पिक)
+  publishProjectUrlHint: '{slug} का उपयोग करने के लिए खाली छोड़ें।'
+  publishProjectSaved: प्रोजेक्ट विवरण अपडेट किया गया।
+  publishSourceUrl: स्रोत URL
+  publishSubmit: समीक्षा के लिए ड्राफ्ट सबमिट करें
+  publishSummary: संक्षिप्त सारांश
+  publishSummaryMinWords: सारांश में कम से कम 3 शब्द होने चाहिए।
+  publishVersionTitle: संस्करण शीर्षक
+  publishVersionTab: संस्करण प्रकाशित करें
+  publishVersion: संस्करण प्रकाशित करें
+  publishVisibility: दृश्यता
+  publishWikiUrl: विकी URL
+  visibilityPrivate: निजी
+  visibilityPublic: सार्वजनिक
+  visibilityUnlisted: असूचीबद्ध (Unlisted)
 modpackImportConfirm:
   description: पता चला कि आपने लॉन्चर में एक फ़ाइल छोड़ी है। क्या आप एक मॉडपैक आयात करने का प्रयास कर रहे हैं?
   title: क्या आप एक मॉडपैक आयात करने का प्रयास कर रहे हैं?
@@ -1244,6 +1452,16 @@ multiplayer:
   sharing: फ़ाइलें शेयर की जा रही हैं...
   start: शुरू करें
   startNewP2PConnection: नया पीयर कनेक्शन बनाने के लिए स्टार्ट बटन पर क्लिक करें
+  connectedToMaster: रूम मास्टर से कनेक्टेड
+  directConnection: सीधा
+  master: मास्टर
+  masterHostsGameHint: रूम मास्टर कनेक्शन हब है और उसे Minecraft LAN विश्व की मेजबानी करनी चाहिए। होस्ट बदलने से पहले मास्टर ट्रांसफर करें।
+  member: सदस्य
+  joinCreatesMissingRoomHint: यदि यह रूम मौजूद नहीं है, तो आप इसे बनाएंगे और इसके मास्टर बन जाएंगे।
+  relayConnection: रिले
+  relayAllowanceSummary: इस अवधि में {total} में से {remaining} शेष
+  relayServiceAvailable: XMCL Together रिले सेवा उपलब्ध है
+  waitingForMaster: रूम मास्टर के पुनः कनेक्ट होने की प्रतीक्षा है
 myStuff: मेरी चीजें
 natType:
   blocked: अवरुद्ध
@@ -1290,6 +1508,11 @@ presence:
   save: '{instance} में सेव देख रहे हैं'
   setting: सेटिंग पेज देख रहे हैं
   shaderPack: '{instance} में शेडर पैक देख रहे हैं'
+  away: दूर
+  offline: ऑफ़लाइन
+  online: ऑनलाइन
+  playing: '{game} खेल रहे हैं'
+  playingGeneric: खेल रहे हैं
 proxy:
   host: होस्ट
   port: पोर्ट
@@ -1477,6 +1700,109 @@ screenshots:
   openFolder: स्क्रीनशॉट फ़ोल्डर खोलें
   playRandom: शफ़ल करें
   playSequence: क्रम में चलाएँ
+  title: स्क्रीनशॉट और फ़ोटो
+  manage: स्क्रीनशॉट प्रबंधक
+  emptyTitle: अभी तक कोई स्क्रीनशॉट नहीं
+  emptyDescription: स्क्रीनशॉट लेने के लिए गेम में F2 दबाएँ, या अपनी फ़ोटो मैन्युअल रूप से आयात करें।
+  dropHint: गैलरी में जोड़ने के लिए फ़ोटो या स्क्रीनशॉट यहाँ छोड़ें
+  backToHome: होम पर वापस जाएँ
+  import: फ़ोटो जोड़ें
+  images: छवियाँ
+  importSuccess: सफलतापूर्वक {count} फ़ोटो आयात की गईं
+  copy: छवि कॉपी करें
+  copied: क्लिपबोर्ड पर कॉपी किया गया!
+  setWallpaper: पृष्ठभूमि के रूप में सेट करें
+  setWallpaperSuccess: इंस्टेंस पृष्ठभूमि छवि के रूप में सेट किया गया!
+  setIcon: आइकन के रूप में सेट करें
+  setIconSuccess: इंस्टेंस आइकन के रूप में सेट किया गया!
+  export: फ़ाइल सहेजें
+  exportSuccess: स्क्रीनशॉट सफलतापूर्वक सहेजा गया!
+  exportSelected: चयनित निर्यात करें
+  exportSelectedTitle: निर्यात फ़ोल्डर चुनें
+  exportSelectedSuccess: सफलतापूर्वक {count} स्क्रीनशॉट निर्यात किए गए
+  deleteConfirmTitle: स्क्रीनशॉट हटाएँ?
+  deleteConfirmMessage: क्या आप वाकई {count} स्क्रीनशॉट हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता।
+  deleteSuccess: स्क्रीनशॉट सफलतापूर्वक हटा दिए गए
+  selectedCount: 'चयनित: {count}'
+  selectAll: सभी चुनें
+  clearSelection: सभी अचयनित करें
+  countLabel: '{count} स्क्रीनशॉट'
+  searchPlaceholder: नाम से खोजें...
+  noSearchResults: कोई मेल खाता स्क्रीनशॉट नहीं
+  noSearchResultsHint: अपनी खोज क्वेरी समायोजित करने का प्रयास करें
+  sort: क्रमबद्ध करें
+  sortDateDesc: नवीनतम पहले
+  sortDateAsc: पुरातन पहले
+  sortSizeDesc: सबसे बड़ा पहले
+  sortSizeAsc: सबसे छोटा पहले
+  sortNameAsc: नाम (A-Z)
+  sortNameDesc: नाम (Z-A)
+  viewGrid: बड़ा ग्रिड
+  viewGridCompact: संक्षिप्त ग्रिड
+  viewList: सूची दृश्य
+  edit: संपादित करें
+  editorTitle: स्क्रीनशॉट संपादित करें
+  layer: परत (Layer)
+  dragToMove: स्थानांतरित करने के लिए खींचें
+  transformHint: स्थानांतरित करने के लिए चयन खींचें • आकार बदलने के लिए हैंडल खींचें • लागू करने के लिए Enter दबाएँ
+  customColor: कस्टम रंग
+  fill: भरें (Fill)
+  brushPreview: ब्रश आकार पूर्वावलोकन
+  fontPreview: फ़ॉन्ट आकार पूर्वावलोकन
+  textBgNone: कोई नहीं
+  textBgShadow: छाया (Shadow)
+  textBgBox: बॉक्स
+  cropHint: क्रॉप क्षेत्र चुनने के लिए बाउंडिंग बॉक्स खींचें।
+  textPlacementHint: रखने के लिए Enter दबाएँ • रद्द करने के लिए Esc दबाएँ
+  layerMoveUp: ऊपर ले जाएँ
+  layerMoveDown: नीचे ले जाएँ
+  layerCopy: '{name} कॉपी'
+  pixels: px
+  saveCopy: कॉपी सहेजें
+  saveOverwrite: अधिलेखित करें (Overwrite)
+  saveSuccess: स्क्रीनशॉट सहेजा गया!
+  saveCopySuccess: नए स्क्रीनशॉट के रूप में सहेजा गया!
+  toolSelect: चुनें / पैन करें
+  toolMove: स्थानांतरित और रूपांतरित करें (Ctrl+T / V)
+  toolPan: पैन करें (Space+खींचें)
+  layers: परतें (Layers)
+  layerAdd: परत जोड़ें
+  layerDuplicate: परत डुप्लिकेट करें
+  layerDelete: परत हटाएँ
+  layerOpacity: अपारदर्शिता (Opacity)
+  transformLayer: मुक्त रूपांतरण
+  applyTransform: रूपांतरण लागू करें (Enter)
+  cancelTransform: रद्द करें (Esc)
+  layerBackground: पृष्ठभूमि
+  layerPaint: ड्राइंग
+  layerText: पाठ (Text)
+  layerBlur: धुंधला (Blur)
+  toolPen: पेन
+  toolArrow: तीर (Arrow)
+  toolRect: आयत
+  toolCircle: वृत्त
+  toolLine: रेखा
+  toolText: पाठ (Text)
+  toolHighlighter: हाइलाइटर
+  toolBlur: पिक्सेलेट / धुंधला
+  toolCrop: क्रॉप
+  applyCrop: क्रॉप लागू करें
+  cancelCrop: क्रॉप रद्द करें
+  strokeWidth: स्ट्रोक की चौड़ाई
+  fontSize: फ़ॉन्ट आकार
+  color: रंग
+  undo: पूर्ववत करें (Undo)
+  redo: पुनः करें (Redo)
+  clear: सभी साफ़ करें
+  textPlaceholder: पाठ टाइप करने के लिए क्लिक करें...
+  fontFamily: फ़ॉन्ट
+  fontBold: बोल्ड
+  fontItalic: इटैलिक
+  textApply: पाठ रखें
+  textBg: पृष्ठभूमि
+  zoomIn: ज़ूम इन
+  zoomOut: ज़ूम आउट
+  resetZoom: ज़ूम रीसेट करें
 search:
   favorate: संग्रह
   local: इंस्टॉल किया गया
@@ -1711,7 +2037,7 @@ setting:
     sideBarColor: साइड बार
     warningColor: चेतावनी रंग
   customCss:
-    advancedDescription: लॉन्चर की वर्तमान शैली को अपने स्वयं के सीएसएस (CSS) से ओवरराइड करें।
+    advancedDescription: अपने स्वयं के CSS के साथ लॉन्चर की वर्तमान शैली को ओवरराइड करें।
     assistantHint: उस लुक का वर्णन करें जिसे आप चाहते हैं और मैं आपके लिए सीएसएस लिखूँगा।
     assistantSuggestion1: साइडबार को पारभासी (translucent) बनाएं
     assistantSuggestion2: कार्ड्स में एक सूक्ष्म ढाल (gradient) पृष्ठभूमि जोड़ें
@@ -1855,6 +2181,23 @@ setting:
   useProxy: HTTP प्रॉक्सी
   useProxyDescription: http अनुरोध के लिए प्रॉक्सी सर्वर पता
   viewBackgroundMusic: संगीत देखें
+  multiplayerTransport: Together ट्रांसपोर्ट
+  multiplayerTransportDescription: Together द्वारा उपयोग किए जाने वाले WebRTC कार्यान्वयन को चुनें। ट्रांसपोर्ट बदलने से सक्रिय साथियों का संपर्क टूट जाता है।
+  aiAgentApiKeyClear: कुंजी साफ़ करें
+  aiAgentApiKeyEmpty: अपनी API कुंजी चिपकाएँ
+  aiAgentApiKeyNotNeeded: आवश्यक नहीं
+  aiAgentApiKeyNotNeededHint: यह प्रदाता स्थानीय रूप से चलता है और इसे किसी API कुंजी की आवश्यकता नहीं है
+  aiAgentApiKeySaved: सहेजा गया
+  aiAgentApiKeyStored: कुंजी सहेजी गई - बदलने के लिए टाइप करें
+  aiAgentBuiltin: अंतर्निहित (Built-in)
+  aiAgentCustom: कस्टम
+  appImageUpdateMode: AppImage अपडेट प्रबंधन मोड
+  appImageExternalMode: बाहरी प्रबंधक / मैन्युअल प्रतिस्थापन (डिफ़ॉल्ट)
+  appImageSelfMode: XMCL स्व-प्रबंधित (मैं इस AppImage का स्वामी हूँ)
+  appImageAutoDownload: अपडेट स्वतः डाउनलोड करें
+  appImageAutoInstall: बाहर निकलते समय डाउनलोड किए गए अपडेट इंस्टॉल करें
+  appImageExternalUpdateHint: यदि Shelly या अन्य प्रबंधक के माध्यम से स्थापित किया गया है, तो वहीं अपडेट करें और बाहरी मोड बनाए रखें। अन्यथा मौजूदा पथ पर AppImage को स्वयं बदलें।
+  appImageSelfUpdateHint: केवल उस AppImage के लिए स्व-प्रबंधित चुनें जिसे आप स्वयं प्रबंधित करते हैं। अंतर्निहित अपडेट के लिए फ़ाइल नाम में बिना संस्करण संख्या वाला पूर्ण पथ आवश्यक है (उदा. xmcl.AppImage)।
 settingLabel:
   global: वैश्विक
   globalHint: यह सेटिंग वैश्विक सेटिंग का अनुसरण करेगी
@@ -1948,6 +2291,13 @@ shared:
   upgrade: अपग्रेड करें
   'yes': 'Yes'
   delete: हटाएँ
+  openFolder: फ़ोल्डर खोलें
+  reset: रीसेट करें
+  missing: गुम
+  healthy: ठीक
+  unused: अप्रयुक्त
+  failed: विफल
+  view: देखें
 sidebar:
   pin: Pin
   unpin: अनपिन करें
@@ -2242,6 +2592,9 @@ userSkin:
   skinDeleteFailed: स्किन को अलमारी से हटाया नहीं जा सका
   edit: संपादित करें
   fetch: लोड करें
+  invalidImage: एक मान्य Minecraft स्किन छवि चुनें।
+  invalidImageTitle: अमान्य स्किन छवि
+  uploadRejected: Minecraft ने इस स्किन अपलोड को अस्वीकार कर दिया। कृपया बाद में पुनः प्रयास करें।
 version:
   checkIntegrity: अखंडता की जाँच करें
   name: संस्करण | संस्करण
@@ -2405,3 +2758,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: खाता
+  confirmMerge: खाता विलय की पुष्टि करें
+  createdAt: 'बनाया गया: {date}'
+  description: आपकी पासवर्ड-मुक्त XMCL पहचान, जो Minecraft गेम खातों से अलग है।
+  expiresAt: 'समाप्ति तिथि: {date}'
+  gameAccountsSeparate: गेम खाते को हटाने से XMCL लॉगिन विधि अनलिंक नहीं होती है।
+  guest: अतिथि
+  identityConflict: यह {provider} लॉगिन किसी अन्य XMCL खाते से संबंधित है। खाते कभी भी स्वचालित रूप से विलय नहीं किए जाते हैं।
+  linkAccountWith: खाते को इससे लिंक करें
+  mergePreview: पुष्टि करने से पहले स्थानांतरित होने वाले संसाधनों की समीक्षा करें।
+  mergeNeedsSession: विलय की समीक्षा करने से पहले उस XMCL खाते में साइन इन करें जिसे आप रखना चाहते हैं।
+  mergeQueued: खाता विलय प्रगति पर है।
+  requestFailed: XMCL खाता सेवा इस अनुरोध को पूरा नहीं कर सकी। आपका गेम खाता अपरिवर्तित है।
+  reviewMerge: विलय की समीक्षा करें
+  session: सत्र
+  sessionActive: सक्रिय
+  sessionExpired: समाप्त
+  signOutAll: सभी उपकरणों से साइन आउट करें
+  signOutDevice: इस उपकरण से साइन आउट करें
+  status:
+    active: सक्रिय
+    deleted: हटाया गया
+    deletion_pending: हटाया जाना लंबित
+    merged: विलय किया गया
+  title: XMCL खाता
+modCategory:
+  optimization: ऑप्टिमाइज़ेशन और प्रदर्शन
+  libraries: लाइब्रेरी और एपीआई
+  utilities: यूआई और उपयोगिताएँ
+  world: विश्व और बायोम
+  visual: दृश्य और ऑडियो
+  gameplay: गेमप्ले और सामग्री
+  miscellaneous: विविध
+localCollection:
+  title: लॉन्चर संग्रह
+  newCollection: नया संग्रह
+  namePlaceholder: संग्रह का नाम
+  addToCollection: संग्रह में जोड़ें
+  empty: अभी तक कोई लॉन्चर संग्रह नहीं
+  corrupted: आपके सहेजे गए संग्रह पढ़े नहीं जा सके और उन्हें रीसेट कर दिया गया है। डेटा फ़ाइल के पास एक बैकअप रखा गया था।
+  modrinthSection: Modrinth खाता
+  installAll: सभी इंस्टॉल करें
+  incompatibleAlert: '1 प्रोजेक्ट वर्तमान इंस्टेंस के साथ संगत नहीं है और उसे छोड़ दिया गया: | {count} प्रोजेक्ट वर्तमान इंस्टेंस के साथ संगत नहीं हैं और उन्हें छोड़ दिया गया:'
+  projects: कोई प्रोजेक्ट नहीं | {count} प्रोजेक्ट | {count} प्रोजेक्ट
+  saveCurrentMods: इंस्टॉल किए गए मॉड को संग्रह के रूप में सहेजें
+  saveCurrentModsSuccess: संग्रह "{name}" में {count} मॉड सहेजे गए
+  viewMods: मॉड देखें
+  editCollection: संग्रह संपादित करें
+  collectionDescription: संग्रह विवरण
+  noModsInCollection: इस संग्रह में अभी तक कोई मॉड नहीं है
+  exportCollection: संग्रह निर्यात करें
+  importCollection: संग्रह आयात करें
+  removeEntryConfirm: संग्रह से हटाएँ
+  addMods: मॉड जोड़ें
+  addModsTo: '"{name}" में मॉड जोड़ें'
+  addModsHint: अपने इंस्टेंस से इंस्टॉल किए गए मॉड जोड़ें या मॉड जोड़ने के लिए मार्केट में बुकमार्क बटन पर क्लिक करें।
+  addModsDialogDesc: इस संग्रह में शामिल करने के लिए इस इंस्टेंस से इंस्टॉल किए गए मॉड चुनें।
+  addAllCurrent: सभी वर्तमान मॉड जोड़ें
+  addedModsSuccess: संग्रह में {count} मॉड जोड़े गए
+  searchMods: मॉड खोजें...
+  selectAll: सभी चुनें
+  deselectAll: सभी अचयनित करें
+  selected: चयनित
+  alreadyInCollection: जोड़ा गया
+  noMatchingMods: आपकी खोज से कोई मॉड मेल नहीं खाता
+  addSelectedMods: '{count} मॉड जोड़ें'

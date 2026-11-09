@@ -42,6 +42,10 @@ askAICrash:
     AIがゲームのクラッシュを理解するのを手伝ってください！
     以下の指示に従って、このゲームのクラッシュについてAIに尋ねてください！
   selectPlatform: AIプラットフォームを開き、コピーしたプロンプトを貼り付けます。
+  agentNotConfigured: 設定でAIプロバイダーとAPIキーを追加すると、ランチャー内蔵のエージェントが診断と修正を行います。
+  askAgent: 内蔵AIエージェントで診断
+  orExternal: または外部AIを使用
+  setupAgent: AIエージェントを設定
 authProfileAddedNotification: 認証プロファイル {name} が追加されました
 bedrock:
   installBedrockVersion: Downloading Bedrock {version}
@@ -62,6 +66,13 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+  description: Minecraft 統合版（Bedrock）はMicrosoft Store経由でインストールおよび起動されます。Microsoftアカウントに統合版のライセンスが必要です。
+  install: Microsoft Storeから入手
+  installFailed: Microsoft Storeを開けませんでした
+  installed: 'インストール済み: {version}'
+  launchHint: 「起動」ボタンを使用して統合版を起動します。
+  licenseRequired: Minecraftを所有するMicrosoftアカウントでログインして、統合版をインストールしてプレイしてください。
+  refresh: 更新
 backup:
   title: バックアップと復元
   description: 設定、コレクション、テーマ、およびゲームインスタンスをバックアップ・復元します
@@ -89,7 +100,7 @@ backup:
   create: バックアップ作成
   createTitle: XMCL バックアップアーカイブの作成
   saveDialogTitle: XMCL バックアップアーカイブを保存
-  fileFilterName: 'XMCL バックアップアーカイブ (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL バックアップアーカイブ (*.xmclbackup, *.zip)
   createError: バックアップの作成に失敗しました
   loadManifestError: バックアップアーカイブの読み込みに失敗しました
   restore: 復元
@@ -148,9 +159,9 @@ backup:
   restoreError: バックアップの復元に失敗しました
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: バックアップを作成
   createBackupDescription: 設定、コレクション、カスタムテーマ、インスタンスを単一のポータブルアーカイブに保存します。
   restoreBackupTitle: バックアップを復元
@@ -188,9 +199,27 @@ backup:
   interval6h: 6時間ごと
   interval12h: 12時間ごと
   interval24h: 24時間ごと
-  keepCount: '最新 {count} 件を保持'
+  keepCount: 最新 {count} 件を保持
 baseSetting:
   title: 基本設定
+  info:
+    address: アドレス
+    changes: 変更点
+    custom: カスタム
+    disabled: 無効
+    enabled: 有効
+    exportFormats: エクスポート形式
+    inherited: 全体設定を継承
+    modLoader: Modローダー
+    notConfigured: 未設定
+    notSet: 未設定
+    offline: オフラインアーカイブ
+    projectId: プロジェクトID
+    running: 実行中
+    saved: 保存済み
+    status: 状態
+    stopped: 停止
+    vanilla: バニラ
 browseApp:
   createShortcut: ショートカットを作成
   default: デフォルト
@@ -349,6 +378,27 @@ errors:
   HeadersTimeoutError: HTTPのヘッダーがタイムアウト
   NotFoundError: 404 Not Found
   SocketError: サーバーソケットエラー
+  bedrockUnsupportedPlatform: Minecraft 統合版はWindows版でのみサポートされています。
+  bedrockNotInstalled: Minecraft 統合版がインストールされていません。
+  bedrockLaunchFailed: Minecraft 統合版の起動に失敗しました。
+  bedrockInstallFailed: Minecraft 統合版のインストールに失敗しました。
+  bedrockDownloadUrlUnavailable: 現在のMicrosoftアカウントではこの統合版バージョンを利用できません。BetaおよびPreviewバージョンにはMinecraftベータプログラムに参加しているアカウントが必要です。
+  bedrockDeveloperModeRequired: この統合版バージョンを登録するにはWindows開発者モードが必要です。
+  bedrockRegisterFailed: Windowsへのこの統合版バージョンの登録に失敗しました。
+  bedrockVersionNotFound: この統合版バージョンはローカルにインストールされていません。
+  CorruptedResourceMetadata: '{count} 件のリソースで破損したメタデータを検出して消去しました。ファイル自体は機能しますが、Modrinth/CurseForgeの属性情報が失われたため、自動的に再検出されます。'
+  InstallBackendUnresponsive:
+    body: ランチャーのバックグラウンドタスクマネージャーが応答しませんでした。ランチャーを再起動してもう一度お試しください。
+    title: インストーラーが応答しません
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: インストール命令が失敗しました
+  InstallNetworkError:
+    body: ネットワークの問題によりインストールが中断されました。インターネット接続またはプロキシを確認して、もう一度お試しください。
+    title: Minecraft ファイルをダウンロードできません
+  InstallPermissionDenied:
+    body: ウイルス対策ソフトまたはフォルダーのアクセス制限によりインストールがブロックされました。ランチャーをウイルス対策ソフトの除外リストに追加するか、設定で別のデータルートを選択してください。
+    title: ランチャーフォルダーに書き込めません
 eula:
   body: このチェックボックスを押すことで、Minecraftの {eula} に同意したことになります。
 exception:
@@ -366,15 +416,20 @@ command:
   instance:
     launch:
       title: インスタンスを起動
+      description: Minecraft インスタンスを起動
     create:
       title: インスタンスを作成
+      description: 新しいインスタンスを作成
     delete:
       title: インスタンスを削除
+      description: 既存のインスタンスを削除
   user:
     login:
       title: ユーザーログイン
+      description: アカウントにログイン
     refresh:
       title: ユーザーを更新
+      description: ユーザーセッションを更新
 commandPalette:
   placeholder: コマンド、インスタンス、Mod を検索…
   commands: コマンド
@@ -391,6 +446,7 @@ commandPalette:
   hintEnter: 開く
   hintBack: 戻る
   hintClose: 閉じる
+  hintAskAgent: エージェントに質問
 feedback:
   channel: チャンネル
   description: バグを見つけました / 提案があります
@@ -409,6 +465,8 @@ feedback:
   qq: QQグループ
   qqDescription: 'フィードバック用QQグループに参加し著者に直接連絡を取る。 グループナンバー: {number}'
   qqEnterGroup: 参加
+  reddit: Reddit
+  redditDescription: r/XMCL サブレディットコミュニティに参加する
 fileDetail:
   fileSize: ファイルサイズ
   filesize: ファイルサイズ
@@ -538,6 +596,16 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: 値
   fileApiPlaceholder: リソースを同期させたい場合は、ここにリモート同期URLを入力してください
+  deleteHintBedrock: Minecraft 統合版とそのすべてのデータがコンピューターから完全に削除されます。よろしいですか？
+  nameInvalidChars: '名前に次の文字を含めることはできません: < > : " / \ | ? *'
+  namePathTraversal: 名前にパス走査文字列 ("..") を含めることはできません
+  nameReservedName: この名前はシステムによって予約されているため使用できません
+  nameTrailingDotOrSpace: 名前の末尾にドットやスペースを使用することはできません
+  nameWhitespaceOnly: 名前をスペースまたはドットのみにすることはできません
+  monitor: フルスクリーンモニター
+  monitorDefault: 既定 (プライマリモニター)
+  monitorNumber: モニター {number}
+  monitorPrimary: プライマリ
 instanceAge:
   older: 古い
   threeDay: 三日以内
@@ -584,8 +652,9 @@ instanceUpdate:
     {add}ファイルを追加します。
     {remove}ファイルを削除します。
     {keep}ファイルを保持します。
-  title: 起動構成の更新
+  title: インスタンスの更新
   update: 更新を開始
+  noFiles: ファイルの変更はありません
 instances:
   add: ゲームを作成
   addCurseForgeDescription: |-
@@ -614,6 +683,7 @@ instances:
   linkSharedFoldersHint: これらのフォルダーをランチャーの共有フォルダーへのリンクとして作成し、このインスタンスがリンクされた他のすべてのインスタンスと内容を共有するようにします。これはコピーではありません。1つのインスタンスで加えた変更はすべてのインスタンスに反映されます。チェックしていないフォルダーはこのインスタンス専用のままです。
   linkFailed: '{folder} フォルダーを共有フォルダーにリンクできませんでした'
   addPrismDescription: 既存のPrismLauncherインスタンスをインポート。
+  instanceCount: '{count} 個のインスタンス'
 items:
   count: '{count} 個'
   total: 合計 {total} 個
@@ -657,6 +727,7 @@ launch:
   launchAnyway: どちらでも走れる
   launchAs: 別のアカウントで起動
   forceKill: 強制終了
+  launchTo: 起動先
 launchBlocked:
   launchBadVersion:
     description: このバージョン {version} のjsonはこわれています。このバージョンを再インストールすると解決するかもしれません?
@@ -680,6 +751,13 @@ launchBlocked:
     description: Javaを確認するか、ランチャーに多くの権限を与えて再度試してください。もし効果がなければ、開発者に連絡してください。
     title: ゲームプロセスの起動に失敗
   unexpectedText: これは予期されていません。問題を軽減するためランチャーを再起動することができます。もし再度起こったら著者に連絡してください。
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCLが現在のデスクトップセッションからX11ディスプレイ情報を取得できませんでした。現在のデスクトップセッションのターミナルからXMCLを再起動するか、一度サインアウトして再サインインしてください。
+    noGraphicalSession: XMCLがグラフィカルデスクトップセッションで実行されていません。Minecraftを起動する前に、デスクトップセッションからXMCLを起動してください。
+    sandboxDenied: アプリケーションサンドボックスがX11にアクセスできません。Flatpakの権限でXMCLにX11ソケットへのアクセス権を付与し、XMCLを再起動してください。
+    title: X11ディスプレイが利用できません
+    xwaylandMissing: このWaylandセッションではMinecraftにXWaylandが必要です。Linuxディストリビューションが提供するXWaylandパッケージをインストールし、サインアウトしてから再サインインしてください。
+    xwaylandNotRunning: XWaylandはインストールされていますが、X11ディスプレイが実行されていません。コンポジター設定でXWaylandを有効にし、サインアウトしてから再サインインしてください。
 launchFailed:
   crash: ゲームがクラッシュしました!!!!
   description: クラッシュレポートはありません。エラーログと最新のログです。
@@ -704,6 +782,11 @@ launcherUpdate:
   installAndQuit: 再起動してインストールします
   noUpdateAvailable: アップデートはありません
   updateToThisVersion: ダウンロードしてインストール
+  automaticUnavailable: 自動更新は利用できません
+  automaticNotImplemented: このランチャーホストでは自動更新が実装されていません。
+  automaticNotConfigured: このランチャーホストでは自動更新が設定されていません。
+  manualCheckHint: リリースの確認は実行されていません。GitHub Releasesで互換性のあるパッケージを確認し、手動でインストールしてください。
+  manualCheckRequired: このホストは更新を自動的に確認またはインストールできません。GitHub Releasesボタンを使用して手動で確認してください。
 localVersion:
   auto: 自動で計算済み
   empty: バージョンがインストールされていません
@@ -747,12 +830,31 @@ loginError:
   requirePassword: パスワードが必要です
   requireUsername: ユーザー名が必要です
   timeout: ログインがタイムアウトしました。再度試すかネットワークを確認してください。
+  loginMinecraftByXboxRateLimitedWithRetry: MicrosoftのMinecraft認証サービスが現在リクエストを制限しています (HTTP 429)。約 {seconds} 秒待ってからもう一度お試しください。
+  loginMinecraftByXboxServerError: MicrosoftのMinecraft認証サービスがサーバーエラーを返しました (HTTP {status})。サーバー側の問題です。数分後にもう一度お試しください。
+  loginMinecraftByXboxStatus: XboxトークンからMinecraftトークンへの引き換えに失敗しました (HTTP {status})。XboxにMinecraftがあることを確認するか、再試行してください。
+  loginXboxAdultVerification: お使いのMicrosoftアカウントは、Xboxにサインインする前に年齢確認（特定の地域で一般的に必要）が必要です。ブラウザで {url} を開いて確認を完了し、もう一度お試しください。
+  loginXboxChildAccount: お使いのMicrosoftアカウントは子供用アカウントであり、Xbox / Minecraftにサインインする前にMicrosoftファミリーに追加する必要があります。ブラウザで {url} を開いて修正し、もう一度お試しください。
+  loginXboxFailedWithCode: MicrosoftトークンによるXboxログインに失敗しました (XErr {code})。エラーコードを検索してヘルプを参照するか、後でもう一度お試しください。
+  loginXboxNoXboxProfile: このMicrosoftアカウントにはまだXboxプロファイルがありません。ブラウザで {url} を開いてプロファイルを作成し、もう一度お試しください。
+  cyrillicNotAllowed: キリル文字は使用できません
+  illegalOfflineUsername: ユーザー名は3〜16文字の半角英数字とアンダースコア (_) のみ使用できます
+  loginMinecraftByXboxRateLimited: MicrosoftのMinecraft認証サービスが現在リクエストを制限しています (HTTP 429)。しばらく待ってからもう一度お試しください。
+  loginXboxBadXsts: Microsoftから期待されるクレームを含まないXSTS応答が返されました。通常は一時的な問題です。数分後にもう一度お試しください。
+  loginXboxBanned: このMicrosoft / XboxアカウントはMicrosoftによって停止または利用停止されており、Minecraftにサインインできません。Microsoft / Xboxサポートにお問い合わせください。
+  loginXboxRegionLocked: お使いのアカウントの地域ではXbox Liveをご利用いただけません。Microsoftアカウント設定で国/地域を変更して、もう一度お試しください。
+  loginCanceled: Microsoftサインインがキャンセルされました。
+  xboxErrorGuideHint: サインインでお困りですか？MicrosoftおよびXboxのログイン問題の解決方法をご確認ください。
+  openLoginGuide: この問題の解決方法
+  openDiscordSupport: サポートが必要ですか？Discordに参加する
 logsCrashes:
-  crashes: クラッシュレポート
+  crashes: クラッシュ
   logs: ログ
   placeholder: ファイルが見つかりませんでした
   title: ログ、またはクラッシュレポート
   failures: 起動失敗
+  serverLogs: サーバーログ
+  showFile: フォルダーに表示
 me:
   groupByDate: 日付でグループ化
   groupByFolder: フォルダーでグループ化
@@ -829,6 +931,23 @@ mod:
   toUpdate: '{count} 個のアップデート'
   ungroup: グループ化
   description: 説明
+  autoCategorize: フォルダーへ自動整理
+  autoCategorizeHint: Modをカテゴリフォルダー (最適化、ライブラリ、ワールド、ゲームプレイなど) に自動的にグループ化します
+  autoCategorizeSuccess: Modが自動的に {count} 個のフォルダーに整理されました
+  collapseAll: すべてのフォルダーを折りたたむ
+  expandAll: すべてのフォルダーを展開
+  folderSetting: フォルダー設定
+  folderColor: フォルダーの色
+  folderIcon: フォルダーアイコン
+  pinGroup: 先頭に固定
+  pinToTop: 先頭に固定
+  pinToTopHint: フォルダーがリストの先頭に表示されます
+  pinned: 固定済み
+  unpinGroup: 固定を解除
+  customColor: カスタムカラー
+  preview: プレビュー
+  ungroupAll: すべてのグループを解除
+  organization: フォルダー整理
 modFilter:
   clear: クリアフィルター
   dependenciesInstallOnly: 見逃された依存関係のMODのみを表示します
@@ -857,6 +976,7 @@ modInstall:
   skipVersion: 異なる Minecraft バージョンの Mod をスキップする
   source: Modソース
   switch: バージョンを切り替え
+  scanUnusedLibraries: 未使用のライブラリをスキャン
 modSearch:
   noLocalModsFound: 検索に一致するローカルModが見つかりません。
   noModsFound: Modが見つかりません。
@@ -892,6 +1012,112 @@ modpack:
   overrides: オーバーライド
   url: URL
   urlHint: あなたのModpackのホームページのURL
+  emitCurseforgeDescription: CurseForge用の標準zip形式Modパックアーカイブ
+  emitModrinthDescription: 高速CDNダウンロードに対応した軽量な公式フォーマット
+  emitPackwiz: Packwiz Modパックをエクスポート
+  emitPackwizDescription: Gitと相性の良い軽量フォーマット (pack.toml、index.toml、.pw.tomlファイル)
+  exportSuccess: Modパックを正常にエクスポートしました！
+  exportSuccessWithWarnings: 警告付きでModパックがエクスポートされました
+  exportSkippedFiles: エクスポート中に読み取り不能またはロックされた {count} 個のファイルをスキップしました
+  exportFailed: Modパックのエクスポートに失敗しました
+  skippedFilesDialogTitle: 一部のファイルをエクスポートできませんでした
+  skippedFilesDialogDescription: Modパックは作成されましたが、{count} 個のファイルがスキップされました
+  skippedReasonEperm: アクセスが拒否されました (OSまたは他のプロセスによってロックされています)
+  skippedReasonEbusy: ファイルが他のプログラムで使用中です
+  skippedReasonEnoent: ファイルが見つからないか破損しています
+  skippedFilesNotice: 残りのファイルはModパックに正常にパッケージ化されました。上記のファイルはWindowsのシステム制限またはアクセス権限の不足によりスキップされました。
+  openExportFolder: Modパックフォルダーを開く
+  closeDialog: 了解
+  expandAll: すべてのフォルダーを展開
+  collapseAll: すべてのフォルダーを折りたたむ
+  modpackVersionHint: 'セマンティックバージョニング形式 (例: 1.0.0)。+でパッチ/マイナーを繰り上げ'
+  modrinthProject: Modrinthプロジェクト
+  selectDefaultFiles: 既定のファイルを選択
+  selectAllFiles: すべてのファイルを選択
+  deselectAllFiles: すべてのファイルの選択を解除
+  bindProject: プロジェクトを連携
+  bindProjectHint: 現在のアカウントが管理するModrinthのModパックプロジェクトを選択します。
+  bindProjectTypeImmutableHint: Modrinthでは最初のバージョンがアップロードされた時点でプロジェクトタイプが固定され、後から変更できません。バージョンがまだない下書きプロジェクトはここに連携できますが、既にModやリソースパックなどとして公開されているプロジェクトをModパックに変更することはできません。「新しいプロジェクトを作成」を使用してください。
+  bindProjectNoProjects: アカウントにModrinthプロジェクトが見つかりませんでした。
+  unbindProject: プロジェクトの連携を解除
+  unbindProjectConfirmTitle: Modrinthプロジェクトの連携を解除しますか？
+  unbindProjectConfirmMessage: これにより、このインスタンスとModrinthプロジェクト間のローカルな関連付けのみが削除されます。Modrinth上のプロジェクトやそのバージョンには影響しません。
+  editProject: プロジェクトを編集
+  projectDiscovery: 発見と互換性
+  projectGallery: ギャラリー
+  projectGalleryAdd: 画像を追加
+  projectGalleryEmpty: ギャラリー画像はまだありません。
+  projectGalleryFeatured: 注目
+  projectGalleryFromScreenshots: スクリーンショットを選択
+  projectGalleryHint: 最大5 MiBの画像を追加し、代表となるプロジェクト画像を選択してください。
+  projectGallerySelectScreenshot: インスタンスのスクリーンショットを選択
+  projectIdentity: 識別情報と説明
+  projectLinks: プロジェクトリンク
+  projectLoadFailed: 連携されたModrinthプロジェクトの読み込みに失敗しました。
+  projectNoChanges: 未保存のプロジェクト変更はありません。
+  projectNotBound: Modrinthプロジェクトが連携されていません
+  projectNotBoundHint: 既存のプロジェクトを連携するか、新しいModrinthプロジェクトを作成してください。
+  projectUnsavedChanges: '{count} 個のプロジェクトフィールドが変更されました'
+  projectLatestDraft: 下書き
+  projectVersions: バージョン
+  publish: 公開
+  publishCategories: カテゴリ (カンマ区切り)
+  publishChannel: リリースチャンネル
+  publishChangelog: 更新履歴
+  publishChangelogGenerate: AIで生成
+  publishConfirmProjectChanges: プロジェクトの変更を確認
+  publishCreateProject: プロジェクトを作成
+  publishCreateDraft: ビルドして下書きを作成
+  publishCustomVersion: カスタム
+  publishDescription: プロジェクトの説明
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: 下書きバージョンがアップロードされました。
+  publishSubmitted: バージョンが審査のために提出されました。
+  publishExistingProject: 既存のプロジェクト
+  publishIcon: プロジェクトアイコン
+  publishIconHint: PNG、JPEG、またはWebP
+  publishIconKeep: 新しい画像が選択されない限り変更しません
+  publishIconUseInstance: インスタンスのアイコンを使用
+  publishIssuesUrl: Issue URL
+  publishLicense: ライセンスID
+  publishLogin: Modrinthにサインイン
+  publishFiles: 選択されたファイル
+  publishLinkageSummary: '{total} 件中 {linked} 件のMod/リソースパック/シェーダーパックはアップロードされず、Modrinthのダウンロードリンクに直接関連付けられます。'
+  publishLinkageEmbeddedSummary: '{count} 個のファイルは関連付けできないため、このバージョンと共にアップロード（同梱）されます。'
+  publishLinkageShowFiles: アップロードが必要なファイルを表示
+  publishLinkageReason:
+    missing-file: ディスク上にファイルが見つかりません
+    not-linked-to-modrinth: Modrinthリソースとして認識されませんでした
+    no-downloadable-url: 再配布可能なダウンロードURLが見つかりませんでした
+  publishModrinth: Modrinthに公開
+  publishNewProject: 新しいプロジェクト
+  publishOpenProject: プロジェクトを開く
+  publishOpenVersion: バージョンを開く
+  publishProfile: MRPackプロファイル
+  publishProfileClient: クライアント専用
+  publishProfileServer: サーバー専用
+  publishProfileSplit: ユニバーサル + クライアント/サーバー別ファイル
+  publishProfileUniversal: ユニバーサル
+  publishProject: プロジェクト
+  publishProjectDetailsTab: プロジェクトの詳細
+  publishProjectName: プロジェクト名
+  publishProjectRequired: 公開する前にプロジェクトを選択してください。
+  publishProjectSlug: プロジェクトスラッグ
+  publishProjectUrl: プロジェクトURL (任意)
+  publishProjectUrlHint: 空欄にすると {slug} が使用されます。
+  publishProjectSaved: プロジェクトの詳細を更新しました。
+  publishSourceUrl: ソースコードURL
+  publishSubmit: 下書きを審査に提出
+  publishSummary: 簡単な概要
+  publishSummaryMinWords: 概要は少なくとも3単語以上必要です。
+  publishVersionTitle: バージョンタイトル
+  publishVersionTab: バージョンを公開
+  publishVersion: バージョンを公開
+  publishVisibility: 公開範囲
+  publishWikiUrl: Wiki URL
+  visibilityPrivate: 非公開
+  visibilityPublic: 公開
+  visibilityUnlisted: 限定公開
 modpackImportConfirm:
   description: |-
     ファイルをランチャーにドロップすることを検出します。
@@ -1159,6 +1385,16 @@ multiplayer:
   startNewP2PConnection: スタートボタンをクリックして新しいピアへの接続を作成します
   connectionError: 接続エラー
   connectionFailedHint: 接続を確立できません。両方のピアのNATタイプが互換性があるか確認してください。
+  connectedToMaster: ルームマスターに接続しました
+  directConnection: 直接接続
+  master: マスター
+  masterHostsGameHint: ルームマスターは接続のハブであり、MinecraftのLANワールドをホストする必要があります。ホストを変更する前にマスター権限を譲渡してください。
+  member: メンバー
+  joinCreatesMissingRoomHint: このルームが存在しない場合、ルームを作成してマスターになります。
+  relayConnection: リレー
+  relayAllowanceSummary: 今期間の残り {remaining} / 合計 {total}
+  relayServiceAvailable: XMCL Togetherリレーサービスが利用可能です
+  waitingForMaster: ルームマスターの再接続を待機中
 myStuff: 私の作品
 natType:
   blocked: ブロックされた
@@ -1205,6 +1441,11 @@ presence:
   save: セーブデータを {instance} で閲覧中
   setting: 設定ページを閲覧中
   shaderPack: '{instance} でシェーダーパックを閲覧中'
+  away: 退席中
+  offline: オフライン
+  online: オンライン
+  playing: '{game} をプレイ中'
+  playingGeneric: プレイ中
 proxy:
   host: ホスト
   port: ポート
@@ -1284,6 +1525,8 @@ resourcepack:
   unselected: リソースパックの選択が解除されました
   noPacks: リソースパックが見つかりません
   search: リソースパックを検索...
+  noLocalPacksFound: 検索に一致するローカルリソースパックが見つかりませんでした。
+  noPacksInstalled: リソースパックがインストールされていません。
 save:
   map:
     tabTitle: ワールドマップ
@@ -1353,6 +1596,25 @@ save:
   searchHint: CurseForgeでワールドを検索
   searchSaves: セーブを検索
   empty: No worlds found
+  allowCheats: チートの許可
+  difficulty: 難易度
+  loadMap: マップを読み込む
+  mapError: マップエラー
+  mapInfo: 'インタラクティブな3Dワールドプレビュー:'
+  mapLoaded: マップが読み込まれました
+  mapPreview: マッププレビュー
+  properties: ワールドプロパティ
+  useMouseRotate: マウスで視点を回転
+  useScrollZoom: スクロールホイールでズーム
+  datapack:
+    name: データパック | データパック
+    noSaveHint: このデータパックをインストールするには、まずワールドを作成または選択してください
+    packFormat: 'パックフォーマット: {format}'
+    imported: データパックが {save} にインポートされました
+  noLocalSavesFound: 検索に一致するローカルセーブデータが見つかりませんでした。
+  noSavesFound: セーブデータが見つかりません
+  noSavesInstalled: セーブデータがありません。
+  world: ワールド
 screenshots:
   empty: スクリーンショットがありません
   playRandom: シャッフル
@@ -1360,6 +1622,109 @@ screenshots:
   gallery: スクリーンショットギャラリー
   hint: ゲーム内でF2を押してスクリーンショットを撮影
   openFolder: スクリーンショットフォルダを開く
+  title: スクリーンショットと写真
+  manage: スクリーンショットマネージャー
+  emptyTitle: スクリーンショットがまだありません
+  emptyDescription: ゲーム内でF2キーを押してスクリーンショットを撮影するか、写真を手動でインポートしてください。
+  dropHint: 写真やスクリーンショットをここにドロップしてギャラリーに追加
+  backToHome: ホームに戻る
+  import: 写真を追加
+  images: 画像
+  importSuccess: '{count} 枚の写真を正常にインポートしました'
+  copy: 画像をコピー
+  copied: クリップボードにコピーしました！
+  setWallpaper: 背景に設定
+  setWallpaperSuccess: インスタンスの背景画像に設定しました！
+  setIcon: アイコンに設定
+  setIconSuccess: インスタンスのアイコンに設定しました！
+  export: ファイルを保存
+  exportSuccess: スクリーンショットを保存しました！
+  exportSelected: 選択項目をエクスポート
+  exportSelectedTitle: エクスポート先フォルダーを選択
+  exportSelectedSuccess: '{count} 枚のスクリーンショットをエクスポートしました'
+  deleteConfirmTitle: スクリーンショットを削除しますか？
+  deleteConfirmMessage: '{count} 枚のスクリーンショットを削除してもよろしいですか？この操作は元に戻せません。'
+  deleteSuccess: スクリーンショットを削除しました
+  selectedCount: '選択中: {count}'
+  selectAll: すべて選択
+  clearSelection: 選択をすべて解除
+  countLabel: '{count} 枚のスクリーンショット'
+  searchPlaceholder: 名前で検索...
+  noSearchResults: 一致するスクリーンショットがありません
+  noSearchResultsHint: 検索キーワードを変更してみてください
+  sort: 並べ替え
+  sortDateDesc: 新しい順
+  sortDateAsc: 古い順
+  sortSizeDesc: サイズが大きい順
+  sortSizeAsc: サイズが小さい順
+  sortNameAsc: 名前 (A-Z)
+  sortNameDesc: 名前 (Z-A)
+  viewGrid: 大きなグリッド
+  viewGridCompact: コンパクトなグリッド
+  viewList: リスト表示
+  edit: 編集
+  editorTitle: スクリーンショットを編集
+  layer: レイヤー
+  dragToMove: ドラッグして移動
+  transformHint: 選択範囲をドラッグして移動 • ハンドルをドラッグしてサイズ変更 • Enterで確定
+  customColor: カスタムカラー
+  fill: 塗りつぶし
+  brushPreview: ブラシサイズのプレビュー
+  fontPreview: フォントサイズのプレビュー
+  textBgNone: なし
+  textBgShadow: シャドウ
+  textBgBox: ボックス
+  cropHint: バウンディングボックスをドラッグして切り抜き範囲を選択します。
+  textPlacementHint: Enterで配置 • Escでキャンセル
+  layerMoveUp: 上へ移動
+  layerMoveDown: 下へ移動
+  layerCopy: '{name} のコピー'
+  pixels: px
+  saveCopy: コピーを保存
+  saveOverwrite: 上書き保存
+  saveSuccess: スクリーンショットを保存しました！
+  saveCopySuccess: 新しいスクリーンショットとして保存しました！
+  toolSelect: 選択 / 移動
+  toolMove: 移動＆変形 (Ctrl+T / V)
+  toolPan: 画面移動 (Space+ドラッグ)
+  layers: レイヤー
+  layerAdd: レイヤーを追加
+  layerDuplicate: レイヤーを複製
+  layerDelete: レイヤーを削除
+  layerOpacity: 不透明度
+  transformLayer: 自由変形
+  applyTransform: 変形を適用 (Enter)
+  cancelTransform: キャンセル (Esc)
+  layerBackground: 背景
+  layerPaint: 描画
+  layerText: テキスト
+  layerBlur: ぼかし
+  toolPen: ペン
+  toolArrow: 矢印
+  toolRect: 長方形
+  toolCircle: 円
+  toolLine: 直線
+  toolText: テキスト
+  toolHighlighter: 蛍光ペン
+  toolBlur: モザイク / ぼかし
+  toolCrop: 切り抜き
+  applyCrop: 切り抜きを適用
+  cancelCrop: 切り抜きをキャンセル
+  strokeWidth: 線の太さ
+  fontSize: フォントサイズ
+  color: 色
+  undo: 元に戻す
+  redo: やり直す
+  clear: すべてクリア
+  textPlaceholder: クリックしてテキストを入力...
+  fontFamily: フォント
+  fontBold: 太字
+  fontItalic: 斜体
+  textApply: テキストを配置
+  textBg: 背景
+  zoomIn: 拡大
+  zoomOut: 縮小
+  resetZoom: ズームをリセット
 search:
   favorate: コレクション
   local: 設置済み
@@ -1528,6 +1893,60 @@ agent:
   accessRequiredHint: 内蔵エージェントを使用するには XMCL に登録するか、設定で独自の AI プロバイダーを構成してください。
   subscribeXmcl: XMCL に登録
   notConfiguredHint: 設定 → 一般 → AIエージェントで API キー、モデル、OpenAI 互換エンドポイントを設定してください。たとえば、OpenAI または Claude 互換ゲートウェイを使用します。
+  callingTool: '{name} を呼び出し中…'
+  disabledPlaceholder: エージェントは無効です
+  emptyHint: インスタンスの確認、Modの切り替え、ログの確認、クラッシュの診断をエージェントに依頼できます。
+  inputPlaceholder: エージェントに質問… (Enterで送信、Shift+Enterで改行)
+  notConfiguredTitle: エージェントは利用できません
+  openSettings: 設定を開く
+  reset: 新しい会話
+  setupGuide: セットアップガイド
+  statusDisabled: 無効 — ログインするかプロバイダーを設定してください
+  statusReady: 準備完了
+  statusWorking: 処理中…
+  suggestion1: このインスタンスを新しいMinecraftバージョンにアップグレードし、Modも更新する
+  suggestion2: Modがクラッシュしました — 原因を特定して修正方法を教えてください
+  suggestion3: 'Modパックを作成する: 欲しい機能のModを探してこのインスタンスにインストールする'
+  thinking: 思考中…
+  title: XMCL エージェント
+  toggleHint: で切り替え
+  abort: 生成を停止
+  confirmAccept: 続行
+  confirmAllowAll: すべて許可
+  confirmCancel: キャンセル
+  confirmPending: 確認待ち
+  confirmTitle: エージェントのアクションを確認
+  errorTitle: エージェントでエラーが発生しました
+  passiveGameCrashed: ゲームがクラッシュしました
+  passiveGameExitCode: 終了コード {code}
+  passiveGameExited: ゲームが終了しました
+  passiveGameExitSignal: シグナル {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: 終了ステータスなし
+  reasoning: 思考プロセス
+  passiveGameStarted: ゲームが起動しました
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Mod互換性レポート
+  passiveModDiagnosisError: 互換性診断に失敗しました
+  passiveModDiagnosisSummary: '{checked} 件のModを確認済み · {incompatibilities} 件の非互換 · {duplicates} 件の重複'
+  passiveModDuplicate: '重複した {mod}: {files}'
+  passiveModInstalled: '{version} をインストールしました'
+  toolArguments: 引数
+  toolResult: 結果
+  toolRunning: 結果を待機中…
+  marketConfirmMessage: '{name} を現在のインスタンスにインストールしますか？'
+  marketConfirmTarget: '対象: {instance}'
+  marketConfirmTitle: '{type} のインストール'
+  marketInstall: インストール
+  marketInstalled: インストール済み
+  marketInstallFailed: '{type} のインストールに失敗しました'
+  marketType:
+    datapack: データパック
+    mod: Mod
+    modpack: Modパック
+    resourcepack: リソースパック
+    shader: シェーダーパック
+  marketResultCount: '{count} 件の結果'
 setting:
   aiAgentApiKeyDescription: OpenAI や Claude 用ゲートウェイなど、OpenAI 互換プロバイダーを設定します。キーはこのデバイスにローカル保存されます。
   aiAgentApiKeyPlaceholder: OpenAI または Claude プロバイダーの API キー
@@ -1728,6 +2147,41 @@ setting:
     successGlobal: 背景画像を更新しました。
     successInstance: インスタンスの背景画像を更新しました。
     failed: 背景画像の設定に失敗しました
+  aiAgentApiKey: AIエージェント APIキー
+  aiAgentEndpoint: AIエージェント エンドポイント
+  aiAgentEndpointDescription: Chat completionsのエンドポイントURL。
+  aiAgentModel: AIエージェント モデル
+  aiAgentModelDescription: Chat completionsリクエストで送信するモデル名。
+  useDesktopBackground: 現在のデスクトップ壁紙を使用
+  customCss:
+    advancedDescription: 独自のCSSでランチャーの現在のスタイルを上書きします。
+    assistantHint: 希望する外観を説明してください。CSSを作成します。
+    assistantSuggestion1: サイドバーを半透明にする
+    assistantSuggestion2: カードにほのかなグラデーション背景を追加する
+    assistantTitle: CSSアシスタント
+    dropHint: .cssファイルをドロップして読み込む
+    editorPlaceholder: /* ここにカスタムCSSを記述 */
+    globalToggle: カスタムCSSの切り替え
+    openInDialog: エージェントダイアログで開く
+    title: カスタムCSS
+    warning: カスタムCSSを使用すると、ランチャーのあらゆる部分をカスタマイズできます。信頼できないソースからCSSを貼り付けるとUIレイアウトが崩れる可能性があるため注意してください。
+  multiplayerTransport: Together転送コア
+  multiplayerTransportDescription: Togetherで使用されるWebRTC実装を選択します。転送方式を変更すると、アクティブなピアとの接続が切断されます。
+  aiAgentApiKeyClear: キーを消去
+  aiAgentApiKeyEmpty: APIキーを貼り付け
+  aiAgentApiKeyNotNeeded: 不要
+  aiAgentApiKeyNotNeededHint: このプロバイダーはローカルで実行されるため、APIキーは不要です
+  aiAgentApiKeySaved: 保存済み
+  aiAgentApiKeyStored: キーが保存されました - 入力して置き換え
+  aiAgentBuiltin: 内蔵
+  aiAgentCustom: カスタム
+  appImageUpdateMode: AppImage 更新管理方式
+  appImageExternalMode: 外部マネージャー / 手動置換（デフォルト）
+  appImageSelfMode: XMCL セルフマネージド（自身で AppImage を管理）
+  appImageAutoDownload: 更新を自動ダウンロード
+  appImageAutoInstall: 終了時にダウンロード済み更新をインストール
+  appImageExternalUpdateHint: Shelly や他のパッケージマネージャー経由でインストールした場合はそちらで更新し、外部モードを維持してください。それ以外の場合は既存パスの AppImage を手動で置き換えてください。外部モードでは XMCL は更新をダウンロード・インストールしません。
+  appImageSelfUpdateHint: 'ご自身で直接管理している AppImage の場合のみセルフマネージドを選択してください。組み込み更新にはファイル名にバージョン番号を含まない絶対パス（例: xmcl.AppImage）が必要です。名前が 0.73.0 などのバージョンを含む場合は、XMCL を終了して手動でファイル名を変更してください。'
 settingLabel:
   global: グローバル
   globalHint: グローバル設定に従います
@@ -1784,6 +2238,8 @@ shaderPack:
   noPacks: シェーダーパックがインストールされていません
   search: シェーダーパックを検索...
   'off': 'Off'
+  noLocalPacksFound: 検索に一致するローカルシェーダーパックが見つかりませんでした。
+  noPacksInstalled: シェーダーパックがインストールされていません。
 shared:
   close: 閉じる
   pressKeyCombination: キーの組み合わせを押してください...
@@ -1817,6 +2273,18 @@ shared:
   upgrade: アップグレード
   'yes': はい
   delete: 削除
+  copied: コピーしました
+  copy: コピー
+  copyFailed: コピーに失敗しました
+  copyFailedHint: クリップボードにコピーできませんでした
+  save: 保存
+  openFolder: フォルダーを開く
+  reset: リセット
+  missing: 不足
+  healthy: 正常
+  unused: 未使用
+  failed: 失敗
+  view: 表示
 sidebar:
   pin: ピン留めする
   unpin: 固定を解除する
@@ -2105,6 +2573,9 @@ userSkin:
   skinDeleteFailed: スキンをクローゼットから削除できませんでした
   edit: 編集
   fetch: 読み込む
+  invalidImage: 有効なMinecraftスキンの画像を選択してください。
+  invalidImageTitle: 無効なスキン画像
+  uploadRejected: Minecraftはこのスキンのアップロードを拒否しました。後でもう一度お試しください。
 version:
   checkIntegrity: 整合性を確認してください
   name: バージョン | バージョン
@@ -2172,6 +2643,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: ゲームパッドを検出しました
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
@@ -2285,3 +2757,119 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+difficulty:
+  easy: イージー
+  hard: ハード
+  normal: ノーマル
+  peaceful: ピースフル
+launchPreExecuteCommandFailed:
+  description: '事前実行コマンドがエラーで失敗しました: {error}。コマンドを確認してもう一度お試しください。'
+  title: 事前実行コマンドの実行に失敗しました
+minecraftFriends:
+  accept: 承認
+  add: フレンド追加
+  addedRelative: '{time} に追加'
+  expiresRelative: '{time} に期限切れ'
+  friends: フレンド
+  incomingHint: 1 件の受信リクエスト | {count} 件の受信リクエスト
+  notifyAdded: '{name} にフレンドリクエストを送信しました'
+  reconnectAction: 再接続
+  requiresMicrosoft: フレンド機能を使用するにはMicrosoftアカウントでサインインしてください。
+  scopedTo: '{name} としてサインイン中'
+  send: 送信
+  title: Minecraft フレンド
+  unsupported: フレンド機能はMicrosoftアカウントでのみ利用できます。
+  addPlaceholder: Minecraft ユーザー名
+  errors:
+    cannotAddSelf: 自分自身にフレンドリクエストを送信することはできません。
+    duplicate: そのプレイヤーは既にリストに存在します。
+    generic: 問題が発生しました。もう一度お試しください。
+    inviteRejected: そのプレイヤーはフレンド機能を有効にしていないか、招待を受け付けていません。
+    tokenExpired: Microsoftセッションの有効期限が切れました。再度ログインしてください。
+    unknownProfile: その名前のプレイヤーが見つかりませんでした。
+    friendsDisabled: お使いのMinecraftアカウントではフレンド機能が無効になっているか利用できません。Minecraftアカウント設定でフレンドを有効にしてから、もう一度お試しください。
+    invalidName: Minecraftのユーザー名は3〜16文字である必要があります。
+  heroEmptyHint: 上の入力欄にMinecraftユーザー名を入力してフレンドリクエストを送信します。
+  heroEmptyTitle: フレンドリストは空です
+  incoming: 受信したリクエスト
+  outgoing: 送信したリクエスト
+  privacy:
+    acceptInvites: フレンド招待を受け付ける
+    acceptInvitesHint: オフにすると、他のプレイヤーからフレンドリクエストが送信されなくなります。
+    friendsEnabled: フレンドリストが有効
+relative:
+  daysAgo: '{count} 日前'
+  hoursAgo: '{count} 時間前'
+  justNow: たった今
+  minutesAgo: '{count} 分前'
+  secondsAgo: '{count} 秒前'
+resourceError:
+  body: 「{path}」を解析できませんでした ({code})。ファイルが破損しているか、ロックされているか、不完全な可能性があります。再ダウンロードするか削除してみてください。
+  title: '{file} を読み込めません'
+xmclAccount:
+  accountSummary: アカウント
+  confirmMerge: アカウントの統合を確認
+  createdAt: '作成日: {date}'
+  description: Minecraftゲームアカウントとは別の、パスワード不要のXMCL IDです。
+  expiresAt: '有効期限: {date}'
+  gameAccountsSeparate: ゲームアカウントを削除しても、XMCLログイン方法のリンクは解除されません。
+  guest: ゲスト
+  identityConflict: この {provider} ログインは別のXMCLアカウントに紐付けられています。アカウントが自動的に統合されることはありません。
+  linkAccountWith: 'アカウントを連携:'
+  mergePreview: 確認する前に、移行されるリソースを確認してください。
+  mergeNeedsSession: 統合を確認する前に、保持したいXMCLアカウントにサインインしてください。
+  mergeQueued: アカウントの統合を処理中です。
+  requestFailed: XMCLアカウントサービスでリクエストを完了できませんでした。ゲームアカウントは変更されていません。
+  reviewMerge: 統合を確認
+  session: セッション
+  sessionActive: アクティブ
+  sessionExpired: 期限切れ
+  signOutAll: すべてのデバイスからサインアウト
+  signOutDevice: このデバイスからサインアウト
+  status:
+    active: アクティブ
+    deleted: 削除済み
+    deletion_pending: 削除保留中
+    merged: 統合済み
+  title: XMCLアカウント
+modCategory:
+  optimization: 最適化とパフォーマンス
+  libraries: ライブラリとAPI
+  utilities: UIとユーティリティ
+  world: ワールドとバイオーム
+  visual: グラフィックとサウンド
+  gameplay: ゲームプレイとコンテンツ
+  miscellaneous: その他
+localCollection:
+  title: ランチャーコレクション
+  newCollection: 新規コレクション
+  namePlaceholder: コレクション名
+  addToCollection: コレクションに追加
+  empty: ランチャーコレクションがまだありません
+  corrupted: 保存されたコレクションを読み込めなかったため、リセットされました。データファイルの隣にバックアップが保持されています。
+  modrinthSection: Modrinthアカウント
+  installAll: すべてインストール
+  incompatibleAlert: '現在のインスタンスと互換性のない1件のプロジェクトがスキップされました: | 現在のインスタンスと互換性のない {count} 件のプロジェクトがスキップされました:'
+  projects: プロジェクトなし | {count} 件のプロジェクト | {count} 件のプロジェクト
+  saveCurrentMods: インストール済みのModをコレクションとして保存
+  saveCurrentModsSuccess: '{count} 個のModをコレクション「{name}」に保存しました'
+  viewMods: Modを表示
+  editCollection: コレクションを編集
+  collectionDescription: コレクションの説明
+  noModsInCollection: このコレクションにはまだModがありません
+  exportCollection: コレクションをエクスポート
+  importCollection: コレクションをインポート
+  removeEntryConfirm: コレクションから削除
+  addMods: Modを追加
+  addModsTo: 「{name}」にModを追加
+  addModsHint: インスタンスからインストール済みのModを追加するか、マーケットのブックマークボタンをクリックしてModを追加します。
+  addModsDialogDesc: このインスタンスからこのコレクションに含めるインストール済みModを選択してください。
+  addAllCurrent: 現在のModをすべて追加
+  addedModsSuccess: '{count} 個のModをコレクションに追加しました'
+  searchMods: Modを検索...
+  selectAll: すべて選択
+  deselectAll: すべて選択解除
+  selected: 選択中
+  alreadyInCollection: 追加済み
+  noMatchingMods: 検索に一致するModはありません
+  addSelectedMods: '{count} 個のModを追加'

@@ -39,7 +39,11 @@ ago:
 askAICrash:
   copyPrompt: Kopieer de prompt om aan AI te vragen
   description: Laat AI je helpen de gamecrash te begrijpen! Volg de instructies hieronder om AI te vragen over deze gamecrash!
-  selectPlatform: Open een AI-platform en plak de prompt die je zojuist hebt gekopieerd.
+  selectPlatform: Abre unha plataforma de IA e pega a solicitude que acabas de copiar.
+  orExternal: ou empregar unha IA externa
+  setupAgent: Configurar o axente de IA
+  agentNotConfigured: Engade un provedor de IA e unha chave de API nos Axustes para que o axente integrado do iniciador poida diagnosticar e solucionar isto por ti.
+  askAgent: Diagnosticar co axente de IA integrado
 authProfileAddedNotification: Auth-profiel {name} toegevoegd
 bedrock:
   installBedrockVersion: Downloading Bedrock {version}
@@ -60,6 +64,13 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+  description: Minecraft Bedrock Edition instálase e iníciase a través de Microsoft Store. Precisas ter unha licenza de Bedrock na túa conta de Microsoft.
+  install: Obter de Microsoft Store
+  installFailed: Erro ao abrir Microsoft Store
+  installed: 'Instalado: {version}'
+  launchHint: Emprega o botón Iniciar para arrincar Bedrock Edition.
+  licenseRequired: Inicia sesión cunha conta de Microsoft que teña Minecraft para instalar e xogar a Bedrock Edition.
+  refresh: Actualizar
 backup:
   title: Copia de seguridade e restauración
   description: Haz copias de seguridad y restaura tus ajustes, colecciones, temas e instancias
@@ -87,7 +98,7 @@ backup:
   create: Crear copia de seguridade
   createTitle: Crear archivo de copia de seguridad XMCL
   saveDialogTitle: Guardar copia de seguridad XMCL
-  fileFilterName: 'Archivo de copia de seguridad XMCL (*.xmclbackup, *.zip)'
+  fileFilterName: Archivo de copia de seguridad XMCL (*.xmclbackup, *.zip)
   createError: Error al crear la copia de seguridad
   loadManifestError: Error al leer el archivo de copia de seguridad
   restore: Restaurar
@@ -98,7 +109,7 @@ backup:
   elapsedTime: Tiempo transcurrido
   remainingTime: Tiempo restante estimado
   calculatingRemaining: Calculando...
-  lessThanMinute: '< 1 min'
+  lessThanMinute: < 1 min
   itemsProgress: '{current}/{total}'
   savesCategory: Mundos
   modsCategory: Mods
@@ -110,9 +121,9 @@ backup:
   copiedLog: Registro copiado al portapapeles
   openFolder: Mostrar en carpeta
   done: Hecho
-  backupDone: '¡Copia de seguridad completada!'
+  backupDone: ¡Copia de seguridad completada!
   backupDoneHint: Tu archivo de copia de seguridad ha sido creado y verificado.
-  restoreDone: '¡Restauración completada!'
+  restoreDone: ¡Restauración completada!
   restoreDoneHint: Todos los datos e instancias seleccionados se han restaurado correctamente.
   timeTaken: 'Tiempo empleado: {time}'
   destinationFile: 'Guardado en: {path}'
@@ -129,7 +140,7 @@ backup:
   selectBackupFileDescription: Elige un archivo .xmclbackup o .zip con tus datos e instancias de XMCL.
   selectFile: Elegir archivo
   selectBackupFileTitle: Abrir copia de seguridad XMCL
-  createdOn: 'Creado el {date}'
+  createdOn: Creado el {date}
   changeFile: Cambiar archivo
   dataToRestore: Datos a restaurar
   restoreSettings: Restaurar ajustes
@@ -146,9 +157,9 @@ backup:
   restoreError: Error al restaurar la copia de seguridad
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Crear copia de seguridad
   createBackupDescription: Guarda los ajustes del lanzador, colecciones, temas personalizados e instancias en un único archivo portátil.
   restoreBackupTitle: Restaurar copia de seguridad
@@ -186,9 +197,27 @@ backup:
   interval6h: Cada 6 horas
   interval12h: Cada 12 horas
   interval24h: Cada 24 horas
-  keepCount: 'Conservar las últimas {count} copias'
+  keepCount: Conservar las últimas {count} copias
 baseSetting:
   title: Instantie-instellingen
+  info:
+    address: Enderezo
+    changes: Cambios
+    custom: Personalizado
+    disabled: Desactivado
+    enabled: Activado
+    exportFormats: Formatos de exportación
+    inherited: Herdado
+    modLoader: Cargador de mods
+    notConfigured: Non configurado
+    notSet: Non establecido
+    offline: Arquivo sen conexión
+    projectId: ID do proxecto
+    running: En execución
+    saved: Gardado
+    status: Estado
+    stopped: Detido
+    vanilla: Vanilla
 browseApp:
   createShortcut: Snelkoppeling maken
   default: STANDAARD
@@ -213,50 +242,50 @@ curseforgeCategory:
   Animated: Animatie
   Armor, Tools, and Weapons: Pantser, gereedschap en wapens
   Combat / PvP: Gevecht/PvP
-  Cosmetic: Uiterlijk/decoratie
-  Creation: Creatieve modus
-  Data Packs: Datapacks
-  Education: Educatie
-  Exploration: Verkenning
-  Extra Large: Groot formaat
-  FTB Official Pack: Het officiële FTB-pakket
+  Cosmetic: Aparencia / Decoración
+  Creation: Modo creativo
+  Data Packs: Paquete de datos
+  Education: Educación
+  Exploration: Exploración
+  Extra Large: Tamaño grande
+  FTB Official Pack: Paquete oficial de FTB
   Fabric: Fabric
   FancyMenu: FancyMenu
-  Font Packs: Lettertypen
-  Food: Voedsel
-  Game Map: Gamekaarten
+  Font Packs: Fontes
+  Food: Comida
+  Game Map: Mapas de xogo
   Hardcore: Hardcore
   MCreator: MCreator
   Magic: Magie
-  Map Based: Gebaseerd op de kaart
-  Map and Information: Kaarten en informatie
-  Medieval: Middeleeuwen
-  Mini Game: Minigames
-  Miscellaneous: Diversen
-  Mod Support: Mod-ondersteuning
-  Modded World: Een mod voor werelden
-  Modern: Modern
-  Multiplayer: Multiplayer
+  Map Based: Baseado no mapa
+  Map and Information: Mapas e información
+  Medieval: Medieval
+  Mini Game: Minixogos
+  Miscellaneous: Varios
+  Mod Support: Soporte para mods
+  Modded World: Mundo con mods
+  Modern: Moderno
+  Multiplayer: Multixogador
   Parkour: Parkour
-  Photo Realistic: Fotorealistisch
-  Puzzle: Puzzels
+  Photo Realistic: Fotorealista
+  Puzzle: Puzzles
   QoL: QoL (Kwaliteit van leven)
-  Quests: Quests
+  Quests: Misións
   Redstone: Redstone
-  Sci-Fi: Sci-Fi
-  Server Utility: Servertool
+  Sci-Fi: Ciencia ficción
+  Server Utility: Utilidade de servidor
   Skyblock: SkyBlock
-  Small / Light: Klein / Licht
+  Small / Light: Lixeiro
   Steampunk: Steampunk
-  Storage: Opslag
-  Survival: Survival
-  Tech: Technologie
-  Technology: Technologie
-  Traditional: Traditioneel
-  Twitch Integration: Twitch-integratie
-  Utility & QoL: Nut & QoL
+  Storage: Almacenamento
+  Survival: Supervivencia
+  Tech: Tecnoloxía
+  Technology: Tecnoloxía
+  Traditional: Tradicional
+  Twitch Integration: Integración con Twitch
+  Utility & QoL: Utilidades e QoL
   Vanilla+: Vanilla+
-  World Gen: Wereldgeneratie
+  World Gen: Xeración de mundo
 dataMigration:
   apply: Instelling toepassen
   placeholder: Klik hier om een map te selecteren
@@ -349,6 +378,27 @@ errors:
   HeadersTimeoutError: HTTP Header time-out
   NotFoundError: 404 Niet Gevonden
   SocketError: Server socket fout
+  bedrockUnsupportedPlatform: Minecraft Bedrock Edition só é compatible coa versión para Windows.
+  bedrockNotInstalled: Minecraft Bedrock Edition non está instalado.
+  bedrockLaunchFailed: Erro ao iniciar Minecraft Bedrock Edition.
+  bedrockInstallFailed: Erro ao instalar Minecraft Bedrock Edition.
+  bedrockDownloadUrlUnavailable: Esta versión de Bedrock non está dispoñible para a conta de Microsoft actual. As versións Beta e Preview requiren dunha conta inscrita no programa beta de Minecraft.
+  bedrockDeveloperModeRequired: Requírese o Modo de desenvolvedor de Windows para rexistrar esta versión de Bedrock.
+  bedrockRegisterFailed: Erro ao rexistrar esta versión de Bedrock en Windows.
+  bedrockVersionNotFound: Esta versión de Bedrock non está instalada localmente.
+  CorruptedResourceMetadata: Detectáronse e limpáronse metadatos danados en {count} recurso(s). Os ficheiros aínda funcionan, pero a súa atribución a Modrinth/CurseForge perdeuse e detectarase de novo automaticamente.
+  InstallBackendUnresponsive:
+    body: O proceso en segundo plano do iniciador deixou de responder, polo que a instalación non puido rematar. Pecha completamente e reinicia o iniciador e téntao de novo.
+    title: O iniciador non responde
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Erro ao instalar ficheiros de Minecraft
+  InstallNetworkError:
+    body: Un problema de rede interrompeu a instalación. Comproba a túa conexión a internet ou proxy e téntao de novo.
+    title: Non se poden descargar os ficheiros de Minecraft
+  InstallPermissionDenied:
+    body: Un antivirus ou permisos de cartafol restrinxidos bloquearon a instalación. Engade o iniciador á lista de exclusións do teu antivirus ou elixe un directorio raíz de datos diferente nos axustes.
+    title: Non se puido escribir no cartafol do iniciador
 eula:
   body: Door het selectievakje aan te vinken, geef je aan akkoord te gaan met Minecraft's {eula}.
 exception:
@@ -366,15 +416,20 @@ command:
   instance:
     launch:
       title: Iniciar instancia
+      description: Iniciar unha instancia de Minecraft
     create:
       title: Crear instancia
+      description: Crear unha nova instancia
     delete:
       title: Eliminar instancia
+      description: Eliminar unha instancia existente
   user:
     login:
       title: Iniciar sesión
+      description: Iniciar sesión na túa conta
     refresh:
       title: Actualizar usuario
+      description: Anovar a sesión de usuario
 commandPalette:
   placeholder: Buscar comandos, instancias, mods…
   commands: Comandos
@@ -391,6 +446,7 @@ commandPalette:
   hintEnter: entrar
   hintBack: atrás
   hintClose: pechar
+  hintAskAgent: preguntar ao Axente
 feedback:
   channel: Kanalen
   description: Ik heb een Bug gevonden of ik wil een suggestie doen
@@ -409,6 +465,8 @@ feedback:
   qq: QQ Groep
   qqDescription: 'Ga naar de feedback QQ-groep en praat direct met auteurs. Groepsnummer: {number}'
   qqEnterGroup: Lid worden
+  reddit: Reddit
+  redditDescription: Únete á comunidade do subreddit r/XMCL
 fileDetail:
   fileSize: Bestandsgrootte
   filesize: Bestandsgrootte
@@ -536,12 +594,23 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: valor
   fileApiPlaceholder: Introduce aquí o URL de sincronización remota se queres manter os recursos sincronizados
+  monitor: Monitor en pantalla completa
+  monitorDefault: Predeterminado (monitor primario)
+  monitorNumber: Monitor {number}
+  monitorPrimary: Primario
+  deleteHintBedrock: Minecraft Bedrock Edition e todos os seus datos eliminaranse por completo do teu ordenador. Tes a certeza?
+  nameInvalidChars: 'O nome non pode conter estes caracteres: < > : " / \ | ? *'
+  namePathTraversal: O nome non pode conter navegación de ruta ("..")
+  nameReservedName: Este nome está reservado polo sistema e non se pode empregar
+  nameTrailingDotOrSpace: O nome non pode rematar cun punto ou espazo
+  nameWhitespaceOnly: O nome non pode ser só espazos en branco ou puntos
 instanceAge:
   older: Ouder
   threeDay: Binnen drie dagen
   today: Vandaag
 instanceDiscover:
   gameFolder: Ontdek {count} gamemappen
+  instanceFolder: Atopáronse {count} instancias
 instanceFileOperation:
   add: Toevoegen
   backup-add: Vervangen (Backup)
@@ -580,6 +649,7 @@ instanceUpdate:
   summary: Voeg {add} bestanden toe. Verwijder {remove} bestanden. Behoud {keep} bestanden.
   title: Instantie bijwerken
   update: Start Update
+  noFiles: Non hai cambios de ficheiros
 instances:
   add: Game aanmaken
   addCurseForgeDescription: Importeren uit curseforge datamap. Je moet de curseforge root datamap selecteren.
@@ -602,6 +672,7 @@ instances:
   linkSharedFoldersHint: 'Crea estes cartafoles como ligazóns aos cartafoles compartidos do iniciador para que esta instancia comparta o seu contido con todas as demais instancias ligadas. Isto non é unha copia: os cambios feitos nunha instancia aparecen en todas. Os cartafoles non marcados permanecen privados desta instancia.'
   linkFailed: Non se puido ligar o cartafol {folder} ao cartafol compartido
   addPrismDescription: Importar unha instancia de PrismLauncher existente.
+  instanceCount: '{count} instancias'
 items:
   count: '{count} items'
   total: '{total} totaal'
@@ -645,6 +716,7 @@ launch:
   launchAnyway: Toch starten
   launchAs: Starten als
   forceKill: Forzar peche
+  launchTo: Iniciar en
 launchBlocked:
   launchBadVersion:
     description: De versie {version} json is kapot. Misschien deze versie opnieuw installeren?
@@ -668,6 +740,13 @@ launchBlocked:
     description: Controleer je java, of geef meer rechten aan de launcher en probeer opnieuw. Als dit nog steeds niet werkt, neem contact op met de ontwikkelaars.
     title: Starten van gameproces mislukt
   unexpectedText: Dit is onverwacht. Je kunt de launcher herstarten om het probleem te verminderen. Neem contact op met de auteur als dit probleem zich opnieuw voordoet.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL non puido recuperar a información de pantalla de X11 da túa sesión de escritorio. Reinicia XMCL desde un terminal na sesión de escritorio actual ou pecha a sesión e volve iniciala.
+    noGraphicalSession: XMCL non se está a executar nunha sesión gráfica de escritorio. Inicia XMCL desde a túa sesión de escritorio antes de iniciar Minecraft.
+    sandboxDenied: A caixa de area da aplicación non pode acceder a X11. Concede a XMCL acceso ao socket de X11 nos permisos de Flatpak e logo reinicia XMCL.
+    title: Pantalla X11 non dispoñible
+    xwaylandMissing: Minecraft precisa de XWayland nesta sesión de Wayland. Instala o paquete XWayland fornecido pola túa distribución de Linux, despois pecha a sesión e volve iniciala.
+    xwaylandNotRunning: XWayland está instalado pero non hai ningunha pantalla X11 en execución. Activa XWayland na configuración do teu compositor, despois pecha a sesión e volve iniciala.
 launchFailed:
   crash: Game Gecrasht!!
   description: Er is geen crashrapport. Dit is de foutlog en het laatste logboek.
@@ -695,6 +774,11 @@ launcherUpdate:
   installAndQuit: Herstarten om te installeren
   noUpdateAvailable: Geen update beschikbaar
   updateToThisVersion: Downloaden en installeren
+  automaticUnavailable: Actualizacións automáticas non dispoñibles
+  automaticNotImplemented: As actualizacións automáticas non están implementadas para este contorno do iniciador.
+  automaticNotConfigured: As actualizacións automáticas non están configuradas para este contorno do iniciador.
+  manualCheckHint: Non se realizou ningunha comprobación de versións. Consulta os lanzamentos de GitHub para obter un paquete compatible e instálao manualmente.
+  manualCheckRequired: Este contorno non pode comprobar nin instalar actualizacións automaticamente. Emprega o botón de lanzamentos de GitHub para comprobar manualmente.
 localVersion:
   auto: Automatisch berekend
   empty: Geen versie geïnstalleerd
@@ -734,12 +818,31 @@ loginError:
   requirePassword: Wachtwoord is verplicht
   requireUsername: Gebruikersnaam is verplicht
   timeout: Inlog time-out. Probeer opnieuw of controleer je netwerk.
+  loginCanceled: Cancelouse o inicio de sesión de Microsoft.
+  xboxErrorGuideHint: Tes problemas para iniciar sesión? Aprende a solucionar problemas de inicio de sesión de Microsoft e Xbox.
+  openLoginGuide: Como solucionar este problema
+  openDiscordSupport: Aínda precisas axuda? Únete ao noso Discord
+  cyrillicNotAllowed: Non se permiten caracteres cirílicos
+  illegalOfflineUsername: O nome de usuario debe ter entre 3 e 16 caracteres e conter só letras inglesas, números e guións baixos
+  loginMinecraftByXboxRateLimited: O servizo de autenticación de Minecraft de Microsoft está a limitar as solicitudes neste momento (HTTP 429). Agarda un momento e téntao de novo.
+  loginMinecraftByXboxRateLimitedWithRetry: O servizo de autenticación de Minecraft de Microsoft está a limitar as solicitudes neste momento (HTTP 429). Agarda uns {seconds} segundo(s) e téntao de novo.
+  loginMinecraftByXboxServerError: O servizo de autenticación de Minecraft de Microsoft devolveu un erro do servidor (HTTP {status}). Isto é do seu lado. Téntao de novo nuns minutos.
+  loginMinecraftByXboxStatus: Erro ao trocar o token de Minecraft polo token de Xbox (HTTP {status}). Asegúrate de que tes Minecraft en Xbox ou téntao de novo.
+  loginXboxAdultVerification: A túa conta de Microsoft precisa dunha verificación de maioría de idade (habitual nalgunhas rexións) antes de poder iniciar sesión en Xbox. Abre {url} no teu navegador para completar a verificación e téntao de novo.
+  loginXboxBadXsts: Microsoft devolveu unha resposta XSTS sen a información esperada do usuario. Isto normalmente é temporal; téntao de novo nuns minutos.
+  loginXboxBanned: Esta conta de Microsoft / Xbox foi suspendida ou expulsada por Microsoft e non pode iniciar sesión en Minecraft. Ponte en contacto co servizo de asistencia de Microsoft / Xbox.
+  loginXboxChildAccount: A túa conta de Microsoft é unha conta infantil e débese engadir a unha Familia de Microsoft antes de poder iniciar sesión en Xbox / Minecraft. Abre {url} no teu navegador para solucionalo e téntao de novo.
+  loginXboxFailedWithCode: Erro ao iniciar sesión en Xbox co token de Microsoft (XErr {code}). Busca o código para obter axuda ou téntao máis tarde.
+  loginXboxNoXboxProfile: Esta conta de Microsoft aínda non ten un perfil de Xbox. Abre {url} no teu navegador para crear un e téntao de novo.
+  loginXboxRegionLocked: Xbox Live non está dispoñible na rexión da túa conta. Cambia o país/rexión da túa conta de Microsoft nos axustes da conta e téntao de novo.
 logsCrashes:
   crashes: Crashrapporten
   logs: Logs
   placeholder: Geen bestanden gevonden
   title: Logs of Crashrapporten
   failures: Fallos de inicio
+  serverLogs: Rexistros do servidor
+  showFile: Amosar no cartafol
 me:
   groupByDate: Agrupar por data
   groupByFolder: Agrupar por cartafol
@@ -809,6 +912,23 @@ mod:
   syncGroupRules: Sla groepsregels op
   toUpdate: '{count} updates'
   ungroup: Degroeperen
+  autoCategorize: Organizar automaticamente en cartafoles
+  autoCategorizeHint: Agrupar automaticamente mods en cartafoles de categorías (Optimización, Bibliotecas, Mundo, Xogabilidade, etc.)
+  autoCategorizeSuccess: Mods organizados automaticamente en {count} cartafoles
+  collapseAll: Pregar todos os cartafoles
+  expandAll: Despregar todos os cartafoles
+  folderSetting: Axustes de cartafol
+  folderColor: Cor de cartafol
+  folderIcon: Icona de cartafol
+  pinGroup: Fixar arriba
+  pinToTop: Fixar arriba
+  pinToTopHint: O cartafol aparecerá na parte superior da lista
+  pinned: Fixado
+  unpinGroup: Desfixar cartafol
+  customColor: Cor personalizada
+  preview: Vista previa
+  ungroupAll: Desagrupar todo
+  organization: Organización de cartafoles
 modFilter:
   clear: Wis Filter
   dependenciesInstallOnly: Toon alleen mods met gemiste afhankelijkheden
@@ -837,6 +957,7 @@ modInstall:
   skipVersion: Sla de Mods over met andere Minecraft-versie
   source: Mod Bron
   switch: Wissel Versie
+  scanUnusedLibraries: Escanear bibliotecas non utilizadas
 modSearch:
   noLocalModsFound: Geen lokale mods gevonden die overeenkomen met je zoekopdracht.
   noModsFound: Geen mods gevonden
@@ -872,6 +993,112 @@ modpack:
   overrides: Overrides
   url: URL
   urlHint: De startpagina url van je modpack
+  emitCurseforgeDescription: Arquivo zip estándar de modpack para CurseForge
+  emitModrinthDescription: Formato oficial lixeiro con descargas rápidas desde CDN
+  emitPackwiz: Exportar modpack de Packwiz
+  emitPackwizDescription: Formato lixeiro compatible con Git (ficheiros pack.toml, index.toml e .pw.toml)
+  exportSuccess: Modpack exportado con éxito!
+  exportSuccessWithWarnings: Modpack exportado con avisos
+  exportSkippedFiles: Omitíronse {count} ficheiros ilexibles ou bloqueados durante a exportación
+  exportFailed: Erro ao exportar o modpack
+  skippedFilesDialogTitle: Algúns ficheiros non se puideron exportar
+  skippedFilesDialogDescription: Modpack creado, pero omitíronse {count} ficheiros
+  skippedReasonEperm: Acceso denegado (bloqueado polo SO ou por outro proceso)
+  skippedReasonEbusy: O ficheiro está a ser usado por outro programa
+  skippedReasonEnoent: Ficheiro non atopado ou danado
+  skippedFilesNotice: O resto dos teus ficheiros empaquetouse correctamente no modpack. Os ficheiros anteriores omitíronse debido a restricións de Windows ou permisos de acceso insuficientes.
+  openExportFolder: Abrir cartafol do modpack
+  closeDialog: Entendido
+  expandAll: Despregar todos os cartafoles
+  collapseAll: Pregar todos os cartafoles
+  modpackVersionHint: Versión semántica (ex. 1.0.0). Usa + para incrementar parche/menor
+  modrinthProject: Proxecto de Modrinth
+  selectDefaultFiles: Seleccionar ficheiros predeterminados
+  selectAllFiles: Seleccionar todos os ficheiros
+  deselectAllFiles: Deseleccionar todos os ficheiros
+  bindProject: Vincular proxecto
+  bindProjectHint: Selecciona un proxecto de modpack de Modrinth xestionado pola conta actual.
+  bindProjectTypeImmutableHint: Modrinth fixa o tipo dun proxecto cando se sube a súa primeira versión e non se pode cambiar despois. Os proxectos en borrador sen versións aínda pódense vincular aquí, pero un proxecto xa publicado como mod/paquete de recursos/etc. non se pode converter en modpack — usa "Crear novo proxecto".
+  bindProjectNoProjects: Non se atoparon proxectos de Modrinth para a túa conta.
+  unbindProject: Desvincular proxecto
+  unbindProjectConfirmTitle: Desvincular proxecto de Modrinth?
+  unbindProjectConfirmMessage: Isto só elimina a asociación local entre esta instancia e o proxecto de Modrinth. O proxecto e as súas versións en Modrinth non se verán afectados.
+  editProject: Editar proxecto
+  projectDiscovery: Descubrimento e compatibilidade
+  projectGallery: Galería
+  projectGalleryAdd: Engadir imaxe
+  projectGalleryEmpty: Aínda non hai imaxes na galería.
+  projectGalleryFeatured: Destacada
+  projectGalleryFromScreenshots: Escoller captura de pantalla
+  projectGalleryHint: Engade imaxes de ata 5 MiB e escolle a imaxe destacada do proxecto.
+  projectGallerySelectScreenshot: Selecciona unha captura de pantalla da instancia
+  projectIdentity: Identidade e descrición
+  projectLinks: Ligazóns do proxecto
+  projectLoadFailed: Erro ao cargar o proxecto de Modrinth vinculado.
+  projectNoChanges: Non hai cambios sen gardar no proxecto.
+  projectNotBound: Non hai ningún proxecto de Modrinth vinculado
+  projectNotBoundHint: Vincula un proxecto existente ou crea un novo proxecto en Modrinth.
+  projectUnsavedChanges: '{count} campo(s) do proxecto modificados'
+  projectLatestDraft: Borrador
+  projectVersions: versións
+  publish: Publicar
+  publishCategories: Categorías (separadas por comas)
+  publishChannel: Canle de lanzamento
+  publishChangelog: Rexistro de cambios
+  publishChangelogGenerate: Xerar con IA
+  publishConfirmProjectChanges: Confirmar cambios do proxecto
+  publishCreateProject: Crear proxecto
+  publishCreateDraft: Construír e crear borrador
+  publishCustomVersion: Personalizado
+  publishDescription: Descrición do proxecto
+  publishDiscordUrl: URL de Discord
+  publishDraftCreated: Versión en borrador subida.
+  publishSubmitted: Versión enviada a revisión.
+  publishExistingProject: Proxecto existente
+  publishIcon: Icona do proxecto
+  publishIconHint: PNG, JPEG ou WebP
+  publishIconKeep: Deixar sen cambios a menos que se seleccione unha nova imaxe
+  publishIconUseInstance: Empregar a icona da instancia
+  publishIssuesUrl: URL de incidencias
+  publishLicense: ID da licenza
+  publishLogin: Iniciar sesión en Modrinth
+  publishFiles: ficheiros seleccionados
+  publishLinkageSummary: '{linked} de {total} mods/paquetes de recursos/paquetes de shaders vincularanse directamente á súa descarga en Modrinth en vez de subirse.'
+  publishLinkageEmbeddedSummary: '{count} ficheiro(s) non se poden vincular e subiranse (integrados) con esta versión.'
+  publishLinkageShowFiles: Amosar os ficheiros que deben subirse
+  publishLinkageReason:
+    missing-file: Ficheiro non atopado no disco
+    not-linked-to-modrinth: Non recoñecido como recurso de Modrinth
+    no-downloadable-url: Non se atopou ningunha URL de descarga redistribuíble
+  publishModrinth: Publicar en Modrinth
+  publishNewProject: Novo proxecto
+  publishOpenProject: Abrir proxecto
+  publishOpenVersion: Abrir versión
+  publishProfile: Perfil MRPack
+  publishProfileClient: Só cliente
+  publishProfileServer: Só servidor
+  publishProfileSplit: Universal + ficheiros separados de cliente/servidor
+  publishProfileUniversal: Universal
+  publishProject: Proxecto
+  publishProjectDetailsTab: Detalles do proxecto
+  publishProjectName: Nome do proxecto
+  publishProjectRequired: Selecciona un proxecto antes de publicar.
+  publishProjectSlug: Slug do proxecto
+  publishProjectUrl: URL do proxecto (opcional)
+  publishProjectUrlHint: Deixar en branco para empregar {slug}.
+  publishProjectSaved: Detalles do proxecto actualizados.
+  publishSourceUrl: URL do código fonte
+  publishSubmit: Enviar borrador a revisión
+  publishSummary: Resumo breve
+  publishSummaryMinWords: O resumo debe conter polo menos 3 palabras.
+  publishVersionTitle: Título da versión
+  publishVersionTab: Publicar versión
+  publishVersion: Publicar versión
+  publishVisibility: Visibilidade
+  publishWikiUrl: URL da wiki
+  visibilityPrivate: Privado
+  visibilityPublic: Público
+  visibilityUnlisted: Non listado
 modpackImportConfirm:
   description: Gedetecteerd dat je een bestand in de launcher sleept. Probeer je een modpack te importeren?
   title: Probeer je een modpack te importeren?
@@ -1129,6 +1356,16 @@ multiplayer:
   startNewP2PConnection: Klik op de Start knop om een nieuwe peer-verbinding te maken
   connectionError: Erro de conexión
   connectionFailedHint: Non se pode establecer a conexión. Comproba que ambos os pares teñan tipos de NAT compatibles.
+  connectedToMaster: Conectado ao anfitrión da sala
+  directConnection: Directa
+  master: Anfitrión
+  masterHostsGameHint: O anfitrión da sala é o centro de conexión e debe aloxar o mundo LAN de Minecraft. Transfire o anfitrión antes de cambiar de host.
+  member: Membro
+  joinCreatesMissingRoomHint: Se esta sala non existe, crearala e converteraste no seu anfitrión.
+  relayConnection: Retransmisión
+  relayAllowanceSummary: Restan {remaining} de {total} neste período
+  relayServiceAvailable: Servizo de retransmisión de XMCL Together dispoñible
+  waitingForMaster: Agardando a que o anfitrión da sala se reconecte
 myStuff: Mijn Spullen
 natType:
   blocked: Geblokkeerd
@@ -1175,6 +1412,11 @@ presence:
   save: Saves bekijken in {instance}
   setting: Instellingenpagina bekijken
   shaderPack: Shaderpacks bekijken in {instance}
+  away: Ausente
+  offline: Desconectado
+  online: En liña
+  playing: Xogando a {game}
+  playingGeneric: Xogando
 proxy:
   host: Host
   port: Poort
@@ -1200,6 +1442,8 @@ resourcepack:
   showFile: Toon resourcepack in map {file}
   unselected: Niet-geselecteerde Resourcepacks
   search: Buscar paquetes de recursos...
+  noLocalPacksFound: Non se atoparon paquetes de recursos locais que coincidan coa túa busca.
+  noPacksInstalled: Non tes ningún paquete de recursos instalado.
 save:
   resetView: Restablecer a vista
   mapHintPan: Arrastra para desprazar a vista
@@ -1223,14 +1467,14 @@ save:
     locked: Bloqueado
   linkShared: Compartir partidas entre instancias
   linkSharedHint: Vincular o cartafol saves desta instancia co cartafol compartido global para que todas as instancias compartan os mesmos mundos. As partidas existentes fusiónanse no cartafol compartido.
-  allowCheats: Cheats Toestaan
+  allowCheats: Permitir trucos
   copy:
     name: Save Kopiëren
   createNew: Maak Nieuwe Wereld
   createdWorlds: Je hebt {count} werelden
   deleteHint: Deze operatie kan niet ongedaan worden gemaakt. Je verliest de save-gegevens voorgoed. Weet je zeker dat je deze save wilt verwijderen?
   deleteTitle: Verwijder de Save
-  difficulty: Moeilijkheidsgraad
+  difficulty: Dificultade
   dropHint: Sleep save zip hierheen om te Importeren
   export: Exporteer Save
   exportMessage: Exporteer de Save als zip
@@ -1238,14 +1482,14 @@ save:
   gameMode: spelmodus
   independent: Instantie gebruikt onafhankelijke saves-map
   levelName: Levelnaam
-  loadMap: Kaart Laden
-  mapError: Kaartfout
-  mapInfo: 'Interactieve 3D wereldvoorbeeld:'
-  mapLoaded: Kaart Geladen
-  mapPreview: Kaartvoorbeeld
+  loadMap: Cargar mapa
+  mapError: Erro do mapa
+  mapInfo: 'Vista previa 3D interactiva do mundo:'
+  mapLoaded: Mapa cargado
+  mapPreview: Vista previa do mapa
   name: Save | Saves
   openFolder: Abrir cartafol de partidas
-  properties: Wereldeigenschappen
+  properties: Propiedades do mundo
   search: Zoek Saves
   searchHint: Buscar mundos en CurseForge
   seed: Seed
@@ -1254,10 +1498,40 @@ save:
   showDirectory: Toon saves-map
   unselected: Gedeelde Saves
   useCurrent: Gebruik huidige wereld
-  useMouseRotate: Gebruik muis om weergave te draaien
-  useScrollZoom: Gebruik scrollwiel om te zoomen
+  useMouseRotate: Usa o rato para rotar a vista
+  useScrollZoom: Usa a roda do rato para facer zoom
   searchSaves: Buscar partidas
   empty: No worlds found
+  datapack:
+    name: Paquete de datos | Paquetes de datos
+    noSaveHint: Crea ou selecciona un mundo primeiro para instalar este paquete de datos
+    packFormat: 'Formato do paquete: {format}'
+    imported: Paquete de datos importado en {save}
+  duplicate: Duplicar partida
+  chunkSelectMode: Seleccionar chunks
+  panMode: Panorámica
+  chunkSelected: '{count} chunks seleccionados'
+  mapHintSelect: Seleccionar
+  mapHintDeselect: Deseleccionar
+  toggleGrid: Alternar cuadrícula de rexións
+  heightTop: Vista superior
+  clearSelection: Limpar selección
+  copyChunks: Copiar chunks
+  pasteChunks: Pegar {count} chunks
+  pasteChunksPlaceHint: Move o rato para posicionar {count} chunk(s), despois fai clic para pegar. Os chunks existentes no destino sobreescribiranse. Preme Esc para cancelar.
+  pasteChunksCancel: Cancelar
+  deleteChunks: Eliminar chunks
+  deleteChunksTitle: Eliminar chunks seleccionados
+  deleteChunksHint: Eliminar {count} chunk(s) seleccionados? Isto non se pode desfacer. Os chunks rexeneraranse a próxima vez que se cargue a área no xogo.
+  mapLoading: Cargando mapa…
+  noRegions: Este mundo non ten rexións xeradas para previsualizar.
+  dimOverworld: Superficie
+  dimNether: O Nether
+  dimEnd: O End
+  noLocalSavesFound: Non se atoparon partidas locais que coincidan coa túa busca.
+  noSavesFound: Non se atoparon partidas
+  noSavesInstalled: Non tes ningunha partida gardada.
+  world: Mundo
 screenshots:
   empty: Je hebt geen screenshots
   playRandom: Shuffle
@@ -1265,6 +1539,109 @@ screenshots:
   gallery: Galería de capturas
   hint: Preme F2 no xogo para capturar pantallas
   openFolder: Abrir cartafol de capturas
+  title: Capturas de pantalla e fotos
+  manage: Xestor de capturas
+  emptyTitle: Aínda non hai capturas de pantalla
+  emptyDescription: Preme F2 no xogo para facer capturas ou importa as túas fotos manualmente.
+  dropHint: Arrastra fotos ou capturas de pantalla aquí para engadilas á galería
+  backToHome: Volver ao Inicio
+  import: Engadir fotos
+  images: Imaxes
+  importSuccess: Importáronse correctamente {count} fotos!
+  copy: Copiar imaxe
+  copied: Copiado ao portapapeis!
+  setWallpaper: Establecer como fondo
+  setWallpaperSuccess: Establecida como imaxe de fondo da instancia!
+  setIcon: Establecer como icona
+  setIconSuccess: Establecida como icona da instancia!
+  export: Gardar ficheiro
+  exportSuccess: Captura de pantalla gardada con éxito!
+  exportSelected: Exportar seleccionadas
+  exportSelectedTitle: Seleccionar cartafol de exportación
+  exportSelectedSuccess: Exportáronse correctamente {count} capturas de pantalla
+  deleteConfirmTitle: Eliminar capturas de pantalla?
+  deleteConfirmMessage: Seguro que queres eliminar {count} capturas de pantalla? Esta acción non se pode desfacer.
+  deleteSuccess: Capturas de pantalla eliminadas con éxito
+  selectedCount: 'Seleccionadas: {count}'
+  selectAll: Seleccionar todo
+  clearSelection: Deseleccionar todo
+  countLabel: '{count} capturas de pantalla'
+  searchPlaceholder: Buscar por nome...
+  noSearchResults: Non se atoparon capturas coincidentes
+  noSearchResultsHint: Proba a axustar o termo de busca
+  sort: Ordenar
+  sortDateDesc: Máis recentes primeiro
+  sortDateAsc: Máis antigas primeiro
+  sortSizeDesc: Máis grandes primeiro
+  sortSizeAsc: Máis pequenas primeiro
+  sortNameAsc: Nome (A-Z)
+  sortNameDesc: Nome (Z-A)
+  viewGrid: Cuadrícula grande
+  viewGridCompact: Cuadrícula compacta
+  viewList: Vista de lista
+  edit: Editar
+  editorTitle: Editar captura de pantalla
+  layer: Capa
+  dragToMove: Arrastrar para mover
+  transformHint: Arrastra a selección para mover • Arrastra os tiradores para redimensionar • Intro para confirmar
+  customColor: Cor personalizada
+  fill: Recheo
+  brushPreview: Vista previa do tamaño do pincel
+  fontPreview: Vista previa do tamaño da fonte
+  textBgNone: Ningún
+  textBgShadow: Sombra
+  textBgBox: Caixa
+  cropHint: Arrastra o cadro delimitador para seleccionar a área de recorte.
+  textPlacementHint: Intro para colocar • Esc para cancelar
+  layerMoveUp: Subir
+  layerMoveDown: Baixar
+  layerCopy: Copia de {name}
+  pixels: px
+  saveCopy: Gardar copia
+  saveOverwrite: Sobreescribir
+  saveSuccess: Captura gardada!
+  saveCopySuccess: Gardada como nova captura!
+  toolSelect: Seleccionar / Mover
+  toolMove: Mover e transformar (Ctrl+T / V)
+  toolPan: Mover vista (Espazo+Arrastrar)
+  layers: Capas
+  layerAdd: Engadir capa
+  layerDuplicate: Duplicar capa
+  layerDelete: Eliminar capa
+  layerOpacity: Opacidade
+  transformLayer: Transformación libre
+  applyTransform: Aplicar transformación (Intro)
+  cancelTransform: Cancelar (Esc)
+  layerBackground: Fondo
+  layerPaint: Debuxo
+  layerText: Texto
+  layerBlur: Desenfoque
+  toolPen: Bolígrafo
+  toolArrow: Frecha
+  toolRect: Rectángulo
+  toolCircle: Círculo
+  toolLine: Liña
+  toolText: Texto
+  toolHighlighter: Marcador
+  toolBlur: Pixelar / Desenfocar
+  toolCrop: Recortar
+  applyCrop: Aplicar recorte
+  cancelCrop: Cancelar recorte
+  strokeWidth: Grosor do trazo
+  fontSize: Tamaño da fonte
+  color: Cor
+  undo: Desfacer
+  redo: Refacer
+  clear: Limpar todo
+  textPlaceholder: Fai clic para escribir texto...
+  fontFamily: Fonte
+  fontBold: Negriña
+  fontItalic: Cursiva
+  textApply: Colocar texto
+  textBg: Fondo
+  zoomIn: Achegar
+  zoomOut: Afastar
+  resetZoom: Restablecer zoom
 search:
   favorate: Collectie
   local: Geïnstalleerd
@@ -1433,6 +1810,60 @@ agent:
   accessRequiredHint: Subscríbete a XMCL para usar o axente integrado ou configura o teu propio provedor de IA nos axustes.
   subscribeXmcl: Subscribirse a XMCL
   notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
+  abort: Deter xeración
+  confirmAccept: Continuar
+  confirmAllowAll: Permitir todo
+  confirmCancel: Cancelar
+  confirmPending: Agardando confirmación
+  confirmTitle: Confirmar acción do axente
+  errorTitle: O axente atopou un erro
+  passiveGameCrashed: O xogo pechouse inesperadamente
+  passiveGameExitCode: Código de saída {code}
+  passiveGameExited: O xogo rematou
+  passiveGameExitSignal: Sinal {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: Sen estado de saída
+  reasoning: Razoamento
+  passiveGameStarted: Xogo iniciado
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Informe de compatibilidade de mods
+  passiveModDiagnosisError: Erro no diagnóstico de compatibilidade
+  passiveModDiagnosisSummary: '{checked} mods comprobados · {incompatibilities} incompatibilidades · {duplicates} duplicados'
+  passiveModDuplicate: 'Duplicado {mod}: {files}'
+  passiveModInstalled: instalado {version}
+  toolArguments: Argumentos
+  toolResult: Resultado
+  toolRunning: Agardando polo resultado…
+  marketConfirmMessage: Instalar {name} na instancia actual?
+  marketConfirmTarget: 'Destino: {instance}'
+  marketConfirmTitle: Instalar {type}
+  marketInstall: Instalar
+  marketInstalled: Instalado
+  marketInstallFailed: Erro ao instalar {type}
+  marketType:
+    datapack: paquete de datos
+    mod: mod
+    modpack: modpack
+    resourcepack: paquete de recursos
+    shader: paquete de shaders
+  marketResultCount: '{count} resultados'
+  callingTool: chamando a {name}…
+  disabledPlaceholder: Axente desactivado
+  emptyHint: Pídelle ao axente que inspeccione a túa instancia, active/desactive mods, lea rexistros ou diagnostique un peche inesperado.
+  inputPlaceholder: Pregúntalle ao axente… (Intro para enviar, Maiús+Intro para nova liña)
+  notConfiguredTitle: Axente non dispoñible
+  openSettings: Abrir axustes
+  reset: Nova conversa
+  setupGuide: Guía de configuración
+  statusDisabled: Desactivado — inicia sesión ou configura un provedor
+  statusReady: Listo
+  statusWorking: Traballando…
+  suggestion1: Actualiza esta instancia a unha versión máis recente de Minecraft e actualiza os mods correspondentes
+  suggestion2: 'Os meus mods fallan: atopa a causa e dime como solucionalo'
+  suggestion3: 'Crear un modpack: atopa mods para a función que quero e instálaos nesta instancia'
+  thinking: pensando…
+  title: Axente de XMCL
+  toggleHint: para alternar
 setting:
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
   aiAgentApiKeyPlaceholder: API-sleutel van OpenAI- of Claude-provider
@@ -1600,14 +2031,14 @@ setting:
     dark: Donker Thema
     light: Licht Thema
     system: Gebruik Systeemthema
-  themeExport: Exporteer Thema
+  themeExport: Exportar tema
   themeBorderRadius: Bordos redondeados
   themeBorderRadiusDescription: Activa ou desactiva os bordos redondeados para tarxetas, dialogos, menus e paneis.
   themeFont: Lettertype
   themeFontDescription: Verander het lettertype van de launcher.
   themeFontUrl: Lettertype URL
   themeFontUrlPlaceholder: Voer HTTP/HTTPS URL in voor lettertype
-  themeImport: Importeer Thema
+  themeImport: Importar tema
   themeResetFont: Reset Lettertype
   themeSelectFont: Selecteer Lettertype
   themeSettings: Thema-instellingen
@@ -1625,6 +2056,45 @@ setting:
     successGlobal: Imaxe de fondo actualizada.
     successInstance: Imaxe de fondo da instancia actualizada.
     failed: Non se puido establecer a imaxe de fondo
+  multiplayerTransport: Transporte de Together
+  multiplayerTransportDescription: Escolle a implementación de WebRTC empregada por Together. Cambiar de transporte desconecta os pares activos.
+  aiAgentApiKeyClear: Borrar chave
+  aiAgentApiKeyEmpty: Pega a túa chave de API
+  aiAgentApiKeyNotNeeded: Non necesaria
+  aiAgentApiKeyNotNeededHint: Este provedor execútase localmente e non precisa de chave de API
+  aiAgentApiKeySaved: Gardada
+  aiAgentApiKeyStored: Chave gardada — escribe para substituír
+  aiAgentBuiltin: Integrado
+  aiAgentCustom: Personalizado
+  useDesktopBackground: Empregar o fondo de pantalla actual do escritorio
+  aiAgentApiKey: Chave de API do Axente de IA
+  aiAgentEndpoint: Punto de conexión do Axente de IA
+  aiAgentEndpointDescription: URL do punto de conexión de completado de chat.
+  aiAgentModel: Modelo do Axente de IA
+  aiAgentModelDescription: Nome do modelo que se enviará nas solicitudes de completado de chat.
+  customCss:
+    advancedDescription: Sobreescribe o estilo actual do iniciador co teu propio CSS.
+    assistantHint: Describe o aspecto que queres e eu escribirei o CSS por ti.
+    assistantSuggestion1: Facer a barra lateral translúcida
+    assistantSuggestion2: Engadir un degradado sutil ao fondo das tarxetas
+    assistantTitle: Asistente CSS
+    dropHint: Arrastra un ficheiro .css para cargalo
+    editorPlaceholder: /* Escribe o teu CSS personalizado aquí */
+    globalToggle: Alternar CSS personalizado
+    openInDialog: Abrir no diálogo do axente
+    title: CSS Personalizado
+    warning: O CSS personalizado permíteche personalizar calquera aspecto do iniciador. Ten coidado ao pegar CSS de fontes non fiables, xa que pode modificar o deseño da interface.
+  devModeLabel: DEV
+  livePreview: Vista previa en directo
+  sidebarShowOnlyPinned: Amosar só instancias fixadas
+  sidebarShowOnlyPinnedHint: Amosar só as instancias fixadas na barra lateral
+  appImageUpdateMode: Xestión de actualizacións de AppImage
+  appImageExternalMode: Xestor externo / substitución manual (predeterminado)
+  appImageSelfMode: Xestionado por XMCL (eu controlo esta AppImage)
+  appImageAutoDownload: Descargar actualizacións automaticamente
+  appImageAutoInstall: Instalar actualizacións descargadas ao saír
+  appImageExternalUpdateHint: Se se instalou a través de Shelly ou outro xestor, actualice alí e manteña o modo externo. En caso contrario, substitúa a AppImage vostede mesmo na súa ruta existente. XMCL non descarga nin instala actualizacións en modo externo.
+  appImageSelfUpdateHint: Elixa autoxestionado só para unha AppImage que xestione vostede mesmo. As actualizacións integradas requiren unha ruta absoluta sen número de versión no nome do ficheiro (ex. xmcl.AppImage). Se contén unha versión como 0.73.0, saia de XMCL e renomee o ficheiro.
 settingLabel:
   global: Globaal
   globalHint: Deze instelling volgt de globale instelling
@@ -1678,6 +2148,8 @@ shaderPack:
   market: Mercado de shaders
   search: Buscar shaders...
   'off': 'Off'
+  noLocalPacksFound: Non se atoparon paquetes de shaders locais que coincidan coa túa busca.
+  noPacksInstalled: Non tes ningún paquete de shaders instalado.
 shared:
   close: Pechar
   pressKeyCombination: Preme unha combinación de teclas...
@@ -1711,6 +2183,18 @@ shared:
   upgrade: Bijwerken
   'yes': Ja
   delete: Eliminar
+  openFolder: Abrir cartafol
+  reset: Restablecer
+  missing: ausente
+  healthy: Correcto
+  unused: sen usar
+  failed: Fallou
+  view: Ver
+  copied: Copiado
+  copy: Copiar
+  copyFailed: Erro ao copiar
+  copyFailedHint: Non se puido copiar ao portapapeis
+  save: Gardar
 sidebar:
   pin: Fixar
   unpin: Desfixar
@@ -1999,6 +2483,9 @@ userSkin:
   skinDeleteFailed: Non foi posible retirar a skin do armario
   edit: Editar
   fetch: Cargar
+  invalidImage: Escolle unha imaxe de pel de Minecraft válida.
+  invalidImageTitle: Imaxe de pel non válida
+  uploadRejected: Minecraft rexeitou a subida desta pel. Téntao de novo máis tarde.
 version:
   checkIntegrity: Controleer Integriteit
   name: Versie | Versies
@@ -2051,6 +2538,7 @@ blueprint:
     empty: Este plano non ten bloques para mostrar.
     hint: '{count} bloques · {x}×{y}×{z}'
     controls: 'WASD: mover · Espazo/Maiús: arriba/abaixo · Arrastrar: mirar · Roda: zoom'
+    title: Vista previa 3D
   convert:
     title: Converter formato
     hint: Converte este plano a outro formato. Crearase un ficheiro novo.
@@ -2069,6 +2557,12 @@ blueprint:
     action: Substituír
   formats:
     structure: Estrutura de Vanilla
+  local: Local
+  allNamespaces: Todos
+  delete: Eliminar
+  cancel: Cancelar
+  loadMore: Cargar máis
+  cmsBrowseOnly: Esta fonte é só de navegación; abre o sitio web para descargar.
 gamepad:
   connected: Controller Connected
   guideTitle: Controller Controls
@@ -2109,6 +2603,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: Mando detectado
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
@@ -2222,3 +2717,111 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+modCategory:
+  optimization: Optimización e rendemento
+  libraries: Bibliotecas e APIs
+  utilities: IU e utilidades
+  world: Mundo e biomas
+  visual: Visual e son
+  gameplay: Xogabilidade e contido
+  miscellaneous: Varios
+xmclAccount:
+  accountSummary: Conta
+  confirmMerge: Confirmar fusión de contas
+  createdAt: Creado o {date}
+  description: A túa identidade de XMCL sen contrasinal, independente das contas de xogo de Minecraft.
+  expiresAt: Expira o {date}
+  gameAccountsSeparate: Eliminar unha conta de xogo non desvincula un método de inicio de sesión de XMCL.
+  guest: Convidado
+  identityConflict: Este inicio de sesión de {provider} pertence a outra conta de XMCL. As contas nunca se fusionan automaticamente.
+  linkAccountWith: Vincular conta con
+  mergePreview: Revisa os recursos que se trasladarán antes de confirmar.
+  mergeNeedsSession: Inicia sesión na conta de XMCL que desexas conservar antes de revisar a fusión.
+  mergeQueued: A fusión de contas está en curso.
+  requestFailed: O servizo de contas de XMCL non puido completar esta solicitude. A túa conta de xogo non cambiou.
+  reviewMerge: Revisar fusión
+  session: Sesión
+  sessionActive: Activa
+  sessionExpired: Caducada
+  signOutAll: Pechar sesión en todos os dispositivos
+  signOutDevice: Pechar sesión neste dispositivo
+  status:
+    active: Activa
+    deleted: Eliminada
+    deletion_pending: Eliminación pendente
+    merged: Fusionada
+  title: Conta de XMCL
+localCollection:
+  title: Coleccións do iniciador
+  newCollection: Nova colección
+  namePlaceholder: Nome da colección
+  addToCollection: Engadir á colección
+  empty: Aínda non hai coleccións no iniciador
+  corrupted: Non se puideron ler as túas coleccións gardadas e restablecéronse. Gardouse unha copia de seguranza xunto ao ficheiro de datos.
+  modrinthSection: Conta de Modrinth
+  installAll: Instalar todo
+  incompatibleAlert: '1 proxecto non é compatible coa instancia actual e omitiuse: | {count} proxectos non son compatibles coa instancia actual e omitíronse:'
+  projects: Sen proxectos | {count} proxecto | {count} proxectos
+  saveCurrentMods: Gardar os mods instalados como colección
+  saveCurrentModsSuccess: Gardáronse {count} mods na colección "{name}"
+  viewMods: Ver mods
+  editCollection: Editar colección
+  collectionDescription: Descrición da colección
+  noModsInCollection: Aínda non hai mods nesta colección
+  exportCollection: Exportar colección
+  importCollection: Importar colección
+  removeEntryConfirm: Eliminar da colección
+  addMods: Engadir mods
+  addModsTo: Engadir mods a "{name}"
+  addModsHint: Engade mods instalados desde a túa instancia ou fai clic no botón de marcador no Mercado para engadir mods.
+  addModsDialogDesc: Selecciona que mods instalados desta instancia incluír nesta colección.
+  addAllCurrent: Engadir todos os mods actuais
+  addedModsSuccess: Engadíronse {count} mods á colección
+  searchMods: Buscar mods...
+  selectAll: Seleccionar todo
+  deselectAll: Deseleccionar todo
+  selected: seleccionado(s)
+  alreadyInCollection: Engadido
+  noMatchingMods: Ningún mod coincide coa túa busca
+  addSelectedMods: Engadir {count} mods
+minecraftFriends:
+  errors:
+    friendsDisabled: A túa conta de Minecraft ten os amigos desactivados ou non pode usar amigos. Activa os amigos nos axustes da conta de Minecraft e téntao de novo.
+    invalidName: Os nomes de usuario de Minecraft deben ter entre 3 e 16 caracteres.
+    cannotAddSelf: Non podes enviarte unha solicitude de amizade a ti mesmo.
+    duplicate: Ese xogador xa está na túa lista.
+    generic: Algo saíu mal. Por favor, téntao de novo.
+    inviteRejected: Ese xogador non ten os amigos activados ou non acepta invitacións.
+    tokenExpired: A túa sesión de Microsoft caducou. Por favor, inicia sesión de novo.
+    unknownProfile: Non puidemos atopar ningún xogador con ese nome.
+  accept: Aceptar
+  add: Engadir amigo
+  addPlaceholder: Nome de usuario de Minecraft
+  addedRelative: Engadido {time}
+  expiresRelative: Caduca {time}
+  friends: Amigos
+  heroEmptyHint: Engade un xogador de Minecraft polo nome de usuario arriba para enviar unha solicitude de amizade.
+  heroEmptyTitle: A túa lista de amigos está baleira
+  incoming: Solicitudes recibidas
+  incomingHint: 1 solicitude recibida | {count} solicitudes recibidas
+  notifyAdded: Solicitude de amizade enviada a {name}
+  outgoing: Solicitudes enviadas
+  privacy:
+    acceptInvites: Aceptar invitacións de amigos
+    acceptInvitesHint: Cando está desactivado, outros xogadores non poderán enviarche solicitudes de amizade.
+    friendsEnabled: Lista de amigos activada
+  reconnectAction: Reconectar
+  requiresMicrosoft: Inicia sesión cunha conta de Microsoft para usar amigos.
+  scopedTo: Conectado como {name}
+  send: Enviar
+  title: Amigos de Minecraft
+  unsupported: Os amigos só están dispoñibles para contas de Microsoft.
+relative:
+  daysAgo: hai {count} día | hai {count} días
+  hoursAgo: hai {count} hora | hai {count} horas
+  justNow: xusto agora
+  minutesAgo: hai {count} minuto | hai {count} minutos
+  secondsAgo: hai {count} segundo | hai {count} segundos
+resourceError:
+  body: Non se puido analizar "{path}" ({code}). O ficheiro pode estar danado, bloqueado ou incompleto. Tenta descargalo de novo ou eliminalo.
+  title: Non se pode ler {file}

@@ -40,6 +40,10 @@ askAICrash:
   copyPrompt: Сұрақты ЖИ-ге сұрау үшін көшіріңіз
   description: ЖИ ойын құлауын түсінуге көмектесіңіз! Төмендегі нұсқаулыққа сәйкес осы ойын құлауы туралы ЖИ-ге сұрақ жіберіңіз!
   selectPlatform: ЖИ платформасын ашып, жаңа көшірілген сұрақты қойыңыз.
+  agentNotConfigured: Іске қосқыштың кірістірілген агенті мұны сіз үшін диагностикалап, түзетуі үшін Баптауларға AI провайдері мен API кілтін қосыңыз.
+  askAgent: Кірістірілген AI агентімен диагностикалау
+  orExternal: немесе сыртқы AI пайдалану
+  setupAgent: AI агентін баптау
 authProfileAddedNotification: '{name} аутентификация профилі қосылды'
 bedrock:
   installBedrockVersion: Downloading Bedrock {version}
@@ -60,6 +64,13 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+  description: Minecraft Bedrock Edition Microsoft Store арқылы орнатылады және іске қосылады. Microsoft тіркелгіңізде Bedrock лицензиясы болуы керек.
+  install: Microsoft Store дүкенінен алу
+  installFailed: Microsoft Store дүкенін ашу сәтсіз аяқталды
+  installed: 'Орнатылған: {version}'
+  launchHint: Bedrock Edition нұсқасын бастау үшін Іске қосу түймесін пайдаланыңыз.
+  licenseRequired: Bedrock Edition нұсқасын орнату және ойнау үшін Minecraft бар Microsoft тіркелгісімен кіріңіз.
+  refresh: Жаңарту
 backup:
   title: Сақтық көшірме және қалпына келтіру
   description: Баптауларды, жинақтарды, тақырыптарды және ойын нұсқаларын сақтық көшіріңіз және қалпына келтіріңіз
@@ -87,7 +98,7 @@ backup:
   create: Сақтық көшірме жасау
   createTitle: XMCL сақтық көшірме мұрағатын жасау
   saveDialogTitle: XMCL сақтық көшірмесін сақтау
-  fileFilterName: 'XMCL сақтық көшірмесі (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL сақтық көшірмесі (*.xmclbackup, *.zip)
   createError: Сақтық көшірме жасау сәтсіз аяқталды
   loadManifestError: Сақтық көшірме мұрағатын оқу мүмкін болмады
   restore: Қалпына келтіру
@@ -98,7 +109,7 @@ backup:
   elapsedTime: Өткен уақыт
   remainingTime: Болжалды қалған уақыт
   calculatingRemaining: Есептелуде...
-  lessThanMinute: '< 1 мин'
+  lessThanMinute: < 1 мин
   itemsProgress: '{current}/{total}'
   savesCategory: Әлемдер
   modsCategory: Модтар
@@ -110,9 +121,9 @@ backup:
   copiedLog: Журнал алмасу буферіне көшірілді
   openFolder: Қалтадан көрсету
   done: Дайын
-  backupDone: 'Сақтық көшірме аяқталды!'
+  backupDone: Сақтық көшірме аяқталды!
   backupDoneHint: Сақтық көшірме мұрағаты жасалды және тексерілді.
-  restoreDone: 'Қалпына келтіру аяқталды!'
+  restoreDone: Қалпына келтіру аяқталды!
   restoreDoneHint: Барлық таңдалған деректер мен инстанциялар сәтті қалпына келтірілді.
   timeTaken: 'Кеткен уақыт: {time}'
   destinationFile: 'Сақталған жері: {path}'
@@ -146,9 +157,9 @@ backup:
   restoreError: Сақтық көшірмені қалпына келтіру мүмкін болмады
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Сақтық көшірме жасау
   createBackupDescription: Лаунчер баптауларын, жинақтарды, тақырыптарды және инстанцияларды бір портативті файлға сақтаңыз.
   restoreBackupTitle: Сақтық көшірмені қалпына келтіру
@@ -186,9 +197,27 @@ backup:
   interval6h: Әр 6 сағат сайын
   interval12h: Әр 12 сағат сайын
   interval24h: Әр 24 сағат сайын
-  keepCount: 'Соңғы {count} көшірмені сақтау'
+  keepCount: Соңғы {count} көшірмені сақтау
 baseSetting:
   title: Жеке жағдай баптаулары
+  info:
+    address: Мекенжай
+    changes: Өзгерістер
+    custom: Жеке
+    disabled: Өшірулі
+    enabled: Қосулы
+    exportFormats: Экспорт пішімдері
+    inherited: Глобалдыдан алынған
+    modLoader: Мод жүктеушісі
+    notConfigured: Бапталмаған
+    notSet: Орнатылмаған
+    offline: Офлайн мұрағат
+    projectId: Жоба идентификаторы
+    running: Орындалуда
+    saved: Сақталды
+    status: Күйі
+    stopped: Тоқтатылды
+    vanilla: Ванилла
 browseApp:
   createShortcut: Тікенше жасау
   default: ӘДЕПКІ
@@ -349,6 +378,27 @@ errors:
   HeadersTimeoutError: HTTP тақырыбының уақыты аяқталды
   NotFoundError: 404 табылмады
   SocketError: Сервер сокет қатесі
+  bedrockUnsupportedPlatform: Minecraft Bedrock Edition тек Windows нұсқасында қолдау көрсетіледі.
+  bedrockNotInstalled: Minecraft Bedrock Edition орнатылмаған.
+  bedrockLaunchFailed: Minecraft Bedrock Edition іске қосу сәтсіз аяқталды.
+  bedrockInstallFailed: Minecraft Bedrock Edition орнату сәтсіз аяқталды.
+  bedrockDownloadUrlUnavailable: Бұл Bedrock нұсқасы ағымдағы Microsoft тіркелгісі үшін қолжетімсіз. Beta және Preview нұсқалары үшін Minecraft бета бағдарламасына тіркелген тіркелгі қажет.
+  bedrockDeveloperModeRequired: Бұл Bedrock нұсқасын тіркеу үшін Windows әзірлеуші режимі қажет.
+  bedrockRegisterFailed: Бұл Bedrock нұсқасын Windows-та тіркеу сәтсіз аяқталды.
+  bedrockVersionNotFound: Бұл Bedrock нұсқасы жергілікті орнатылмаған.
+  CorruptedResourceMetadata: '{count} ресурста бүлінген метадеректер анықталды және тазартылды. Файлдар әлі де жұмыс істейді, бірақ олардың Modrinth/CurseForge атрибуты жоғалды және автоматты түрде қайта анықталады.'
+  InstallBackendUnresponsive:
+    body: Іске қосқыштың фондық тапсырмалар менеджері жауап бермеді. Іске қосқышты қайта іске қосып, қайталап көріңіз.
+    title: Орнатушы жауап бермейді
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Орнату нұсқаулығы сәтсіз аяқталды
+  InstallNetworkError:
+    body: Желілік мәселе орнатуды үзді. Интернет байланысын немесе проксиді тексеріп, қайталап көріңіз.
+    title: Minecraft файлдарын жүктеп алу мүмкін емес
+  InstallPermissionDenied:
+    body: Антивирус немесе шектелген бума рұқсаттары орнатуды бұғаттады. Іске қосқышты антивирустың ерекшеліктер тізіміне қосыңыз немесе баптаулардан басқа деректер каталогын таңдаңыз.
+    title: Іске қосқыш бумасына жазу мүмкін емес
 eula:
   body: Құсбелгі қойындысын белгілеу арқылы, сіз Minecraft-тың {eula} шарттарымен келісетініңізді білдіресіз.
 exception:
@@ -366,15 +416,20 @@ command:
   instance:
     launch:
       title: Дананы іске қосу
+      description: Minecraft инстансын іске қосу
     create:
       title: Дана құру
+      description: Жаңа инстанс жасау
     delete:
       title: Дананы жою
+      description: Бар инстансты жою
   user:
     login:
       title: Пайдаланушымен кіру
+      description: Тіркелгіңізге кіру
     refresh:
       title: Пайдаланушыны жаңарту
+      description: Пайдаланушы сессиясын жаңарту
 commandPalette:
   placeholder: Командаларды, даналарды, модтарды іздеу…
   commands: Командалар
@@ -391,6 +446,7 @@ commandPalette:
   hintEnter: ашу
   hintBack: артқа
   hintClose: жабу
+  hintAskAgent: Агенттен сұрау
 feedback:
   channel: Арналар
   description: Мен қате таптым немесе ұсыныс жасағым келеді
@@ -409,6 +465,8 @@ feedback:
   qq: QQ тобы
   qqDescription: 'Кері байланыс QQ тобына кіріп, авторлармен тікелей сөйлесіңіз. Топ нөмірі: {number}'
   qqEnterGroup: Қосылу
+  reddit: Reddit
+  redditDescription: r/XMCL subreddit қоғамдастығына қосылыңыз
 fileDetail:
   fileSize: Файл өлшемі
   filesize: Файл өлшемі
@@ -536,6 +594,16 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: мән
   fileApiPlaceholder: Ресурс синхронизациясын сақтағыңыз келсе, осында қашықтан синхрондау URL мекенжайын енгізіңіз
+  deleteHintBedrock: Minecraft Bedrock Edition және оның барлық деректері компьютеріңізден толығымен жойылады. Сенімдісіз бе?
+  nameInvalidChars: 'Атауда келесі таңбалар болмауы керек: < > : " / \ | ? *'
+  namePathTraversal: Атауда жолды шарлау таңбалары ("..") болмауы керек
+  nameReservedName: Бұл атау жүйемен брондалған және оны пайдалану мүмкін емес
+  nameTrailingDotOrSpace: Атау нүктемен немесе бос орынмен аяқталмауы керек
+  nameWhitespaceOnly: Атау тек бос орындардан немесе нүктелерден тұрмауы керек
+  monitor: Толық экранды монитор
+  monitorDefault: Әдепкі (негізгі монитор)
+  monitorNumber: '{number} мониторы'
+  monitorPrimary: Негізгі
 instanceAge:
   older: Ескірек
   threeDay: Үш күн ішінде
@@ -579,8 +647,9 @@ instanceUpdate:
   files: Файл жаңартулары
   loaderChanged: Бұл жеке жағдайдың мод жүктегіші өзгерді. Ескі мод жүктегіші {modloader}, ал жаңасы {newModloader}.
   summary: '{add} файл қосылды. {remove} файл жойылды. {keep} файл сақталды.'
-  title: Жеке жағдайды жаңарту
+  title: Инстансты жаңарту
   update: Жаңартуды бастау
+  noFiles: Файл өзгерістері жоқ
 instances:
   add: Ойын жасау
   addCurseForgeDescription: Curseforge деректер қалтасынан импорттау. Сіз curseforge-тің түбірлік деректер қалтасын таңдауыңыз керек
@@ -603,6 +672,7 @@ instances:
   linkSharedFoldersHint: Бұл қалталарды іске қосу бағдарламасының ортақ қалталарына сілтеме ретінде жасаңыз, осылайша бұл дана олардың мазмұнын барлық басқа байланысқан даналармен бөліседі. Бұл көшірме емес — бір данадағы өзгерістер барлығында көрінеді. Белгіленбеген қалталар осы дана үшін жеке болып қалады.
   linkFailed: '{folder} қалтасын ортақ қалтаға байланыстыру мүмкін болмады'
   addPrismDescription: Бар PrismLauncher данасын импорттау.
+  instanceCount: '{count} инстанс'
 items:
   count: '{count} элемент'
   total: Барлығы {total}
@@ -646,6 +716,7 @@ launch:
   launchAnyway: Сонда да іске қосу
   launchAs: Басқа аккаунтпен іске қосу
   forceKill: Мәжбүрлеп жабу
+  launchTo: 'Іске қосу орны:'
 launchBlocked:
   launchBadVersion:
     description: '{version} нұсқасы json-ы бұзылған. Бұл нұсқаны қайта орнату керек пе?'
@@ -669,6 +740,13 @@ launchBlocked:
     description: Java-ны тексеріңіз немесе launcher-ға көбірек рұқсат беріп, қайталап көріңіз. Егер бұл көмектеспесе, әзірлеушілерге хабарласыңыз.
     title: Ойын процесін бастау сәтсіз аяқталды
   unexpectedText: Бұл күтпеген жағдай. Мәселене шешу үшін launcher-ды қайта іске қосуыңызға болады. Егер бұл мәселе қайталанса, авторға хабарласыңыз.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL жұмыс үстелі сессиясынан X11 дисплей ақпаратын қалпына келтіре алмады. Ағымдағы жұмыс үстелі сессиясындағы терминалдан XMCL қайта іске қосыңыз немесе жүйеден шығып, қайта кіріңіз.
+    noGraphicalSession: XMCL графикалық жұмыс үстелі сессиясында жұмыс істемейді. Minecraft іске қоспас бұрын XMCL жұмыс үстелі сессиясынан іске қосыңыз.
+    sandboxDenied: Қолданбаның оқшауланған ортасы X11-ге қол жеткізе алмайды. Flatpak рұқсаттарында XMCL үшін X11 ұяшығына рұқсат беріңіз, содан кейін XMCL қайта іске қосыңыз.
+    title: X11 дисплейі қолжетімсіз
+    xwaylandMissing: Бұл Wayland сессиясында Minecraft үшін XWayland қажет. Linux дистрибутиві ұсынған XWayland пакетін орнатыңыз, содан кейін жүйеден шығып, қайта кіріңіз.
+    xwaylandNotRunning: XWayland орнатылған, бірақ ешқандай X11 дисплейі жұмыс істемейді. Композитор конфигурациясында XWayland қосыңыз, содан кейін жүйеден шығып, қайта кіріңіз.
 launchFailed:
   crash: Ойын құлады!!
   description: Құлау есебі жоқ. Бұл қате журналы және ең соңғы журнал.
@@ -696,6 +774,11 @@ launcherUpdate:
   installAndQuit: Орнату үшін қайта іске қосу
   noUpdateAvailable: Жаңарту жоқ
   updateToThisVersion: Жүктеп алу және орнату
+  automaticUnavailable: Автоматты жаңартулар қолжетімсіз
+  automaticNotImplemented: Бұл іске қосқыш хосты үшін автоматты жаңарту жүзеге асырылмаған.
+  automaticNotConfigured: Бұл іске қосқыш хосты үшін автоматты жаңарту бапталмаған.
+  manualCheckHint: Нұсқа тексерісі орындалмады. Үйлесімді пакетті GitHub Releases арқылы тексеріп, оны қолмен орнатыңыз.
+  manualCheckRequired: Бұл хост жаңартуларды автоматты түрде тексере немесе орната алмайды. Қолмен тексеру үшін GitHub Releases түймесін пайдаланыңыз.
 localVersion:
   auto: Автоматты есептелген
   empty: Нұсқалар орнатылмаған
@@ -735,12 +818,31 @@ loginError:
   requirePassword: Құпиясөз қажет
   requireUsername: Пайдаланушы аты қажет
   timeout: Кіру уақыты аяқталды. Қайталап көріңіз немесе желіңізді тексеріңіз.
+  loginMinecraftByXboxRateLimitedWithRetry: Microsoft-тың Minecraft аутентификация қызметі сұрауларды шектеуде (HTTP 429). Шамамен {seconds} секунд күтіп, қайталап көріңіз.
+  loginMinecraftByXboxServerError: Microsoft-тың Minecraft аутентификация қызметі серверлік қате қайтарды (HTTP {status}). Бұл олардың тарапындағы ақаулық. Бірнеше минуттан кейін қайталап көріңіз.
+  loginMinecraftByXboxStatus: Xbox токенін Minecraft токеніне айырбастау сәтсіз аяқталды (HTTP {status}). Xbox-та Minecraft бар екенін тексеріңіз немесе қайталаңыз.
+  loginXboxAdultVerification: Сіздің Microsoft тіркелгіңіз Xbox-қа кірмес бұрын жас мөлшерін растауды талап етеді. Растауды аяқтау үшін браузерде {url} ашыңыз, содан кейін қайталап көріңіз.
+  loginXboxChildAccount: Сіздің Microsoft тіркелгіңіз балалар тіркелгісі болып табылады және Xbox / Minecraft-қа кірмес бұрын оны Microsoft Family тобына қосу керек. Браузерде {url} ашып, түзеп, қайталап көріңіз.
+  loginXboxFailedWithCode: Microsoft токені арқылы Xbox-қа кіру сәтсіз аяқталды (XErr {code}). Көмек алу үшін кодты іздеңіз немесе кейінірек қайталап көріңіз.
+  loginXboxNoXboxProfile: Бұл Microsoft тіркелгісінде әлі Xbox профилі жоқ. Оны жасау үшін браузерде {url} ашыңыз, содан кейін қайталап көріңіз.
+  cyrillicNotAllowed: Кириллица таңбаларына рұқсат етілмейді
+  illegalOfflineUsername: Пайдаланушы аты 3-16 таңбадан тұруы керек және тек ағылшын әріптері, сандар және астын сызу таңбасын қамтуы керек
+  loginMinecraftByXboxRateLimited: Microsoft-тың Minecraft аутентификация қызметі сұрауларды шектеуде (HTTP 429). Біраз күтіп, қайталап көріңіз.
+  loginXboxBadXsts: Microsoft күтілетін деректері жоқ XSTS жауабын қайтарды. Бұл әдетте уақытша мәселе — бірнеше минуттан кейін қайталап көріңіз.
+  loginXboxBanned: Бұл Microsoft / Xbox тіркелгісі Microsoft тарапынан тоқтатылған немесе бұғатталған және Minecraft-қа кіре алмайды. Microsoft / Xbox қолдау қызметіне хабарласыңыз.
+  loginXboxRegionLocked: Сіздің тіркелгіңіздің аймағында Xbox Live қолжетімсіз. Microsoft тіркелгісінің баптауларында елді/аймақты өзгертіп, қайталап көріңіз.
+  loginCanceled: Microsoft арқылы кіру тоқтатылды.
+  xboxErrorGuideHint: Кіруде қиындықтар туындады ма? Microsoft және Xbox кіру мәселелерін шешу жолын біліңіз.
+  openLoginGuide: Бұл мәселені қалай шешуге болады
+  openDiscordSupport: Әлі де көмек қажет пе? Discord серверімізге қосылыңыз
 logsCrashes:
-  crashes: Құлау есептері
+  crashes: Ақаулықтар
   logs: Журналдар
   placeholder: Файлдар табылмады
   title: Журналдар немесе құлау есептері
   failures: Іске қосу қателері
+  serverLogs: Сервер журналдары
+  showFile: Бумада көрсету
 me:
   groupByDate: Күні бойынша топтау
   groupByFolder: Қалта бойынша топтау
@@ -810,6 +912,23 @@ mod:
   toUpdate: '{count} жаңарту'
   ungroup: Топтан шығару
   description: Сипаттама
+  autoCategorize: Бумаларға автоматты түрде сұрыптау
+  autoCategorizeHint: Модтарды автоматты түрде санат бумаларына топтастыру (Оңтайландыру, Кітапханалар, Әлем, Ойын процесі, т.б.)
+  autoCategorizeSuccess: Модтар автоматты түрде {count} бумаға сұрыпталды
+  collapseAll: Барлық бумаларды жинау
+  expandAll: Барлық бумаларды жаю
+  folderSetting: Бума баптаулары
+  folderColor: Бума түсі
+  folderIcon: Бума таңбашасы
+  pinGroup: Жоғарыға бекіту
+  pinToTop: Жоғарыға бекіту
+  pinToTopHint: Бума тізімнің басында пайда болады
+  pinned: Бекітілген
+  unpinGroup: Буманы босату
+  customColor: Жеке түс
+  preview: Алдын ала қарау
+  ungroupAll: Барлық топтарды тарату
+  organization: Бумаларды ұйымдастыру
 modFilter:
   clear: Сүзгіні тазалау
   dependenciesInstallOnly: Тек жетіспейтін тәуелділік модтарын көрсету
@@ -838,6 +957,7 @@ modInstall:
   skipVersion: Әртүрлі Minecraft нұсқасы бар модтарды өткізіп жіберу
   source: Мод көзі
   switch: Нұсқаны ауыстыру
+  scanUnusedLibraries: Пайдаланылмаған кітапханаларды сканерлеу
 modSearch:
   noLocalModsFound: Сіздің іздеуіңізге сәйкес жергілікті модтар табылмады.
   noModsFound: Модтар табылмады.
@@ -873,6 +993,112 @@ modpack:
   overrides: Алмастырулар
   url: URL
   urlHint: Мод-пагыңыздың басты бетінің URL-і
+  emitCurseforgeDescription: CurseForge үшін стандартты zip мод-пак мұрағаты
+  emitModrinthDescription: Жылдам CDN жүктеулері бар жеңіл ресми пішім
+  emitPackwiz: Packwiz Мод-пагын экспорттау
+  emitPackwizDescription: Git үшін ыңғайлы жеңіл пішім (pack.toml, index.toml және .pw.toml файлдары)
+  exportSuccess: Мод-пак сәтті экспортталды!
+  exportSuccessWithWarnings: Мод-пак ескертулермен экспортталды
+  exportSkippedFiles: Экспорттау кезінде оқылмайтын немесе бұғатталған {count} файл өткізіп жіберілді
+  exportFailed: Мод-пакты экспорттау сәтсіз аяқталды
+  skippedFilesDialogTitle: Кейбір файлдарды экспорттау мүмкін болмады
+  skippedFilesDialogDescription: Мод-пак жасалды, бірақ {count} файл өткізіп жіберілді
+  skippedReasonEperm: Қолжетімділікке тыйым салынған (ОЖ немесе басқа процесс бұғаттаған)
+  skippedReasonEbusy: Файл басқа бағдарламамен пайдаланылуда
+  skippedReasonEnoent: Файл табылмады немесе бүлінген
+  skippedFilesNotice: Қалған файлдарыңыз мод-пакқа сәтті топтастырылды. Жоғарыдағы файлдар Windows жүйесінің шектеулері немесе қолжетімділік рұқсаттарының жоқтығынан өткізіп жіберілді.
+  openExportFolder: Мод-пак бумасын ашу
+  closeDialog: Түсінікті
+  expandAll: Барлық бумаларды жаю
+  collapseAll: Барлық бумаларды жинау
+  modpackVersionHint: Семантикалық нұсқа жолы (мысалы, 1.0.0). Патчты/кіші нұсқаны арттыру үшін + пайдаланыңыз
+  modrinthProject: Modrinth жобасы
+  selectDefaultFiles: Әдепкі файлдарды таңдау
+  selectAllFiles: Барлық файлдарды таңдау
+  deselectAllFiles: Барлық файлдарды таңдаудан алып тастау
+  bindProject: Жобаны байланыстыру
+  bindProjectHint: Ағымдағы тіркелгі басқаратын Modrinth мод-пак жобасын таңдаңыз.
+  bindProjectTypeImmutableHint: Modrinth жоба түрін оның бірінші нұсқасы жүктелген кезде бекітеді және оны кейін өзгерту мүмкін емес. Әзірге нұсқасы жоқ жоба нобайларын осында байланыстыруға болады, бірақ мод/ресурстар жинағы және т.б. ретінде жарияланған жобаны мод-пакқа айналдыру мүмкін емес — оның орнына "Жаңа жоба жасау" мүмкіндігін пайдаланыңыз.
+  bindProjectNoProjects: Тіркелгіңіз үшін Modrinth жобалары табылмады.
+  unbindProject: Жоба байланысын ажырату
+  unbindProjectConfirmTitle: Modrinth жобасының байланысы ажыратылсын ба?
+  unbindProjectConfirmMessage: Бұл тек осы инстанс пен Modrinth жобасы арасындағы жергілікті байланысты жояды. Modrinth-тегі жоба мен оның нұсқаларына әсер етпейді.
+  editProject: Жобаны өңдеу
+  projectDiscovery: Табу және үйлесімділік
+  projectGallery: Галерея
+  projectGalleryAdd: Сурет қосу
+  projectGalleryEmpty: Әзірге галерея суреттері жоқ.
+  projectGalleryFeatured: Таңдаулы
+  projectGalleryFromScreenshots: Скриншотты таңдау
+  projectGalleryHint: 5 МиБ дейінгі суреттерді қосып, таңдаулы жоба суретін таңдаңыз.
+  projectGallerySelectScreenshot: Инстанс скриншотын таңдаңыз
+  projectIdentity: Сәйкестік және сипаттама
+  projectLinks: Жоба сілтемелері
+  projectLoadFailed: Байланыстырылған Modrinth жобасын жүктеу сәтсіз аяқталды.
+  projectNoChanges: Сақталмаған жоба өзгерістері жоқ.
+  projectNotBound: Ешқандай Modrinth жобасы байланыстырылмаған
+  projectNotBoundHint: Бар жобаны байланыстырыңыз немесе жаңа Modrinth жобасын жасаңыз.
+  projectUnsavedChanges: '{count} жоба өрісі өзгертілді'
+  projectLatestDraft: Нобай
+  projectVersions: нұсқалар
+  publish: Жариялау
+  publishCategories: Санаттар (үтірмен бөлінген)
+  publishChannel: Шығарылым арнасы
+  publishChangelog: Өзгерістер журналы
+  publishChangelogGenerate: AI арқылы жасау
+  publishConfirmProjectChanges: Жоба өзгерістерін растау
+  publishCreateProject: Жоба жасау
+  publishCreateDraft: Құрастыру және нобай жасау
+  publishCustomVersion: Жеке
+  publishDescription: Жоба сипаттамасы
+  publishDiscordUrl: Discord URL мекенжайы
+  publishDraftCreated: Нобай нұсқасы жүктелді.
+  publishSubmitted: Нұсқа қарауға жіберілді.
+  publishExistingProject: Бар жоба
+  publishIcon: Жоба таңбашасы
+  publishIconHint: PNG, JPEG немесе WebP
+  publishIconKeep: Жаңа сурет таңдалмаса, өзгеріссіз қалдырыңыз
+  publishIconUseInstance: Инстанс таңбашасын пайдалану
+  publishIssuesUrl: Мәселелер URL мекенжайы
+  publishLicense: Лицензия идентификаторы
+  publishLogin: Modrinth-ке кіру
+  publishFiles: таңдалған файлдар
+  publishLinkageSummary: '{total} мод/ресурстар жинағы/шейдерлер жинағының {linked} тікелей жүктелу орнына олардың Modrinth жүктеуіне сілтеме жасайды.'
+  publishLinkageEmbeddedSummary: '{count} файлды сілтемелеу мүмкін емес және осы нұсқамен бірге жүктеледі (ендіріледі).'
+  publishLinkageShowFiles: Жүктелуі қажет файлдарды көрсету
+  publishLinkageReason:
+    missing-file: Файл дискіден табылмады
+    not-linked-to-modrinth: Modrinth ресурсы ретінде танылмады
+    no-downloadable-url: Қайта таратылатын жүктеу URL мекенжайы табылмады
+  publishModrinth: Modrinth-те жариялау
+  publishNewProject: Жаңа жоба
+  publishOpenProject: Жобаны ашу
+  publishOpenVersion: Нұсқаны ашу
+  publishProfile: MRPack профилі
+  publishProfileClient: Тек клиент
+  publishProfileServer: Тек сервер
+  publishProfileSplit: Әмбебап + бөлек клиент/сервер файлдары
+  publishProfileUniversal: Әмбебап
+  publishProject: Жоба
+  publishProjectDetailsTab: Жоба мәліметтері
+  publishProjectName: Жоба атауы
+  publishProjectRequired: Жарияламас бұрын жобаны таңдаңыз.
+  publishProjectSlug: Жоба слагы
+  publishProjectUrl: Жоба URL мекенжайы (қосымша)
+  publishProjectUrlHint: '{slug} пайдалану үшін бос қалдырыңыз.'
+  publishProjectSaved: Жоба мәліметтері жаңартылды.
+  publishSourceUrl: Бастапқы код URL мекенжайы
+  publishSubmit: Нобайды қарауға жіберу
+  publishSummary: Қысқаша мазмұны
+  publishSummaryMinWords: Қысқаша мазмұн кемінде 3 сөзден тұруы керек.
+  publishVersionTitle: Нұсқа тақырыбы
+  publishVersionTab: Нұсқаны жариялау
+  publishVersion: Нұсқаны жариялау
+  publishVisibility: Көрінуі
+  publishWikiUrl: Вики URL мекенжайы
+  visibilityPrivate: Жеке
+  visibilityPublic: Көпшілікке қолжетімді
+  visibilityUnlisted: Тізімде жоқ
 modpackImportConfirm:
   description: Сіз launcher-ға файл апарғаныңыз анықталды. Сіз мод-пак импорттағыңыз келе ме?
   title: Сіз мод-пак импорттағыңыз келе ме?
@@ -1128,6 +1354,16 @@ multiplayer:
   startNewP2PConnection: Жаңа қарым-қатынас серігі байланысын жасау үшін Бастау батырмасын басыңыз
   connectionError: Байланыс қатесі
   connectionFailedHint: Байланыс орнату мүмкін емес. Екі жағында да NAT түрлерінің сәйкестігін тексеріңіз.
+  connectedToMaster: Бөлме қожайынына қосылды
+  directConnection: Тікелей
+  master: Қожайын
+  masterHostsGameHint: Бөлме қожайыны байланыс орталығы болып табылады және Minecraft LAN әлемін хостинг етуі керек. Хостты ауыстырмас бұрын қожайын құқығын тапсырыңыз.
+  member: Мүше
+  joinCreatesMissingRoomHint: Егер бұл бөлме болмаса, сіз оны жасайсыз және оның қожайыны боласыз.
+  relayConnection: Ретранслятор
+  relayAllowanceSummary: Осы кезеңде {total} ішінен {remaining} қалды
+  relayServiceAvailable: XMCL Together ретранслятор қызметі қолжетімді
+  waitingForMaster: Бөлме қожайынының қайта қосылуын күтуде
 myStuff: Менің заттарым
 natType:
   blocked: Блокталған
@@ -1174,6 +1410,11 @@ presence:
   save: '{instance} жағдайында сақталған ойындарды қарау'
   setting: Баптаулар бетін қарау
   shaderPack: '{instance} жағдайында шейдерлер жинағын қарау'
+  away: Орында жоқ
+  offline: Желіде емес
+  online: Желіде
+  playing: '{game} ойнауда'
+  playingGeneric: Ойнауда
 proxy:
   host: Хост
   port: Порт
@@ -1199,6 +1440,8 @@ resourcepack:
   unselected: Таңдалмаған ресурстар жинағы
   noPacks: Ресурс пакеттері табылмады
   search: Ресурс пакеттерін іздеу...
+  noLocalPacksFound: Іздеуге сәйкес жергілікті ресурстар жинағы табылмады.
+  noPacksInstalled: Сізде ешқандай ресурстар жинағы орнатылмаған.
 save:
   resetView: Көріністі қалпына келтіру
   mapHintPan: Көріністі жылжыту үшін сүйреңіз
@@ -1257,6 +1500,36 @@ save:
   searchHint: CurseForge-те әлемдерді іздеу
   searchSaves: Сақтауларды іздеу
   empty: No worlds found
+  duplicate: Сақтау көшірмесін жасау
+  chunkSelectMode: Чанктарды таңдау
+  panMode: Жылжыту
+  chunkSelected: '{count} чанк таңдалды'
+  mapHintSelect: Таңдау
+  mapHintDeselect: Таңдауды алып тастау
+  toggleGrid: Аймақ торын ауыстыру
+  heightTop: Үстіңгі жағы
+  clearSelection: Таңдауды тазалау
+  copyChunks: Чанктарды көшіру
+  pasteChunks: '{count} чанкті кірістіру'
+  pasteChunksPlaceHint: '{count} чанкті орналастыру үшін тінтуірді жылжытыңыз, содан кейін кірістіру үшін басыңыз. Мақсатты орындағы бар чанктар үстінен жазылады. Бас тарту үшін Esc пернесін басыңыз.'
+  pasteChunksCancel: Бас тарту
+  deleteChunks: Чанктарды жою
+  deleteChunksTitle: Таңдалған чанктарды жою
+  deleteChunksHint: Таңдалған {count} чанкті жойғыңыз келе ме? Бұл әрекетті қайтару мүмкін емес. Чанктар ойында аймақ келесі рет жүктелгенде қайта жасалады.
+  mapLoading: Карта жүктелуде…
+  noRegions: Бұл әлемде алдын ала қарау үшін жасалған аймақтар жоқ.
+  dimOverworld: Негізгі әлем
+  dimNether: Незер
+  dimEnd: Энд
+  datapack:
+    name: Деректер жинағы | Деректер жинақтары
+    noSaveHint: Бұл деректер жинағын орнату үшін алдымен әлем жасаңыз немесе таңдаңыз
+    packFormat: 'Жинақ пішімі: {format}'
+    imported: Деректер жинағы {save} ішіне импортталды
+  noLocalSavesFound: Іздеуге сәйкес жергілікті сақтаулар табылмады.
+  noSavesFound: Сақтаулар табылмады
+  noSavesInstalled: Сізде сақтаулар жоқ.
+  world: Әлем
 screenshots:
   empty: Сізде ешқандай скриншот жоқ
   playRandom: Араластыру
@@ -1264,6 +1537,109 @@ screenshots:
   gallery: Скриншоттар галереясы
   hint: Ойында скриншот үшін F2 басыңыз
   openFolder: Скриншоттар қалтасын ашу
+  title: Скриншоттар мен фотосуреттер
+  manage: Скриншот менеджері
+  emptyTitle: Әзірге скриншоттар жоқ
+  emptyDescription: Скриншот түсіру үшін ойында F2 пернесін басыңыз немесе фотосуреттеріңізді қолмен импорттаңыз.
+  dropHint: Галереяға қосу үшін фотосуреттерді немесе скриншоттарды осында тастаңыз
+  backToHome: Басты бетке оралу
+  import: Фотосуреттер қосу
+  images: Суреттер
+  importSuccess: '{count} фотосурет сәтті импортталды'
+  copy: Суретті көшіру
+  copied: Алмасу буферіне көшірілді!
+  setWallpaper: Тұсқағаз ретінде орнату
+  setWallpaperSuccess: Инстанстың фондық суреті ретінде орнатылды!
+  setIcon: Таңбаша ретінде орнату
+  setIconSuccess: Инстанс таңбашасы ретінде орнатылды!
+  export: Файлды сақтау
+  exportSuccess: Скриншот сәтті сақталды!
+  exportSelected: Таңдалғандарды экспорттау
+  exportSelectedTitle: Экспорттау бумасын таңдаңыз
+  exportSelectedSuccess: '{count} скриншот сәтті экспортталды'
+  deleteConfirmTitle: Скриншоттарды жою керек пе?
+  deleteConfirmMessage: '{count} скриншотты жойғыңыз келетініне сенімдісіз бе? Бұл әрекетті қайтару мүмкін емес.'
+  deleteSuccess: Скриншоттар сәтті жойылды
+  selectedCount: 'Таңдалды: {count}'
+  selectAll: Барлығын таңдау
+  clearSelection: Барлық таңдауды алып тастау
+  countLabel: '{count} скриншот'
+  searchPlaceholder: Атауы бойынша іздеу...
+  noSearchResults: Сәйкес скриншоттар жоқ
+  noSearchResultsHint: Іздеу сұрауын өзгертіп көріңіз
+  sort: Сұрыптау
+  sortDateDesc: Алдымен жаңалары
+  sortDateAsc: Алдымен ескілері
+  sortSizeDesc: Алдымен үлкендері
+  sortSizeAsc: Алдымен кішілері
+  sortNameAsc: Атауы (А-Я)
+  sortNameDesc: Атауы (Я-А)
+  viewGrid: Үлкен тор
+  viewGridCompact: Ықшам тор
+  viewList: Тізім көрінісі
+  edit: Өңдеу
+  editorTitle: Скриншотты өңдеу
+  layer: Қабат
+  dragToMove: Жылжыту үшін сүйреңіз
+  transformHint: Жылжыту үшін таңдауды сүйреңіз • Өлшемін өзгерту үшін тұтқаларды сүйреңіз • Қолдану үшін Enter басыңыз
+  customColor: Жеке түс
+  fill: Бояу
+  brushPreview: Қылқалам өлшемін алдын ала қарау
+  fontPreview: Қаріп өлшемін алдын ала қарау
+  textBgNone: Жоқ
+  textBgShadow: Көлеңке
+  textBgBox: Жақтау
+  cropHint: Қию аймағын таңдау үшін шекараны сүйреңіз.
+  textPlacementHint: Орналастыру үшін Enter • Бас тарту үшін Esc
+  layerMoveUp: Жоғары жылжыту
+  layerMoveDown: Төмен жылжыту
+  layerCopy: '{name} көшірмесі'
+  pixels: px
+  saveCopy: Көшірмені сақтау
+  saveOverwrite: Үстінен жазу
+  saveSuccess: Скриншот сақталды!
+  saveCopySuccess: Жаңа скриншот ретінде сақталды!
+  toolSelect: Таңдау / Жылжыту
+  toolMove: Жылжыту және түрлендіру (Ctrl+T / V)
+  toolPan: Жылжыту (Space+Сүйреу)
+  layers: Қабаттар
+  layerAdd: Қабат қосу
+  layerDuplicate: Қабаттың көшірмесін жасау
+  layerDelete: Қабатты жою
+  layerOpacity: Күңгірттік
+  transformLayer: Еркін түрлендіру
+  applyTransform: Түрлендіруді қолдану (Enter)
+  cancelTransform: Бас тарту (Esc)
+  layerBackground: Фон
+  layerPaint: Сурет салу
+  layerText: Мәтін
+  layerBlur: Бұлдырату
+  toolPen: Қалам
+  toolArrow: Көрсеткі
+  toolRect: Тіктөртбұрыш
+  toolCircle: Шеңбер
+  toolLine: Сызық
+  toolText: Мәтін
+  toolHighlighter: Маркер
+  toolBlur: Пиксельдеу / Бұлдырату
+  toolCrop: Қию
+  applyCrop: Қиюды қолдану
+  cancelCrop: Қиюдан бас тарту
+  strokeWidth: Сызық қалыңдығы
+  fontSize: Қаріп өлшемі
+  color: Түс
+  undo: Болдырмау
+  redo: Қайталау
+  clear: Барлығын тазалау
+  textPlaceholder: Мәтін енгізу үшін басыңыз...
+  fontFamily: Қаріп
+  fontBold: Қалың
+  fontItalic: Көлбеу
+  textApply: Мәтінді орналастыру
+  textBg: Фон
+  zoomIn: Үлкейту
+  zoomOut: Кішірейту
+  resetZoom: Масштабты қалпына келтіру
 search:
   favorate: Жинақ
   local: Орнатылған
@@ -1432,6 +1808,60 @@ agent:
   accessRequiredHint: Кірістірілген агентті пайдалану үшін XMCL қызметіне жазылыңыз немесе баптауларда өз ЖИ провайдеріңізді реттеңіз.
   subscribeXmcl: XMCL қызметіне жазылу
   notConfiguredHint: Баптаулар → Жалпы → ЖИ агенті бөлімінде API кілтін, модельді және OpenAI-мен үйлесімді соңғы нүктені орнатыңыз. Мысалы, OpenAI немесе Claude-пен үйлесімді шлюзді қолданыңыз.
+  callingTool: '{name} шақырылуда…'
+  disabledPlaceholder: Агент өшірілген
+  emptyHint: Агенттен инстансыңызды тексеруді, модтарды ауыстыруды, журналдарды оқуды немесе ақаулықты диагностикалауды сұраңыз.
+  inputPlaceholder: Агенттен сұраңыз… (Жіберу үшін Enter, жаңа жол үшін Shift+Enter)
+  notConfiguredTitle: Агент қолжетімсіз
+  openSettings: Баптауларды ашу
+  reset: Жаңа сөйлесу
+  setupGuide: Орнату нұсқаулығы
+  statusDisabled: Өшірілген — кіріңіз немесе провайдерді баптаңыз
+  statusReady: Дайын
+  statusWorking: Жұмыс істеуде…
+  suggestion1: Бұл инстансты жаңа Minecraft нұсқасына жаңартып, модтарды сәйкесінше жаңартыңыз
+  suggestion2: Менің модтарым құлап жатыр — себебін тауып, оны қалай түзету керектігін айтыңыз
+  suggestion3: 'Мод-пак жасаңыз: маған қажет функция үшін модтарды тауып, оларды осы инстансқа орнатыңыз'
+  thinking: ойлануда…
+  title: XMCL Агенті
+  toggleHint: ауыстыру үшін
+  abort: Жасауды тоқтату
+  confirmAccept: Жалғастыру
+  confirmAllowAll: Барлығына рұқсат беру
+  confirmCancel: Бас тарту
+  confirmPending: Растауды күтуде
+  confirmTitle: Агент әрекетін растау
+  errorTitle: Агент қатеге тап болды
+  passiveGameCrashed: Ойын ақаумен жабылды
+  passiveGameExitCode: Шығу коды {code}
+  passiveGameExited: Ойыннан шықты
+  passiveGameExitSignal: Сигнал {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: Шығу күйі жоқ
+  reasoning: Ой қорыту
+  passiveGameStarted: Ойын басталды
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Модтар үйлесімділігі туралы есеп
+  passiveModDiagnosisError: Үйлесімділікті диагностикалау сәтсіз аяқталды
+  passiveModDiagnosisSummary: '{checked} мод тексерілді · {incompatibilities} үйлесімсіз · {duplicates} қайталанған'
+  passiveModDuplicate: 'Қайталанған {mod}: {files}'
+  passiveModInstalled: '{version} орнатылды'
+  toolArguments: Аргументтер
+  toolResult: Нәтиже
+  toolRunning: Нәтижені күтуде…
+  marketConfirmMessage: '{name} ағымдағы инстансқа орнатылсын ба?'
+  marketConfirmTarget: 'Мақсат: {instance}'
+  marketConfirmTitle: '{type} орнату'
+  marketInstall: Орнату
+  marketInstalled: Орнатылды
+  marketInstallFailed: '{type} орнату сәтсіз аяқталды'
+  marketType:
+    datapack: деректер жинағы
+    mod: мод
+    modpack: мод-пак
+    resourcepack: ресурстар жинағы
+    shader: шейдерлер жинағы
+  marketResultCount: '{count} нәтиже'
 setting:
   aiAgentApiKeyDescription: OpenAI-мен үйлесімді провайдерді баптаңыз, мысалы OpenAI немесе Claude үшін шлюз. Кілт осы құрылғыда жергілікті сақталады.
   aiAgentApiKeyPlaceholder: OpenAI немесе Claude провайдерінің API кілті
@@ -1624,6 +2054,45 @@ setting:
     successGlobal: Фон суреті жаңартылды.
     successInstance: Дана фон суреті жаңартылды.
     failed: Фон суретін орнату сәтсіз аяқталды
+  devModeLabel: DEV
+  livePreview: Тікелей алдын ала қарау
+  sidebarShowOnlyPinned: Тек бекітілген инстанстарды көрсету
+  sidebarShowOnlyPinnedHint: Бүйірлік тақтада тек бекітілген инстанстарды көрсету
+  aiAgentApiKey: AI Агентінің API кілті
+  aiAgentEndpoint: AI Агентінің Endpoint мекенжайы
+  aiAgentEndpointDescription: Chat completions endpoint URL мекенжайы.
+  aiAgentModel: AI Агентінің моделі
+  aiAgentModelDescription: Сұрауда жіберілетін модель атауы.
+  useDesktopBackground: Ағымдағы жұмыс үстелі тұсқағазын пайдалану
+  customCss:
+    advancedDescription: Өз CSS кодыңызбен іске қосқыштың ағымдағы стилін қайта анықтаңыз.
+    assistantHint: Қалаған көріністі сипаттаңыз, мен сіз үшін CSS жазамын.
+    assistantSuggestion1: Бүйірлік тақтаны мөлдір ету
+    assistantSuggestion2: Карточкаларға нәзік градиенттік фон қосу
+    assistantTitle: CSS Көмекшісі
+    dropHint: Жүктеу үшін .css файлын осында тастаңыз
+    editorPlaceholder: /* Жеке CSS-ті осында жазыңыз */
+    globalToggle: Жеке CSS-ті ауыстыру
+    openInDialog: Агент сұхбатында ашу
+    title: Жеке CSS
+    warning: Жеке CSS іске қосқыштың кез келген бөлігін теңшеуге мүмкіндік береді. Сенімсіз көздерден CSS қойған кезде абай болыңыз, себебі ол интерфейс орналасуын бұзуы мүмкін.
+  multiplayerTransport: Together тасымалдауы
+  multiplayerTransportDescription: Together қолданатын WebRTC жүзеге асыруын таңдаңыз. Тасымалдауды өзгерту белсенді тораптарды ажыратады.
+  aiAgentApiKeyClear: Кілтті тазалау
+  aiAgentApiKeyEmpty: API кілтіңізді қойыңыз
+  aiAgentApiKeyNotNeeded: Қажет емес
+  aiAgentApiKeyNotNeededHint: Бұл провайдер жергілікті түрде жұмыс істейді және API кілтін қажет етпейді
+  aiAgentApiKeySaved: Сақталды
+  aiAgentApiKeyStored: Кілт сақталды — ауыстыру үшін теріңіз
+  aiAgentBuiltin: Кірістірілген
+  aiAgentCustom: Жеке
+  appImageUpdateMode: AppImage жаңартуларын басқару
+  appImageExternalMode: Сыртқы менеджер / қолмен ауыстыру (әдепкі)
+  appImageSelfMode: XMCL өзіндік басқаруы (осы AppImage-ді өзім басқарамын)
+  appImageAutoDownload: Жаңартуларды автоматты түрде жүктеп алу
+  appImageAutoInstall: Шығу кезінде жүктелген жаңартуларды орнату
+  appImageExternalUpdateHint: Егер Shelly немесе басқа менеджер арқылы орнатылса, сол жерде жаңартып, сыртқы режимді сақтаңыз. Әйтпесе, бар жолдағы AppImage файлын өзіңіз ауыстырыңыз. XMCL сыртқы режимде жаңартуларды жүктемейді немесе орнатпайды.
+  appImageSelfUpdateHint: Өзіңіз басқаратын AppImage үшін ғана осы режимді таңдаңыз. Кірістірілген жаңартулар файл атында нұсқа нөмірі жоқ абсолютті жолды қажет етеді (мысалы, xmcl.AppImage). Егер атауында 0.73.0 сияқты нұсқа болса, XMCL-ді жауып, файлдың атын өзгертіңіз.
 settingLabel:
   global: Глобалды
   globalHint: Бұл баптау глобалды баптауға ереді
@@ -1677,6 +2146,8 @@ shaderPack:
   noPacks: Шейдер пакеттері орнатылмаған
   search: Шейдер пакеттерін іздеу...
   'off': 'Off'
+  noLocalPacksFound: Іздеуге сәйкес жергілікті шейдерлер жинағы табылмады.
+  noPacksInstalled: Сізде ешқандай шейдерлер жинағы орнатылмаған.
 shared:
   close: Жабу
   pressKeyCombination: Пернелер тіркесімін басыңыз...
@@ -1710,6 +2181,18 @@ shared:
   upgrade: Жаңарту
   'yes': Иә
   delete: Жою
+  copied: Көшірілді
+  copy: Көшіру
+  copyFailed: Көшіру сәтсіз аяқталды
+  copyFailedHint: Алмасу буферіне көшіру мүмкін болмады
+  save: Сақтау
+  openFolder: Буманы ашу
+  reset: Қалпына келтіру
+  missing: жоқ
+  healthy: Қалыпты
+  unused: пайдаланылмаған
+  failed: Сәтсіз
+  view: Көру
 sidebar:
   pin: Бекіту
   unpin: Бекітуді алып тастау
@@ -1997,6 +2480,9 @@ userSkin:
   skinDeleteFailed: Скинді гардеробтан жою мүмкін болмады
   edit: Өңдеу
   fetch: Жүктеу
+  invalidImage: Жарамды Minecraft скин суретін таңдаңыз.
+  invalidImageTitle: Жарамсыз скин суреті
+  uploadRejected: Minecraft бұл скинді жүктеуден бас тартты. Кейінірек қайталап көріңіз.
 version:
   checkIntegrity: Тұтастығын тексеру
   name: Нұсқа | Нұсқалар
@@ -2049,6 +2535,7 @@ blueprint:
     empty: Бұл сызбада көрсетілетін блоктар жоқ.
     hint: '{count} блок · {x}×{y}×{z}'
     controls: 'WASD: қозғалу · Space/Shift: жоғары/төмен · Сүйреу: қарау · Дөңгелек: масштаб'
+    title: 3D алдын ала қарау
   convert:
     title: Пішімді түрлендіру
     hint: Бұл сызбаны басқа пішімге түрлендіріңіз. Жаңа файл жасалады.
@@ -2067,6 +2554,12 @@ blueprint:
     action: Ауыстыру
   formats:
     structure: Vanilla құрылымы
+  local: Жергілікті
+  allNamespaces: Барлығы
+  delete: Жою
+  cancel: Бас тарту
+  loadMore: Көбірек жүктеу
+  cmsBrowseOnly: Бұл дереккөз тек шолу үшін; жүктеп алу үшін веб-сайтты ашыңыз.
 gamepad:
   connected: Controller Connected
   guideTitle: Controller Controls
@@ -2107,6 +2600,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: Геймпад анықталды
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
@@ -2220,3 +2714,112 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+title: XMCL
+minecraftFriends:
+  accept: Қабылдау
+  add: Дос қосу
+  addedRelative: '{time} қосылды'
+  expiresRelative: Мерзімі {time} аяқталады
+  friends: Достар
+  incomingHint: 1 кіріс сұрау | {count} кіріс сұрау
+  notifyAdded: '{name} пайдаланушысына дос сұрауы жіберілді'
+  reconnectAction: Қайта қосылу
+  requiresMicrosoft: Достар функциясын пайдалану үшін Microsoft тіркелгісімен кіріңіз.
+  scopedTo: '{name} ретінде кірген'
+  send: Жіберу
+  title: Minecraft Достары
+  unsupported: Достар функциясы тек Microsoft тіркелгілері үшін қолжетімді.
+  addPlaceholder: Minecraft пайдаланушы аты
+  errors:
+    cannotAddSelf: Өзіңізге дос сұрауын жібере алмайсыз.
+    duplicate: Бұл ойыншы тізіміңізде бар.
+    generic: Бірдеңе дұрыс болмады. Қайталап көріңіз.
+    inviteRejected: Бұл ойыншы достар функциясын қоспаған немесе шақыруларды қабылдамайды.
+    tokenExpired: Microsoft сессиясының мерзімі аяқталды. Қайта кіріңіз.
+    unknownProfile: Бұл атпен ойыншы табылмады.
+    friendsDisabled: Minecraft тіркелгіңізде достар өшірілген немесе достарды пайдалану мүмкін емес. Minecraft тіркелгі баптауларында достарды қосып, қайталап көріңіз.
+    invalidName: Minecraft пайдаланушы аттары 3 пен 16 таңба аралығында болуы керек.
+  heroEmptyHint: Дос сұрауын жіберу үшін жоғарыдағы пайдаланушы атын енгізіңіз.
+  heroEmptyTitle: Достар тізіміңіз бос
+  incoming: Кіріс сұраулар
+  outgoing: Шығыс сұраулар
+  privacy:
+    acceptInvites: Достық шақыруларын қабылдау
+    acceptInvitesHint: Өшірулі болғанда, басқа ойыншылар сізге дос сұрауын жібере алмайды.
+    friendsEnabled: Достар тізімі қосулы
+relative:
+  daysAgo: '{count} күн бұрын'
+  hoursAgo: '{count} сағат бұрын'
+  justNow: жаңа ғана
+  minutesAgo: '{count} минут бұрын'
+  secondsAgo: '{count} секунд бұрын'
+resourceError:
+  body: '"{path}" талдау мүмкін болмады ({code}). Файл бүлінген, бұғатталған немесе толық жүктелмеген болуы мүмкін. Қайта жүктеп көріңіз немесе жойыңыз.'
+  title: '{file} файлын оқу мүмкін емес'
+xmclAccount:
+  accountSummary: Тіркелгі
+  confirmMerge: Тіркелгілерді біріктіруді растау
+  createdAt: 'Жасалған күні: {date}'
+  description: Minecraft ойын тіркелгілерінен бөлек, құпия сөзсіз XMCL сәйкестендіргішіңіз.
+  expiresAt: 'Мерзімі аяқталады: {date}'
+  gameAccountsSeparate: Ойын тіркелгісін жою XMCL кіру әдісінің байланысын ажыратпайды.
+  guest: Қонақ
+  identityConflict: Бұл {provider} кіруі басқа XMCL Тіркелгісіне тиесілі. Тіркелгілер ешқашан автоматты түрде біріктірілмейді.
+  linkAccountWith: 'Тіркелгіні мынамен байланыстыру:'
+  mergePreview: Растау алдында көшірілетін ресурстарды тексеріңіз.
+  mergeNeedsSession: Біріктіруді қарап шықпас бұрын, сақтап қалғыңыз келетін XMCL Тіркелгісіне кіріңіз.
+  mergeQueued: Тіркелгілерді біріктіру орындалуда.
+  requestFailed: XMCL Тіркелгі қызметі бұл сұрауды орындай алмады. Ойын тіркелгіңіз өзгеріссіз қалды.
+  reviewMerge: Біріктіруді қарап шығу
+  session: Сессия
+  sessionActive: Белсенді
+  sessionExpired: Мерзімі аяқталған
+  signOutAll: Барлық құрылғылардан шығу
+  signOutDevice: Осы құрылғыдан шығу
+  status:
+    active: Белсенді
+    deleted: Жойылған
+    deletion_pending: Жою күтілуде
+    merged: Біріктірілген
+  title: XMCL Тіркелгісі
+modCategory:
+  optimization: Оңтайландыру және өнімділік
+  libraries: Кітапханалар және API
+  utilities: Интерфейс және құралдар
+  world: Әлем және биомдар
+  visual: Визуалды және аудио
+  gameplay: Ойын процесі және мазмұн
+  miscellaneous: Әртүрлі
+localCollection:
+  title: Іске қосқыш жинақтары
+  newCollection: Жаңа жинақ
+  namePlaceholder: Жинақ атауы
+  addToCollection: Жинаққа қосу
+  empty: Әзірге іске қосқыш жинақтары жоқ
+  corrupted: Сақталған жинақтарыңызды оқу мүмкін болмады және қалпына келтірілді. Сақтық көшірме деректер файлының жанында сақталды.
+  modrinthSection: Modrinth тіркелгісі
+  installAll: Барлығын орнату
+  incompatibleAlert: '1 жоба ағымдағы инстанспен үйлесімді емес және өткізіп жіберілді: | {count} жоба ағымдағы инстанспен үйлесімді емес және өткізіп жіберілді:'
+  projects: Жобалар жоқ | {count} жоба | {count} жоба
+  saveCurrentMods: Орнатылған модтарды жинақ ретінде сақтау
+  saveCurrentModsSuccess: '{count} мод "{name}" жинағына сақталды'
+  viewMods: Модтарды көру
+  editCollection: Жинақты өңдеу
+  collectionDescription: Жинақ сипаттамасы
+  noModsInCollection: Бұл жинақта әзірге модтар жоқ
+  exportCollection: Жинақты экспорттау
+  importCollection: Жинақты импорттау
+  removeEntryConfirm: Жинақтан жою
+  addMods: Модтар қосу
+  addModsTo: '"{name}" жинағына модтар қосу'
+  addModsHint: Инстансыңыздан орнатылған модтарды қосыңыз немесе Дүкендегі бетбелгі түймесін басып модтар қосыңыз.
+  addModsDialogDesc: Бұл жинаққа қосу үшін осы инстанстан қандай орнатылған модтарды қосу керектігін таңдаңыз.
+  addAllCurrent: Барлық ағымдағы модтарды қосу
+  addedModsSuccess: Жинаққа {count} мод қосылды
+  searchMods: Модтарды іздеу...
+  selectAll: Барлығын таңдау
+  deselectAll: Барлық таңдауды алып тастау
+  selected: таңдалды
+  alreadyInCollection: Қосылған
+  noMatchingMods: Іздеуіңізге сәйкес модтар жоқ
+  addSelectedMods: '{count} мод қосу'

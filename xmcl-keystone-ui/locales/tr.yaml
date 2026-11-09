@@ -98,7 +98,7 @@ backup:
   create: Yedek Oluştur
   createTitle: XMCL Yedek Arşivi Oluştur
   saveDialogTitle: XMCL Yedek Arşivini Kaydet
-  fileFilterName: 'XMCL Yedek Arşivi (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL Yedek Arşivi (*.xmclbackup, *.zip)
   createError: Yedek oluşturulamadı
   loadManifestError: Yedek arşivi okunamadı
   restore: Geri Yükle
@@ -109,7 +109,7 @@ backup:
   elapsedTime: Geçen süre
   remainingTime: Tahmini kalan süre
   calculatingRemaining: Hesaplanıyor...
-  lessThanMinute: '< 1 dk'
+  lessThanMinute: < 1 dk
   itemsProgress: '{current}/{total}'
   savesCategory: Dünyalar
   modsCategory: Modlar
@@ -121,9 +121,9 @@ backup:
   copiedLog: Günlük panoya kopyalandı
   openFolder: Klasörde Göster
   done: Tamam
-  backupDone: 'Yedekleme Tamamlandı!'
+  backupDone: Yedekleme Tamamlandı!
   backupDoneHint: Yedek arşiviniz oluşturuldu ve doğrulandı.
-  restoreDone: 'Geri Yükleme Tamamlandı!'
+  restoreDone: Geri Yükleme Tamamlandı!
   restoreDoneHint: Seçilen tüm veriler ve örnekler başarıyla geri yüklendi.
   timeTaken: 'Geçen süre: {time}'
   destinationFile: 'Kaydedilen yer: {path}'
@@ -157,9 +157,9 @@ backup:
   restoreError: Yedek geri yüklenemedi
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Yedek Oluştur
   createBackupDescription: Başlatıcı ayarlarını, koleksiyonları, özel temaları ve örnekleri tek bir taşınabilir arşiv dosyasına kaydedin.
   restoreBackupTitle: Yedeği Geri Yükle
@@ -197,9 +197,27 @@ backup:
   interval6h: Her 6 saatte bir
   interval12h: Her 12 saatte bir
   interval24h: Her 24 saatte bir
-  keepCount: 'Son {count} yedeği sakla'
+  keepCount: Son {count} yedeği sakla
 baseSetting:
   title: Instance Ayarları
+  info:
+    address: Adres
+    changes: Değişiklikler
+    custom: Özel
+    disabled: Devre dışı
+    enabled: Etkin
+    exportFormats: Dışa aktarma biçimleri
+    inherited: Devralınan
+    modLoader: Mod yükleyici
+    notConfigured: Yapılandırılmamış
+    notSet: Ayarlanmamış
+    offline: Çevrimdışı arşiv
+    projectId: Proje Kimliği
+    running: Çalışıyor
+    saved: Kaydedildi
+    status: Durum
+    stopped: Durduruldu
+    vanilla: Vanilla
 browseApp:
   createShortcut: Kısayol Oluştur
   default: VARSAYILAN
@@ -428,6 +446,7 @@ commandPalette:
   hintEnter: aç
   hintBack: geri
   hintClose: kapat
+  hintAskAgent: Agent'a sor
 feedback:
   channel: Kanallar
   description: Bir Hata buldum veya bir öneride bulunmak istiyorum
@@ -446,6 +465,8 @@ feedback:
   qq: QQ Grubu
   qqDescription: 'Geri bildirim QQ grubuna girin ve yazarlarla doğrudan konuşun. Grup Numarası: {number}'
   qqEnterGroup: Katıl
+  reddit: Reddit
+  redditDescription: r/XMCL subreddit topluluğuna katılın
 fileDetail:
   fileSize: Dosya Boyutu
   filesize: Dosya boyutu
@@ -579,6 +600,10 @@ instance:
   nameTrailingDotOrSpace: Ad nokta veya boşlukla bitemez
   nameWhitespaceOnly: Ad yalnızca boşluklardan veya noktalardan oluşamaz
   showHiddenCards: Gizlenen kartları göster
+  monitor: Tam Ekran Monitör
+  monitorDefault: Varsayılan (birincil monitör)
+  monitorNumber: Monitör {number}
+  monitorPrimary: Birincil
 instanceAge:
   older: Daha Eski
   threeDay: Üç Gün İçinde
@@ -647,6 +672,7 @@ instances:
   linkSharedFoldersHint: Bu klasörleri başlatıcının paylaşılan klasörlerine bağlantı olarak oluşturun, böylece bu örnek içeriklerini bağlı diğer tüm örneklerle paylaşır. Bu bir kopya değildir — bir örnekte yapılan değişiklikler tümünde görünür. İşaretlenmemiş klasörler bu örneğe özel kalır.
   linkFailed: '{folder} klasörü paylaşılan klasöre bağlanamadı'
   addPrismDescription: Mevcut PrismLauncher örneğini içe aktar.
+  instanceCount: '{count} örnek'
 items:
   count: '{count} öğe'
   total: '{total} toplam'
@@ -714,6 +740,13 @@ launchBlocked:
     description: Lütfen java'nızı kontrol edin veya başlatıcıya daha fazla izin verin ve tekrar deneyin. Bu hala işe yaramazsa, lütfen geliştiricilerle iletişime geçin.
     title: Oyun işlemi başlatılamadı
   unexpectedText: Bu beklenmedik bir durum. Sorunu hafifletmek için başlatıcıyı yeniden başlatabilirsiniz. Bu sorun tekrar olursa lütfen yazarla iletişime geçin.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL masaüstü oturumunuzdan X11 ekran bilgilerini kurtaramadı. XMCL'yi geçerli masaüstü oturumundaki bir terminalden yeniden başlatın veya oturumu kapatıp tekrar açın.
+    noGraphicalSession: XMCL grafik bir masaüstü oturumunda çalışmıyor. Minecraft'ı başlatmadan önce XMCL'yi masaüstü oturumunuzdan başlatın.
+    sandboxDenied: Uygulama korumalı alanı X11'e erişemiyor. Flatpak izinlerinizde XMCL'ye X11 soketine erişim izni verin, ardından XMCL'yi yeniden başlatın.
+    title: X11 ekranı kullanılamıyor
+    xwaylandMissing: Bu Wayland oturumunda Minecraft için XWayland gereklidir. Linux dağıtımınız tarafından sağlanan XWayland paketini kurun, ardından oturumu kapatıp tekrar açın.
+    xwaylandNotRunning: XWayland kurulu ancak çalışan bir X11 ekranı yok. Birleştirici yapılandırmanızda XWayland'i etkinleştirin, ardından oturumu kapatıp tekrar açın.
 launchFailed:
   crash: Oyun Çöktü!!
   description: Çökme raporu yok. Bu hata günlüğü ve en son günlük.
@@ -741,6 +774,11 @@ launcherUpdate:
   installAndQuit: Yüklemek için Yeniden Başlat
   noUpdateAvailable: Güncelleme Yok
   updateToThisVersion: İndir ve Yükle
+  automaticUnavailable: Otomatik güncellemeler kullanılamıyor
+  automaticNotImplemented: Bu başlatıcı ana bilgisayarı için otomatik güncelleme uygulanmadı.
+  automaticNotConfigured: Bu başlatıcı ana bilgisayarı için otomatik güncelleme yapılandırılmadı.
+  manualCheckHint: Sürüm denetimi yapılmadı. Uyumlu bir paket için GitHub Releases'i kontrol edin ve el ile kurun.
+  manualCheckRequired: Bu ana bilgisayar güncellemeleri otomatik olarak denetleyemez veya kuramaz. El ile denetlemek için GitHub Releases düğmesini kullanın.
 localVersion:
   auto: Otomatik Hesaplanmış
   empty: Yüklü Sürüm Yok
@@ -793,6 +831,10 @@ loginError:
   loginXboxFailedWithCode: Microsoft belirteciyle Xbox oturumu açılamadı (XErr {code}). Lütfen yardım için kodu arayın veya daha sonra tekrar deneyin.
   loginXboxNoXboxProfile: Bu Microsoft hesabının henüz bir Xbox profili yok. Bir tane oluşturmak için tarayıcınızda {url} adresini açın, ardından tekrar deneyin.
   loginXboxRegionLocked: Xbox Live, hesabınızın bölgesinde kullanılamıyor. Lütfen Microsoft hesap ayarlarından Microsoft hesabınızın ülkesini/bölgesini değiştirin ve tekrar deneyin.
+  loginCanceled: Microsoft girişi iptal edildi.
+  xboxErrorGuideHint: Giriş yapmakta sorun mu yaşıyorsunuz? Microsoft ve Xbox giriş sorunlarını nasıl çözeceğinizi öğrenin.
+  openLoginGuide: Bu sorun nasıl çözülür
+  openDiscordSupport: Hâlâ yardıma mı ihtiyacınız var? Discord'umuza katılın
 logsCrashes:
   crashes: Çökme Raporları
   logs: Günlükler
@@ -870,6 +912,23 @@ mod:
   syncGroupRules: Gruplama kurallarını kaydet
   toUpdate: '{count} güncelleme'
   ungroup: Grubu Çöz
+  autoCategorize: Klasörlere otomatik düzenle
+  autoCategorizeHint: Modları kategori klasörlerine (Optimizasyon, Kütüphaneler, Dünya, Oynanış vb.) göre otomatik gruplandırın
+  autoCategorizeSuccess: Modlar otomatik olarak {count} klasöre ayrıldı
+  collapseAll: Tüm Klasörleri Daralt
+  expandAll: Tüm Klasörleri Genişlet
+  folderSetting: Klasör Ayarları
+  folderColor: Klasör Rengi
+  folderIcon: Klasör Simgesi
+  pinGroup: Üste Sabitle
+  pinToTop: Üste Sabitle
+  pinToTopHint: Klasör listenin en üstünde görünecektir
+  pinned: Sabitlendi
+  unpinGroup: Klasör Sabitlemesini Kaldır
+  customColor: Özel Renk
+  preview: Önizleme
+  ungroupAll: Tüm klasör grubunu çöz
+  organization: Klasör Düzenleme
 modFilter:
   clear: Filtreyi Temizle
   dependenciesInstallOnly: Sadece eksik bağımlılık modlarını göster
@@ -898,6 +957,7 @@ modInstall:
   skipVersion: Farklı Minecraft sürümüne sahip Modları atla
   source: Mod Kaynağı
   switch: Sürüm Değiştir
+  scanUnusedLibraries: Kullanılmayan Kütüphaneleri Tara
 modSearch:
   noLocalModsFound: Aramanızla eşleşen yerel mod bulunamadı.
   noModsFound: Mod bulunamadı
@@ -933,6 +993,112 @@ modpack:
   overrides: Geçersiz Kılmalar (Overrides)
   url: URL
   urlHint: Mod paketinizin ana sayfa url'si
+  emitCurseforgeDescription: CurseForge için standart zip mod paketi arşivi
+  emitModrinthDescription: Hızlı CDN indirmeleri ile hafif resmi biçim
+  emitPackwiz: Packwiz Mod Paketini Dışa Aktar
+  emitPackwizDescription: Hafif git dostu biçim (pack.toml, index.toml ve .pw.toml dosyaları)
+  exportSuccess: Mod paketi başarıyla dışa aktarıldı!
+  exportSuccessWithWarnings: Mod paketi uyarılarla dışa aktarıldı
+  exportSkippedFiles: Dışa aktarma sırasında okunamayan veya kilitli {count} dosya atlandı
+  exportFailed: Mod paketi dışa aktarılamadı
+  skippedFilesDialogTitle: Bazı dosyalar dışa aktarılamadı
+  skippedFilesDialogDescription: Mod paketi oluşturuldu, ancak {count} dosya atlandı
+  skippedReasonEperm: Erişim reddedildi (işletim sistemi veya başka bir işlem tarafından kilitlendi)
+  skippedReasonEbusy: Dosya başka bir program tarafından kullanılıyor
+  skippedReasonEnoent: Dosya bulunamadı veya bozuk
+  skippedFilesNotice: Dosyalarınızın geri kalanı mod paketinde başarıyla paketlendi. Yukarıdaki dosyalar Windows sistem kısıtlamaları veya eksik erişim izinleri nedeniyle atlandı.
+  openExportFolder: Mod paketi klasörünü aç
+  closeDialog: Anladım
+  expandAll: Tüm klasörleri genişlet
+  collapseAll: Tüm klasörleri daralt
+  modpackVersionHint: Anlamsal sürüm dizesi (örn. 1.0.0). Yama/küçük sürümü artırmak için + kullanın
+  modrinthProject: Modrinth projesi
+  selectDefaultFiles: Varsayılan dosyaları seç
+  selectAllFiles: Tüm dosyaları seç
+  deselectAllFiles: Tüm dosyaların seçimini kaldır
+  bindProject: Projeyi bağla
+  bindProjectHint: Mevcut hesap tarafından yönetilen bir Modrinth mod paketi projesi seçin.
+  bindProjectTypeImmutableHint: Modrinth, ilk sürümü yüklendiğinde bir projenin türünü sabitler ve sonradan değiştirilemez. Henüz herhangi bir sürümü olmayan taslak projeler buraya bağlanabilir, ancak zaten bir mod/kaynak paketi vb. olarak yayınlanmış bir proje mod paketine dönüştürülemez — bunun yerine "Yeni proje oluştur"u kullanın.
+  bindProjectNoProjects: Hesabınız için Modrinth projesi bulunamadı.
+  unbindProject: Projenin bağını kaldır
+  unbindProjectConfirmTitle: Modrinth projesinin bağı kaldırılsın mı?
+  unbindProjectConfirmMessage: Bu işlem yalnızca bu örnek ile Modrinth projesi arasındaki yerel ilişkilendirmeyi kaldırır. Modrinth'teki proje ve sürümleri etkilenmez.
+  editProject: Projeyi düzenle
+  projectDiscovery: Keşif ve uyumluluk
+  projectGallery: Galeri
+  projectGalleryAdd: Görsel ekle
+  projectGalleryEmpty: Henüz galeri görseli yok.
+  projectGalleryFeatured: Öne Çıkan
+  projectGalleryFromScreenshots: Ekran görüntüsü seç
+  projectGalleryHint: 5 MiB'a kadar görseller ekleyin ve öne çıkan proje görselini seçin.
+  projectGallerySelectScreenshot: Bir örnek ekran görüntüsü seçin
+  projectIdentity: Kimlik ve açıklama
+  projectLinks: Proje bağlantıları
+  projectLoadFailed: Bağlı Modrinth projesi yüklenemedi.
+  projectNoChanges: Kaydedilmemiş proje değişikliği yok.
+  projectNotBound: Hiçbir Modrinth projesi bağlı değil
+  projectNotBoundHint: Mevcut bir projeyi bağlayın veya yeni bir Modrinth projesi oluşturun.
+  projectUnsavedChanges: '{count} proje alanı değişti'
+  projectLatestDraft: Taslak
+  projectVersions: sürümler
+  publish: Yayınla
+  publishCategories: Kategoriler (virgülle ayrılmış)
+  publishChannel: Yayın kanalı
+  publishChangelog: Değişiklik günlüğü
+  publishChangelogGenerate: Yapay zeka ile oluştur
+  publishConfirmProjectChanges: Proje değişikliklerini onayla
+  publishCreateProject: Proje oluştur
+  publishCreateDraft: Derle ve taslak oluştur
+  publishCustomVersion: Özel
+  publishDescription: Proje açıklaması
+  publishDiscordUrl: Discord URL'si
+  publishDraftCreated: Taslak sürüm yüklendi.
+  publishSubmitted: Sürüm inceleme için gönderildi.
+  publishExistingProject: Mevcut proje
+  publishIcon: Proje simgesi
+  publishIconHint: PNG, JPEG veya WebP
+  publishIconKeep: Yeni bir görsel seçilmedikçe değiştirmeden bırakın
+  publishIconUseInstance: Örnek simgesini kullan
+  publishIssuesUrl: Sorunlar URL'si
+  publishLicense: Lisans Kimliği
+  publishLogin: Modrinth'te oturum açın
+  publishFiles: seçilen dosyalar
+  publishLinkageSummary: '{total} mod/kaynak paketi/gölgelendirici paketinden {linked} tanesi yüklenmek yerine doğrudan Modrinth indirme bağlantısına bağlanacaktır.'
+  publishLinkageEmbeddedSummary: '{count} dosya bağlanamıyor ve bu sürümle birlikte yüklenecek (gömülecek).'
+  publishLinkageShowFiles: Yüklenmesi gereken dosyaları göster
+  publishLinkageReason:
+    missing-file: Dosya diskte bulunamadı
+    not-linked-to-modrinth: Modrinth kaynağı olarak tanınmadı
+    no-downloadable-url: Yeniden dağıtılabilir indirme URL'si bulunamadı
+  publishModrinth: Modrinth'te Yayınla
+  publishNewProject: Yeni proje
+  publishOpenProject: Projeyi aç
+  publishOpenVersion: Sürümü aç
+  publishProfile: MRPack profili
+  publishProfileClient: Yalnızca istemci
+  publishProfileServer: Yalnızca sunucu
+  publishProfileSplit: Evrensel + ayrı istemci/sunucu dosyaları
+  publishProfileUniversal: Evrensel
+  publishProject: Proje
+  publishProjectDetailsTab: Proje ayrıntıları
+  publishProjectName: Proje adı
+  publishProjectRequired: Yayınlamadan önce bir proje seçin.
+  publishProjectSlug: Proje kısa adı (slug)
+  publishProjectUrl: Proje URL'si (isteğe bağlı)
+  publishProjectUrlHint: '{slug} kullanmak için boş bırakın.'
+  publishProjectSaved: Proje ayrıntıları güncellendi.
+  publishSourceUrl: Kaynak URL'si
+  publishSubmit: Taslağı inceleme için gönder
+  publishSummary: Kısa özet
+  publishSummaryMinWords: Özet en az 3 kelime içermelidir.
+  publishVersionTitle: Sürüm başlığı
+  publishVersionTab: Sürümü yayınla
+  publishVersion: Sürümü yayınla
+  publishVisibility: Görünürlük
+  publishWikiUrl: Viki URL'si
+  visibilityPrivate: Özel
+  visibilityPublic: Herkese Açık
+  visibilityUnlisted: Listelenmemiş
 modpackImportConfirm:
   description: Başlatıcıya bir dosya bıraktığınız algılandı. Bir mod paketini içe aktarmaya mı çalışıyorsunuz?
   title: Bir mod paketini içe aktarmaya mı çalışıyorsunuz?
@@ -1190,6 +1356,16 @@ multiplayer:
   startNewP2PConnection: Yeni bir eş bağlantısı oluşturmak için Başlat düğmesine tıklayın
   connectionError: Bağlantı hatası
   connectionFailedHint: Bağlantı kurulamıyor. Her iki tarafın da uyumlu NAT türlerine sahip olduğunu kontrol edin.
+  connectedToMaster: Oda yöneticisine bağlandı
+  directConnection: Doğrudan
+  master: Oda Yöneticisi
+  masterHostsGameHint: Oda yöneticisi bağlantı merkezidir ve Minecraft LAN dünyasını barındırmalıdır. Barındırıcıyı değiştirmeden önce yöneticiliği devredin.
+  member: Üye
+  joinCreatesMissingRoomHint: Bu oda mevcut değilse, onu oluşturacak ve yöneticisi olacaksınız.
+  relayConnection: Röle
+  relayAllowanceSummary: Bu dönemde {total} üzerinden {remaining} kaldı
+  relayServiceAvailable: XMCL Together röle hizmeti kullanılabilir
+  waitingForMaster: Oda yöneticisinin yeniden bağlanması bekleniyor
 myStuff: Eşyalarım
 natType:
   blocked: Engellendi
@@ -1236,6 +1412,11 @@ presence:
   save: '{instance} içindeki Kayıtlar Görüntüleniyor'
   setting: Ayar Sayfası Görüntüleniyor
   shaderPack: '{instance} içindeki Gölgelendirici Paketleri Görüntüleniyor'
+  away: Dışarıda
+  offline: Çevrimdışı
+  online: Çevrimiçi
+  playing: '{game} oynuyor'
+  playingGeneric: Oynuyor
 proxy:
   host: Ana Bilgisayar
   port: Port
@@ -1358,6 +1539,109 @@ screenshots:
   gallery: Ekran görüntüsü galerisi
   hint: Oyunda F2 tuşuna basarak ekran görüntüsü alın
   openFolder: Ekran görüntüleri klasörünü aç
+  title: Ekran Görüntüleri ve Fotoğraflar
+  manage: Ekran Görüntüsü Yöneticisi
+  emptyTitle: Henüz ekran görüntüsü yok
+  emptyDescription: Ekran görüntüsü yakalamak için oyunda F2 tuşuna basın veya fotoğraflarınızı el ile içe aktarın.
+  dropHint: Galeriye eklemek için fotoğrafları veya ekran görüntülerini buraya bırakın
+  backToHome: Ana Sayfaya Dön
+  import: Fotoğraf Ekle
+  images: Görseller
+  importSuccess: '{count} fotoğraf başarıyla içe aktarıldı'
+  copy: Görseli Kopyala
+  copied: Panoya kopyalandı!
+  setWallpaper: Arka Plan Olarak Ayarla
+  setWallpaperSuccess: Örnek arka plan görseli olarak ayarlandı!
+  setIcon: Simge Olarak Ayarla
+  setIconSuccess: Örnek simgesi olarak ayarlandı!
+  export: Dosyayı Kaydet
+  exportSuccess: Ekran görüntüsü başarıyla kaydedildi!
+  exportSelected: Seçilenleri Dışa Aktar
+  exportSelectedTitle: Dışa Aktarma Klasörünü Seçin
+  exportSelectedSuccess: '{count} ekran görüntüsü başarıyla dışa aktarıldı'
+  deleteConfirmTitle: Ekran görüntüleri silinsin mi?
+  deleteConfirmMessage: '{count} ekran görüntüsünü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.'
+  deleteSuccess: Ekran görüntüleri başarıyla silindi
+  selectedCount: 'Seçilen: {count}'
+  selectAll: Tümünü seç
+  clearSelection: Tümünün seçimini kaldır
+  countLabel: '{count} ekran görüntüsü'
+  searchPlaceholder: İsme göre ara...
+  noSearchResults: Eşleşen ekran görüntüsü yok
+  noSearchResultsHint: Arama sorgunuzu ayarlamayı deneyin
+  sort: Sırala
+  sortDateDesc: Önce en yeni
+  sortDateAsc: Önce en eski
+  sortSizeDesc: Önce en büyük
+  sortSizeAsc: Önce en küçük
+  sortNameAsc: İsim (A-Z)
+  sortNameDesc: İsim (Z-A)
+  viewGrid: Büyük ızgara
+  viewGridCompact: Kompakt ızgara
+  viewList: Liste görünümü
+  edit: Düzenle
+  editorTitle: Ekran Görüntüsünü Düzenle
+  layer: Katman
+  dragToMove: Taşımak için sürükleyin
+  transformHint: Taşımak için seçimi sürükleyin • Yeniden boyutlandırmak için tutamaçları sürükleyin • Onaylamak için Enter tuşuna basın
+  customColor: Özel renk
+  fill: Doldur
+  brushPreview: Fırça Boyutu Önizlemesi
+  fontPreview: Yazı Tipi Boyutu Önizlemesi
+  textBgNone: Yok
+  textBgShadow: Gölge
+  textBgBox: Kutu
+  cropHint: Kırpma alanını seçmek için sınırlayıcı kutuyu sürükleyin.
+  textPlacementHint: Yerleştirmek için Enter • İptal etmek için Esc
+  layerMoveUp: Yukarı Taşı
+  layerMoveDown: Aşağı Taşı
+  layerCopy: '{name} Kopyası'
+  pixels: px
+  saveCopy: Kopyayı Kaydet
+  saveOverwrite: Üzerine Yaz
+  saveSuccess: Ekran görüntüsü kaydedildi!
+  saveCopySuccess: Yeni ekran görüntüsü olarak kaydedildi!
+  toolSelect: Seç / Kaydır
+  toolMove: Taşı ve Dönüştür (Ctrl+T / V)
+  toolPan: Kaydır (Space+Sürükle)
+  layers: Katmanlar
+  layerAdd: Katman Ekle
+  layerDuplicate: Katmanı Çoğalt
+  layerDelete: Katmanı Sil
+  layerOpacity: Opaklık
+  transformLayer: Serbest Dönüştürme
+  applyTransform: Dönüştürmeyi Uygula (Enter)
+  cancelTransform: İptal (Esc)
+  layerBackground: Arka Plan
+  layerPaint: Çizim
+  layerText: Metin
+  layerBlur: Bulanıklık
+  toolPen: Kalem
+  toolArrow: Ok
+  toolRect: Dikdörtgen
+  toolCircle: Daire
+  toolLine: Çizgi
+  toolText: Metin
+  toolHighlighter: Vurgulayıcı
+  toolBlur: Piksellendir / Bulanıklaştır
+  toolCrop: Kırp
+  applyCrop: Kırpmayı Uygula
+  cancelCrop: Kırpmayı İptal Et
+  strokeWidth: Çizgi kalınlığı
+  fontSize: Yazı tipi boyutu
+  color: Renk
+  undo: Geri al
+  redo: Yinele
+  clear: Tümünü temizle
+  textPlaceholder: Metin yazmak için tıklayın...
+  fontFamily: Yazı Tipi
+  fontBold: Kalın
+  fontItalic: İtalik
+  textApply: Metni Yerleştir
+  textBg: Arka Plan
+  zoomIn: Yakınlaştır
+  zoomOut: Uzaklaştır
+  resetZoom: Yakınlaştırmayı sıfırla
 search:
   favorate: Koleksiyon
   local: Yüklü
@@ -1736,6 +2020,23 @@ setting:
   livePreview: Canlı Önizleme
   sidebarShowOnlyPinned: Yalnızca Sabitlenmiş Örnekleri Göster
   sidebarShowOnlyPinnedHint: Kenar çubuğunda yalnızca sabitlenmiş örnekleri göster
+  multiplayerTransport: Together aktarımı
+  multiplayerTransportDescription: Together tarafından kullanılan WebRTC uygulamasını seçin. Aktarımın değiştirilmesi etkin eşlerin bağlantısını keser.
+  aiAgentApiKeyClear: Anahtarı temizle
+  aiAgentApiKeyEmpty: API anahtarınızı yapıştırın
+  aiAgentApiKeyNotNeeded: Gerekli değil
+  aiAgentApiKeyNotNeededHint: Bu sağlayıcı yerel olarak çalışır ve API anahtarı gerektirmez
+  aiAgentApiKeySaved: Kaydedildi
+  aiAgentApiKeyStored: Anahtar kaydedildi - değiştirmek için yazın
+  aiAgentBuiltin: Yerleşik
+  aiAgentCustom: Özel
+  appImageUpdateMode: AppImage güncelleme sahipliği
+  appImageExternalMode: Harici yönetici / manuel değişim (varsayılan)
+  appImageSelfMode: XMCL tarafından yönetilen (bu AppImage bana ait)
+  appImageAutoDownload: Güncellemeleri otomatik olarak indir
+  appImageAutoInstall: Çıkışta indirilen güncellemeleri yükle
+  appImageExternalUpdateHint: Shelly veya başka bir yönetici üzerinden yüklendiyse, güncellemeyi oradan yapın ve harici modu koruyun. Aksi takdirde AppImage dosyasını mevcut yolunda kendiniz değiştirin. XMCL harici modda güncelleme indirmez veya yüklemez.
+  appImageSelfUpdateHint: Yalnızca kendiniz yönettiğiniz bir AppImage için otomatik yönetimi seçin. Yerleşik güncellemeler, dosya adında sürüm numarası bulunmayan mutlak bir AppImage yolu gerektirir (örneğin xmcl.AppImage). İsimde sürüm varsa, XMCL'yi kapatıp dosyayı kendiniz yeniden adlandırın.
 settingLabel:
   global: Global
   globalHint: Bu ayar global ayarı takip edecektir
@@ -1829,6 +2130,13 @@ shared:
   copyFailedHint: Panoya kopyalanamadı
   save: Kaydet
   delete: Sil
+  openFolder: Klasörü Aç
+  reset: Sıfırla
+  missing: eksik
+  healthy: Tamam
+  unused: kullanılmıyor
+  failed: Başarısız
+  view: Görüntüle
 sidebar:
   pin: Sabitle
   unpin: Sabitlemeyi kaldır
@@ -2117,6 +2425,9 @@ userSkin:
   skinDeleteFailed: Cilt gardıroptan kaldırılamadı
   edit: Düzenle
   fetch: Yükle
+  invalidImage: Geçerli bir Minecraft görünüm görseli seçin.
+  invalidImageTitle: Geçersiz Görünüm Görseli
+  uploadRejected: Minecraft bu görünüm yüklemesini reddetti. Lütfen daha sonra tekrar deneyin.
 version:
   checkIntegrity: Bütünlüğü Kontrol Et
   name: Sürüm | Sürümler
@@ -2161,6 +2472,43 @@ agent:
   thinking: düşünüyor…
   title: XMCL Temsilcisi
   toggleHint: geçiş yapmak için
+  abort: Üretimi durdur
+  confirmAccept: Devam et
+  confirmAllowAll: Tümüne izin ver
+  confirmCancel: İptal
+  confirmPending: Onay bekleniyor
+  confirmTitle: Agent eylemini onayla
+  errorTitle: Agent bir hatayla karşılaştı
+  passiveGameCrashed: Oyun çöktü
+  passiveGameExitCode: Çıkış kodu {code}
+  passiveGameExited: Oyun kapandı
+  passiveGameExitSignal: Sinyal {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: Çıkış durumu yok
+  reasoning: Akıl yürütme
+  passiveGameStarted: Oyun başlatıldı
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Mod uyumluluk raporu
+  passiveModDiagnosisError: Uyumluluk teşhisi başarısız oldu
+  passiveModDiagnosisSummary: '{checked} mod kontrol edildi · {incompatibilities} uyumsuzluk · {duplicates} kopya'
+  passiveModDuplicate: 'Yinelenen {mod}: {files}'
+  passiveModInstalled: '{version} kuruldu'
+  toolArguments: Bağımsız Değişkenler
+  toolResult: Sonuç
+  toolRunning: Sonuç bekleniyor…
+  marketConfirmMessage: '{name} geçerli örneğe kurulsun mu?'
+  marketConfirmTarget: 'Hedef: {instance}'
+  marketConfirmTitle: '{type} Kur'
+  marketInstall: Kur
+  marketInstalled: Kuruldu
+  marketInstallFailed: '{type} kurulumu başarısız oldu'
+  marketType:
+    datapack: veri paketi
+    mod: mod
+    modpack: mod paketi
+    resourcepack: kaynak paketi
+    shader: gölgelendirici paketi
+  marketResultCount: '{count} sonuç'
 minecraftFriends:
   accept: Kabul Et
   add: Arkadaş ekle
@@ -2173,6 +2521,8 @@ minecraftFriends:
     inviteRejected: Bu oyuncunun arkadaş özelliği etkin değil veya davetleri kabul etmiyor.
     tokenExpired: Microsoft oturumunuzun süresi doldu. Lütfen tekrar oturum açın.
     unknownProfile: Bu isimde bir oyuncu bulamadık.
+    friendsDisabled: Minecraft hesabınızda arkadaşlar devre dışı bırakılmış veya arkadaşlar kullanılamıyor. Minecraft hesap ayarlarında arkadaşları etkinleştirin ve tekrar deneyin.
+    invalidName: Minecraft kullanıcı adları 3 ila 16 karakter arasında olmalıdır.
   expiresRelative: 'Süre dolum tarihi: {time}'
   friends: Arkadaşlar
   heroEmptyHint: Arkadaşlık isteği göndermek için yukarıya kullanıcı adına göre bir Minecraft oyuncusu ekleyin.
@@ -2408,3 +2758,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: Hesap
+  confirmMerge: Hesap birleştirmeyi onayla
+  createdAt: '{date} tarihinde oluşturuldu'
+  description: Minecraft oyun hesaplarından ayrı, şifresiz XMCL kimliğiniz.
+  expiresAt: '{date} tarihinde sona eriyor'
+  gameAccountsSeparate: Bir oyun hesabını kaldırmak, XMCL giriş yönteminin bağlantısını kesmez.
+  guest: Konuk
+  identityConflict: Bu {provider} girişi başka bir XMCL Hesabına ait. Hesaplar asla otomatik olarak birleştirilmez.
+  linkAccountWith: 'Hesabı şununla bağla:'
+  mergePreview: Onaylamadan önce taşınacak kaynakları gözden geçirin.
+  mergeNeedsSession: Birleştirmeyi incelemeden önce saklamak istediğiniz XMCL Hesabında oturum açın.
+  mergeQueued: Hesap birleştirme işlemi devam ediyor.
+  requestFailed: XMCL Hesap hizmeti bu isteği tamamlayamadı. Oyun hesabınız değişmedi.
+  reviewMerge: Birleştirmeyi incele
+  session: Oturum
+  sessionActive: Etkin
+  sessionExpired: Süresi doldu
+  signOutAll: Tüm cihazlardan çıkış yap
+  signOutDevice: Bu cihazdan çıkış yap
+  status:
+    active: Etkin
+    deleted: Silindi
+    deletion_pending: Silme beklemede
+    merged: Birleştirildi
+  title: XMCL Hesabı
+modCategory:
+  optimization: Optimizasyon ve Performans
+  libraries: Kütüphaneler ve API'ler
+  utilities: Kullanıcı Arayüzü ve Yardımcı Araçlar
+  world: Dünya ve Biyomlar
+  visual: Görsel ve Ses
+  gameplay: Oynanış ve İçerik
+  miscellaneous: Çeşitli
+localCollection:
+  title: Başlatıcı koleksiyonları
+  newCollection: Yeni koleksiyon
+  namePlaceholder: Koleksiyon adı
+  addToCollection: Koleksiyona ekle
+  empty: Henüz başlatıcı koleksiyonu yok
+  corrupted: Kaydedilen koleksiyonlarınız okunamadı ve sıfırlandı. Veri dosyasının yanında bir yedek tutuldu.
+  modrinthSection: Modrinth hesabı
+  installAll: Tümünü kur
+  incompatibleAlert: '1 proje geçerli örnekle uyumlu değil ve atlandı: | {count} proje geçerli örnekle uyumlu değil ve atlandı:'
+  projects: Proje yok | {count} proje | {count} proje
+  saveCurrentMods: Yüklü modları koleksiyon olarak kaydet
+  saveCurrentModsSuccess: '{count} mod "{name}" koleksiyonuna kaydedildi'
+  viewMods: Modları görüntüle
+  editCollection: Koleksiyonu düzenle
+  collectionDescription: Koleksiyon açıklaması
+  noModsInCollection: Bu koleksiyonda henüz mod yok
+  exportCollection: Koleksiyonu dışa aktar
+  importCollection: Koleksiyonu içe aktar
+  removeEntryConfirm: Koleksiyondan kaldır
+  addMods: Mod ekle
+  addModsTo: '"{name}" koleksiyonuna mod ekle'
+  addModsHint: Örneğinizden kurulu modları ekleyin veya mod eklemek için Mağaza'daki yer işareti düğmesine tıklayın.
+  addModsDialogDesc: Bu koleksiyona dahil etmek için bu örnekten hangi yüklü modların seçileceğini belirleyin.
+  addAllCurrent: Mevcut tüm modları ekle
+  addedModsSuccess: Koleksiyona {count} mod eklendi
+  searchMods: Mod ara...
+  selectAll: Tümünü seç
+  deselectAll: Tümünün seçimini kaldır
+  selected: seçildi
+  alreadyInCollection: Eklendi
+  noMatchingMods: Aramanızla eşleşen mod yok
+  addSelectedMods: '{count} mod ekle'

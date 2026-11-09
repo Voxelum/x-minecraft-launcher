@@ -52,6 +52,43 @@ agent:
   thinking: đang suy nghĩ…
   title: Trợ lý XMCL
   toggleHint: để bật/tắt
+  abort: Dừng tạo
+  confirmAccept: Tiếp tục
+  confirmAllowAll: Cho phép tất cả
+  confirmCancel: Hủy
+  confirmPending: Đang chờ xác nhận
+  confirmTitle: Xác nhận hành động của Agent
+  errorTitle: Agent đã gặp lỗi
+  passiveGameCrashed: Game bị sự cố
+  passiveGameExitCode: Mã thoát {code}
+  passiveGameExited: Game đã thoát
+  passiveGameExitSignal: Tín hiệu {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: Không có trạng thái thoát
+  reasoning: Quá trình suy luận
+  passiveGameStarted: Game đã khởi động
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Báo cáo tương thích mod
+  passiveModDiagnosisError: Chẩn đoán tương thích thất bại
+  passiveModDiagnosisSummary: Đã kiểm tra {checked} mod · {incompatibilities} không tương thích · {duplicates} trùng lặp
+  passiveModDuplicate: '{mod} bị trùng lặp: {files}'
+  passiveModInstalled: đã cài đặt {version}
+  toolArguments: Đối số
+  toolResult: Kết quả
+  toolRunning: Đang chờ kết quả…
+  marketConfirmMessage: Cài đặt {name} vào phiên bản hiện tại?
+  marketConfirmTarget: 'Mục tiêu: {instance}'
+  marketConfirmTitle: Cài đặt {type}
+  marketInstall: Cài đặt
+  marketInstalled: Đã cài đặt
+  marketInstallFailed: Cài đặt {type} thất bại
+  marketType:
+    datapack: gói dữ liệu
+    mod: mod
+    modpack: modpack
+    resourcepack: gói tài nguyên
+    shader: gói shader
+  marketResultCount: '{count} kết quả'
 ago:
   day: '{duration} ngày trước | {duration} ngày trước'
   hour: '{duration} giờ trước | {duration} giờ trước'
@@ -93,20 +130,20 @@ bedrock:
   launchFailed: Không thể khởi chạy phiên bản Bedrock này
   removeFailed: Không thể xóa Bedrock {version}
 backup:
-  title: 'Sao lưu & Khôi phục'
+  title: Sao lưu & Khôi phục
   description: Sao lưu và khôi phục cài đặt, bộ sưu tập, giao diện và các phiên bản trò chơi của bạn
   launcherData: Dữ liệu trình khởi chạy
   includeSettingsTitle: Cài đặt trình khởi chạy
   includeSettingsHint: Tùy chọn chung, ngôn ngữ, chế độ nhà phát triển và giao diện
   includeCollectionsTitle: Bộ sưu tập đã lưu
   includeCollectionsHint: Bộ sưu tập mod và tài nguyên do trình khởi chạy quản lý
-  includeThemesTitle: 'Giao diện & Phương tiện tùy chỉnh'
+  includeThemesTitle: Giao diện & Phương tiện tùy chỉnh
   includeThemesHint: Màu chủ đề, CSS tùy chỉnh và hình nền
   instances: Phiên bản (Instances)
   selectAll: Chọn tất cả
   deselectAll: Bỏ chọn tất cả
   instanceDataOptions: Tùy chọn dữ liệu phiên bản
-  includeConfigs: 'Cấu hình & Tùy chọn'
+  includeConfigs: Cấu hình & Tùy chọn
   includeSaves: Thế giới đã lưu (Saves)
   includeResourcePacks: Gói tài nguyên
   includeShaderPacks: Gói Shader
@@ -119,7 +156,7 @@ backup:
   create: Tạo bản sao lưu
   createTitle: Tạo tệp sao lưu XMCL
   saveDialogTitle: Lưu tệp sao lưu XMCL
-  fileFilterName: 'Tệp sao lưu XMCL (*.xmclbackup, *.zip)'
+  fileFilterName: Tệp sao lưu XMCL (*.xmclbackup, *.zip)
   createError: Không thể tạo bản sao lưu
   loadManifestError: Không thể đọc tệp sao lưu
   restore: Khôi phục
@@ -130,7 +167,7 @@ backup:
   elapsedTime: Thời gian đã trôi qua
   remainingTime: Thời gian còn lại dự kiến
   calculatingRemaining: Đang tính toán...
-  lessThanMinute: '< 1 phút'
+  lessThanMinute: < 1 phút
   itemsProgress: '{current}/{total}'
   savesCategory: Thế giới
   modsCategory: Mods
@@ -142,16 +179,16 @@ backup:
   copiedLog: Đã sao chép nhật ký vào bộ nhớ tạm
   openFolder: Hiển thị trong thư mục
   done: Hoàn tất
-  backupDone: 'Sao lưu hoàn tất!'
+  backupDone: Sao lưu hoàn tất!
   backupDoneHint: Tệp sao lưu của bạn đã được tạo và xác minh.
-  restoreDone: 'Khôi phục hoàn tất!'
+  restoreDone: Khôi phục hoàn tất!
   restoreDoneHint: Tất cả dữ liệu và phiên bản đã chọn đã được khôi phục thành công.
   timeTaken: 'Thời gian thực hiện: {time}'
   destinationFile: 'Đã lưu tại: {path}'
   stagePreparing: Đang chuẩn bị
   stageSettings: Cài đặt trình khởi chạy
   stageCollections: Bộ sưu tập đã lưu
-  stageThemes: 'Giao diện & Phương tiện'
+  stageThemes: Giao diện & Phương tiện
   stageInstances: Phiên bản trò chơi
   stageCompressing: Đang nén tệp lưu trữ
   stageComplete: Hoàn tất
@@ -161,14 +198,14 @@ backup:
   selectBackupFileDescription: Chọn tệp .xmclbackup hoặc .zip chứa dữ liệu và phiên bản XMCL của bạn.
   selectFile: Chọn tệp
   selectBackupFileTitle: Mở tệp sao lưu XMCL
-  createdOn: 'Được tạo vào {date}'
+  createdOn: Được tạo vào {date}
   changeFile: Đổi tệp
   dataToRestore: Dữ liệu cần khôi phục
   restoreSettings: Khôi phục cài đặt
   restoreSettingsHint: Ghi đè tùy chọn hiện tại bằng bản sao lưu
   restoreCollections: Khôi phục bộ sưu tập
   restoreCollectionsHint: Nhập và hợp nhất các bộ sưu tập đã lưu
-  restoreThemes: 'Khôi phục giao diện & phương tiện'
+  restoreThemes: Khôi phục giao diện & phương tiện
   restoreThemesHint: Cài đặt lại giao diện, CSS tùy chỉnh và phương tiện nền
   noLauncherDataInBackup: Không tìm thấy cài đặt hoặc giao diện trong bản sao lưu này.
   conflictStrategyTitle: Xử lý trùng tên phiên bản
@@ -178,9 +215,9 @@ backup:
   restoreError: Không thể khôi phục bản sao lưu
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Tạo bản sao lưu
   createBackupDescription: Lưu cài đặt, bộ sưu tập, giao diện tùy chỉnh và các phiên bản vào một tệp lưu trữ di động duy nhất.
   restoreBackupTitle: Khôi phục bản sao lưu
@@ -195,7 +232,7 @@ backup:
   autoBackupRunNow: Chạy ngay
   autoBackupLastRun: Lần tự động sao lưu cuối
   autoBackupNeverRun: Chưa từng
-  selectedCount: 'Đã chọn {selected} / {total}'
+  selectedCount: Đã chọn {selected} / {total}
   autoBackupSelectInstances: Phiên bản tự động sao lưu (Chọn một hoặc nhiều)
   searchInstances: Tìm kiếm phiên bản...
   autoBackupInterval: Tần suất sao lưu
@@ -203,8 +240,8 @@ backup:
   autoBackupDestination: Thư mục tự động sao lưu
   browse: Duyệt
   autoBackupContentLabel: Nội dung bao gồm trong sao lưu nền
-  instanceSaves: 'Thế giới & Lưu trữ'
-  instanceConfigs: 'Cấu hình & Tùy chọn'
+  instanceSaves: Thế giới & Lưu trữ
+  instanceConfigs: Cấu hình & Tùy chọn
   instanceMods: Mods
   instanceResourcePacks: Gói tài nguyên
   instanceShaderPacks: Gói Shader
@@ -218,9 +255,27 @@ backup:
   interval6h: Mỗi 6 giờ
   interval12h: Mỗi 12 giờ
   interval24h: Mỗi 24 giờ
-  keepCount: 'Giữ {count} bản sao lưu gần nhất'
+  keepCount: Giữ {count} bản sao lưu gần nhất
 baseSetting:
   title: Cài đặt phiên bản
+  info:
+    address: Địa chỉ
+    changes: Thay đổi
+    custom: Tùy chỉnh
+    disabled: Đã tắt
+    enabled: Đã bật
+    exportFormats: Định dạng xuất
+    inherited: Kế thừa chung
+    modLoader: Trình tải mod
+    notConfigured: Chưa cấu hình
+    notSet: Chưa thiết lập
+    offline: Lưu trữ ngoại tuyến
+    projectId: ID dự án
+    running: Đang chạy
+    saved: Đã lưu
+    status: Trạng thái
+    stopped: Đã dừng
+    vanilla: Vanilla
 browseApp:
   createShortcut: Tạo lối tắt (Shortcut)
   default: MẶC ĐỊNH
@@ -455,6 +510,7 @@ commandPalette:
   hintEnter: chọn
   hintBack: quay lại
   hintClose: đóng
+  hintAskAgent: hỏi Agent
 feedback:
   channel: Các kênh phản hồi
   description: Tôi đã tìm thấy lỗi hoặc tôi muốn đưa ra đề xuất
@@ -473,6 +529,8 @@ feedback:
   qq: Nhóm QQ
   qqDescription: 'Tham gia nhóm QQ phản hồi và nói chuyện trực tiếp với tác giả. Số nhóm: {number}'
   qqEnterGroup: Tham gia
+  reddit: Reddit
+  redditDescription: Tham gia cộng đồng subreddit r/XMCL
 fileDetail:
   fileSize: Dung lượng tệp
   filesize: Dung lượng tệp
@@ -610,6 +668,10 @@ instance:
   vmVar: Biến môi trường
   vmVarHint: Nhấp nút + để thêm biến môi trường
   width: Chiều rộng
+  monitor: Màn hình toàn màn hình
+  monitorDefault: Mặc định (màn hình chính)
+  monitorNumber: Màn hình {number}
+  monitorPrimary: Chính
 instanceAge:
   older: Cũ hơn
   threeDay: Trong vòng ba ngày
@@ -675,6 +737,10 @@ instances:
   folderSetting: Cài đặt thư mục
   importFolderDescription: Nhập Minecraft vào trình khởi chạy
   loadingFiles: Đang tải các tệp Modpack
+  instanceCount: '{count} phiên bản'
+  linkSharedFolders: Chia sẻ thư mục giữa các phiên bản
+  linkSharedFoldersHint: Tạo các thư mục này dưới dạng liên kết đến các thư mục chia sẻ của trình khởi chạy để phiên bản này chia sẻ nội dung với mọi phiên bản được liên kết khác. Đây không phải là bản sao — các thay đổi được thực hiện trong một phiên bản sẽ xuất hiện trong tất cả các phiên bản. Các thư mục không được chọn sẽ vẫn ở chế độ riêng tư cho phiên bản này.
+  linkFailed: Không thể liên kết thư mục {folder} với thư mục chia sẻ
 items:
   count: '{count} mục'
   total: Tổng cộng {total}
@@ -736,6 +802,13 @@ launchBlocked:
     description: Vui lòng kiểm tra Java của bạn, hoặc cấp thêm quyền cho trình khởi chạy và thử lại. Nếu vẫn không hoạt động, vui lòng liên hệ với nhà phát triển.
     title: Khởi chạy tiến trình game thất bại
   unexpectedText: Lỗi không mong muốn. Bạn có thể khởi động lại trình khởi chạy để giảm thiểu sự cố. Vui lòng liên hệ với tác giả nếu sự cố này tái diễn.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL không thể khôi phục thông tin hiển thị X11 từ phiên máy tính của bạn. Khởi động lại XMCL từ terminal trong phiên máy tính hiện tại, hoặc đăng xuất rồi đăng nhập lại.
+    noGraphicalSession: XMCL không chạy trong phiên giao diện đồ họa. Hãy khởi động XMCL từ phiên máy tính trước khi khởi chạy Minecraft.
+    sandboxDenied: Hộp cát ứng dụng không thể truy cập X11. Hãy cấp quyền truy cập socket X11 cho XMCL trong quyền Flatpak, sau đó khởi động lại XMCL.
+    title: Màn hình X11 không khả dụng
+    xwaylandMissing: Minecraft cần XWayland trong phiên Wayland này. Hãy cài đặt gói XWayland do bản phân phối Linux của bạn cung cấp, sau đó đăng xuất và đăng nhập lại.
+    xwaylandNotRunning: XWayland đã được cài đặt nhưng không có màn hình X11 nào đang chạy. Hãy bật XWayland trong cấu hình bộ tổng hợp (compositor), sau đó đăng xuất và đăng nhập lại.
 launchFailed:
   crash: Trò chơi đã bị crash!!
   description: Không có báo cáo crash. Dưới đây là nhật ký lỗi và nhật ký mới nhất.
@@ -763,6 +836,11 @@ launcherUpdate:
   installAndQuit: Khởi động lại để cài đặt
   noUpdateAvailable: Không có bản cập nhật nào khả dụng
   updateToThisVersion: Tải xuống và cài đặt
+  automaticUnavailable: Cập nhật tự động không khả dụng
+  automaticNotImplemented: Cập nhật tự động chưa được triển khai cho máy chủ trình khởi chạy này.
+  automaticNotConfigured: Cập nhật tự động chưa được cấu hình cho máy chủ trình khởi chạy này.
+  manualCheckHint: Chưa thực hiện kiểm tra phiên bản. Hãy kiểm tra GitHub Releases để tìm gói tương thích và cài đặt thủ công.
+  manualCheckRequired: Máy chủ này không thể tự động kiểm tra hoặc cài đặt bản cập nhật. Sử dụng nút GitHub Releases để kiểm tra thủ công.
 localVersion:
   auto: Tự động tính toán
   empty: Chưa cài đặt phiên bản nào
@@ -815,6 +893,10 @@ loginError:
   requirePassword: Mật khẩu là bắt buộc
   requireUsername: Tên người dùng là bắt buộc
   timeout: Hết thời gian đăng nhập. Vui lòng thử lại hoặc kiểm tra kết nối mạng của bạn.
+  loginCanceled: Đăng nhập Microsoft đã bị hủy.
+  xboxErrorGuideHint: Gặp sự cố khi đăng nhập? Tìm hiểu cách khắc phục sự cố đăng nhập Microsoft & Xbox.
+  openLoginGuide: Cách khắc phục sự cố này
+  openDiscordSupport: Vẫn cần trợ giúp? Tham gia Discord của chúng tôi
 logsCrashes:
   crashes: Báo cáo sự cố (Crash Reports)
   failures: Khởi chạy thất bại
@@ -844,6 +926,8 @@ minecraftFriends:
     inviteRejected: Người chơi đó chưa bật tính năng kết bạn hoặc không nhận lời mời.
     tokenExpired: Phiên làm việc Microsoft của bạn đã hết hạn. Vui lòng đăng nhập lại.
     unknownProfile: Chúng tôi không thể tìm thấy người chơi có tên đó.
+    friendsDisabled: Tài khoản Minecraft của bạn đã tắt tính năng bạn bè hoặc không thể sử dụng bạn bè. Hãy bật bạn bè trong cài đặt tài khoản Minecraft, sau đó thử lại.
+    invalidName: Tên người dùng Minecraft phải có từ 3 đến 16 ký tự.
   expiresRelative: Hết hạn {time}
   friends: Bạn bè
   heroEmptyHint: Thêm một người chơi Minecraft bằng tên người dùng ở trên để gửi yêu cầu kết bạn.
@@ -924,6 +1008,23 @@ mod:
   syncGroupRules: Lưu các quy tắc nhóm
   toUpdate: '{count} bản cập nhật'
   ungroup: Hủy nhóm
+  autoCategorize: Tự động sắp xếp vào thư mục
+  autoCategorizeHint: Tự động nhóm mod vào các thư mục thể loại (Tối ưu hóa, Thư viện, Thế giới, Lối chơi, v.v.)
+  autoCategorizeSuccess: Các mod đã được tự động sắp xếp vào {count} thư mục
+  collapseAll: Thu gọn tất cả thư mục
+  expandAll: Mở rộng tất cả thư mục
+  folderSetting: Cài đặt thư mục
+  folderColor: Màu thư mục
+  folderIcon: Biểu tượng thư mục
+  pinGroup: Ghim lên đầu
+  pinToTop: Ghim lên đầu
+  pinToTopHint: Thư mục sẽ xuất hiện ở đầu danh sách
+  pinned: Đã ghim
+  unpinGroup: Bỏ ghim thư mục
+  customColor: Màu tùy chỉnh
+  preview: Xem trước
+  ungroupAll: Hủy nhóm tất cả
+  organization: Sắp xếp thư mục
 modFilter:
   clear: Xóa bộ lọc
   dependenciesInstallOnly: Chỉ hiển thị các mod bị thiếu phụ thuộc
@@ -952,6 +1053,7 @@ modInstall:
   skipVersion: Bỏ qua các mod có phiên bản Minecraft khác
   source: Nguồn Mod
   switch: Chuyển đổi phiên bản
+  scanUnusedLibraries: Quét các thư viện không sử dụng
 modSearch:
   noLocalModsFound: Không tìm thấy mod cục bộ nào khớp với tìm kiếm của bạn.
   noModsFound: Không tìm thấy mod
@@ -987,6 +1089,112 @@ modpack:
   overrides: Ghi đè
   url: URL
   urlHint: URL trang chủ của modpack của bạn
+  emitCurseforgeDescription: Kho lưu trữ modpack dạng zip tiêu chuẩn cho CurseForge
+  emitModrinthDescription: Định dạng chính thức nhẹ với tải xuống CDN nhanh
+  emitPackwiz: Xuất modpack Packwiz
+  emitPackwizDescription: Định dạng nhẹ, thân thiện với git (các tệp pack.toml, index.toml và .pw.toml)
+  exportSuccess: Đã xuất modpack thành công!
+  exportSuccessWithWarnings: Đã xuất modpack có cảnh báo
+  exportSkippedFiles: Đã bỏ qua {count} tệp không đọc được hoặc bị khóa trong quá trình xuất
+  exportFailed: Xuất modpack thất bại
+  skippedFilesDialogTitle: Không thể xuất một số tệp
+  skippedFilesDialogDescription: Đã tạo modpack, nhưng {count} tệp đã bị bỏ qua
+  skippedReasonEperm: Bị từ chối truy cập (bị khóa bởi hệ điều hành hoặc tiến trình khác)
+  skippedReasonEbusy: Tệp đang được chương trình khác sử dụng
+  skippedReasonEnoent: Tệp không tìm thấy hoặc bị hỏng
+  skippedFilesNotice: Các tệp còn lại đã được đóng gói thành công vào modpack. Các tệp trên bị bỏ qua do giới hạn hệ thống Windows hoặc thiếu quyền truy cập.
+  openExportFolder: Mở thư mục modpack
+  closeDialog: Đã hiểu
+  expandAll: Mở rộng tất cả thư mục
+  collapseAll: Thu gọn tất cả thư mục
+  modpackVersionHint: 'Chuỗi phiên bản ngữ nghĩa (ví dụ: 1.0.0). Dùng dấu + để tăng bản vá/bản nhỏ'
+  modrinthProject: Dự án Modrinth
+  selectDefaultFiles: Chọn các tệp mặc định
+  selectAllFiles: Chọn tất cả tệp
+  deselectAllFiles: Bỏ chọn tất cả tệp
+  bindProject: Liên kết dự án
+  bindProjectHint: Chọn một dự án modpack Modrinth được quản lý bởi tài khoản hiện tại.
+  bindProjectTypeImmutableHint: Modrinth cố định loại dự án khi phiên bản đầu tiên được tải lên và không thể thay đổi sau đó. Các dự án bản nháp chưa có phiên bản nào vẫn có thể được liên kết ở đây, nhưng một dự án đã xuất bản dưới dạng mod/gói tài nguyên/v.v. không thể chuyển đổi thành modpack — hãy sử dụng "Tạo dự án mới" thay thế.
+  bindProjectNoProjects: Không tìm thấy dự án Modrinth nào cho tài khoản của bạn.
+  unbindProject: Hủy liên kết dự án
+  unbindProjectConfirmTitle: Hủy liên kết dự án Modrinth?
+  unbindProjectConfirmMessage: Thao tác này chỉ xóa liên kết cục bộ giữa phiên bản này và dự án Modrinth. Dự án và các phiên bản của nó trên Modrinth không bị ảnh hưởng.
+  editProject: Chỉnh sửa dự án
+  projectDiscovery: Khám phá và khả năng tương thích
+  projectGallery: Thư viện ảnh
+  projectGalleryAdd: Thêm hình ảnh
+  projectGalleryEmpty: Chưa có hình ảnh nào trong thư viện.
+  projectGalleryFeatured: Nổi bật
+  projectGalleryFromScreenshots: Chọn ảnh chụp màn hình
+  projectGalleryHint: Thêm hình ảnh tối đa 5 MiB và chọn hình ảnh đại diện cho dự án.
+  projectGallerySelectScreenshot: Chọn một ảnh chụp màn hình của phiên bản
+  projectIdentity: Danh tính và mô tả
+  projectLinks: Liên kết dự án
+  projectLoadFailed: Không thể tải dự án Modrinth đã liên kết.
+  projectNoChanges: Không có thay đổi dự án chưa lưu.
+  projectNotBound: Chưa liên kết dự án Modrinth nào
+  projectNotBoundHint: Liên kết một dự án hiện có hoặc tạo một dự án Modrinth mới.
+  projectUnsavedChanges: '{count} trường dự án đã thay đổi'
+  projectLatestDraft: Bản nháp
+  projectVersions: phiên bản
+  publish: Xuất bản
+  publishCategories: Danh mục (phân cách bằng dấu phẩy)
+  publishChannel: Kênh phát hành
+  publishChangelog: Nhật ký thay đổi
+  publishChangelogGenerate: Tạo bằng AI
+  publishConfirmProjectChanges: Xác nhận các thay đổi của dự án
+  publishCreateProject: Tạo dự án
+  publishCreateDraft: Xây dựng và tạo bản nháp
+  publishCustomVersion: Tùy chỉnh
+  publishDescription: Mô tả dự án
+  publishDiscordUrl: URL Discord
+  publishDraftCreated: Đã tải lên phiên bản nháp.
+  publishSubmitted: Phiên bản đã được gửi để xem xét.
+  publishExistingProject: Dự án hiện có
+  publishIcon: Biểu tượng dự án
+  publishIconHint: PNG, JPEG hoặc WebP
+  publishIconKeep: Giữ nguyên trừ khi chọn hình ảnh mới
+  publishIconUseInstance: Sử dụng biểu tượng của phiên bản
+  publishIssuesUrl: URL Báo cáo sự cố
+  publishLicense: ID Giấy phép
+  publishLogin: Đăng nhập vào Modrinth
+  publishFiles: tệp đã chọn
+  publishLinkageSummary: '{linked} trong tổng số {total} mod/gói tài nguyên/gói shader sẽ được liên kết trực tiếp với liên kết tải xuống Modrinth thay vì được tải lên.'
+  publishLinkageEmbeddedSummary: '{count} tệp không thể liên kết và sẽ được tải lên (nhúng) cùng với phiên bản này.'
+  publishLinkageShowFiles: Hiển thị các tệp bắt buộc phải tải lên
+  publishLinkageReason:
+    missing-file: Không tìm thấy tệp trên ổ đĩa
+    not-linked-to-modrinth: Không được nhận diện là tài nguyên Modrinth
+    no-downloadable-url: Không tìm thấy URL tải xuống có thể phân phối lại
+  publishModrinth: Xuất bản lên Modrinth
+  publishNewProject: Dự án mới
+  publishOpenProject: Mở dự án
+  publishOpenVersion: Mở phiên bản
+  publishProfile: Hồ sơ MRPack
+  publishProfileClient: Chỉ dành cho Client
+  publishProfileServer: Chỉ dành cho Server
+  publishProfileSplit: Phổ thông + các tệp client/server riêng biệt
+  publishProfileUniversal: Phổ thông
+  publishProject: Dự án
+  publishProjectDetailsTab: Chi tiết dự án
+  publishProjectName: Tên dự án
+  publishProjectRequired: Hãy chọn một dự án trước khi xuất bản.
+  publishProjectSlug: Định danh rút gọn (slug)
+  publishProjectUrl: URL dự án (tùy chọn)
+  publishProjectUrlHint: Để trống để sử dụng {slug}.
+  publishProjectSaved: Đã cập nhật chi tiết dự án.
+  publishSourceUrl: URL mã nguồn
+  publishSubmit: Gửi bản nháp để duyệt
+  publishSummary: Tóm tắt ngắn gọn
+  publishSummaryMinWords: Tóm tắt phải chứa ít nhất 3 từ.
+  publishVersionTitle: Tiêu đề phiên bản
+  publishVersionTab: Xuất bản phiên bản
+  publishVersion: Xuất bản phiên bản
+  publishVisibility: Khả năng hiển thị
+  publishWikiUrl: URL Wiki
+  visibilityPrivate: Riêng tư
+  visibilityPublic: Công khai
+  visibilityUnlisted: Không công khai
 modpackImportConfirm:
   description: Phát hiện bạn thả một tệp vào trình khởi chạy. Bạn có đang cố gắng nhập một modpack không?
   title: Bạn có đang cố gắng nhập một modpack không?
@@ -1244,6 +1452,16 @@ multiplayer:
   sharing: Đang chia sẻ tệp...
   start: Bắt đầu
   startNewP2PConnection: Nhấp vào nút Bắt đầu để tạo một kết nối ngang hàng (peer connection) mới
+  connectedToMaster: Đã kết nối với chủ phòng
+  directConnection: Trực tiếp
+  master: Chủ phòng
+  masterHostsGameHint: Chủ phòng là trung tâm kết nối và phải lưu trữ thế giới LAN Minecraft. Hãy chuyển quyền chủ phòng trước khi thay đổi máy chủ lưu trữ.
+  member: Thành viên
+  joinCreatesMissingRoomHint: Nếu phòng này không tồn tại, bạn sẽ tạo phòng và trở thành chủ phòng.
+  relayConnection: Chuyển tiếp
+  relayAllowanceSummary: Còn lại {remaining} trong tổng số {total} của giai đoạn này
+  relayServiceAvailable: Dịch vụ chuyển tiếp XMCL Together khả dụng
+  waitingForMaster: Đang chờ chủ phòng kết nối lại
 myStuff: Kho của tôi
 natType:
   blocked: Bị chặn (Blocked)
@@ -1290,6 +1508,11 @@ presence:
   save: Đang xem các Thế giới đã lưu trong {instance}
   setting: Đang xem trang Cài đặt
   shaderPack: Đang xem các Gói Shader trong {instance}
+  away: Vắng mặt
+  offline: Ngoại tuyến
+  online: Trực tuyến
+  playing: Đang chơi {game}
+  playingGeneric: Đang chơi
 proxy:
   host: Máy chủ proxy
   port: Cổng
@@ -1477,6 +1700,109 @@ screenshots:
   openFolder: Mở thư mục ảnh chụp màn hình
   playRandom: Phát ngẫu nhiên
   playSequence: Phát theo thứ tự
+  title: Ảnh chụp màn hình & Hình ảnh
+  manage: Trình quản lý ảnh chụp màn hình
+  emptyTitle: Chưa có ảnh chụp màn hình nào
+  emptyDescription: Nhấn F2 trong trò chơi để chụp ảnh màn hình hoặc nhập ảnh của bạn thủ công.
+  dropHint: Kéo thả ảnh hoặc ảnh chụp màn hình vào đây để thêm vào thư viện
+  backToHome: Quay lại Trang chủ
+  import: Thêm ảnh
+  images: Hình ảnh
+  importSuccess: Đã nhập thành công {count} ảnh
+  copy: Sao chép hình ảnh
+  copied: Đã sao chép vào bộ nhớ tạm!
+  setWallpaper: Đặt làm hình nền
+  setWallpaperSuccess: Đã đặt làm hình nền phiên bản!
+  setIcon: Đặt làm biểu tượng
+  setIconSuccess: Đã đặt làm biểu tượng phiên bản!
+  export: Lưu tệp
+  exportSuccess: Đã lưu ảnh chụp màn hình thành công!
+  exportSelected: Xuất mục đã chọn
+  exportSelectedTitle: Chọn thư mục xuất
+  exportSelectedSuccess: Đã xuất thành công {count} ảnh chụp màn hình
+  deleteConfirmTitle: Xóa ảnh chụp màn hình?
+  deleteConfirmMessage: Bạn có chắc chắn muốn xóa {count} ảnh chụp màn hình không? Thao tác này không thể hoàn tác.
+  deleteSuccess: Đã xóa ảnh chụp màn hình thành công
+  selectedCount: 'Đã chọn: {count}'
+  selectAll: Chọn tất cả
+  clearSelection: Bỏ chọn tất cả
+  countLabel: '{count} ảnh chụp màn hình'
+  searchPlaceholder: Tìm kiếm theo tên...
+  noSearchResults: Không tìm thấy ảnh chụp màn hình phù hợp
+  noSearchResultsHint: Hãy thử điều chỉnh cụm từ tìm kiếm của bạn
+  sort: Sắp xếp
+  sortDateDesc: Mới nhất trước
+  sortDateAsc: Cũ nhất trước
+  sortSizeDesc: Lớn nhất trước
+  sortSizeAsc: Nhỏ nhất trước
+  sortNameAsc: Tên (A-Z)
+  sortNameDesc: Tên (Z-A)
+  viewGrid: Lưới lớn
+  viewGridCompact: Lưới thu gọn
+  viewList: Chế độ xem danh sách
+  edit: Chỉnh sửa
+  editorTitle: Chỉnh sửa ảnh chụp màn hình
+  layer: Lớp
+  dragToMove: Kéo để di chuyển
+  transformHint: Kéo vùng chọn để di chuyển • Kéo các tay cầm để đổi kích thước • Nhấn Enter để xác nhận
+  customColor: Màu tùy chỉnh
+  fill: Tô màu
+  brushPreview: Xem trước kích thước cọ
+  fontPreview: Xem trước cỡ chữ
+  textBgNone: Không có
+  textBgShadow: Đổ bóng
+  textBgBox: Hộp
+  cropHint: Kéo hộp giới hạn để chọn vùng cắt.
+  textPlacementHint: Nhấn Enter để đặt • Nhấn Esc để hủy
+  layerMoveUp: Di chuyển lên
+  layerMoveDown: Di chuyển xuống
+  layerCopy: Bản sao {name}
+  pixels: px
+  saveCopy: Lưu bản sao
+  saveOverwrite: Ghi đè
+  saveSuccess: Đã lưu ảnh chụp màn hình!
+  saveCopySuccess: Đã lưu thành ảnh chụp màn hình mới!
+  toolSelect: Chọn / Di chuyển khung
+  toolMove: Di chuyển & Biến đổi (Ctrl+T / V)
+  toolPan: Di chuyển khung (Space+Kéo)
+  layers: Lớp
+  layerAdd: Thêm lớp
+  layerDuplicate: Nhân đôi lớp
+  layerDelete: Xóa lớp
+  layerOpacity: Độ mờ đục
+  transformLayer: Biến đổi tự do
+  applyTransform: Áp dụng biến đổi (Enter)
+  cancelTransform: Hủy (Esc)
+  layerBackground: Nền
+  layerPaint: Vẽ
+  layerText: Văn bản
+  layerBlur: Làm mờ
+  toolPen: Bút
+  toolArrow: Mũi tên
+  toolRect: Hình chữ nhật
+  toolCircle: Hình tròn
+  toolLine: Đường thẳng
+  toolText: Văn bản
+  toolHighlighter: Bút dạ quang
+  toolBlur: Pixel hóa / Làm mờ
+  toolCrop: Cắt xén
+  applyCrop: Áp dụng cắt
+  cancelCrop: Hủy cắt
+  strokeWidth: Độ dày nét vẽ
+  fontSize: Cỡ chữ
+  color: Màu sắc
+  undo: Hoàn tác
+  redo: Làm lại
+  clear: Xóa tất cả
+  textPlaceholder: Nhấp để nhập văn bản...
+  fontFamily: Phông chữ
+  fontBold: In đậm
+  fontItalic: In nghiêng
+  textApply: Đặt văn bản
+  textBg: Nền
+  zoomIn: Phóng to
+  zoomOut: Thu nhỏ
+  resetZoom: Đặt lại thu phóng
 search:
   favorate: Bộ sưu tập
   local: Đã cài đặt
@@ -1855,6 +2181,23 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: Địa chỉ máy chủ proxy cho các yêu cầu http
   viewBackgroundMusic: Xem danh sách nhạc
+  multiplayerTransport: Giao thức truyền tải Together
+  multiplayerTransportDescription: Chọn bản triển khai WebRTC được sử dụng bởi Together. Việc thay đổi giao thức truyền tải sẽ ngắt kết nối các đồng nghiệp đang hoạt động.
+  aiAgentApiKeyClear: Xóa khóa
+  aiAgentApiKeyEmpty: Dán khóa API của bạn
+  aiAgentApiKeyNotNeeded: Không yêu cầu
+  aiAgentApiKeyNotNeededHint: Nhà cung cấp này chạy cục bộ và không cần khóa API
+  aiAgentApiKeySaved: Đã lưu
+  aiAgentApiKeyStored: Đã lưu khóa - nhập để thay thế
+  aiAgentBuiltin: Tích hợp sẵn
+  aiAgentCustom: Tùy chỉnh
+  appImageUpdateMode: Quyền quản lý cập nhật AppImage
+  appImageExternalMode: Trình quản lý bên ngoài / thay thế thủ công (mặc định)
+  appImageSelfMode: XMCL tự quản lý (tôi sở hữu AppImage này)
+  appImageAutoDownload: Tự động tải xuống bản cập nhật
+  appImageAutoInstall: Cài đặt bản cập nhật đã tải xuống khi thoát
+  appImageExternalUpdateHint: Nếu cài đặt qua Shelly hoặc trình quản lý khác, hãy cập nhật tại đó và giữ chế độ bên ngoài. Nếu không, hãy tự thay thế AppImage tại đường dẫn hiện có. XMCL không tải xuống hoặc cài đặt bản cập nhật ở chế độ bên ngoài.
+  appImageSelfUpdateHint: Chỉ chọn tự quản lý cho AppImage mà bạn tự quản lý. Bản cập nhật tích hợp yêu cầu đường dẫn tuyệt đối không có số phiên bản trong tên tệp (ví dụ xmcl.AppImage). Nếu tên chứa phiên bản như 0.73.0, hãy thoát XMCL và đổi tên tệp.
 settingLabel:
   global: Toàn cục
   globalHint: Cài đặt này sẽ áp dụng theo cài đặt toàn cục
@@ -1948,6 +2291,13 @@ shared:
   upgrade: Nâng cấp
   'yes': Có
   delete: Xóa
+  openFolder: Mở thư mục
+  reset: Đặt lại
+  missing: thiếu
+  healthy: Bình thường
+  unused: chưa dùng
+  failed: Thất bại
+  view: Xem
 sidebar:
   pin: Ghim
   unpin: Bỏ ghim
@@ -2242,6 +2592,9 @@ userSkin:
   skinDeleteFailed: Không thể xóa skin khỏi tủ đồ
   edit: Chỉnh sửa
   fetch: Tải
+  invalidImage: Hãy chọn hình ảnh skin Minecraft hợp lệ.
+  invalidImageTitle: Hình ảnh skin không hợp lệ
+  uploadRejected: Minecraft đã từ chối tải lên skin này. Vui lòng thử lại sau.
 version:
   checkIntegrity: Kiểm tra tính toàn vẹn
   name: Phiên bản | Các phiên bản
@@ -2405,3 +2758,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: Tài khoản
+  confirmMerge: Xác nhận hợp nhất tài khoản
+  createdAt: Đã tạo vào {date}
+  description: Danh tính XMCL không cần mật khẩu của bạn, tách biệt với tài khoản trò chơi Minecraft.
+  expiresAt: Hết hạn vào {date}
+  gameAccountsSeparate: Việc xóa tài khoản trò chơi không hủy liên kết phương thức đăng nhập XMCL.
+  guest: Khách
+  identityConflict: Lần đăng nhập {provider} này thuộc về một Tài khoản XMCL khác. Các tài khoản không bao giờ được hợp nhất tự động.
+  linkAccountWith: Liên kết tài khoản với
+  mergePreview: Xem lại các tài nguyên sẽ được chuyển trước khi xác nhận.
+  mergeNeedsSession: Đăng nhập vào Tài khoản XMCL bạn muốn giữ lại trước khi xem lại việc hợp nhất.
+  mergeQueued: Đang tiến hành hợp nhất tài khoản.
+  requestFailed: Dịch vụ Tài khoản XMCL không thể hoàn tất yêu cầu này. Tài khoản trò chơi của bạn không bị thay đổi.
+  reviewMerge: Xem lại việc hợp nhất
+  session: Phiên
+  sessionActive: Hoạt động
+  sessionExpired: Đã hết hạn
+  signOutAll: Đăng xuất khỏi tất cả thiết bị
+  signOutDevice: Đăng xuất khỏi thiết bị này
+  status:
+    active: Hoạt động
+    deleted: Đã xóa
+    deletion_pending: Đang chờ xóa
+    merged: Đã hợp nhất
+  title: Tài khoản XMCL
+modCategory:
+  optimization: Tối ưu hóa & Hiệu năng
+  libraries: Thư viện & API
+  utilities: Giao diện & Tiện ích
+  world: Thế giới & Quần xã
+  visual: Hình ảnh & Âm thanh
+  gameplay: Lối chơi & Nội dung
+  miscellaneous: Linh tinh
+localCollection:
+  title: Bộ sưu tập trình khởi chạy
+  newCollection: Bộ sưu tập mới
+  namePlaceholder: Tên bộ sưu tập
+  addToCollection: Thêm vào bộ sưu tập
+  empty: Chưa có bộ sưu tập trình khởi chạy nào
+  corrupted: Không thể đọc các bộ sưu tập đã lưu của bạn và đã được đặt lại. Bản sao lưu được lưu bên cạnh tệp dữ liệu.
+  modrinthSection: Tài khoản Modrinth
+  installAll: Cài đặt tất cả
+  incompatibleAlert: '1 dự án không tương thích với phiên bản hiện tại và đã bị bỏ qua: | {count} dự án không tương thích với phiên bản hiện tại và đã bị bỏ qua:'
+  projects: Không có dự án | {count} dự án | {count} dự án
+  saveCurrentMods: Lưu các mod đã cài đặt thành bộ sưu tập
+  saveCurrentModsSuccess: Đã lưu {count} mod vào bộ sưu tập "{name}"
+  viewMods: Xem các mod
+  editCollection: Chỉnh sửa bộ sưu tập
+  collectionDescription: Mô tả bộ sưu tập
+  noModsInCollection: Chưa có mod nào trong bộ sưu tập này
+  exportCollection: Xuất bộ sưu tập
+  importCollection: Nhập bộ sưu tập
+  removeEntryConfirm: Xóa khỏi bộ sưu tập
+  addMods: Thêm mod
+  addModsTo: Thêm mod vào "{name}"
+  addModsHint: Thêm các mod đã cài đặt từ phiên bản của bạn hoặc nhấp vào nút dấu trang trong Chợ để thêm mod.
+  addModsDialogDesc: Chọn các mod đã cài đặt từ phiên bản này để đưa vào bộ sưu tập này.
+  addAllCurrent: Thêm tất cả các mod hiện tại
+  addedModsSuccess: Đã thêm {count} mod vào bộ sưu tập
+  searchMods: Tìm kiếm mod...
+  selectAll: Chọn tất cả
+  deselectAll: Bỏ chọn tất cả
+  selected: đã chọn
+  alreadyInCollection: Đã thêm
+  noMatchingMods: Không có mod nào khớp với tìm kiếm của bạn
+  addSelectedMods: Thêm {count} mod

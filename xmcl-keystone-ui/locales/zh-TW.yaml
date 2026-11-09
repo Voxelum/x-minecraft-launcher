@@ -69,6 +69,13 @@ bedrock:
   downloadFailed: 下載基岩版 {version} 失敗
   launchFailed: 啟動此基岩版失敗
   removeFailed: 移除基岩版 {version} 失敗
+  description: Minecraft 基岩版通過 Microsoft Store 安装和啟動。您的微軟帳號需要拥有基岩版許可證。
+  install: 从 Microsoft Store 获取
+  installFailed: 打開 Microsoft Store 失敗
+  installed: 已安装：{version}
+  launchHint: 使用“啟動”按鈕啟動基岩版。
+  licenseRequired: 请登入拥有 Minecraft 許可證的微軟帳號以安装和遊玩基岩版。
+  refresh: 重新整理
 backup:
   title: 備份與還原
   description: 備份與還原您的啟動器設定、收藏夾、主題與遊戲實例
@@ -96,7 +103,7 @@ backup:
   create: 建立備份
   createTitle: 建立 XMCL 備份封存檔
   saveDialogTitle: 儲存 XMCL 備份封存檔
-  fileFilterName: 'XMCL 備份封存檔 (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL 備份封存檔 (*.xmclbackup, *.zip)
   createError: 建立備份失敗
   loadManifestError: 讀取備份封存檔失敗
   restore: 還原
@@ -107,7 +114,7 @@ backup:
   elapsedTime: 經過時間
   remainingTime: 預計剩餘
   calculatingRemaining: 計算中...
-  lessThanMinute: '< 1 分鐘'
+  lessThanMinute: < 1 分鐘
   itemsProgress: '{current}/{total}'
   savesCategory: 存檔
   modsCategory: 模組
@@ -123,8 +130,8 @@ backup:
   backupDoneHint: 您的備份封存檔已建立並驗證完成。
   restoreDone: 還原完成！
   restoreDoneHint: 所有選取的資料與實例已成功還原。
-  timeTaken: '耗時：{time}'
-  destinationFile: '儲存至：{path}'
+  timeTaken: 耗時：{time}
+  destinationFile: 儲存至：{path}
   stagePreparing: 準備中
   stageSettings: 啟動器設定
   stageCollections: 已儲存收藏夾
@@ -132,13 +139,13 @@ backup:
   stageInstances: 遊戲實例
   stageCompressing: 壓縮封存檔
   stageComplete: 完成
-  stageLabel: '階段：{stage}'
+  stageLabel: 階段：{stage}
   searchInstancesPlaceholder: 依名稱或版本搜尋實例...
   selectBackupFilePrompt: 選擇要還原的備份封存檔
   selectBackupFileDescription: 選擇包含已儲存 XMCL 資料與實例的 .xmclbackup 或 .zip 檔案。
   selectFile: 選擇檔案
   selectBackupFileTitle: 開啟 XMCL 備份封存檔
-  createdOn: '建立於 {date}'
+  createdOn: 建立於 {date}
   changeFile: 更換檔案
   dataToRestore: 要還原的資料
   restoreSettings: 還原設定
@@ -155,8 +162,8 @@ backup:
   restoreError: 還原備份失敗
   restorePartialTitle: 還原完成，存在警告
   restorePartialHint: 部分元件或實例未能完全還原。請查看活動紀錄了解詳情。
-  restoreFailedCategory: '還原 {category} 失敗'
-  instancesSkipped: '已略過 {count} 個已存在的實例'
+  restoreFailedCategory: 還原 {category} 失敗
+  instancesSkipped: 已略過 {count} 個已存在的實例
   instancesFailed: '{count} 個實例還原失敗'
   createBackupTitle: 建立備份
   createBackupDescription: 將啟動器設定、收藏夾、自訂主題與實例儲存為單一可攜式封存檔。
@@ -172,7 +179,7 @@ backup:
   autoBackupRunNow: 立即備份
   autoBackupLastRun: 上次自動備份
   autoBackupNeverRun: 從未
-  selectedCount: '已選 {selected} / {total}'
+  selectedCount: 已選 {selected} / {total}
   autoBackupSelectInstances: 要自動備份的實例（可選取一個或多個）
   searchInstances: 搜尋實例...
   autoBackupInterval: 備份頻率
@@ -195,9 +202,27 @@ backup:
   interval6h: 每 6 小時
   interval12h: 每 12 小時
   interval24h: 每 24 小時
-  keepCount: '保留最近 {count} 個備份'
+  keepCount: 保留最近 {count} 個備份
 baseSetting:
   title: 一般設定
+  info:
+    address: 地址
+    changes: 修改狀態
+    custom: 自定义
+    disabled: 未啟用
+    enabled: 已啟用
+    exportFormats: 匯出格式
+    inherited: 繼承全局
+    modLoader: 模組加載器
+    notConfigured: 未設定
+    notSet: 未設定
+    offline: 離線包
+    projectId: 專案 ID
+    running: 运行中
+    saved: 已儲存
+    status: 狀態
+    stopped: 未运行
+    vanilla: 原版
 browseApp:
   createShortcut: 建立捷徑
   default: 預設
@@ -359,6 +384,27 @@ errors:
   HeadersTimeoutError: 等待 HTTP 標頭資訊超時
   NotFoundError: 404 未找到資源
   SocketError: 伺服器連線中斷
+  bedrockUnsupportedPlatform: Minecraft 基岩版仅在 Windows 版本上受支援。
+  bedrockNotInstalled: 未安装 Minecraft 基岩版。
+  bedrockLaunchFailed: 啟動 Minecraft 基岩版失敗。
+  bedrockInstallFailed: 安装 Minecraft 基岩版失敗。
+  bedrockDownloadUrlUnavailable: 当前微軟帳號無法获取此基岩版版本。Beta 和 Preview 版本需要帳號加入 Minecraft 測試計劃。
+  bedrockDeveloperModeRequired: 注册此基岩版版本需要開啟 Windows 開發者模式。
+  bedrockRegisterFailed: 向 Windows 注册此基岩版版本失敗。
+  bedrockVersionNotFound: 本機未安装此基岩版版本。
+  CorruptedResourceMetadata: 偵測到併已清理 {count} 個資源的損壞元數據。檔案本身仍可使用，但其 Modrinth/CurseForge 關联資訊已丟失，将在下次扫描時自動重新识别。
+  InstallBackendUnresponsive:
+    body: 啟動器后台進程無响應，安装無法完成。请完全結束併重新打開啟動器，然后重試。
+    title: 啟動器無响應
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Minecraft 檔案安装失敗
+  InstallNetworkError:
+    body: 網路問題中斷了安装，请檢查您的網路或代理后重試。
+    title: 無法下載 Minecraft 檔案
+  InstallPermissionDenied:
+    body: 杀毒軟件或目錄權限阻止了安装。请将啟動器加入杀毒軟件白名單，或在設定中選擇其他數據目錄。
+    title: 無法寫入啟動器目錄
 eula:
   body: 勾選此複選框即表示您同意 Minecraft 的 {eula}。
 exception:
@@ -376,15 +422,20 @@ command:
   instance:
     launch:
       title: 啟動執行個體
+      description: 啟動 Minecraft 實例
     create:
       title: 建立執行個體
+      description: 建立新實例
     delete:
       title: 刪除執行個體
+      description: 刪除現有實例
   user:
     login:
       title: 用戶登入
+      description: 登入您的帳號
     refresh:
       title: 刷新用戶
+      description: 重新整理用戶会話
 commandPalette:
   placeholder: 搜尋命令、執行個體、模組…
   commands: 命令
@@ -401,6 +452,7 @@ commandPalette:
   hintEnter: 進入
   hintBack: 返回
   hintClose: 關閉
+  hintAskAgent: 询問 Agent
 feedback:
   channel: 聯絡管道
   description: 我找到了漏洞/我想提出建議
@@ -419,6 +471,8 @@ feedback:
   qq: QQ 群
   qqDescription: 加入 QQ 回饋群直接和作者聊聊吧，群組號碼：{number}
   qqEnterGroup: 加入
+  reddit: Reddit
+  redditDescription: 加入 r/XMCL 社區
 fileDetail:
   fileSize: 檔案大小
   filesize: 檔案大小
@@ -548,6 +602,16 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: value
   fileApiPlaceholder: 若需保持資源同步，請在此處填入遠端同步網址
+  deleteHintBedrock: Minecraft 基岩版及其所有數據将从您的电脑中完全刪除。確定要繼續吗？
+  monitor: 全屏顯示器
+  monitorDefault: 預設（主顯示器）
+  monitorNumber: 顯示器 {number}
+  monitorPrimary: 主顯示器
+  nameInvalidChars: '名称不能包含以下字符：< > : " / \\ | ? *'
+  namePathTraversal: 名称不能包含路徑遍歷符號（".."）
+  nameReservedName: 此名称是系統保留名称，無法使用
+  nameTrailingDotOrSpace: 名称不能以點號或空格結尾
+  nameWhitespaceOnly: 名称不能仅由空格或點號組成
 instanceAge:
   older: 三天前
   threeDay: 三天內
@@ -631,6 +695,7 @@ instances:
   linkSharedFoldersHint: 將這些資料夾建立為指向啟動器共享資料夾的連結，使此實例與其他所有已連結的實例共享其內容。這不是複製——在一個實例中所做的變更會顯示在所有實例中。未勾選的資料夾將保持此實例私有。
   linkFailed: 無法將 {folder} 資料夾連結到共享資料夾
   addPrismDescription: 匯入現有的 PrismLauncher 實例。
+  instanceCount: '{count} 個實例'
 items:
   count: '{count} 個'
   total: 共 {total} 個
@@ -700,6 +765,13 @@ launchBlocked:
       如果仍然無法解決問題，請聯絡開發人員。
     title: 無法啟動遊戲程序
   unexpectedText: 這是意料之外的錯誤，您可以重新啟動啟動器來嘗試緩解問題，請聯絡作者來修復。
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL 無法从当前桌面会話恢復 X11 顯示資訊。请在当前桌面会話的終端中重新啟動 XMCL，或登出后重新登入。
+    noGraphicalSession: XMCL 当前不在圖形桌面会話中运行。请从桌面会話啟動 XMCL 后再啟動 Minecraft。
+    sandboxDenied: 應用沙箱無法存取 X11。请在 Flatpak 權限中允許 XMCL 存取 X11 socket，然后重啟 XMCL。
+    title: X11 顯示不可用
+    xwaylandMissing: 当前 Wayland 会話中的 Minecraft 需要 XWayland。请安装 Linux 發行版提供的 XWayland 軟件包，然后登出併重新登入。
+    xwaylandNotRunning: 已安装 XWayland，但当前沒有运行 X11 顯示服务。请在合成器設定中啟用 XWayland，然后登出併重新登入。
 launchFailed:
   crash: 遊戲當機了！
   description: 沒有找到當機報告，這裡是錯誤日誌和最新的日誌檔案
@@ -727,6 +799,11 @@ launcherUpdate:
   installAndQuit: 重新啟動並安裝更新
   noUpdateAvailable: 目前沒有可用更新
   updateToThisVersion: 下載並安裝
+  automaticUnavailable: 自動更新不可用
+  automaticNotImplemented: 此啟動器宿主尚未實現自動更新。
+  automaticNotConfigured: 此啟動器宿主尚未設定自動更新。
+  manualCheckHint: 尚未檢查新版本。请前往 GitHub Releases 查找相容安装包併手動安装。
+  manualCheckRequired: 此宿主無法自動檢查或安装更新。请點擊 GitHub Releases 按鈕手動檢查。
 localVersion:
   auto: 自動選擇
   empty: 本地沒有安裝任何版本
@@ -768,6 +845,23 @@ loginError:
   requirePassword: 請輸入密碼
   requireUsername: 使用者名稱不能為空
   timeout: 登入超時，請重試或檢查您的網路！
+  loginCanceled: 已取消微軟登入。
+  cyrillicNotAllowed: 不允許包含西里尔字符
+  illegalOfflineUsername: 用戶名長度必须为 3-16 個字符，且只能包含英文字母、數字和下劃线
+  loginMinecraftByXboxRateLimited: 微軟的 Minecraft 登入服务当前正在限流（HTTP 429），请稍等片刻后重試。
+  loginMinecraftByXboxRateLimitedWithRetry: 微軟的 Minecraft 登入服务当前正在限流（HTTP 429），请等待约 {seconds} 秒后重試。
+  loginMinecraftByXboxServerError: 微軟的 Minecraft 登入服务返回了伺服器錯誤（HTTP {status}），这是微軟那邊的問題，请稍后几分鐘再試。
+  loginMinecraftByXboxStatus: 通過 Xbox 通證交換 Minecraft 通證失敗（HTTP {status}），请確認您的 Xbox 帳號拥有 Minecraft，或稍后重試。
+  loginXboxAdultVerification: 您的微軟帳號需要先完成成人身份驗證（部分地區强製要求）才能登入 Xbox。请在浏覽器中打開 {url} 完成驗證后重試。
+  loginXboxBadXsts: 微軟返回的 XSTS 响應缺少用戶身份資訊。这通常是临時問題，请稍后几分鐘再試。
+  loginXboxBanned: 该微軟 / Xbox 帳號已被微軟封禁或暫停使用，無法登入 Minecraft。请联系微軟 / Xbox 客服。
+  loginXboxChildAccount: 您的微軟帳號是儿童帳號，需要先在 Microsoft 家庭中被添加为家庭成员才能登入 Xbox / Minecraft。请在浏覽器中打開 {url} 完成設定后重試。
+  loginXboxFailedWithCode: 请求 Xbox 通證失敗（XErr {code}），请根據该錯誤碼搜尋解决方案，或稍后重試。
+  loginXboxNoXboxProfile: 该微軟帳號還沒有 Xbox 檔案。请在浏覽器中打開 {url} 建立一個 Xbox 檔案后重試。
+  loginXboxRegionLocked: Xbox Live 在您帳號所在的国家/地區不可用。请到微軟帳號設定中修改帳號的国家/地區后重試。
+  xboxErrorGuideHint: 登入遇到問題？查看如何修復 Microsoft 和 Xbox 登入問題。
+  openLoginGuide: 如何修復此問題
+  openDiscordSupport: 仍需要說明？加入 Discord
 logsCrashes:
   crashes: 當機報告
   logs: 日誌
@@ -775,6 +869,7 @@ logsCrashes:
   title: 日誌或當機報告
   failures: 啟動失敗
   serverLogs: 伺服器日誌
+  showFile: 在檔案夹中顯示
 me:
   groupByDate: 按日期分組
   groupByFolder: 按資料夾分組
@@ -906,6 +1001,7 @@ modInstall:
   skipVersion: 忽略不同 Minecraft 版本的 Mod
   source: 模組來源
   switch: 切換版本
+  scanUnusedLibraries: 扫描未使用的庫
 modSearch:
   noLocalModsFound: 未找到符合搜尋的本機模組。
   noModsFound: 未找到模組。
@@ -942,6 +1038,111 @@ modpack:
   selectDefaultFiles: 選擇預設檔案
   url: URL
   urlHint: 模組包的主頁 URL 位址
+  emitCurseforgeDescription: 适用于 CurseForge 的標准 zip 模組包歸檔
+  emitModrinthDescription: 帶有高速 CDN 下載的官方轻量格式
+  emitPackwiz: 匯出 Packwiz 模組包
+  emitPackwizDescription: 轻量且對 git 友好的格式（pack.toml、index.toml 和 .pw.toml 檔案）
+  exportSuccess: 模組包匯出成功！
+  exportSuccessWithWarnings: 模組包已匯出，但包含警告
+  exportSkippedFiles: 匯出過程中略過了 {count} 個無法读取或已鎖定的檔案
+  exportFailed: 匯出模組包失敗
+  skippedFilesDialogTitle: 部分檔案無法匯出
+  skippedFilesDialogDescription: 模組包已建立，但略過了 {count} 個檔案
+  skippedReasonEperm: 拒絕存取（已被系統或其他進程鎖定）
+  skippedReasonEbusy: 檔案正被另一個程式使用
+  skippedReasonEnoent: 檔案未找到或損壞
+  skippedFilesNotice: 其餘檔案已成功打包至模組包。上述檔案因 Windows 系統限製或缺少存取權限而被略過。
+  openExportFolder: 打開模組包檔案夹
+  closeDialog: 知道了
+  expandAll: 展開所有檔案夹
+  collapseAll: 摺疊所有檔案夹
+  modpackVersionHint: 语义化版本號（例如 1.0.0）。使用 + 递增修订/次版本號
+  modrinthProject: Modrinth 專案
+  selectAllFiles: 全選檔案
+  deselectAllFiles: 取消全選檔案
+  bindProject: 绑定專案
+  bindProjectHint: 選擇当前 Modrinth 帳號有權管理的整合包專案。
+  bindProjectTypeImmutableHint: Modrinth 会在專案的第一個版本上傳后確定專案类型，之后無法修改。還沒有任何版本的草稿專案仍可在此绑定，但已發布为 mod/資源包等类型的專案無法轉換为整合包，请使用“建立新專案”来發布。
+  bindProjectNoProjects: 未找到你的 Modrinth 帳號下的任何專案。
+  unbindProject: 解除绑定
+  unbindProjectConfirmTitle: 解除绑定 Modrinth 專案？
+  unbindProjectConfirmMessage: 这只会解除当前實例与该 Modrinth 專案的本機關联，Modrinth 上的專案和版本不会受影响。
+  editProject: 編輯專案
+  projectDiscovery: 發現与相容性
+  projectGallery: 專案圖庫
+  projectGalleryAdd: 添加圖片
+  projectGalleryEmpty: 暫無圖庫圖片。
+  projectGalleryFeatured: 設为主圖
+  projectGalleryFromScreenshots: 選擇實例螢幕截圖
+  projectGalleryHint: 可添加不超過 5 MiB 的圖片，併設定專案主圖。
+  projectGallerySelectScreenshot: 選擇当前實例的螢幕截圖
+  projectIdentity: 標识与介绍
+  projectLinks: 專案連結
+  projectLoadFailed: 無法加載已绑定的 Modrinth 專案。
+  projectNoChanges: 專案沒有未儲存的修改。
+  projectNotBound: 尚未绑定 Modrinth 專案
+  projectNotBoundHint: 可绑定已有專案，或建立新的 Modrinth 專案。
+  projectUnsavedChanges: 已修改 {count} 個專案字段
+  projectLatestDraft: 草稿
+  projectVersions: 個版本
+  publish: 發布
+  publishCategories: 分类（用逗號分隔）
+  publishChannel: 發布通道
+  publishChangelog: 更新日誌
+  publishChangelogGenerate: 用 AI 生成
+  publishConfirmProjectChanges: 確認專案修改
+  publishCreateProject: 建立專案
+  publishCreateDraft: 構建併建立草稿
+  publishCustomVersion: 自定义
+  publishDescription: 專案詳細介绍
+  publishDiscordUrl: Discord 地址
+  publishDraftCreated: 草稿版本已上傳。
+  publishSubmitted: 版本已提交審核。
+  publishExistingProject: 已有專案
+  publishIcon: 專案圖標
+  publishIconHint: 支援 PNG、JPEG 或 WebP
+  publishIconKeep: 未選擇新圖片時保持現有圖標
+  publishIconUseInstance: 使用實例圖標
+  publishIssuesUrl: 問題反饋地址
+  publishLicense: 許可證 ID
+  publishLogin: 登入 Modrinth
+  publishFiles: 個已選檔案
+  publishLinkageSummary: '{total} 個 mod/資源包/光影包包中，{linked} 個可以直接連結到 Modrinth 上的下載地址，無需上傳。'
+  publishLinkageEmbeddedSummary: '{count} 個檔案無法連結，将随此版本一起上傳（內嵌）。'
+  publishLinkageShowFiles: 查看需要上傳的檔案
+  publishLinkageReason:
+    missing-file: 本機找不到该檔案
+    not-linked-to-modrinth: 未识别为 Modrinth 資源
+    no-downloadable-url: 未找到可再分發的下載地址
+  publishModrinth: 發布到 Modrinth
+  publishNewProject: 新建專案
+  publishOpenProject: 打開專案
+  publishOpenVersion: 打開版本
+  publishProfile: MRPack 类型
+  publishProfileClient: 仅用戶端
+  publishProfileServer: 仅服务端
+  publishProfileSplit: 通用包及独立用戶端/服务端包
+  publishProfileUniversal: 通用包
+  publishProject: 專案
+  publishProjectDetailsTab: 專案詳情
+  publishProjectName: 專案名称
+  publishProjectRequired: 请先選擇要發布的專案。
+  publishProjectSlug: 專案標识
+  publishProjectUrl: 專案 URL（可選）
+  publishProjectUrlHint: 留空将自動使用 {slug}。
+  publishProjectSaved: 專案詳情已更新。
+  publishSourceUrl: 源代碼地址
+  publishSubmit: 提交草稿審核
+  publishSummary: 简短摘要
+  publishSummaryMinWords: 摘要至少需要包含 3 個词。
+  publishVersionTitle: 版本標題
+  publishVersionTab: 發布版本
+  publishVersion: 發布版本
+  publishVisibility: 可见性
+  publishWikiUrl: Wiki 地址
+  visibilityPrivate: 私有
+  visibilityPublic: 公開
+  visibilityUnlisted: 不公開列出
 modpackImportConfirm:
   description: 偵測到您將檔案拖曳到啟動器。您是要匯入模組包嗎？
   title: 您是否要匯入模組包？
@@ -1201,6 +1402,16 @@ multiplayer:
   startNewP2PConnection: 按一下開始按鈕來新建一個新的點對點連線
   connectionError: 連線錯誤
   connectionFailedHint: 無法建立連線。請檢查雙方的 NAT 類型是否相容。
+  connectedToMaster: 已連接到房間主控
+  directConnection: 直連
+  master: 主控
+  masterHostsGameHint: 房間主控是联机連接中心，應由主控開啟 Minecraft 局域網世界。更換遊戲宿主前请先轉移主控。
+  member: 成员
+  joinCreatesMissingRoomHint: 如果该房間不存在，你会建立它併成为房間主控。
+  relayConnection: 中繼
+  relayAllowanceSummary: 本週期剩餘 {remaining}，共 {total}
+  relayServiceAvailable: XMCL Together 中繼服务可用
+  waitingForMaster: 正在等待房間主控重新連接
 myStuff: 個人中心
 natType:
   blocked: 無法存取網際網路
@@ -1247,6 +1458,11 @@ presence:
   save: 在 {instance} 瀏覽存檔
   setting: 瀏覽設定頁面
   shaderPack: 在 {instance} 瀏覽光影包
+  away: 离開
+  offline: 離線
+  online: 線上
+  playing: 正在遊玩 {game}
+  playingGeneric: 正在遊玩
 proxy:
   host: 伺服器位址
   port: 埠號
@@ -1326,6 +1542,8 @@ resourcepack:
   unselected: 未選資源包
   noPacks: 未找到資源包
   search: 搜尋資源包...
+  noLocalPacksFound: 未找到匹配搜尋的本機資源包。
+  noPacksInstalled: 您尚未安装任何資源包。
 save:
   map:
     tabTitle: 世界地圖
@@ -1395,6 +1613,25 @@ save:
   searchHint: 在 CurseForge 上搜尋世界
   searchSaves: 搜尋存檔
   empty: No worlds found
+  allowCheats: 允許作弊
+  difficulty: 難度
+  datapack:
+    name: 資料包 | 資料包
+    noSaveHint: 请先建立或選擇一個世界来安装此資料包
+    packFormat: 資料包格式：{format}
+    imported: 資料包已匯入至 {save}
+  loadMap: 加載地圖
+  mapError: 地圖錯誤
+  mapInfo: 交互式3D世界預覽：
+  mapLoaded: 地圖已加載
+  mapPreview: 地圖預覽
+  noLocalSavesFound: 未找到匹配搜尋的本機存檔。
+  noSavesFound: 未找到存檔
+  noSavesInstalled: 您還沒有任何存檔。
+  properties: 世界属性
+  useMouseRotate: 使用鼠標旋轉视圖
+  useScrollZoom: 使用滚輪縮放
+  world: 世界
 screenshots:
   empty: 您還沒有截圖
   playRandom: 隨機播放
@@ -1402,6 +1639,109 @@ screenshots:
   gallery: 截圖畫廊
   hint: 在遊戲中按 F2 截圖
   openFolder: 開啟截圖資料夾
+  title: 螢幕截圖与相片
+  manage: 螢幕截圖管理器
+  emptyTitle: 暫無螢幕截圖
+  emptyDescription: 在遊戲中按 F2 螢幕截圖，或手動匯入相片。
+  dropHint: 将相片或螢幕截圖拖到此處，添加到相簿
+  backToHome: 返回主頁
+  import: 添加相片
+  images: 圖片
+  importSuccess: 已成功匯入 {count} 张相片
+  copy: 復製圖片
+  copied: 已復製到剪貼板！
+  setWallpaper: 設为背景
+  setWallpaperSuccess: 已設为實例背景圖片！
+  setIcon: 設为圖標
+  setIconSuccess: 已設为實例圖標！
+  export: 儲存檔案
+  exportSuccess: 螢幕截圖儲存成功！
+  exportSelected: 匯出所選螢幕截圖
+  exportSelectedTitle: 選擇匯出檔案夹
+  exportSelectedSuccess: 已成功匯出 {count} 张螢幕截圖
+  deleteConfirmTitle: 刪除螢幕截圖？
+  deleteConfirmMessage: 確定要刪除 {count} 张螢幕截圖吗？此操作無法復原。
+  deleteSuccess: 螢幕截圖已刪除
+  selectedCount: 已選擇：{count}
+  selectAll: 全選
+  clearSelection: 取消全選
+  countLabel: '{count} 张螢幕截圖'
+  searchPlaceholder: 按名称搜尋……
+  noSearchResults: 沒有匹配的螢幕截圖
+  noSearchResultsHint: 请尝試调整搜尋內容
+  sort: 排序
+  sortDateDesc: 最新優先
+  sortDateAsc: 最早優先
+  sortSizeDesc: 最大優先
+  sortSizeAsc: 最小優先
+  sortNameAsc: 名称（A-Z）
+  sortNameDesc: 名称（Z-A）
+  viewGrid: 大網格
+  viewGridCompact: 紧凑網格
+  viewList: 列表视圖
+  edit: 編輯
+  editorTitle: 編輯螢幕截圖
+  layer: 圖層
+  dragToMove: 拖動以移動
+  transformHint: 拖動選區以移動，拖動控製點以縮放，按 Enter 應用
+  customColor: 自定义顏色
+  fill: 填充
+  brushPreview: 畫筆大小預覽
+  fontPreview: 字號預覽
+  textBgNone: 無
+  textBgShadow: 陰影
+  textBgBox: 方框
+  cropHint: 拖動邊框選擇裁剪區域。
+  textPlacementHint: 按 Enter 放置，按 Esc 取消
+  layerMoveUp: 上移圖層
+  layerMoveDown: 下移圖層
+  layerCopy: '{name} 副本'
+  pixels: 像素
+  saveCopy: 儲存副本
+  saveOverwrite: 覆蓋原圖
+  saveSuccess: 螢幕截圖已儲存！
+  saveCopySuccess: 已儲存为新螢幕截圖！
+  toolSelect: 選擇 / 平移
+  toolMove: 移動与變換（Ctrl+T / V）
+  toolPan: 平移（空格+拖動）
+  layers: 圖層
+  layerAdd: 添加圖層
+  layerDuplicate: 復製圖層
+  layerDelete: 刪除圖層
+  layerOpacity: 不透明度
+  transformLayer: 自由變換
+  applyTransform: 應用變換（Enter）
+  cancelTransform: 取消（Esc）
+  layerBackground: 背景
+  layerPaint: 绘畫
+  layerText: 文字
+  layerBlur: 模糊
+  toolPen: 畫筆
+  toolArrow: 箭头
+  toolRect: 矩形
+  toolCircle: 圓形
+  toolLine: 直线
+  toolText: 文字
+  toolHighlighter: 荧光筆
+  toolBlur: 像素化 / 模糊
+  toolCrop: 裁剪
+  applyCrop: 應用裁剪
+  cancelCrop: 取消裁剪
+  strokeWidth: 线條寬度
+  fontSize: 字號
+  color: 顏色
+  undo: 復原
+  redo: 重做
+  clear: 清空全部
+  textPlaceholder: 點擊輸入文字……
+  fontFamily: 字體
+  fontBold: 粗體
+  fontItalic: 斜體
+  textApply: 放置文字
+  textBg: 背景
+  zoomIn: 放大
+  zoomOut: 縮小
+  resetZoom: 重置縮放
 search:
   favorate: 收藏
   local: 已安裝
@@ -1421,6 +1761,28 @@ localCollection:
   installAll: 全部安裝
   incompatibleAlert: 有 {count} 個項目與目前執行個體不相容，已略過：
   projects: 無項目 | {count} 個項目 | {count} 個項目
+  saveCurrentMods: 将已安装模組儲存为收藏庫
+  saveCurrentModsSuccess: 已将 {count} 個模組儲存至收藏庫“{name}”
+  viewMods: 查看模組
+  editCollection: 編輯收藏庫
+  collectionDescription: 收藏庫描述
+  noModsInCollection: 此收藏庫中尚無模組
+  exportCollection: 匯出收藏庫
+  importCollection: 匯入收藏庫
+  removeEntryConfirm: 从收藏庫中移除
+  addMods: 添加模組
+  addModsTo: 添加模組至“{name}”
+  addModsHint: 从實例添加已安装的模組，或在市场中點擊书籤按鈕添加模組。
+  addModsDialogDesc: 選擇此實例中要包含在此收藏庫中的已安装模組。
+  addAllCurrent: 添加当前所有模組
+  addedModsSuccess: 已添加 {count} 個模組至收藏庫
+  searchMods: 搜尋模組……
+  selectAll: 全選
+  deselectAll: 取消全選
+  selected: 項已選
+  alreadyInCollection: 已添加
+  noMatchingMods: 沒有找到匹配的模組
+  addSelectedMods: 添加 {count} 個模組
 server:
   launch: 啟動伺服端
   stop: 停止伺服端
@@ -1581,6 +1943,60 @@ agent:
   accessRequiredHint: 訂閱 XMCL 即可使用內建 AI 助手，或前往設定自行配置 AI 供應商。
   subscribeXmcl: 訂閱 XMCL
   notConfiguredHint: 請在設定 → 基本設定 → AI 助手中設定 API 金鑰、模型和 OpenAI 相容端點，例如 OpenAI 或相容 Claude 的閘道。
+  abort: 停止生成
+  callingTool: 正在调用 {name}…
+  confirmAccept: 繼續
+  confirmAllowAll: 全部允許
+  confirmCancel: 取消
+  confirmPending: 等待確認
+  confirmTitle: 確認 Agent 操作
+  disabledPlaceholder: Agent 已禁用
+  emptyHint: 让 Agent 檢查你的實例、啟用/禁用模組、读取日誌或診斷當機。
+  errorTitle: Agent 執行出錯
+  inputPlaceholder: 向 Agent 提問…（Enter 發送，Shift+Enter 換行）
+  notConfiguredTitle: Agent 暫不可用
+  openSettings: 打開設定
+  passiveGameCrashed: 遊戲當機
+  passiveGameExitCode: 結束代碼 {code}
+  passiveGameExited: 遊戲已結束
+  passiveGameExitSignal: 信號 {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: 無結束狀態
+  reasoning: 思考過程
+  passiveGameStarted: 遊戲已啟動
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: 模組相容性報告
+  passiveModDiagnosisError: 相容性診斷失敗
+  passiveModDiagnosisSummary: 已檢查 {checked} 個模組 · {incompatibilities} 個不相容 · {duplicates} 個重複
+  passiveModDuplicate: 重複的 {mod}：{files}
+  passiveModInstalled: 已安装 {version}
+  reset: 新建對話
+  setupGuide: 設定指南
+  statusDisabled: 已禁用 — 请登入或設定服务商
+  statusReady: 就绪
+  statusWorking: 處理中…
+  suggestion1: 将此實例升级到更新的 Minecraft 版本，併同步更新模組
+  suggestion2: 我的模組當機了 — 找出原因併告诉我如何修復
+  suggestion3: 構建一個整合包：为我想要的功能查找模組併安装到此實例
+  thinking: 思考中…
+  title: XMCL Agent
+  toolArguments: 參數
+  toolResult: 結果
+  toolRunning: 等待結果…
+  toggleHint: 切換
+  marketConfirmMessage: 要将 {name} 安装到当前實例吗？
+  marketConfirmTarget: 目標：{instance}
+  marketConfirmTitle: 安装{type}
+  marketInstall: 安装
+  marketInstalled: 已安装
+  marketInstallFailed: '{type}安装失敗'
+  marketType:
+    datapack: 資料包
+    mod: 模組
+    modpack: 整合包
+    resourcepack: 資源包
+    shader: 光影包包
+  marketResultCount: 共 {count} 個結果
 setting:
   aiAgentApiKeyDescription: 配置 OpenAI 相容供應商，例如 OpenAI 或 Claude 閘道。API 金鑰僅儲存在本機裝置。
   aiAgentApiKeyPlaceholder: OpenAI 或 Claude 供應商 API 金鑰
@@ -1792,6 +2208,29 @@ setting:
     successGlobal: 背景圖片已更新。
     successInstance: 實例背景圖片已更新。
     failed: 設定背景圖片失敗
+  multiplayerTransport: Together 傳輸核心
+  multiplayerTransportDescription: 選擇 Together 使用的 WebRTC 實現。切換核心会斷開当前連接。
+  aiAgentApiKey: AI Agent API Key
+  aiAgentApiKeyClear: 清除密鑰
+  aiAgentApiKeyEmpty: 粘貼你的 API Key
+  aiAgentApiKeyNotNeeded: 無需密鑰
+  aiAgentApiKeyNotNeededHint: 该服务在本機运行，無需 API Key
+  aiAgentApiKeySaved: 已儲存
+  aiAgentApiKeyStored: 已儲存密鑰，輸入可替換
+  aiAgentBuiltin: 內置
+  aiAgentCustom: 自定义
+  aiAgentEndpoint: AI Agent Endpoint
+  aiAgentEndpointDescription: 聊天补全（chat completions）的 Endpoint 地址。
+  aiAgentModel: AI Agent 模型
+  aiAgentModelDescription: 请求聊天补全時使用的模型名。
+  useDesktopBackground: 使用当前桌面桌布
+  appImageUpdateMode: AppImage 更新管理方式
+  appImageExternalMode: 外部管理器 / 手動替換（預設）
+  appImageSelfMode: XMCL 自行管理（我擁有此 AppImage）
+  appImageAutoDownload: 自動下載更新
+  appImageAutoInstall: 結束時安裝已下載的更新
+  appImageExternalUpdateHint: 如果是透過 Shelly 或其他套件管理員安裝，請在那裡更新並保持外部模式。否則請在現有路徑自行替換 AppImage。XMCL 在外部模式下不會下載或安裝更新，亦不會更改管理員記錄或桌面捷徑。
+  appImageSelfUpdateHint: 僅在您自行管理 AppImage 時選擇自行管理，而非由 Shelly 或其他管理員所擁有。內建更新需要檔名中不包含版本號的絕對 AppImage 路徑（例如 xmcl.AppImage）。如果名稱包含如 0.73.0 的版本號，請退出 XMCL，自行重新命名檔案，將桌面捷徑更新為該穩定路徑，然後再次啟動。在此之前更新仍為手動。XMCL 不會為您重新命名檔案。變更模式後，請再次檢查更新。
 settingLabel:
   global: 全域性設定
   globalHint: 此設定已使用全域性設定
@@ -1854,6 +2293,8 @@ shaderPack:
   noPacks: 未安裝光影包
   search: 搜尋光影包...
   'off': 'Off'
+  noLocalPacksFound: 未找到匹配搜尋的本機光影包包。
+  noPacksInstalled: 您尚未安装任何光影包包。
 shared:
   reset: 重設
   close: 關閉
@@ -1894,6 +2335,11 @@ shared:
   'yes': 是
   delete: 刪除
   view: 檢視
+  openFolder: 打開檔案夹
+  missing: 缺失
+  healthy: 正常
+  unused: 未使用
+  failed: 失敗
 sidebar:
   pin: 釘選
   unpin: 取消釘選
@@ -2197,6 +2643,9 @@ userSkin:
   skinDeleteFailed: 無法從衣櫥移除皮膚
   edit: 編輯
   fetch: 載入
+  invalidImage: 请選擇有效的 Minecraft 皮膚圖片。
+  invalidImageTitle: 無效的皮膚圖片
+  uploadRejected: Minecraft 拒絕了此次皮膚上傳，请稍后重試。
 version:
   checkIntegrity: 檢查完整性
   name: 版本 | 版本
@@ -2257,6 +2706,8 @@ minecraftFriends:
     inviteRejected: 該玩家未啟用好友功能或不接受邀請。
     tokenExpired: 你的 Microsoft 工作階段已過期，請重新登入。
     generic: 出現了一些問題，請重試。
+    friendsDisabled: 您的 Minecraft 帳號未啟用好友功能或無法使用好友。请在 Minecraft 帳號設定中啟用好友，然后重試。
+    invalidName: Minecraft 用戶名必须介于 3 到 16 個字符之間。
 relative:
   justNow: 剛剛
   secondsAgo: '{count} 秒前'
@@ -2303,6 +2754,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: 偵測到控製器
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
@@ -2416,3 +2868,34 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+difficulty:
+  easy: 简單
+  hard: 困難
+  normal: 普通
+  peaceful: 和平
+xmclAccount:
+  accountSummary: 帳號
+  confirmMerge: 確認合併帳號
+  createdAt: 建立于 {date}
+  description: 無密碼的 XMCL 身份，与 Minecraft 遊戲帳號分開管理。
+  expiresAt: 過期時間 {date}
+  gameAccountsSeparate: 移除遊戲帳號不会解除 XMCL 登入方式。
+  guest: 访客
+  identityConflict: 此 {provider} 登入属于另一個 XMCL Account。帳號絕不会自動合併。
+  linkAccountWith: 使用以下方式绑定帳號
+  mergePreview: 確認前请檢查将要迁移的資源。
+  mergeNeedsSession: 请先登入你希望保留的 XMCL Account，再檢查合併。
+  mergeQueued: 帳號合併正在進行。
+  requestFailed: XMCL Account 服务無法完成请求。你的遊戲帳號未受影响。
+  reviewMerge: 檢查合併
+  session: 会話
+  sessionActive: 有效
+  sessionExpired: 已過期
+  signOutAll: 結束所有設備
+  signOutDevice: 結束此設備
+  status:
+    active: 有效
+    deleted: 已刪除
+    deletion_pending: 等待刪除
+    merged: 已合併
+  title: XMCL Account

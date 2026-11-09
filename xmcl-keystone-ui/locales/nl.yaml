@@ -40,6 +40,10 @@ askAICrash:
   copyPrompt: Kopieer de prompt om aan AI te vragen
   description: Laat AI u helpen de gamecrash te begrijpen! Volg de onderstaande instructies om deze gamecrash aan AI te vragen!
   selectPlatform: Open een AI-platform en plak de prompt die u zojuist heeft gekopieerd.
+  agentNotConfigured: Voeg een AI-provider en API-sleutel toe in Instellingen om de ingebouwde assistent dit te laten diagnosticeren en oplossen.
+  askAgent: Diagnosticeer met ingebouwde AI-assistent
+  orExternal: of gebruik een externe AI
+  setupAgent: AI-assistent instellen
 authProfileAddedNotification: Auth-profiel {name} Toegevoegd
 bedrock:
   installBedrockVersion: Downloading Bedrock {version}
@@ -60,21 +64,28 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+  description: Minecraft Bedrock Edition wordt geïnstalleerd en gestart via de Microsoft Store. Je moet een Bedrock-licentie bezitten op je Microsoft-account.
+  install: Downloaden uit Microsoft Store
+  installFailed: Kan de Microsoft Store niet openen
+  installed: 'Geïnstalleerd: {version}'
+  launchHint: Gebruik de Startknop om Bedrock Edition te starten.
+  licenseRequired: Log in met een Microsoft-account dat Minecraft bezit om Bedrock Edition te installeren en te spelen.
+  refresh: Vernieuwen
 backup:
-  title: 'Back-up & Herstel'
+  title: Back-up & Herstel
   description: Maak back-ups en herstel je instellingen, collecties, thema’s en game-instanties
   launcherData: Launcher-gegevens
   includeSettingsTitle: Launcher-instellingen
   includeSettingsHint: Algemene voorkeuren, taal, ontwikkelaarsmodus en uiterlijk
   includeCollectionsTitle: Opgeslagen collecties
   includeCollectionsHint: Door de launcher beheerde mod- en broncollecties
-  includeThemesTitle: 'Aangepaste thema’s & media'
+  includeThemesTitle: Aangepaste thema’s & media
   includeThemesHint: Themakleuren, aangepaste CSS-stijlen en achtergrondmedia
   instances: Instanties
   selectAll: Alles selecteren
   deselectAll: Alles deselecteren
   instanceDataOptions: Instantiegegevens-opties
-  includeConfigs: 'Configuraties & opties'
+  includeConfigs: Configuraties & opties
   includeSaves: Werelden (Saves)
   includeResourcePacks: Resourcepacks
   includeShaderPacks: Shaderpacks
@@ -87,7 +98,7 @@ backup:
   create: Back-up maken
   createTitle: XMCL Back-uparchief maken
   saveDialogTitle: XMCL Back-uparchief opslaan
-  fileFilterName: 'XMCL Back-uparchief (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL Back-uparchief (*.xmclbackup, *.zip)
   createError: Back-up maken mislukt
   loadManifestError: Back-uparchief lezen mislukt
   restore: Herstellen
@@ -98,7 +109,7 @@ backup:
   elapsedTime: Verstreken tijd
   remainingTime: Geschatte resterende tijd
   calculatingRemaining: Berekenen...
-  lessThanMinute: '< 1 min'
+  lessThanMinute: < 1 min
   itemsProgress: '{current}/{total}'
   savesCategory: Werelden
   modsCategory: Mods
@@ -110,16 +121,16 @@ backup:
   copiedLog: Logboek gekopieerd naar klembord
   openFolder: Tonen in map
   done: Klaar
-  backupDone: 'Back-up voltooid!'
+  backupDone: Back-up voltooid!
   backupDoneHint: Je back-uparchief is aangemaakt en gecontroleerd.
-  restoreDone: 'Herstel voltooid!'
+  restoreDone: Herstel voltooid!
   restoreDoneHint: Alle geselecteerde gegevens en instanties zijn succesvol hersteld.
   timeTaken: 'Verstreken tijd: {time}'
   destinationFile: 'Opgeslagen in: {path}'
   stagePreparing: Voorbereiden
   stageSettings: Launcher-instellingen
   stageCollections: Opgeslagen collecties
-  stageThemes: 'Thema’s & media'
+  stageThemes: Thema’s & media
   stageInstances: Game-instanties
   stageCompressing: Archief comprimeren
   stageComplete: Voltooid
@@ -129,14 +140,14 @@ backup:
   selectBackupFileDescription: Kies een .xmclbackup- of .zip-bestand met je opgeslagen XMCL-gegevens en instanties.
   selectFile: Bestand kiezen
   selectBackupFileTitle: XMCL Back-uparchief openen
-  createdOn: 'Gemaakt op {date}'
+  createdOn: Gemaakt op {date}
   changeFile: Bestand wijzigen
   dataToRestore: Te herstellen gegevens
   restoreSettings: Instellingen herstellen
   restoreSettingsHint: Huidige launcher-voorkeuren overschrijven met de back-up
   restoreCollections: Collecties herstellen
   restoreCollectionsHint: Opgeslagen collecties importeren en samenvoegen
-  restoreThemes: 'Thema’s & media herstellen'
+  restoreThemes: Thema’s & media herstellen
   restoreThemesHint: Thema’s, aangepaste CSS en achtergrondmedia opnieuw installeren
   noLauncherDataInBackup: Geen launcher-instellingen of thema’s gevonden in dit back-uparchief.
   conflictStrategyTitle: Afhandeling van naamconflicten
@@ -146,9 +157,9 @@ backup:
   restoreError: Back-up herstellen mislukt
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Back-up maken
   createBackupDescription: Sla je launcher-instellingen, collecties, aangepaste thema’s en instanties op in één draagbaar archiefbestand.
   restoreBackupTitle: Back-up herstellen
@@ -171,8 +182,8 @@ backup:
   autoBackupDestination: Map voor automatische back-ups
   browse: Bladeren
   autoBackupContentLabel: Inhoud voor achtergrondback-ups
-  instanceSaves: 'Werelden & saves'
-  instanceConfigs: 'Configuraties & opties'
+  instanceSaves: Werelden & saves
+  instanceConfigs: Configuraties & opties
   instanceMods: Mods
   instanceResourcePacks: Resourcepacks
   instanceShaderPacks: Shaderpacks
@@ -186,9 +197,27 @@ backup:
   interval6h: Elke 6 uur
   interval12h: Elke 12 uur
   interval24h: Elke 24 uur
-  keepCount: 'Laatste {count} back-ups bewaren'
+  keepCount: Laatste {count} back-ups bewaren
 baseSetting:
-  title: Instance-instellingen
+  title: Basisinstellingen
+  info:
+    address: Adres
+    changes: Wijzigingen
+    custom: Aangepast
+    disabled: Uitgeschakeld
+    enabled: Ingeschakeld
+    exportFormats: Exportformaten
+    inherited: Overgeërfd
+    modLoader: Modloader
+    notConfigured: Niet geconfigureerd
+    notSet: Niet ingesteld
+    projectId: Project-ID
+    running: Actief
+    saved: Opgeslagen
+    status: Status
+    stopped: Gestopt
+    vanilla: Vanilla
+    offline: Offline archief
 browseApp:
   createShortcut: Snelkoppeling Maken
   default: STANDAARD
@@ -315,10 +344,10 @@ diagnosis:
     description: Kan {file} niet vinden
     title: Modpack-bestand niet gevonden
 difficulty:
-  easy: Eenvoudig
+  easy: Makkelijk
   hard: Moeilijk
   normal: Normaal
-  peaceful: Vredig
+  peaceful: Vreedzaam
 disk:
   available: Beschikbaar
   used: Gebruikt
@@ -349,6 +378,27 @@ errors:
   HeadersTimeoutError: HTTP Header timeout
   NotFoundError: 404 Niet Gevonden
   SocketError: Server socket fout
+  bedrockUnsupportedPlatform: Minecraft Bedrock Edition wordt alleen ondersteund op Windows.
+  bedrockNotInstalled: Minecraft Bedrock Edition is niet geïnstalleerd.
+  bedrockLaunchFailed: Kan Minecraft Bedrock Edition niet starten.
+  bedrockInstallFailed: Kan installatie van Minecraft Bedrock Edition niet starten.
+  CorruptedResourceMetadata: Beschadigde metadata gedetecteerd en gewist voor {count} bron(nen). De bestanden werken nog steeds, maar hun Modrinth/CurseForge-koppeling ging verloren en wordt automatisch opnieuw gedetecteerd.
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Kan Minecraft-bestanden niet installeren
+  InstallNetworkError:
+    body: Een netwerkprobleem heeft de installatie onderbroken. Controleer je internetverbinding of proxy en probeer het opnieuw.
+    title: Kan Minecraft-bestanden niet downloaden
+  InstallPermissionDenied:
+    body: Een antivirusprogramma of beperkte bestandsrechten hebben de installatie geblokkeerd. Voeg de launcher toe aan antivirus-uitzonderingen of kies een andere map in instellingen.
+    title: Geen schrijftoegang tot launcher-map
+  bedrockDownloadUrlUnavailable: Deze Bedrock-versie is niet beschikbaar voor het huidige Microsoft-account. Beta- en previewversies vereisen deelname aan het Minecraft-bètaprogramma.
+  bedrockDeveloperModeRequired: Windows Ontwikkelaarsmodus is vereist om deze Bedrock-versie te registreren.
+  bedrockRegisterFailed: Kan deze Bedrock-versie niet registreren in Windows.
+  bedrockVersionNotFound: Deze Bedrock-versie is niet lokaal geïnstalleerd.
+  InstallBackendUnresponsive:
+    body: Het achtergrondproces van de launcher reageert niet meer, waardoor de installatie niet kon worden voltooid. Sluit de launcher volledig af en start deze opnieuw.
+    title: Launcher reageert niet
 eula:
   body: Door het selectievakje aan te vinken, geeft u aan dat u akkoord gaat met de {eula} van Minecraft.
 exception:
@@ -366,15 +416,20 @@ command:
   instance:
     launch:
       title: Instantie starten
+      description: Een Minecraft-instantie starten
     create:
       title: Instantie aanmaken
+      description: Een nieuwe instantie maken
     delete:
       title: Instantie verwijderen
+      description: Een bestaande instantie verwijderen
   user:
     login:
       title: Gebruiker inloggen
+      description: Inloggen op je account
     refresh:
       title: Gebruiker vernieuwen
+      description: Gebruikerssessie vernieuwen
 commandPalette:
   placeholder: Zoek opdrachten, instanties, mods…
   commands: Opdrachten
@@ -391,13 +446,14 @@ commandPalette:
   hintEnter: openen
   hintBack: terug
   hintClose: sluiten
+  hintAskAgent: vraag het aan de Assistent
 feedback:
   channel: Kanalen
   description: Ik heb een bug gevonden of ik wil een suggestie doen
   discord: Discord
   discordDescription: Neem deel aan het Discord-kanaal
   discordJoin: Deelnemen
-  generateReport: Rapport Genereerren
+  generateReport: Rapport genereren
   generateSaveAs: Sla het rapport op in
   github: Github Issue
   githubDescription: Open een Github Issue om uw gedachten te delen
@@ -409,6 +465,8 @@ feedback:
   qq: QQ Groep
   qqDescription: 'Betreed de feedback QQ-groep en praat direct met de auteurs. Groepsnummer: {number}'
   qqEnterGroup: Deelnemen
+  reddit: Reddit
+  redditDescription: Word lid van de r/XMCL subreddit-community
 fileDetail:
   fileSize: Bestandsgrootte
   filesize: Bestandsgrootte
@@ -536,6 +594,16 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: waarde
   fileApiPlaceholder: Voer hier de externe sync-URL in als je de resources gesynchroniseerd wilt houden
+  deleteHintBedrock: Minecraft Bedrock Edition en alle bijbehorende gegevens worden volledig van je computer verwijderd. Weet je het zeker?
+  monitor: Volledig scherm beeldscherm
+  monitorDefault: Standaard (hoofdbeeldscherm)
+  monitorNumber: Beeldscherm {number}
+  monitorPrimary: Primair
+  nameInvalidChars: 'Naam mag geen van de volgende tekens bevatten: < > : " / \ | ? *'
+  namePathTraversal: Naam mag geen padnavigatie ("..") bevatten
+  nameReservedName: Deze naam is gereserveerd door het besturingssysteem en kan niet worden gebruikt
+  nameTrailingDotOrSpace: Naam mag niet eindigen met een punt of spatie
+  nameWhitespaceOnly: Naam mag niet alleen uit spaties of punten bestaan
 instanceAge:
   older: Ouder
   threeDay: Binnen Drie Dagen
@@ -581,6 +649,7 @@ instanceUpdate:
   summary: '{add} bestanden toegevoegd. {remove} bestanden verwijderd. {keep} bestanden behouden.'
   title: Instance Updaten
   update: Start Update
+  noFiles: Geen bestandswijzigingen
 instances:
   add: Spel Aanmaken
   addCurseForgeDescription: Importeer vanuit de Curseforge-datamap. U moet de hoofddatamap van Curseforge selecteren
@@ -603,6 +672,7 @@ instances:
   linkSharedFoldersHint: Maak deze mappen als koppelingen naar de gedeelde mappen van de launcher, zodat deze instantie hun inhoud deelt met alle andere gekoppelde instanties. Dit is geen kopie — wijzigingen in één instantie verschijnen in alle. Niet-aangevinkte mappen blijven privé voor deze instantie.
   linkFailed: Kan de map {folder} niet koppelen aan de gedeelde map
   addPrismDescription: Bestaande PrismLauncher-instantie importeren.
+  instanceCount: '{count} instanties'
 items:
   count: '{count} items'
   total: '{total} totaal'
@@ -646,6 +716,7 @@ launch:
   launchAnyway: Toch Starten
   launchAs: Starten als
   forceKill: Geforceerd beëindigen
+  launchTo: Starten naar
 launchBlocked:
   launchBadVersion:
     description: De {version} versie json is corrupt. Misschien deze versie opnieuw installeren?
@@ -669,6 +740,13 @@ launchBlocked:
     description: Controleer uw java, of geef de launcher meer permissies en probeer het opnieuw. Als dit nog steeds niet werkt, neem dan contact op met de ontwikkelaars.
     title: Starten van gameproces mislukt
   unexpectedText: Dit is onverwacht. U kunt de launcher herstarten om het probleem te verhelpen. Neem contact op met de auteur als dit probleem zich opnieuw voordoet.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL kon de X11-scherminformatie niet herstellen van je desktopsessie. Herstart XMCL vanuit een terminal in de huidige sessie, of meld je af en opnieuw aan.
+    noGraphicalSession: XMCL draait niet in een grafische desktopsessie. Start XMCL vanuit je grafische omgeving voordat je Minecraft start.
+    sandboxDenied: De applicatie-sandbox heeft geen toegang tot X11. Verleen XMCL toegang tot de X11-socket in je Flatpak-machtigingen en herstart XMCL.
+    title: X11-scherm niet beschikbaar
+    xwaylandMissing: Minecraft vereist XWayland in deze Wayland-sessie. Installeer het XWayland-pakket van je Linux-distributie en meld je opnieuw aan.
+    xwaylandNotRunning: XWayland is geïnstalleerd, maar de X11-schermserver draait niet. Schakel XWayland in via de instellingen van je compositor en meld je opnieuw aan.
 launchFailed:
   crash: Game Gecrasht!!
   description: Er is geen crash rapport. Dit is de fout log en de laatste log.
@@ -696,6 +774,11 @@ launcherUpdate:
   installAndQuit: Herstarten om te Installeren
   noUpdateAvailable: Geen Update Beschikbaar
   updateToThisVersion: Downloaden en Installeren
+  automaticUnavailable: Automatische updates niet beschikbaar
+  automaticNotImplemented: Automatisch bijwerken is niet geïmplementeerd voor dit platform.
+  automaticNotConfigured: Automatisch bijwerken is niet geconfigureerd voor dit platform.
+  manualCheckHint: Er is niet gezocht naar updates. Controleer GitHub Releases voor een compatibel installatiepakket en installeer het handmatig.
+  manualCheckRequired: Dit platform ondersteunt geen automatische updatecontrole of -installatie. Bezoek de officiële releasepagina.
 localVersion:
   auto: Automatisch Berekend
   empty: Geen Versie Geïnstalleerd
@@ -735,12 +818,31 @@ loginError:
   requirePassword: Wachtwoord is verplicht
   requireUsername: Gebruikersnaam is verplicht
   timeout: Inloggen timeout. Probeer het opnieuw of controleer uw netwerk.
+  loginCanceled: Aanmelden bij Microsoft is geannuleerd.
+  cyrillicNotAllowed: Cyrillische tekens zijn niet toegestaan
+  illegalOfflineUsername: Gebruikersnaam moet 3–16 tekens lang zijn en mag alleen Engelse letters, cijfers en liggende streepjes bevatten
+  loginMinecraftByXboxRateLimited: De Minecraft-authenticatieservice van Microsoft beperkt tijdelijk verzoeken (HTTP 429). Wacht even en probeer het opnieuw.
+  loginMinecraftByXboxRateLimitedWithRetry: De Minecraft-authenticatieservice van Microsoft beperkt verzoeken (HTTP 429). Wacht ongeveer {seconds}s en probeer het opnieuw.
+  loginMinecraftByXboxServerError: De Minecraft-authenticatieservice van Microsoft gaf een serverfout (HTTP {status}). Dit is een probleem aan hun zijde. Probeer het over een paar minuten opnieuw.
+  loginMinecraftByXboxStatus: Kan Xbox-token niet inwisselen voor Minecraft-token (HTTP {status}). Controleer of dit Xbox-profiel Minecraft bezit of probeer het opnieuw.
+  loginXboxAdultVerification: Je Microsoft-account vereist leeftijdsverificatie (in sommige regio's verplicht) vóór Xbox-aanmelding. Open {url} in je browser om dit te voltooien en probeer het opnieuw.
+  loginXboxBadXsts: Microsoft retourneerde een XSTS-antwoord zonder de verwachte gebruikersgegevens. Dit is meestal tijdelijk – probeer het over een paar minuten opnieuw.
+  loginXboxBanned: Dit Microsoft-/Xbox-account is door Microsoft geschorst of verbannen. Je kunt niet inloggen bij Minecraft. Neem contact op met Microsoft-/Xbox-ondersteuning.
+  loginXboxChildAccount: Je Microsoft-account is een kinderaccount en moet aan een Microsoft Family worden toegevoegd voordat je kunt inloggen bij Xbox/Minecraft. Open {url} in je browser om dit op te lossen en probeer het opnieuw.
+  loginXboxFailedWithCode: Inloggen bij Xbox met Microsoft-token mislukt (XErr {code}). Zoek online naar deze code voor hulp of probeer het later opnieuw.
+  loginXboxNoXboxProfile: Dit Microsoft-account heeft nog geen Xbox-profiel. Open {url} in je browser om er een aan te maken en probeer het opnieuw.
+  loginXboxRegionLocked: Xbox Live is niet beschikbaar in de regio van je Microsoft-account. Wijzig je land/regio in je Microsoft-accountinstellingen en probeer het opnieuw.
+  xboxErrorGuideHint: Problemen met inloggen? Ontdek hoe je inlogproblemen met Microsoft & Xbox oplost.
+  openLoginGuide: Hoe dit probleem op te lossen
+  openDiscordSupport: Nog steeds hulp nodig? Word lid van onze Discord
 logsCrashes:
   crashes: Crash Rapporten
   logs: Logs
   placeholder: Geen Bestanden Gevonden
   title: Logs of Crash Rapporten
   failures: Startfouten
+  serverLogs: Serverlogs
+  showFile: Weergeven in map
 me:
   groupByDate: Groeperen op datum
   groupByFolder: Groeperen op map
@@ -793,7 +895,7 @@ mod:
   modloaderSelectNotSupported: Geen {modloader} gevonden voor Minecraft {minecraft}
   mods: '{count} mods'
   name: Mod | Mods
-  newFolder: Nieuwe Map
+  newFolder: Nieuwe map
   noGroupsFound: Geen groepen gevonden
   noGroupsYet: Nog geen groepen. Maak er een!
   noModLoaderHint: Vergeet niet een mod loader in te schakelen om mods te gebruiken!
@@ -804,12 +906,29 @@ mod:
   selectOrCreateGroup: Selecteer of Maak Groep
   showDirectory: Toon mods map
   showFile: Toon het mod pad {file}
-  showInModrinth: Toon {name} in Modrinth
-  switchDefaultSource: Standaard Mod Bron
+  showInModrinth: '{name} weergeven in Modrinth'
+  switchDefaultSource: Standaardbron wisselen
   syncGroupRules: Groeperingsregels Opslaan
-  toUpdate: '{count} updates'
+  toUpdate: '{count} updates beschikbaar'
   ungroup: Degroeperen
   description: Beschrijving
+  autoCategorize: Automatisch in mappen sorteren
+  autoCategorizeHint: Groepeer mods automatisch in categoriemappen (Optimalisatie, Bibliotheken, Wereld, Gameplay, etc.)
+  autoCategorizeSuccess: Mods automatisch gesorteerd in {count} mappen
+  collapseAll: Alle mappen inklappen
+  expandAll: Alle mappen uitklappen
+  folderSetting: Mapinstellingen
+  folderColor: Mapkleur
+  folderIcon: Mappictogram
+  pinGroup: Bovenaan vastmaken
+  pinToTop: Bovenaan vastmaken
+  pinToTopHint: Map verschijnt bovenaan de lijst
+  pinned: Vastgemaakt
+  unpinGroup: Map losmaken
+  customColor: Aangepaste kleur
+  preview: Voorbeeld
+  ungroupAll: Alle groeperingen opheffen
+  organization: Maporganisatie
 modFilter:
   clear: Filter Wissen
   dependenciesInstallOnly: Toon alleen gemiste afhankelijkheden mods
@@ -838,6 +957,7 @@ modInstall:
   skipVersion: Sla de Mods met andere Minecraft versie over
   source: Mod Bron
   switch: Versie Wisselen
+  scanUnusedLibraries: Ongebruikte bibliotheken scannen
 modSearch:
   noLocalModsFound: Geen lokale mods gevonden die overeenkomen met uw zoekopdracht.
   noModsFound: Geen mods gevonden.
@@ -866,13 +986,119 @@ modpack:
   export: Exporteer als Modpack
   exportDirectory: Export Map
   exportDirectoryDescription: De modpack wordt standaard geëxporteerd naar de Downloads map
-  includeAssets: Assets Includeren
+  includeAssets: Assets opnemen
   includes: Bestanden om in te sluiten
   modpackVersion: Modpack Versie
   name: Modpack | Modpacks
   overrides: Overschrijvingen
   url: URL
   urlHint: De startpagina URL van uw modpack
+  emitCurseforgeDescription: Standaard ZIP-modpackarchief voor CurseForge
+  emitModrinthDescription: Lichtgewicht officieel formaat met snelle CDN-downloads
+  emitPackwiz: Packwiz-modpack exporteren
+  emitPackwizDescription: Git-vriendelijk metadatagebaseerd formaat, ideaal voor versiebeheer
+  exportSkippedFiles: '{count} onleesbare of vergrendelde bestanden zijn overgeslagen tijdens exporteren'
+  exportSuccessWithWarnings: Modpack geëxporteerd met waarschuwingen
+  skippedFilesDialogDescription: Modpack aangemaakt, maar {count} bestanden zijn overgeslagen
+  skippedFilesDialogTitle: Overgeslagen bestanden bij exporteren
+  modrinthProject: Modrinth-project
+  bindProject: Project koppelen
+  bindProjectHint: Selecteer een Modrinth-modpackproject dat wordt beheerd door het huidige account.
+  bindProjectTypeImmutableHint: Modrinth vergrendelt het projecttype zodra de eerste versie is geüpload; daarna kan het niet meer worden gewijzigd. Conceptprojecten zonder versies kunnen hier worden gekoppeld, maar een project dat al als mod of resourcepack is gepubliceerd, kan niet worden omgezet in een modpack — gebruik in plaats daarvan "Nieuw project maken".
+  bindProjectNoProjects: Geen Modrinth-projecten gevonden voor je account.
+  unbindProject: Project ontkoppelen
+  unbindProjectConfirmTitle: Modrinth-project ontkoppelen?
+  unbindProjectConfirmMessage: Dit verwijdert alleen de lokale koppeling tussen deze instantie en het Modrinth-project. Het project en de versies op Modrinth blijven ongewijzigd.
+  editProject: Project bewerken
+  projectDiscovery: Ontdekking & compatibiliteit
+  projectGallery: Galerij
+  projectGalleryAdd: Afbeelding toevoegen
+  projectGalleryEmpty: Nog geen afbeeldingen in de galerij.
+  projectGalleryFeatured: Uitgelicht
+  projectGalleryFromScreenshots: Kiezen uit screenshots
+  projectGalleryHint: Voeg afbeeldingen toe tot 5 MiB en kies een hoofdafbeelding voor het project.
+  projectGallerySelectScreenshot: Selecteer instantie-screenshot
+  projectIdentity: Identiteit & beschrijving
+  projectLinks: Projectlinks
+  projectLoadFailed: Kan het gekoppelde Modrinth-project niet laden.
+  projectNotBound: Geen Modrinth-project gekoppeld
+  projectNotBoundHint: Koppel een bestaand project of maak een nieuw Modrinth-project aan.
+  projectNoChanges: Geen wijzigingen in project
+  projectUnsavedChanges: '{count} projectveld(en) gewijzigd'
+  projectLatestDraft: Concept
+  projectVersions: versies
+  publish: Publiceren
+  publishChannel: Releasekanaal
+  publishChangelog: Wijzigingslogboek
+  publishChangelogGenerate: Genereren met AI
+  publishConfirmProjectChanges: Projectwijzigingen bevestigen
+  publishCreateProject: Project maken
+  publishCreateDraft: Bouwen & concept uploaden
+  publishCustomVersion: Aangepast
+  publishDescription: Projectbeschrijving
+  publishDiscordUrl: Discord-URL
+  publishDraftCreated: Versieconcept geüpload.
+  publishExistingProject: Bestaand project
+  publishSubmitted: Versie ingediend voor beoordeling.
+  publishIcon: Projectpictogram
+  publishIconHint: Vierkante PNG of JPEG aanbevolen.
+  publishIconKeep: Behouden tenzij nieuwe afbeelding is gekozen
+  publishIconUseInstance: Instantiepictogram gebruiken
+  publishIssuesUrl: Bugtracker-URL
+  publishFiles: geselecteerde bestanden
+  publishLinkageSummary: '{linked} van {total} mods/resourcepacks/shaderpacks worden rechtstreeks gekoppeld aan hun Modrinth-download in plaats van opnieuw te worden geüpload.'
+  publishLinkageEmbeddedSummary: '{count} bestand(en) kunnen niet worden gekoppeld en worden meegeleverd (ingebed) met deze versie.'
+  publishLinkageShowFiles: Bestanden tonen die moeten worden geüpload
+  publishLinkageReason:
+    missing-file: Bestand niet gevonden op schijf
+    not-linked-to-modrinth: Niet herkend als Modrinth-bron
+    no-downloadable-url: Geen openbaar downloadbare URL gevonden
+  publishLogin: Inloggen om te publiceren
+  publishModrinth: Publiceren op Modrinth
+  publishNewProject: Nieuw project
+  publishOpenProject: Project openen
+  publishOpenVersion: Versie openen
+  publishProfile: MRPack-profiel
+  publishProfileClient: Alleen client
+  publishProfileServer: Alleen server
+  publishProfileSplit: Universeel + aparte client/server-bestanden
+  publishProfileUniversal: Universeel
+  publishProject: Project
+  publishProjectDetailsTab: Projectdetails
+  publishProjectName: Projectnaam
+  publishProjectRequired: Project vereist
+  publishProjectSlug: Projectslug (ID)
+  publishProjectUrlHint: Laat leeg om {slug} te gebruiken.
+  publishSourceUrl: Broncode-URL
+  publishSubmit: Publiceren
+  publishVersion: Versie
+  publishVersionTab: Versie & bestanden
+  publishWikiUrl: Wiki-URL
+  exportSuccess: Modpack succesvol geëxporteerd
+  exportFailed: Exporteren van modpack mislukt
+  skippedReasonEperm: Toegang geweigerd (vergrendeld door besturingssysteem of proces)
+  skippedReasonEbusy: Bestand is in gebruik door een ander programma
+  skippedReasonEnoent: Bestand niet gevonden of beschadigd
+  skippedFilesNotice: De rest van je bestanden is succesvol verpakt in het modpack. De bovenstaande bestanden zijn overgeslagen vanwege systeembeperkingen of ontbrekende rechten.
+  openExportFolder: Modpackmap openen
+  closeDialog: Begrepen
+  expandAll: Alle mappen uitklappen
+  collapseAll: Alle mappen inklappen
+  modpackVersionHint: Semantisch versienummer (bijv. 1.0.0). Gebruik + om patch/minor te verhogen
+  selectDefaultFiles: Standaardbestanden selecteren
+  selectAllFiles: Alle bestanden selecteren
+  deselectAllFiles: Alle bestanden deselecteren
+  publishCategories: Categorieën (door komma's gescheiden)
+  publishLicense: Licentie-ID
+  publishProjectUrl: Project-URL (optioneel)
+  publishProjectSaved: Projectdetails bijgewerkt.
+  publishSummary: Korte samenvatting
+  publishSummaryMinWords: Samenvatting moet minimaal 3 woorden bevatten.
+  publishVersionTitle: Versietitel
+  publishVisibility: Zichtbaarheid
+  visibilityPrivate: Privé
+  visibilityPublic: Openbaar
+  visibilityUnlisted: Niet vermeld
 modpackImportConfirm:
   description: U heeft een bestand in de launcher gesleept. Probeert u een modpack te importeren?
   title: Probeert u een modpack te importeren?
@@ -1006,7 +1232,7 @@ modrinth:
   licenses:
     name: Licenties
   loginHint: Deze operatie vereist Modrinth om uit te voeren. De launcher zal een browservenster openen om in te loggen op Modrinth.
-  loginTitle: Inloggen op Modrinth
+  loginTitle: Inloggen bij Modrinth
   modLoaders:
     name: Mod Loaders
   modpackSource:
@@ -1111,7 +1337,7 @@ multiplayer:
   leaveGroup: Groep verlaten
   localToken: Lokaal Token
   manualConnect: Handmatig Verbinden
-  name: Multiplayer op LAN
+  name: Together
   networkInfo: Netwerk Info
   next: Volgende
   otherExposedPortDescription: De poort doorgestuurd door {user}
@@ -1128,6 +1354,16 @@ multiplayer:
   startNewP2PConnection: Klik op de Start knop om een nieuwe peer-verbinding te maken
   connectionError: Verbindingsfout
   connectionFailedHint: Kan geen verbinding maken. Controleer of beide peers compatibele NAT-types hebben.
+  connectedToMaster: Verbonden met de kamermaster
+  directConnection: Direct
+  master: Master
+  masterHostsGameHint: De kamermaster is het verbindingsknooppunt en moet de Minecraft LAN-wereld hosten. Draag master over voordat je van host wisselt.
+  member: Lid
+  joinCreatesMissingRoomHint: Als deze kamer niet bestaat, maak je deze aan en word je de master.
+  relayConnection: Relais
+  relayAllowanceSummary: '{remaining} van {total} resterend deze periode'
+  relayServiceAvailable: XMCL Together relais-dienst beschikbaar
+  waitingForMaster: Wachten tot de kamermaster opnieuw verbindt
 myStuff: Mijn Spullen
 natType:
   blocked: Geblokkeerd
@@ -1174,6 +1410,11 @@ presence:
   save: Saves Aan Het Bekijken in {instance}
   setting: Instellingenpagina Aan Het Bekijken
   shaderPack: Shader Packs Aan Het Bekijken in {instance}
+  away: Afwezig
+  offline: Offline
+  online: Online
+  playing: Speelt {game}
+  playingGeneric: Speelt
 proxy:
   host: Host
   port: Poort
@@ -1199,6 +1440,8 @@ resourcepack:
   unselected: Niet-geselecteerde Resource Packs
   noPacks: Geen resourcepakketten gevonden
   search: Resourcepakketten zoeken...
+  noLocalPacksFound: Geen lokale resourcepacks gevonden die overeenkomen met je zoekopdracht.
+  noPacksInstalled: Je hebt geen resourcepacks geïnstalleerd.
 save:
   resetView: Weergave herstellen
   mapHintPan: Sleep om de weergave te verplaatsen
@@ -1222,9 +1465,9 @@ save:
     locked: Vergrendeld
   linkShared: Werelden delen tussen instanties
   linkSharedHint: Koppel de map saves van deze instantie aan de globale gedeelde map zodat alle instanties dezelfde werelden delen. Bestaande saves worden samengevoegd in de gedeelde map.
-  allowCheats: Cheats Toestaan
+  allowCheats: Cheats toestaan
   copy:
-    name: Save Kopiëren
+    name: Kopiëren
   createNew: Nieuwe Wereld Aanmaken
   createdWorlds: U heeft {count} werelden
   deleteHint: Deze operatie kan niet ongedaan worden gemaakt. U verliest de save-data voorgoed. Weet u zeker dat u deze save wilt verwijderen?
@@ -1237,13 +1480,13 @@ save:
   gameMode: spelmodus
   independent: Instance gebruikt onafhankelijke saves map
   levelName: Wereldnaam
-  loadMap: Kaart Laden
-  mapError: Kaart Fout
-  mapInfo: 'Interactieve 3D wereld voorbeeld:'
-  mapLoaded: Kaart Geladen
-  mapPreview: Kaart Voorbeeld
+  loadMap: Kaart laden
+  mapError: Kan kaart niet laden
+  mapInfo: Kaartinfo
+  mapLoaded: Kaart geladen
+  mapPreview: Kaartvoorbeeld
   name: Save | Saves
-  properties: Wereld Eigenschappen
+  properties: Eigenschappen
   search: Saves Zoeken
   seed: Seed
   selected: Lokale Saves
@@ -1251,12 +1494,42 @@ save:
   showDirectory: Toon saves map
   unselected: Gedeelde Saves
   useCurrent: Huidige wereld gebruiken
-  useMouseRotate: Gebruik muis om te roteren
-  useScrollZoom: Gebruik scrollwiel om te zoomen
-  openFolder: Opslagmap openen
-  searchHint: Werelden zoeken op CurseForge
-  searchSaves: Opslagen zoeken
+  useMouseRotate: Draaien met rechtermuisknop
+  useScrollZoom: Zoomen met muiswiel
+  openFolder: Map openen
+  searchHint: Werelden doorzoeken…
+  searchSaves: Werelden zoeken
   empty: No worlds found
+  datapack:
+    name: Datapack | Datapacks
+    packFormat: 'Pakketformaat: {format}'
+    imported: Datapack geïmporteerd in {save}
+    noSaveHint: Maak of selecteer eerst een wereld om dit datapack te installeren
+  chunkSelected: '{count} chunks geselecteerd'
+  chunkSelectMode: Chunk-selectiemodus
+  clearSelection: Selectie wissen
+  copyChunks: Chunks kopiëren
+  pasteChunks: '{count} chunks plakken'
+  pasteChunksPlaceHint: Beweeg de muis om {count} chunk(s) te positioneren en klik om te plakken. Bestaande chunks op de doellocatie worden overschreven. Druk op Esc om te annuleren.
+  deleteChunks: Chunks verwijderen
+  deleteChunksHint: '{count} geselecteerde chunk(s) verwijderen? Dit kan niet ongedaan worden gemaakt. De chunks worden opnieuw gegenereerd wanneer het gebied in het spel wordt geladen.'
+  noLocalSavesFound: Geen lokale werelden gevonden die overeenkomen met je zoekopdracht.
+  noSavesFound: Je hebt geen werelden.
+  panMode: Verschuifmodus
+  duplicate: Wereld dupliceren
+  mapHintSelect: Selecteren
+  mapHintDeselect: Deselecteren
+  toggleGrid: Regioraster in-/uitschakelen
+  heightTop: Bovenkant
+  pasteChunksCancel: Annuleren
+  deleteChunksTitle: Geselecteerde chunks verwijderen
+  mapLoading: Kaart laden…
+  noRegions: Deze wereld heeft geen gegenereerde regio's om weer te geven.
+  dimOverworld: Bovenwereld
+  dimNether: Nether
+  dimEnd: The End
+  noSavesInstalled: Je hebt geen werelden.
+  world: Wereld
 screenshots:
   empty: U heeft geen screenshots
   playRandom: Shuffle
@@ -1264,6 +1537,109 @@ screenshots:
   gallery: Schermafbeeldingengalerij
   hint: Druk in het spel op F2 voor een schermafbeelding
   openFolder: Map met schermafbeeldingen openen
+  title: Screenshots & foto's
+  manage: Screenshotbeheer
+  emptyTitle: Nog geen screenshots
+  emptyDescription: Druk op F2 in het spel om screenshots te maken. Ze verschijnen automatisch hier.
+  importSuccess: '{count} foto''s succesvol geïmporteerd'
+  exportSuccess: Screenshot succesvol geëxporteerd
+  exportSelectedSuccess: '{count} screenshots succesvol geëxporteerd'
+  deleteSuccess: Screenshot succesvol verwijderd
+  deleteConfirmTitle: Screenshots verwijderen?
+  deleteConfirmMessage: Weet je zeker dat je {count} screenshots wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
+  selectedCount: 'Geselecteerd: {count}'
+  countLabel: '{count} screenshots'
+  selectAll: Alles selecteren
+  edit: Bewerken
+  saveCopy: Kopie opslaan
+  saveCopySuccess: Kopie succesvol opgeslagen
+  saveSuccess: Wijzigingen succesvol opgeslagen
+  undo: Ongedaan maken
+  redo: Opnieuw uitvoeren
+  textPlaceholder: Tekst invoeren…
+  fontFamily: Lettertype
+  fontBold: Vet
+  fontItalic: Cursief
+  toolSelect: Selecteren
+  toolCrop: Bijsnijden
+  toolText: Tekst
+  layers: Lagen
+  layerAdd: Laag toevoegen
+  layerDelete: Laag verwijderen
+  layerDuplicate: Laag dupliceren
+  layerCopy: '{name} kopie'
+  layerOpacity: Dekking
+  zoomIn: Inzoomen
+  zoomOut: Uitzoomen
+  backToHome: Terug naar overzicht
+  setIcon: Instellen als instantiepictogram
+  setIconSuccess: Succesvol ingesteld als instantiepictogram
+  strokeWidth: Lijndikte
+  dropHint: Sleep foto's of screenshots hierheen om toe te voegen aan galerij
+  import: Foto's toevoegen
+  images: Afbeeldingen
+  copy: Afbeelding kopiëren
+  copied: Gekopieerd naar klembord!
+  setWallpaper: Instellen als achtergrond
+  setWallpaperSuccess: Ingesteld als instantie-achtergrondafbeelding!
+  export: Bestand opslaan
+  exportSelected: Geselecteerde exporteren
+  exportSelectedTitle: Exportmap selecteren
+  clearSelection: Selectie wissen
+  searchPlaceholder: Zoeken op naam…
+  noSearchResults: Geen overeenkomende screenshots
+  noSearchResultsHint: Probeer je zoekopdracht aan te passen
+  sort: Sorteren
+  sortDateDesc: Nieuwste eerst
+  sortDateAsc: Oudste eerst
+  sortSizeDesc: Grootste eerst
+  sortSizeAsc: Kleinste eerst
+  sortNameAsc: Naam (A–Z)
+  sortNameDesc: Naam (Z–A)
+  viewGrid: Groot raster
+  viewGridCompact: Compact raster
+  viewList: Lijstweergave
+  editorTitle: Screenshot bewerken
+  layer: Laag
+  dragToMove: Slepen om te verplaatsen
+  transformHint: Sleep selectie om te verplaatsen • Sleep handvatten om te schalen • Enter om te bevestigen
+  customColor: Aangepaste kleur
+  fill: Vullen
+  brushPreview: Voorbeeld penseelgrootte
+  fontPreview: Voorbeeld lettergrootte
+  textBgNone: Geen
+  textBgShadow: Schaduw
+  textBgBox: Kader
+  cropHint: Sleep selectiekader om het bijsnijdgebied te kiezen.
+  textPlacementHint: Enter om te plaatsen • Esc om te annuleren
+  layerMoveUp: Omhoog verplaatsen
+  layerMoveDown: Omlaag verplaatsen
+  pixels: px
+  saveOverwrite: Overschrijven
+  toolMove: Verplaatsen & Transformeren (Ctrl+T / V)
+  toolPan: Verschuiven (Spatie+Slepen)
+  transformLayer: Vrij transformeren
+  applyTransform: Transformatie toepassen (Enter)
+  cancelTransform: Annuleren (Esc)
+  layerBackground: Achtergrond
+  layerPaint: Tekening
+  layerText: Tekst
+  layerBlur: Vervaging
+  toolPen: Pen
+  toolArrow: Pijl
+  toolRect: Rechthoek
+  toolCircle: Cirkel
+  toolLine: Lijn
+  toolHighlighter: Markeerstift
+  toolBlur: Pixelate / Vervagen
+  applyCrop: Bijsnijden toepassen
+  cancelCrop: Bijsnijden annuleren
+  fontSize: Lettergrootte
+  color: Kleur
+  clear: Alles wissen
+  textApply: Tekst plaatsen
+  textBg: Achtergrond
+  resetZoom: Zoom herstellen
 search:
   favorate: Collectie
   local: Geïnstalleerd
@@ -1429,12 +1805,66 @@ serverStatus:
   refuse: §4Server weigert!
   timeout: §4Verbinden met server timeout!
 agent:
-  accessRequiredHint: Abonneer je op XMCL om de ingebouwde agent te gebruiken, of configureer je eigen AI-provider in de instellingen.
+  accessRequiredHint: Neem een XMCL-abonnement of configureer je eigen AI-provider in de instellingen.
   subscribeXmcl: Abonneren op XMCL
   notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
+  abort: Genereren stoppen
+  callingTool: '{name} aanroepen…'
+  confirmAccept: Doorgaan
+  confirmAllowAll: Alles toestaan
+  confirmCancel: Annuleren
+  confirmPending: Wachten op bevestiging
+  confirmTitle: Actie van assistent bevestigen
+  disabledPlaceholder: AI-assistent is uitgeschakeld. Configureer een provider in de instellingen.
+  emptyHint: Stel een vraag over crashes, mods of configuratie.
+  errorTitle: Fout bij uitvoeren van assistent
+  inputPlaceholder: Vraag over crashes, logs of mods…
+  notConfiguredTitle: Assistent niet beschikbaar
+  openSettings: Instellingen openen
+  passiveGameCrashed: Spel is gecrasht
+  passiveGameExitCode: Afsluitcode {code}
+  passiveGameExited: Spel afgesloten
+  passiveGameExitSignal: Signaal {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: Geen afsluitstatus
+  reasoning: Redenering
+  toolArguments: Argumenten
+  toolResult: Resultaat
+  toolRunning: Wachten op resultaat…
+  marketConfirmMessage: '{name} installeren in de huidige instantie?'
+  marketConfirmTarget: 'Doel: {instance}'
+  marketConfirmTitle: '{type} installeren'
+  marketInstall: Installeren
+  marketInstalled: Geïnstalleerd
+  marketInstallFailed: Kan {type} niet installeren
+  marketType:
+    datapack: datapack
+    mod: mod
+    modpack: modpack
+    resourcepack: resourcepack
+    shader: shaderpack
+  marketResultCount: '{count} resultaten'
+  passiveGameStarted: Spel gestart
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Mod-compatibiliteitsrapport
+  passiveModDiagnosisError: Compatibiliteitsdiagnose mislukt
+  passiveModDiagnosisSummary: '{checked} mods gecontroleerd · {incompatibilities} incompatibiliteiten · {duplicates} duplicaten'
+  passiveModDuplicate: 'Duplicaat {mod}: {files}'
+  passiveModInstalled: '{version} geïnstalleerd'
+  title: XMCL Assistent
+  statusDisabled: Uitgeschakeld — log in of configureer een provider
+  reset: Nieuwe chat
+  thinking: Nadenken…
+  setupGuide: Installatiehandleiding
+  statusReady: Gereed
+  statusWorking: Bezig…
+  suggestion1: Upgrade deze instantie naar een nieuwere Minecraft-versie en werk de mods bij
+  suggestion2: Mijn mods crashen — zoek de oorzaak en vertel me hoe ik het kan oplossen
+  suggestion3: 'Bouw een modpack: zoek mods voor een gewenste functie en installeer ze in deze instantie'
+  toggleHint: om te schakelen
 setting:
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
-  aiAgentApiKeyPlaceholder: API-sleutel van OpenAI- of Claude-provider
+  aiAgentApiKeyPlaceholder: Voer API-sleutel in…
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
   aiAgentModelPlaceholder: gpt-5.6 of claude-sonnet-4-5
   themeStore:
@@ -1518,7 +1948,7 @@ setting:
   enableDiscord: Discord Presence Inschakelen
   enableDiscordDescription: Dit zal de status van Discord bijwerken naar de launcher
   enterUrl: Voer URL in
-  exportSettings: Instellingen Exporteren
+  exportSettings: Instellingen exporteren
   exportSettingsHint: Sla uw huidige instellingen op naar een bestand
   general: Algemeen
   githubRelease: Github Release
@@ -1526,8 +1956,8 @@ setting:
   globalJavaHint: In de automatische modus wordt eerst deze Java geprobeerd en wordt alleen teruggevallen op automatische detectie als deze niet compatibel is met de spelversie.
   globalSetting: Globale Instance Instellingen
   globalSettingHint: Instance zal deze instellingen standaard gebruiken.
-  importSettings: Instellingen Importeren
-  importSettingsHint: Laad instellingen van een eerder geëxporteerd bestand
+  importSettings: Instellingen importeren
+  importSettingsHint: Instellingen laden vanuit een JSON-bestand.
   instanceTheme:
     activeDescription: Deze instance gebruikt een aangepast thema. U kunt het verwijderen om het globale thema te gebruiken.
     description: Schakel een aangepast thema in voor deze instance. Dit zal een kopie maken van het huidige globale thema.
@@ -1538,14 +1968,14 @@ setting:
   layout:
     default: Standaard Lay-out
     focus: Focus Lay-out
-  layoutDescription: Kies uw favoriete interface stijl
-  layoutTitle: Interface Lay-out
-  linuxEnableDedicatedGPUOptimization: Toewijzing van een dedicated grafische processor
-  linuxEnableDedicatedGPUOptimizationDescription: Deze optie wijst een dedicated GPU toe aan het Minecraft-proces.
+  layoutDescription: Kies de gewenste lay-out voor de launcher.
+  layoutTitle: Lay-outstijl
+  linuxEnableDedicatedGPUOptimization: Toegewezen GPU inschakelen op Linux
+  linuxEnableDedicatedGPUOptimizationDescription: Start het spel met omgevingsvariabelen voor afzonderlijke GPU's (DRI_PRIME=1, __NV_PRIME_RENDER_OFFLOAD=1).
   linuxTitlebar: Native titelbalk
   linuxTitlebarDescription: Gebruik native linux titelbalk voor de launcher
   location: Opslaglocatie
-  manualUpdateHint: De versie kan niet automatisch worden bijgewerkt. Download de launcher opnieuw van de officiële website!
+  manualUpdateHint: Klik hier om handmatig te controleren op launcher-updates.
   maunalUpdateHint: De versie kan niet auto-updaten. Download de launcher opnieuw van de website!
   maxSockets: Per Host
   maxSocketsDescription: Beperk het maximale aantal sockets dat per host of in totaal voor alle hosts is toegestaan. 0 betekent geen limiet.
@@ -1555,7 +1985,7 @@ setting:
   minecraftOptions: Minecraft Opties
   name: Globale Instelling | Globale Instellingen
   network: Netwerk Instellingen
-  newsPosition: Verplaats Nieuws Sectie
+  newsPosition: Nieuwspositie
   officialWebsite: Officiële Website
   particleMode:
     bubble: Bel
@@ -1570,19 +2000,19 @@ setting:
   replaceNatives:
     all: Alle
     legacy: Alleen Legacy Versie
-  resetAllSettings: Reset Alle Instellingen
+  resetAllSettings: Alle instellingen herstellen
   resetAllSettingsConfirmMessage: Dit zal alle instellingen, accounts, instances, groepen en gecachte data permanent verwijderen. Deze actie kan niet ongedaan worden gemaakt. Weet u het zeker?
   resetAllSettingsConfirmTitle: Alle Instellingen Resetten?
   resetAllSettingsHint: Reset de launcher naar fabrieksinstellingen (verwijdert alles)
-  resetAllSettingsSuccess: Alle instellingen zijn gereset. De launcher zal opnieuw opstarten.
-  resetSettingsError: 'Fout bij het resetten van instellingen: {error}'
+  resetAllSettingsSuccess: Alle instellingen zijn hersteld naar de standaardwaarden.
+  resetSettingsError: 'Fout bij het herstellen van instellingen: {error}'
   resetToDefault: Reset naar Standaard
   select: Selecteren
-  settingsExported: Instellingen succesvol geëxporteerd
-  settingsImportError: Importeren van instellingen mislukt. Controleer het bestandsformaat.
-  settingsImported: Instellingen succesvol geïmporteerd
-  settingsReloadHint: De launcher zal opnieuw opstarten om alle instellingen toe te passen.
-  showNewsHeader: Nieuws showcase tonen
+  settingsExported: Instellingen succesvol geëxporteerd.
+  settingsImportError: Fout bij het importeren van instellingen.
+  settingsImported: Instellingen succesvol geïmporteerd.
+  settingsReloadHint: De launcher moet opnieuw worden gestart om de wijzigingen toe te passen.
+  showNewsHeader: Nieuwsbanner weergeven
   showRoot: Tonen
   sidebarAlign: Uitlijning van de zijbalk
   sidebarAutoHide: Zijbalk automatisch verbergen
@@ -1624,6 +2054,45 @@ setting:
     successGlobal: Achtergrondafbeelding bijgewerkt.
     successInstance: Achtergrondafbeelding van instantie bijgewerkt.
     failed: Kon achtergrondafbeelding niet instellen
+  multiplayerTransport: Together-overdracht
+  multiplayerTransportDescription: Kies de WebRTC-implementatie die door Together wordt gebruikt. Het wijzigen hiervan verbreekt actieve peers.
+  aiAgentApiKey: AI-assistent API-sleutel
+  aiAgentApiKeyNotNeeded: Geen API-sleutel nodig
+  aiAgentApiKeyNotNeededHint: Voor dit model of dit eindpunt is geen API-sleutel vereist.
+  aiAgentCustom: Aangepaste provider
+  aiAgentEndpoint: API-eindpunt
+  aiAgentModel: Modelnaam
+  customCss:
+    globalToggle: Aangepaste CSS inschakelen
+    advancedDescription: Overschrijf de huidige styling van de launcher met je eigen CSS.
+    assistantHint: Beschrijf het gewenste uiterlijk en ik schrijf de CSS voor je.
+    assistantSuggestion1: Zijbalk halfdoorschijnend maken
+    assistantSuggestion2: Subtiele kleurverloopachtergrond toevoegen aan kaarten
+    assistantTitle: CSS-assistent
+    dropHint: Sleep een .css-bestand hierheen om het te laden
+    editorPlaceholder: /* Schrijf hier je aangepaste CSS */
+    openInDialog: Openen in het assistent-venster
+    title: Aangepaste CSS
+    warning: Met aangepaste CSS kun je elk aspect van de launcher aanpassen. Wees voorzichtig met het plakken van CSS uit onbekende bronnen.
+  aiAgentApiKeyClear: Sleutel wissen
+  aiAgentApiKeyEmpty: Plak je API-sleutel
+  aiAgentApiKeySaved: Opgeslagen
+  aiAgentApiKeyStored: Sleutel opgeslagen — typ om te vervangen
+  aiAgentBuiltin: Ingebouwd
+  aiAgentEndpointDescription: URL voor chat completions-eindpunt.
+  aiAgentModelDescription: Modelnaam om te verzenden in chat completion-verzoeken.
+  useDesktopBackground: Huidige bureaubladachtergrond gebruiken
+  devModeLabel: Ontwikkelaarsmodus
+  livePreview: Live voorbeeld
+  sidebarShowOnlyPinned: Alleen vastgemaakte instanties tonen
+  sidebarShowOnlyPinnedHint: Alleen vastgemaakte instanties weergeven in de zijbalk
+  appImageUpdateMode: AppImage-updatebeheer
+  appImageExternalMode: Externe beheerder / handmatige vervanging (standaard)
+  appImageSelfMode: Zelfbeheerd door XMCL (ik beheer deze AppImage)
+  appImageAutoDownload: Updates automatisch downloaden
+  appImageAutoInstall: Gedownloade updates installeren bij afsluiten
+  appImageExternalUpdateHint: Als dit via Shelly of een andere beheerder is geïnstalleerd, update dan daar en behoud de externe modus. Vervang anders zelf de AppImage op het bestaande pad. XMCL downloadt of installeert geen updates in externe modus.
+  appImageSelfUpdateHint: Kies alleen zelfbeheerd voor een AppImage die u zelf beheert. Ingebouwde updates vereisen een absoluut pad zonder versienummer in de bestandsnaam (bijv. xmcl.AppImage). Als de naam een versienummer bevat, sluit dan XMCL af en hernoem het bestand.
 settingLabel:
   global: Globaal
   globalHint: Deze instelling volgt de globale instelling
@@ -1677,6 +2146,8 @@ shaderPack:
   noPacks: Geen shaderpakketten geïnstalleerd
   search: Shaderpakketten zoeken...
   'off': 'Off'
+  noLocalPacksFound: Geen lokale shaderpacks gevonden die overeenkomen met je zoekopdracht.
+  noPacksInstalled: Je hebt geen shaderpacks geïnstalleerd.
 shared:
   close: Sluiten
   pressKeyCombination: Druk op een toetsencombinatie...
@@ -1710,6 +2181,18 @@ shared:
   upgrade: Bijwerken
   'yes': Ja
   delete: Verwijderen
+  openFolder: Map openen
+  reset: Herstellen
+  missing: ontbreekt
+  copy: Kopiëren
+  copied: Gekopieerd
+  save: Opslaan
+  healthy: OK
+  unused: ongebruikt
+  copyFailed: Kopiëren mislukt
+  copyFailedHint: Kon niet kopiëren naar klembord
+  failed: Mislukt
+  view: Bekijken
 sidebar:
   pin: Vastzetten
   unpin: Losmaken
@@ -1776,7 +2259,7 @@ turnRegion:
   po: Polen
 tutorial:
   feedbackDescription: Als u problemen tegenkomt, klik dan op deze knop om feedback te sturen!
-  hideNewsHeaderDescription: U kunt de nieuws showcase aan de linkerkant zien. Door op deze knop te klikken kunt u deze showcase verbergen.
+  hideNewsHeaderDescription: Klik hier om de nieuwsbalk te verbergen.
   instance:
     appearanceThemeDescription: Pas achtergrond, kleuren en visuele stijl aan voor deze specifieke instantie.
     appearanceThemeTitle: Uiterlijk van instantie
@@ -1805,7 +2288,7 @@ tutorial:
     versionDescription: Selecteer Minecraft-versie en loaders zoals Forge, Fabric, Quilt of NeoForge.
     versionTitle: Minecraft & Loader-versie
   instanceAddDescription: Klik op deze knop om een bestaande Minecraft instance te importeren of een nieuwe aan te maken vanaf nul of een modpack.
-  instanceSelectDescription: Klik op deze knop om naar de pagina te navigeren om een spel te selecteren en nieuws te lezen.
+  instanceSelectDescription: Selecteer een instantie om deze te beheren of te starten.
   launchDescription: Klik op deze knop om het spel te installeren of te starten.
   mod:
     defaultSourceDescription: U kunt hier de bron van mod-details kiezen. Er zijn mods die zowel naar Modrinth als Curseforge zijn gepubliceerd. Als u tussen deze twee contentproviders wilt wisselen, kunt u de waarde hier wijzigen.
@@ -1816,11 +2299,11 @@ tutorial:
     listTitle: Geïnstalleerde of Zoek Mod
     searchDescription: U kunt mods zoeken van Modrinth, Curseforge of uw lokale cache met dit zoekvak.
     searchTitle: Zoek Mods
-  recentPlayDescription: De gemaakte spellen worden hier vermeld. U kunt de weergaven hier ook wisselen om de geïnstalleerde versies en gedownloade modpacks te zien.
-  storePoupularModpackDescription: U zult de meest populaire modpacks in Curseforge en Modrinth in deze sectie zien.
-  storeSearchCategoryDescription: U kunt hier ook de categorieën of filters omschakelen.
+  recentPlayDescription: De gemaakte spellen worden hier weergegeven. Je kunt hier wisselen om ook geïnstalleerde versies en gedownloade modpacks te zien.
+  storePoupularModpackDescription: In dit gedeelte zie je de populairste modpacks op CurseForge en Modrinth.
+  storeSearchCategoryDescription: Je kunt hier ook categorieën en filters in- en uitschakelen.
   storeSearchDescription: U kunt modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om te zoeken.
-  storeSearchResultDescription: U zult hier alle zoekresultaten zien weergegeven.
+  storeSearchResultDescription: Hier zie je de zoekresultaten.
   userAccountDescription: Klik op dit pictogram om uw Minecraft-account toe te voegen of te beheren.
   tooltip: Hulp & Rondleiding
   done: Begrepen!
@@ -1997,8 +2480,11 @@ userSkin:
   skinDeleteFailed: Skin kon niet uit de kledingkast worden verwijderd
   edit: Bewerken
   fetch: Laden
+  invalidImage: Kies een geldige Minecraft skin-afbeelding.
+  invalidImageTitle: Ongeldige skin-afbeelding
+  uploadRejected: Minecraft heeft deze skin-upload geweigerd. Probeer het later opnieuw.
 version:
-  checkIntegrity: Integriteit Controleren
+  checkIntegrity: Integriteit controleren
   name: Versie | Versies
   notInstalled: Versie is niet geïnstalleerd
 versionType:
@@ -2049,6 +2535,7 @@ blueprint:
     empty: Deze blauwdruk bevat geen blokken om weer te geven.
     hint: '{count} blokken · {x}×{y}×{z}'
     controls: 'WASD: bewegen · Spatie/Shift: omhoog/omlaag · Slepen: kijken · Scrollen: zoomen'
+    title: Voorbeeld
   convert:
     title: Formaat converteren
     hint: Converteer deze blauwdruk naar een ander formaat. Er wordt een nieuw bestand gemaakt.
@@ -2067,6 +2554,12 @@ blueprint:
     action: Vervangen
   formats:
     structure: Vanilla-structuur
+  local: Lokaal
+  allNamespaces: Alle
+  delete: Verwijderen
+  cancel: Annuleren
+  cmsBrowseOnly: Alleen bladeren
+  loadMore: Meer laden
 gamepad:
   connected: Controller Connected
   guideTitle: Controller Controls
@@ -2107,6 +2600,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: Gamepad gedetecteerd
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
@@ -2220,3 +2714,112 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: Account
+  confirmMerge: Accountkoppeling bevestigen
+  createdAt: Aangemaakt op {date}
+  description: Je XMCL-account met of zonder wachtwoord, los van Minecraft-spelaccounts.
+  gameAccountsSeparate: Het verwijderen van een spelaccount ontkoppelt je XMCL-inlogmethode niet.
+  guest: Gast
+  identityConflict: Deze inlogmethode via {provider} is al gekoppeld aan een ander XMCL-account. Accounts worden nooit automatisch samengevoegd.
+  linkAccountWith: Account koppelen aan
+  mergePreview: Controleer de bronnen die worden overgezet voordat je bevestigt.
+  mergeNeedsSession: Meld je aan bij het XMCL-account dat je wilt behouden voordat je het samenvoegen bekijkt.
+  mergeQueued: Samenvoegen van accounts is bezig.
+  requestFailed: De XMCL-accountservice kon dit verzoek niet voltooien. Je spelaccount is niet gewijzigd.
+  reviewMerge: Samenvoeging bekijken
+  session: Sessie
+  sessionActive: Actief
+  sessionExpired: Verlopen
+  signOutAll: Afmelden op alle apparaten
+  signOutDevice: Afmelden op dit apparaat
+  status:
+    active: Actief
+    deleted: Verwijderd
+    deletion_pending: Verwijdering in behandeling
+    merged: Samengevoegd
+  expiresAt: Verloopt op {date}
+  title: XMCL-account
+minecraftFriends:
+  accept: Accepteren
+  add: Vriend toevoegen
+  addPlaceholder: Minecraft-gebruikersnaam
+  title: Vrienden
+  addedRelative: Toegevoegd {time}
+  errors:
+    cannotAddSelf: Je kunt geen vriendschapsverzoek naar jezelf sturen.
+    duplicate: Die speler staat al in je lijst.
+    friendsDisabled: Vrienden zijn uitgeschakeld voor je Minecraft-account. Schakel vrienden in via je accountinstellingen en probeer het opnieuw.
+    generic: Er is iets misgegaan. Probeer het opnieuw.
+    invalidName: Minecraft-gebruikersnamen moeten tussen 3 en 16 tekens lang zijn.
+    inviteRejected: Die speler heeft vrienden uitgeschakeld of accepteert geen uitnodigingen.
+    tokenExpired: Je Microsoft-sessie is verlopen. Log opnieuw in.
+    unknownProfile: We konden geen speler met die naam vinden.
+  expiresRelative: Verloopt {time}
+  friends: Vrienden
+  heroEmptyHint: Voeg hierboven een speler toe op gebruikersnaam om een verzoek te sturen.
+  heroEmptyTitle: Je vriendenlijst is leeg
+  incoming: Inkomende verzoeken
+  incomingHint: 1 inkomend verzoek | {count} inkomende verzoeken
+  notifyAdded: Vriendschapsverzoek verzonden naar {name}
+  outgoing: Uitgaande verzoeken
+  privacy:
+    acceptInvites: Vriendenuitnodigingen accepteren
+    acceptInvitesHint: Indien uitgeschakeld kunnen andere spelers je geen verzoeken sturen.
+    friendsEnabled: Vriendenlijst ingeschakeld
+  reconnectAction: Opnieuw verbinden
+  requiresMicrosoft: Log in met een Microsoft-account om vrienden te gebruiken.
+  scopedTo: Aangemeld als {name}
+  send: Verzenden
+  unsupported: Vrienden zijn alleen beschikbaar voor Microsoft-accounts.
+modCategory:
+  optimization: Optimalisatie & Prestaties
+  libraries: Bibliotheken & API's
+  utilities: UI & Hulpprogramma's
+  gameplay: Gameplay
+  world: Wereld & Dimensies
+  visual: Visueel & Animaties
+  miscellaneous: Diversen
+relative:
+  daysAgo: '{count} dag geleden | {count} dagen geleden'
+  hoursAgo: '{count} uur geleden | {count} uur geleden'
+  justNow: zojuist
+  minutesAgo: '{count} minuut geleden | {count} minuten geleden'
+  secondsAgo: '{count} seconde geleden | {count} seconden geleden'
+resourceError:
+  body: '"{path}" kon niet worden verwerkt ({code}). Het bestand is mogelijk beschadigd, vergrendeld of onvolledig. Probeer het opnieuw te downloaden of te verwijderen.'
+  title: Kan {file} niet lezen
+title: XMCL
+localCollection:
+  title: Launcher-collecties
+  newCollection: Nieuwe collectie
+  namePlaceholder: Collectienaam
+  empty: Nog geen collecties
+  installAll: Alles installeren
+  exportCollection: Collectie exporteren
+  importCollection: Collectie importeren
+  saveCurrentMods: Huidige mods opslaan als collectie
+  saveCurrentModsSuccess: '{count} mods opgeslagen in collectie "{name}"'
+  addModsTo: Mods toevoegen aan "{name}"
+  addedModsSuccess: '{count} mods toegevoegd aan collectie'
+  addSelectedMods: '{count} mods toevoegen'
+  incompatibleAlert: '1 project is niet compatibel met de huidige instantie en is overgeslagen: | {count} projecten zijn niet compatibel met de huidige instantie en zijn overgeslagen:'
+  projects: Geen projecten | {count} project | {count} projecten
+  modrinthSection: Modrinth-account
+  viewMods: Mods bekijken
+  editCollection: Collectie bewerken
+  collectionDescription: Collectiebeschrijving
+  noModsInCollection: Nog geen mods in deze collectie
+  removeEntryConfirm: Verwijderen uit collectie
+  addMods: Mods toevoegen
+  addModsHint: Voeg geïnstalleerde mods toe vanuit je instantie of klik op de bladwijzerknop in de catalogus.
+  addModsDialogDesc: Selecteer geïnstalleerde mods uit deze instantie om op te nemen in deze collectie.
+  addAllCurrent: Alle huidige mods toevoegen
+  searchMods: Mods zoeken…
+  selectAll: Alles selecteren
+  deselectAll: Selectie wissen
+  selected: geselecteerd
+  alreadyInCollection: Al toegevoegd
+  noMatchingMods: Geen overeenkomende mods gevonden
+  addToCollection: Aan collectie toevoegen
+  corrupted: Je opgeslagen collecties konden niet worden gelezen en zijn opnieuw ingesteld. Er is een back-up bewaard naast het bestand.
