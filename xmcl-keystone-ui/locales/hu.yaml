@@ -553,6 +553,22 @@ instanceAge:
   older: Régebbi
   threeDay: Három napon belül
   today: Ma
+instanceAutoGroup:
+  title: "Automatikus mappákba rendezés"
+  subtitle: "Válassza ki a példányok elrendezését az oldalsávon és az «Enyém» nézetben"
+  autoRouteTitle: "Új példányok automatikus rendezése létrehozáskor / letöltéskor"
+  autoRouteDescription: "Az újonnan importált vagy letöltött modcsomagok automatikusan a megfelelő mappába kerülnek."
+  strategySection: "Csoportosítási stratégia"
+  byModloader: "Modbetöltő szerint"
+  byModloaderDescription: "Példányok csoportosítása Forge, Fabric, NeoForge, Quilt, Vanilla és Bedrock szerint."
+  byVersion: "Minecraft verzió szerint"
+  byVersionDescription: "Példányok csoportosítása kiadási generáció szerint, a legújabbakkal elöl."
+  bySource: "Platform és forrás szerint"
+  bySourceDescription: "Példányok csoportosítása Modrinth, CurseForge, FTB, Szerverek vagy Egyéni szerint."
+  active: "Aktív"
+  ungroupAll: "Összes szétbontása"
+  sortAllNow: "Összes rendezése most"
+
 instanceDiscover:
   gameFolder: Fedezzen fel {count} játékmappát
   instanceFolder: '{count} példányt találtunk'

@@ -614,6 +614,22 @@ instanceAge:
   older: পুরানো
   threeDay: তিন দিনের মধ্যে
   today: আজ
+instanceAutoGroup:
+  title: "ফোল্ডারে স্বয়ংক্রিয়ভাবে সাজান"
+  subtitle: "সাইডবার এবং «আমার সামগ্রী»-তে আপনার ইনস্ট্যান্স কীভাবে সাজাতে চান তা চয়ন করুন"
+  autoRouteTitle: "তৈরি / ডাউনলোডের সময় নতুন ইনস্ট্যান্স স্বয়ংক্রিয়ভাবে সাজান"
+  autoRouteDescription: "নতুন আমদানি করা বা ডাউনলোড করা মডপ্যাক স্বয়ংক্রিয়ভাবে ম্যাচিং ফোল্ডারে যাবে।"
+  strategySection: "গ্রুপিং কৌশল"
+  byModloader: "মডলোডার অনুযায়ী"
+  byModloaderDescription: "Forge, Fabric, NeoForge, Quilt, Vanilla এবং Bedrock অনুসারে ইনস্ট্যান্স গ্রুপ করুন।"
+  byVersion: "Minecraft সংস্করণ অনুযায়ী"
+  byVersionDescription: "নতুন রিলিজ প্রজন্ম অনুসারে ইনস্ট্যান্স গ্রুপ করুন।"
+  bySource: "প্ল্যাটফর্ম এবং উৎস অনুযায়ী"
+  bySourceDescription: "Modrinth, CurseForge, FTB, সার্ভার বা কাস্টম অনুসারে ইনস্ট্যান্স গ্রুপ করুন।"
+  active: "সক্রিয়"
+  ungroupAll: "সমস্ত আনগ্রুপ করুন"
+  sortAllNow: "এখনই সব সাজান"
+
 instanceDiscover:
   gameFolder: '{count}টি গেম ফোল্ডার সনাক্ত করুন'
   instanceFolder: '{count}টি ইনস্ট্যান্স পাওয়া গেছে'

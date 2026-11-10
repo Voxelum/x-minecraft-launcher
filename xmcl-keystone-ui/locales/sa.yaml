@@ -614,6 +614,22 @@ instanceAge:
   older: पुरातनम्
   threeDay: दिनत्रये
   today: अद्य
+instanceAutoGroup:
+  title: "संपुटिकाषु स्वयमेव वर्गीकरणम्"
+  subtitle: "पार्श्वपट्टिकायां «मम वस्तूनि» भागे च स्वदृष्टान्तान् कथं संयोजयितुम् इच्छन्ति तत् वृणुध्वम्"
+  autoRouteTitle: "निर्माणे / अवतरणे नूतनदृष्टान्तानां स्वयमेव वर्गीकरणम्"
+  autoRouteDescription: "नूतनानि आयातितानि वा अवतारितानि वा मॉडसञ्चयानि स्वयमेव युक्ते संपुटिके स्थास्यन्ति।"
+  strategySection: "समूहीकरणनीतिः"
+  byModloader: "मॉडलोडर-अनुसारम्"
+  byModloaderDescription: "Forge, Fabric, NeoForge, Quilt, Vanilla तथा Bedrock द्वारा दृष्टान्तान् समूहीकुरुत।"
+  byVersion: "Minecraft-संस्करणानुसारम्"
+  byVersionDescription: "संस्करणपीढ्यानुसारं नूतनात् प्राक् दृष्टान्तान् समूहीकुरुत।"
+  bySource: "मञ्च-मूलानुसारम्"
+  bySourceDescription: "Modrinth, CurseForge, FTB, सेवकाः अथवा स्वेच्छानुसारं दृष्टान्तान् समूहीकुरुत।"
+  active: "सक्रियम्"
+  ungroupAll: "सर्वं विसमूहीकुरुत"
+  sortAllNow: "अधुना सर्वं वर्गीकुरुत"
+
 instanceDiscover:
   gameFolder: '{count} क्रीडाकोशान् अन्वेषयतु'
   instanceFolder: '{count} क्षणाः लब्धाः'

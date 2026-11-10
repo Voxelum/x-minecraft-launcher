@@ -577,6 +577,22 @@ instanceAge:
   older: Старші
   threeDay: Протягом трьох днів
   today: Сьогодні
+instanceAutoGroup:
+  title: "Авто-сортування по папках"
+  subtitle: "Оберіть, як організувати ваші збірки на бічній панелі та в «Моєму»"
+  autoRouteTitle: "Авто-сортувати нові збірки при створенні / завантаженні"
+  autoRouteDescription: "Нові імпортовані чи завантажені модпаки автоматично потраплятимуть у відповідну папку."
+  strategySection: "Стратегія групування"
+  byModloader: "За модлоадером"
+  byModloaderDescription: "Групувати збірки за Forge, Fabric, NeoForge, Quilt, Vanilla та Bedrock."
+  byVersion: "За версією Minecraft"
+  byVersionDescription: "Групувати збірки за поколінням релізу від найновіших."
+  bySource: "За платформою та джерелом"
+  bySourceDescription: "Групувати збірки за Modrinth, CurseForge, FTB, серверами або кастомними."
+  active: "Активно"
+  ungroupAll: "Розгрупувати всі"
+  sortAllNow: "Сортувати всі зараз"
+
 instanceDiscover:
   gameFolder: Виявлено {count} папок гри
   instanceFolder: Знайдено {count} екземплярів

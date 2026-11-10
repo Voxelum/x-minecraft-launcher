@@ -34,6 +34,7 @@
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <component :is="lazyDialogComponent" v-if="lazyDialogComponent" />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
+    <AppSideBarAutoGroupDialog />
     <AppGamepadPrompt />
     <transition name="bp-mode">
       <AppBigPictureView v-if="isBigPicture" />
@@ -93,6 +94,7 @@ import { kMinecraftFriends, useMinecraftFriendsImpl } from '@/composables/minecr
 import { useUserMenuControl } from '@/composables/userMenu'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
+import AppSideBarAutoGroupDialog from '@/views/AppSideBarAutoGroupDialog.vue'
 import AppGamepadPrompt from '@/views/AppGamepadPrompt.vue'
 import AppBigPictureView from '@/views/AppBigPictureView.vue'
 import { kBigPicture, useBigPicture } from '@/composables/bigPicture'

@@ -543,6 +543,22 @@ instanceAge:
   older: Plus âgée
   threeDay: Dans trois jours
   today: Aujourd'hui
+instanceAutoGroup:
+  title: "Trier automatiquement dans des dossiers"
+  subtitle: "Choisissez comment organiser vos instances dans la barre latérale et « Mes affaires »"
+  autoRouteTitle: "Trier automatiquement les nouvelles instances à la création / téléchargement"
+  autoRouteDescription: "Les modpacks nouvellement importés ou téléchargés seront automatiquement placés dans le dossier correspondant."
+  strategySection: "Stratégie de regroupement"
+  byModloader: "Par chargeur de mods"
+  byModloaderDescription: "Regrouper les instances par Forge, Fabric, NeoForge, Quilt, Vanilla et Bedrock."
+  byVersion: "Par version de Minecraft"
+  byVersionDescription: "Regrouper les instances par génération de version, de la plus récente à la plus ancienne."
+  bySource: "Par plateforme & source"
+  bySourceDescription: "Regrouper les instances par Modrinth, CurseForge, FTB, Serveurs ou Personnalisé."
+  active: "Actif"
+  ungroupAll: "Tout dissocier"
+  sortAllNow: "Tout trier maintenant"
+
 instanceDiscover:
   gameFolder: Découvrez {count} dossiers de jeu
   instanceFolder: "{count}\_instances trouvées"

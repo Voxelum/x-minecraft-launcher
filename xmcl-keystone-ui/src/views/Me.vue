@@ -56,7 +56,7 @@ const filterKey = ref('')
 const displayNewsHeader = useLocalStorage('displayNewsHeader', true, { writeDefaults: false })
 const { instances } = injection(kInstances)
 const { path } = injection(kInstance)
-const { groups } = useInstanceGroup()
+const { groups, edit } = useInstanceGroup()
 const { pinnedInstances } = useInjectSidebarSettings()
 
 // View mode: folder, date, or plain
@@ -90,11 +90,30 @@ const instanceMap = computed(() => {
   return map
 })
 
+function isImageUrl(val?: string): boolean {
+  if (!val) return false
+  return val.startsWith('http://') || val.startsWith('https://') || val.startsWith('data:image/') || val.startsWith('image://')
+}
+
+function isGradient(val?: string): boolean {
+  if (!val) return false
+  return val.includes('gradient')
+}
+
+function getBaseColor(val?: string, fallback = '#10B981'): string {
+  if (!val) return fallback
+  if (!isGradient(val)) return val
+  const match = val.match(/#(?:[0-9a-fA-F]{3,8})|rgba?\([^)]+\)/)
+  // Ні ну....я тут реально їб"вся з цим, бо йобаний ШІ ніх"я не допоміг, лише проблем створив, тому пишу по приколу тут комент
+  return match ? match[0] : fallback
+}
+
 interface GroupedItem {
   type: 'group'
   id: string
   name: string
   color: string
+  icon?: string
   instances: Instance[]
 }
 
@@ -116,6 +135,7 @@ const groupedInstances = computed((): GroupedItem[] => {
           id: item.id,
           name: item.name,
           color: item.color,
+          icon: item.icon,
           instances: groupInstances,
         })
       }
@@ -183,7 +203,39 @@ interface InstanceSection {
   id: string
   title: string
   icon: string
+  color?: string
+  groupId?: string
+  isGroup?: boolean
   instances: Instance[]
+}
+
+const collapsedGroups = useLocalStorage<Record<string, boolean>>('me:collapsedGroups', {})
+const toggleCollapse = (id: string) => {
+  collapsedGroups.value = {
+    ...collapsedGroups.value,
+    [id]: !collapsedGroups.value[id],
+  }
+}
+const isCollapsed = (id: string) => !!collapsedGroups.value[id]
+
+const { show: showFolderSetting } = useDialog('folder-setting')
+
+function openGroupSetting(section: InstanceSection) {
+  if (!section.groupId) return
+  const id = section.groupId
+  showFolderSetting({
+    name: section.title,
+    color: section.color || '',
+    icon: section.icon || '',
+    hasIcon: true,
+    onSave: (saved: { name: string; color: string; icon: string }) => {
+      edit(id, {
+        name: saved.name,
+        color: saved.color,
+        icon: saved.icon,
+      })
+    },
+  })
 }
 
 const instanceSections = computed((): InstanceSection[] => {
@@ -194,8 +246,11 @@ const instanceSections = computed((): InstanceSection[] => {
     for (const group of groupedInstances.value) {
       sections.push({
         id: `group-${group.id}`,
+        groupId: group.id,
+        isGroup: true,
         title: group.name || t('instances.folder'),
-        icon: 'folder',
+        icon: group.icon || 'folder',
+        color: group.color,
         instances: group.instances,
       })
     }
@@ -204,8 +259,9 @@ const instanceSections = computed((): InstanceSection[] => {
     if (ungroupedInstances.value.length > 0) {
       sections.push({
         id: 'ungrouped',
-        title: ' ',
-        icon: 'view_list',
+        isGroup: false,
+        title: groupedInstances.value.length > 0 ? (t('bigPicture.ungrouped') || 'Ungrouped') : '',
+        icon: 'grid_view',
         instances: ungroupedInstances.value,
       })
     }
@@ -447,59 +503,132 @@ useTutorial(
         <div
           v-for="section in instanceSections"
           :key="section.id"
-          class="mb-6"
+          class="mb-6 me-folder-section"
+          :class="{ 'me-folder-section--collapsed': isCollapsed(section.id) }"
           role="region"
           :aria-label="section.title || t('instance.name', 2)"
         >
-          <div v-if="section.title" class="section-header-item mb-3">
+          <!-- Special Folder Header when in Folder Mode -->
+          <div
+            v-if="section.isGroup"
+            class="me-folder-header"
+            :style="{
+              '--folder-color': getBaseColor(section.color),
+              '--folder-bg': section.color || 'rgba(255, 255, 255, 0.04)',
+            }"
+            :data-gradient="isGradient(section.color)"
+            @click="toggleCollapse(section.id)"
+          >
+            <!-- Left side: icon, name, count -->
+            <div class="me-folder-header__left">
+              <div
+                class="me-folder-icon-box"
+                :style="{
+                  background: isGradient(section.color) ? section.color : (section.color ? section.color : 'rgba(255, 255, 255, 0.1)'),
+                  boxShadow: section.color ? `0 4px 14px ${getBaseColor(section.color)}50` : 'none',
+                }"
+              >
+                <img
+                  v-if="isImageUrl(section.icon)"
+                  :src="section.icon"
+                  class="w-full h-full object-cover"
+                >
+                <v-icon
+                  v-else
+                  :size="20"
+                  color="white"
+                  class="me-folder-header-icon"
+                >
+                  {{ section.icon || 'folder' }}
+                </v-icon>
+              </div>
+
+              <div class="me-folder-title-wrap">
+                <span class="me-folder-title truncate">{{ section.title }}</span>
+                <span class="me-folder-count">{{ section.instances.length }}</span>
+              </div>
+            </div>
+
+            <!-- Right side: settings & collapse chevron -->
+            <div class="me-folder-header__actions" @click.stop>
+              <v-btn
+                icon
+                size="small"
+                variant="text"
+                class="me-folder-action-btn"
+                :title="t('instances.folderSetting')"
+                @click="openGroupSetting(section)"
+              >
+                <v-icon size="18">settings</v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                size="small"
+                variant="text"
+                class="me-folder-action-btn me-folder-chevron"
+                :class="{ 'me-folder-chevron--collapsed': isCollapsed(section.id) }"
+                @click="toggleCollapse(section.id)"
+              >
+                <v-icon size="20">expand_more</v-icon>
+              </v-btn>
+            </div>
+          </div>
+
+          <!-- Regular Section Header (for Date view or Ungrouped) -->
+          <div v-else-if="section.title" class="section-header-item mb-3">
             <v-icon size="small" class="mr-2" aria-hidden="true">{{ section.icon }}</v-icon>
             <span class="section-title-item">{{ section.title }}</span>
             <span class="section-count">({{ section.instances.length }})</span>
           </div>
-          <div
-            v-roving-tabindex
-            role="group"
-            :aria-label="section.title || t('instance.name', 2)"
-            class="instances-grid"
-          >
+
+          <!-- Instances Grid -->
+          <v-expand-transition>
             <div
-              v-for="instance in section.instances"
-              :key="instance.path"
-              v-context-menu="getInstanceContextMenu(instance)"
-              class="instance-item surface-card-row"
-              :class="{ 'instance-item--active': instance.path === path }"
-              role="button"
-              tabindex="0"
-              :aria-label="`${instance.name} (Minecraft ${instance.runtime.minecraft})`"
-              :aria-pressed="instance.path === path"
-              @click="selectInstance(instance.path)"
-              @keydown.enter.prevent="selectInstance(instance.path)"
-              @keydown.space.prevent="selectInstance(instance.path)"
+              v-show="!section.isGroup || !isCollapsed(section.id)"
+              v-roving-tabindex
+              role="group"
+              :aria-label="section.title || t('instance.name', 2)"
+              class="instances-grid"
             >
-              <div class="instance-avatar-wrapper">
-                <v-avatar size="44" class="instance-avatar">
-                  <v-img :src="getInstanceIcon(instance, undefined)" />
-                </v-avatar>
-                <div v-if="pinnedInstances.includes(instance.path)" class="pin-badge">
-                  <v-icon size="x-small" color="white" class="text-[8px]" aria-hidden="true">push_pin</v-icon>
+              <div
+                v-for="instance in section.instances"
+                :key="instance.path"
+                v-context-menu="getInstanceContextMenu(instance)"
+                class="instance-item surface-card-row"
+                :class="{ 'instance-item--active': instance.path === path }"
+                role="button"
+                tabindex="0"
+                :aria-label="`${instance.name} (Minecraft ${instance.runtime.minecraft})`"
+                :aria-pressed="instance.path === path"
+                @click="selectInstance(instance.path)"
+                @keydown.enter.prevent="selectInstance(instance.path)"
+                @keydown.space.prevent="selectInstance(instance.path)"
+              >
+                <div class="instance-avatar-wrapper">
+                  <v-avatar size="44" class="instance-avatar">
+                    <v-img :src="getInstanceIcon(instance, undefined)" />
+                  </v-avatar>
+                  <div v-if="pinnedInstances.includes(instance.path)" class="pin-badge">
+                    <v-icon size="x-small" color="white" class="text-[8px]" aria-hidden="true">push_pin</v-icon>
+                  </div>
                 </div>
+                <div class="instance-info">
+                  <div class="instance-name">{{ instance.name }}</div>
+                  <div class="instance-version">{{ instance.runtime.minecraft }}</div>
+                </div>
+                <v-btn
+                  v-shared-tooltip="() => t('launch.launch')"
+                  class="instance-play-button"
+                  color="primary"
+                  variant="text"
+                  size="small"
+                  icon="play_arrow"
+                  :aria-label="t('launch.launch')"
+                  @click.stop="launchInstance(instance.path)"
+                />
               </div>
-              <div class="instance-info">
-                <div class="instance-name">{{ instance.name }}</div>
-                <div class="instance-version">{{ instance.runtime.minecraft }}</div>
-              </div>
-              <v-btn
-                v-shared-tooltip="() => t('launch.launch')"
-                class="instance-play-button"
-                color="primary"
-                variant="text"
-                size="small"
-                icon="play_arrow"
-                :aria-label="t('launch.launch')"
-                @click.stop="launchInstance(instance.path)"
-              />
             </div>
-          </div>
+          </v-expand-transition>
         </div>
       </section>
     </div>
@@ -802,6 +931,126 @@ useTutorial(
 
 .dark .instance-version {
   color: rgba(255, 255, 255, 0.5);
+}
+
+/* My Stuff Folder Header & Section */
+.me-folder-section {
+  transition: all 0.25s ease;
+}
+
+.me-folder-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--folder-color) 12%, rgba(255, 255, 255, 0.025));
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.me-folder-header:hover {
+  background: color-mix(in srgb, var(--folder-color) 20%, rgba(255, 255, 255, 0.05));
+  border-color: color-mix(in srgb, var(--folder-color) 40%, rgba(255, 255, 255, 0.2));
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--folder-color) 20%, transparent);
+}
+
+.me-folder-header[data-gradient="true"] {
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--folder-color) 22%, transparent) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border-color: color-mix(in srgb, var(--folder-color) 40%, rgba(255, 255, 255, 0.12));
+}
+
+.me-folder-header[data-gradient="true"]:hover {
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--folder-color) 32%, transparent) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.me-folder-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.me-folder-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.me-folder-header:hover .me-folder-icon-box {
+  transform: scale(1.06);
+}
+
+.me-folder-header-icon {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+
+.me-folder-header-icon :deep(img) {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)) brightness(1.2) contrast(1.1);
+}
+
+.me-folder-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.me-folder-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.01em;
+}
+
+.me-folder-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.me-folder-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.me-folder-action-btn {
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.me-folder-action-btn:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.me-folder-chevron {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.me-folder-chevron--collapsed {
+  transform: rotate(-90deg);
 }
 
 @media (max-width: 768px) {

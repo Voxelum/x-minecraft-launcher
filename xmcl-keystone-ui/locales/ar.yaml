@@ -565,6 +565,22 @@ instanceAge:
   older: أقدم
   threeDay: في ثلاثة أيام
   today: اليوم
+instanceAutoGroup:
+  title: "فرز تلقائي في المجلدات"
+  subtitle: "اختر كيف تريد تنظيم الحالات في الشريط الجانبي وصفحة «أشيائي»"
+  autoRouteTitle: "فرز الحالات الجديدة تلقائيًا عند الإنشاء / التنزيل"
+  autoRouteDescription: "حزم التعديل المستوردة أو المنزلة حديثًا ستوضع تلقائيًا في المجلد المطابق."
+  strategySection: "استراتيجية التجميع"
+  byModloader: "حسب محمل التعديل"
+  byModloaderDescription: "تجميع الحالات حسب Forge و Fabric و NeoForge و Quilt و Vanilla و Bedrock."
+  byVersion: "حسب إصدار Minecraft"
+  byVersionDescription: "تجميع الحالات حسب جيل الإصدار مرتبة من الأحدث أولاً."
+  bySource: "حسب المنصة والمصدر"
+  bySourceDescription: "تجميع الحالات حسب Modrinth و CurseForge و FTB أو الخوادم أو مخصص."
+  active: "نشط"
+  ungroupAll: "إلغاء تجميع الكل"
+  sortAllNow: "فرز الكل الآن"
+
 instanceDiscover:
   gameFolder: اكتشف مجلدات اللعبة {count}
   instanceFolder: تم العثور على {count} من الحالات

@@ -627,6 +627,22 @@ instanceAge:
   older: 三天前
   threeDay: 三天內
   today: 今天
+instanceAutoGroup:
+  title: "自動歸類至資料夾"
+  subtitle: "選擇在側邊欄同「我的」頁面中點樣組織管理你嘅實例"
+  autoRouteTitle: "建立 / 下載新實例時自動歸類"
+  autoRouteDescription: "新匯入或下載嘅模組包將會自動放入對應資料夾。"
+  strategySection: "分組策略"
+  byModloader: "按模組載入器"
+  byModloaderDescription: "按 Forge、Fabric、NeoForge、Quilt、原版同基岩版對實例分組。"
+  byVersion: "按 Minecraft 版本"
+  byVersionDescription: "按遊戲主要發布版本分組，最新版本排先。"
+  bySource: "按平台與來源"
+  bySourceDescription: "按 Modrinth、CurseForge、FTB、伺服器或自訂對實例分組。"
+  active: "使用中"
+  ungroupAll: "全部取消分組"
+  sortAllNow: "立即全部整理"
+
 instanceDiscover:
   gameFolder: 發現 {count} 個遊戲資料夾
   instanceFolder: 找到 {count} 個實例

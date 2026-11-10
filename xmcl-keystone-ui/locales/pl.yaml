@@ -510,6 +510,22 @@ instanceAge:
   older: Starszy
   threeDay: W trzy dni
   today: Dzisiaj
+instanceAutoGroup:
+  title: "Automatycznie sortuj do folderów"
+  subtitle: "Wybierz sposób organizacji instancji na pasku bocznym i w sekcji «Moje zasoby»"
+  autoRouteTitle: "Automatycznie sortuj nowe instancje przy tworzeniu / pobieraniu"
+  autoRouteDescription: "Nowo zaimportowane lub pobrane paczki modów automatycznie trafią do odpowiedniego folderu."
+  strategySection: "Strategia grupowania"
+  byModloader: "Według modloadera"
+  byModloaderDescription: "Grupuj instancje według Forge, Fabric, NeoForge, Quilt, Vanilla i Bedrock."
+  byVersion: "Według wersji Minecrafta"
+  byVersionDescription: "Grupuj instancje według generacji wydań, od najnowszych."
+  bySource: "Według platformy i źródła"
+  bySourceDescription: "Grupuj instancje według Modrinth, CurseForge, FTB, Serwerów lub Własnych."
+  active: "Aktywne"
+  ungroupAll: "Rozgrupuj wszystko"
+  sortAllNow: "Posortuj wszystko teraz"
+
 instanceDiscover:
   gameFolder: Odkryj {count} folderów z grami
   instanceFolder: 'Znaleziono wystąpienia: {count}'

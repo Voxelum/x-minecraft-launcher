@@ -5,6 +5,7 @@ import type { MaybeRef } from 'vue'
 import { onMounted, ref } from 'vue'
 import { kInstances } from './instances'
 import { kTheme } from './theme'
+import { autoGroupConfig, classifyInstance } from './instanceAutoGroup'
 
 export enum OverState {
   TopQuad, // top 1/4
@@ -337,6 +338,26 @@ export function useInstanceGroup() {
       }
     }
     for (const i of existed) {
+      if (autoGroupConfig.value.enabled) {
+        const instObj = instances.find(inst => inst.path === i)
+        if (instObj) {
+          const target = classifyInstance(instObj, autoGroupConfig.value.strategy)
+          const existingGroup = newGroupData.find(g => typeof g !== 'string' && g.name === target.name) as InstanceGroupData | undefined
+          if (existingGroup) {
+            existingGroup.instances.push(i)
+            continue
+          } else {
+            newGroupData.push({
+              id: crypto.getRandomValues(new Uint32Array(2))[0].toString(16),
+              name: target.name,
+              color: target.color || '',
+              icon: target.icon || '',
+              instances: [i],
+            })
+            continue
+          }
+        }
+      }
       newGroupData.push(i)
     }
 
