@@ -2,7 +2,10 @@
   <div
     class="relative sidebar-group-wrapper"
     :class="{ 'sidebar-group-wrapper--expanded': expanded }"
-    :style="{ '--sidebar-group-color': color }"
+    :style="{
+      '--sidebar-group-color': getBaseColor(color),
+      '--sidebar-group-bg': color,
+    }"
   >
     <AppSideBarGroupItemIndicator :state="overState" />
     <AppSideBarGroupItemIndicator :state="overState" />
@@ -11,6 +14,7 @@
       v-context-menu="getItems"
       v-shared-tooltip.right="() => group.name ? group.name : { list: instances.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`) }"
       class="sidebar-group non-moveable"
+      :data-gradient="isGradient(color)"
       role="button"
       tabindex="0"
       :aria-label="group.name || 'Instance group'"
@@ -39,23 +43,56 @@
           />
           <div
             v-else-if="!expanded"
-            class="instance-grid"
+            class="instance-icon-container"
+          >
+            <template v-if="group.icon">
+              <v-img
+                v-if="isImageUrl(group.icon)"
+                :src="group.icon"
+                class="instance-custom-img"
+                draggable="false"
+              />
+              <v-icon
+                v-else
+                :size="30"
+                :color="color ? 'white' : 'primary'"
+                class="group-folder-icon"
+              >
+                {{ group.icon }}
+              </v-icon>
+            </template>
+            <div
+              v-else
+              class="instance-grid"
+            >
+              <v-img
+                v-for="i in instances.slice(0, 4)"
+                :key="i.path"
+                class="instance-grid-item"
+                :src="getInstanceIcon(i, i.server ? undefined : undefined)"
+                draggable="false"
+              />
+            </div>
+          </div>
+          <div
+            v-else
+            class="instance-icon-container"
           >
             <v-img
-              v-for="i in instances.slice(0, 4)"
-              :key="i.path"
-              class="instance-grid-item"
-              :src="getInstanceIcon(i, i.server ? undefined : undefined)"
+              v-if="group.icon && isImageUrl(group.icon)"
+              :src="group.icon"
+              class="instance-custom-img"
               draggable="false"
             />
+            <v-icon
+              v-else
+              :size="32"
+              :color="color ? 'white' : 'primary'"
+              class="group-folder-icon"
+            >
+              {{ group.icon || 'folder_open' }}
+            </v-icon>
           </div>
-          <v-icon
-            v-else
-            :size="32"
-            :color="color"
-          >
-            folder_open
-          </v-icon>
         </Transition>
       </span>
     </div>
@@ -115,19 +152,39 @@ const { dragging, overState, onDragEnd, onDragEnter, onDragLeave, onDragOver, on
 const { show } = useDialog('folder-setting')
 const { t } = useI18n()
 
+function isImageUrl(val?: string): boolean {
+  if (!val) return false
+  return val.startsWith('http://') || val.startsWith('https://') || val.startsWith('data:image/') || val.startsWith('image://')
+}
+
+function isGradient(val?: string): boolean {
+  if (!val) return false
+  return val.includes('gradient')
+}
+
+function getBaseColor(val?: string, fallback = '#10B981'): string {
+  if (!val) return fallback
+  if (!isGradient(val)) return val
+  const match = val.match(/#(?:[0-9a-fA-F]{3,8})|rgba?\([^)]+\)/)
+  return match ? match[0] : fallback
+}
+
 const mutableState = reactive({
   name: props.group.name,
   color: props.group.color,
+  icon: props.group.icon || '',
+  hasIcon: true,
 })
-watch(() => [props.group.name, props.group.color], ([name, color]) => {
-  mutableState.name = name
-  mutableState.color = color
+watch(() => [props.group.name, props.group.color, props.group.icon], ([name, color, icon]) => {
+  mutableState.name = name || ''
+  mutableState.color = color || ''
+  mutableState.icon = icon || ''
 })
 watch(
   mutableState,
   (state) => {
-    if (state.name !== props.group.name || state.color !== props.group.color) {
-      emit('setting', { id: props.group.id, name: state.name, color: state.color })
+    if (state.name !== props.group.name || state.color !== props.group.color || state.icon !== (props.group.icon || '')) {
+      emit('setting', { id: props.group.id, name: state.name, color: state.color, icon: state.icon })
     }
   },
   { deep: true },
@@ -138,7 +195,12 @@ const getItems = () => {
     icon: 'settings',
     text: t('instances.folderSetting'),
     onClick: () => {
-      show(mutableState)
+      show({
+        ...mutableState,
+        onSave: (saved: { name: string; color: string; icon: string }) => {
+          emit('setting', { id: props.group.id, name: saved.name, color: saved.color, icon: saved.icon })
+        },
+      })
     },
   }]
   return items
@@ -200,6 +262,20 @@ const getItems = () => {
   background-color: color-mix(in srgb, var(--sidebar-group-color) 60%, transparent);
 }
 
+.sidebar-group[data-gradient="true"] .sidebar-group__content {
+  background-image: var(--sidebar-group-bg);
+  opacity: 0.9;
+}
+
+.sidebar-group[data-gradient="true"]:hover .sidebar-group__content {
+  opacity: 1;
+  filter: brightness(1.15);
+}
+
+.sidebar-group[data-gradient="true"] .sidebar-group__indicator {
+  background: var(--sidebar-group-bg);
+}
+
 /* Keep the folder header at the regular item size when expanded,
    only swap the background to a transparent (header-style) look */
 .sidebar-group-wrapper--expanded .sidebar-group__content {
@@ -247,6 +323,22 @@ const getItems = () => {
   height: 48px;
 }
 
+.instance-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.instance-custom-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
 .instance-grid-item {
   width: 100%;
   height: 100%;
@@ -255,5 +347,13 @@ const getItems = () => {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+.group-folder-icon {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+
+.group-folder-icon :deep(img) {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)) brightness(1.2) contrast(1.1);
 }
 </style>

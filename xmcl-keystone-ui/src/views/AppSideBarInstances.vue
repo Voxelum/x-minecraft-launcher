@@ -26,9 +26,20 @@
         :color="i.color || defaultColor"
         @arrange="move($event.targetPath, $event.toPath || i, $event.previous)"
         @group="group($event, i)"
-        @setting="edit($event.id, { name: $event.name, color: $event.color })"
+        @setting="edit($event.id, { name: $event.name, color: $event.color, icon: $event.icon })"
       />
     </template>
+
+    <AppSideBarItem
+      id="auto-group-button"
+      data-testid="auto-group-instances"
+      v-shared-tooltip.right="() => t('instanceAutoGroup.title')"
+      :aria-label="t('instanceAutoGroup.title')"
+      icon="sort"
+      clickable
+      class="auto-group-button"
+      @click="showAutoGroup()"
+    />
 
     <AppSideBarItem
       id="create-instance-button"
@@ -59,6 +70,7 @@ const { t } = useI18n()
 const { isValidating, selectedInstance } = injection(kInstances)
 
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
+const { show: showAutoGroup } = useDialog('auto-group-instances')
 
 const { groups, move, group, edit } = useInstanceGroup()
 const { showOnlyPinned, pinnedInstances } = useInjectSidebarSettings()

@@ -78,7 +78,7 @@
       <div
         v-if="indent"
         class="market-item__indent-guide"
-        :style="{ '--market-item-indent-color': indentColor || 'rgb(var(--v-theme-primary))' }"
+        :style="{ '--market-item-indent-color': getBaseColor(indentColor) || 'rgb(var(--v-theme-primary))' }"
       />
     </template>
 
@@ -380,6 +380,13 @@ const tags = computed(() => {
 
   return tags
 })
+
+function getBaseColor(val?: string): string | undefined {
+  if (!val) return undefined
+  if (!val.includes('gradient')) return val
+  const match = val.match(/#(?:[0-9a-fA-F]{3,8})|rgba?\([^)]+\)/)
+  return match ? match[0] : undefined
+}
 
 const installing = ref(false)
 const onInstall = async () => {
