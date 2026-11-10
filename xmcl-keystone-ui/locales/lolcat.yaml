@@ -540,6 +540,22 @@ instanceAge:
   older: OLDR
   threeDay: IN THREE DAYZ
   today: TODAY
+instanceAutoGroup:
+  title: "Auto-sort in foldrz"
+  subtitle: "Choos how ur gamez r organized in sidebar & Mah Stuffz"
+  autoRouteTitle: "Auto-sort new gamez on makin / downloadin"
+  autoRouteDescription: "Freshly nommed modpackz will drop rite in da matchin foldr."
+  strategySection: "Groopin Strategiez"
+  byModloader: "By Modloadr"
+  byModloaderDescription: "Groop gamez by Forge, Fabric, NeoForge, Quilt, Vanilla, and Bedrock."
+  byVersion: "By Minecraft Vershun"
+  byVersionDescription: "Groop gamez by relees generashun newest first kthx."
+  bySource: "By Platfurm & Source"
+  bySourceDescription: "Groop gamez by Modrinth, CurseForge, FTB, Serverz, or Custom."
+  active: "Doin It"
+  ungroupAll: "Ungroop All Teh Thingz"
+  sortAllNow: "Sort All Rite Meow"
+
 instanceDiscover:
   gameFolder: DISCOVER {count} GAME FOLDRZ
   instanceFolder: FOUND {count} INSTANCES

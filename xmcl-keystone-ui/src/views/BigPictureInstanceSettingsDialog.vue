@@ -80,7 +80,7 @@
                 @click="onAssignFolder(g)"
               >
                 <template #prepend>
-                  <v-icon size="18" :style="g.color ? { color: g.color } : {}">folder</v-icon>
+                  <v-icon size="18" :style="g.color ? { color: getBaseColor(g.color) } : {}">folder</v-icon>
                 </template>
               </v-list-item>
               <v-divider class="my-1 border-white/10" />
@@ -331,10 +331,17 @@ const editFolderDialog = ref(false)
 const editFolderName = ref('')
 const editFolderColor = ref('#2196F3')
 
+function getBaseColor(val?: string): string | undefined {
+  if (!val) return undefined
+  if (!val.includes('gradient')) return val
+  const match = val.match(/#(?:[0-9a-fA-F]{3,8})|rgba?\([^)]+\)/)
+  return match ? match[0] : undefined
+}
+
 function openEditFolderDialog() {
   if (!currentGroup.value) return
   editFolderName.value = currentGroup.value.name || ''
-  editFolderColor.value = currentGroup.value.color || '#2196F3'
+  editFolderColor.value = getBaseColor(currentGroup.value.color) || '#2196F3'
   editFolderDialog.value = true
 }
 

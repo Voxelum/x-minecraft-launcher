@@ -540,6 +540,22 @@ instanceAge:
   older: Ouder
   threeDay: Binnen Drie Dagen
   today: Vandaag
+instanceAutoGroup:
+  title: "Automatisch in mappen sorteren"
+  subtitle: "Kies hoe je instanties wilt ordenen in de zijbalk en «Mijn spullen»"
+  autoRouteTitle: "Nieuwe instanties automatisch sorteren bij aanmaken / downloaden"
+  autoRouteDescription: "Nieuw geïmporteerde of gedownloade modpacks komen automatisch in de bijbehorende map terecht."
+  strategySection: "Groeperingsstrategie"
+  byModloader: "Op modloader"
+  byModloaderDescription: "Groepeer instanties op Forge, Fabric, NeoForge, Quilt, Vanilla en Bedrock."
+  byVersion: "Op Minecraft-versie"
+  byVersionDescription: "Groepeer instanties op release-generatie, nieuwste eerst."
+  bySource: "Op platform & bron"
+  bySourceDescription: "Groepeer instanties op Modrinth, CurseForge, FTB, Servers of Aangepast."
+  active: "Actief"
+  ungroupAll: "Alles degroeperen"
+  sortAllNow: "Alles nu sorteren"
+
 instanceDiscover:
   gameFolder: '{count} spelmappen gevonden'
   instanceFolder: '{count} instances gevonden'

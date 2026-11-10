@@ -583,6 +583,22 @@ instanceAge:
   older: Daha Eski
   threeDay: Üç Gün İçinde
   today: Bugün
+instanceAutoGroup:
+  title: "Klasörlere otomatik sırala"
+  subtitle: "Örneklerinizin kenar çubuğunda ve «Benimkiler» bölümünde nasıl düzenleneceğini seçin"
+  autoRouteTitle: "Oluşturma / indirmede yeni örnekleri otomatik sırala"
+  autoRouteDescription: "Yeni içe aktarılan veya indirilen mod paketleri otomatik olarak eşleşen klasöre yerleştirilir."
+  strategySection: "Gruplandırma Stratejisi"
+  byModloader: "Mod Yükleyicisine Göre"
+  byModloaderDescription: "Örnekleri Forge, Fabric, NeoForge, Quilt, Vanilla ve Bedrock'a göre gruplandırın."
+  byVersion: "Minecraft Sürümüne Göre"
+  byVersionDescription: "Örnekleri en yeniden başlayarak sürüm nesline göre gruplandırın."
+  bySource: "Platform ve Kaynağa Göre"
+  bySourceDescription: "Örnekleri Modrinth, CurseForge, FTB, Sunucular veya Özel'e göre gruplandırın."
+  active: "Etkin"
+  ungroupAll: "Tüm Grupları Çöz"
+  sortAllNow: "Şimdi Tümünü Sırala"
+
 instanceDiscover:
   gameFolder: '{count} oyun klasörü keşfet'
   instanceFolder: '{count} instance bulundu'

@@ -676,6 +676,22 @@ instanceAge:
   older: Older
   threeDay: In Three Days
   today: Today
+instanceAutoGroup:
+  title: "Auto-sort into folders"
+  subtitle: "Choose how you want your instances organized in the sidebar & My Stuff"
+  autoRouteTitle: "Auto-sort new instances on creation / download"
+  autoRouteDescription: "Newly imported or downloaded modpacks will automatically land in the matching folder."
+  strategySection: "Grouping Strategy"
+  byModloader: "By Modloader"
+  byModloaderDescription: "Group instances by Forge, Fabric, NeoForge, Quilt, Vanilla, and Bedrock."
+  byVersion: "By Minecraft Version"
+  byVersionDescription: "Group instances by release generation sorted newest first."
+  bySource: "By Platform & Source"
+  bySourceDescription: "Group instances by Modrinth, CurseForge, FTB, Servers, or Custom."
+  active: "Active"
+  ungroupAll: "Ungroup All"
+  sortAllNow: "Sort All Now"
+
 instanceDiscover:
   gameFolder: Discover {count} game folders
   instanceFolder: Found {count} instances
