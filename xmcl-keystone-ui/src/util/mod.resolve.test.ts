@@ -101,63 +101,87 @@ describe('getModDependents', () => {
 })
 
 describe('resolveModsToDisable', () => {
-  test('disables an orphan dependency together with the mod', () => {
-    const app = makeMod({ modId: 'app', enabled: true, deps: [{ modId: 'lib' }] })
-    const lib = makeMod({ modId: 'lib', enabled: true })
-    const all = [app, lib]
+  test('keeps Sophisticated Storage when disabling an addon', () => {
+    const addon = makeMod({ modId: 'storage_addon', enabled: true, deps: [{ modId: 'sophisticatedstorage' }] })
+    expect(paths(resolveModsToDisable([addon]))).toEqual(['storage_addon'])
+  })
 
-    expect(paths(resolveModsToDisable([app], all))).toEqual(['app', 'lib'])
+  test('allows explicitly selecting both an addon and its parent', () => {
+    const addon = makeMod({ modId: 'addon', enabled: true, deps: [{ modId: 'parent' }] })
+    const parent = makeMod({ modId: 'parent', enabled: true })
+    expect(resolveModsToDisable([addon, parent])).toEqual([addon, parent])
+  })
+
+  test('deduplicates selections without changing the input', () => {
+    const mod = makeMod({ modId: 'mod', enabled: true })
+    const selection = [mod, mod]
+    expect(resolveModsToDisable(selection)).toEqual([mod])
+    expect(selection).toEqual([mod, mod])
+  })
+
+  test('does not select anything for an empty selection', () => {
+    expect(resolveModsToDisable([])).toEqual([])
+  })
+
+  test('keeps Terramity enabled when disabling its fix addon', () => {
+    const app = makeMod({ modId: 'terramity_fix', enabled: true, deps: [{ modId: 'terramity' }] })
+    const lib = makeMod({ modId: 'terramity', enabled: true })
+
+    expect(paths(resolveModsToDisable([app]))).toEqual(['terramity_fix'])
+    expect(lib.enabled).toBe(true)
   })
 
   test('keeps a dependency that another enabled mod still needs', () => {
     const app = makeMod({ modId: 'app', enabled: true, deps: [{ modId: 'lib' }] })
     const other = makeMod({ modId: 'other', enabled: true, deps: [{ modId: 'lib' }] })
     const lib = makeMod({ modId: 'lib', enabled: true })
-    const all = [app, other, lib]
 
-    expect(paths(resolveModsToDisable([app], all))).toEqual(['app'])
+    expect(paths(resolveModsToDisable([app]))).toEqual(['app'])
+    expect(lib.enabled).toBe(true)
+    expect(other.enabled).toBe(true)
   })
 
-  test('disables a shared dependency when all its dependents are disabled together', () => {
+  test('keeps shared dependencies when disabling all their dependents', () => {
     const app = makeMod({ modId: 'app', enabled: true, deps: [{ modId: 'lib' }] })
     const other = makeMod({ modId: 'other', enabled: true, deps: [{ modId: 'lib' }] })
     const lib = makeMod({ modId: 'lib', enabled: true })
-    const all = [app, other, lib]
 
-    expect(paths(resolveModsToDisable([app, other], all))).toEqual(['app', 'lib', 'other'])
+    expect(paths(resolveModsToDisable([app, other]))).toEqual(['app', 'other'])
+    expect(lib.enabled).toBe(true)
   })
 
-  test('cascades through transitive dependencies', () => {
+  test('keeps transitive dependencies enabled', () => {
     const app = makeMod({ modId: 'app', enabled: true, deps: [{ modId: 'lib' }] })
     const lib = makeMod({ modId: 'lib', enabled: true, deps: [{ modId: 'core' }] })
     const core = makeMod({ modId: 'core', enabled: true })
-    const all = [app, lib, core]
 
-    expect(paths(resolveModsToDisable([app], all))).toEqual(['app', 'core', 'lib'])
+    expect(paths(resolveModsToDisable([app]))).toEqual(['app'])
+    expect(lib.enabled).toBe(true)
+    expect(core.enabled).toBe(true)
   })
 
-  test('ignores dependencies satisfied by a mod id alias (provides)', () => {
+  test('keeps dependencies matched through provided aliases', () => {
     const app = makeMod({ modId: 'app', enabled: true, deps: [{ modId: 'api' }] })
     const lib = makeMod({ modId: 'lib', enabled: true, provides: ['lib', 'api'] })
-    const all = [app, lib]
 
-    expect(paths(resolveModsToDisable([app], all))).toEqual(['app', 'lib'])
+    expect(paths(resolveModsToDisable([app]))).toEqual(['app'])
+    expect(lib.enabled).toBe(true)
   })
 
   test('does not touch already disabled dependencies', () => {
     const app = makeMod({ modId: 'app', enabled: true, deps: [{ modId: 'lib' }] })
     const lib = makeMod({ modId: 'lib', enabled: false })
-    const all = [app, lib]
 
-    expect(paths(resolveModsToDisable([app], all))).toEqual(['app'])
+    expect(paths(resolveModsToDisable([app]))).toEqual(['app'])
+    expect(lib.enabled).toBe(false)
   })
 
   test('does not follow optional dependencies', () => {
     const app = makeMod({ modId: 'app', enabled: true, deps: [{ modId: 'lib', optional: true }] })
     const lib = makeMod({ modId: 'lib', enabled: true })
-    const all = [app, lib]
 
-    expect(paths(resolveModsToDisable([app], all))).toEqual(['app'])
+    expect(paths(resolveModsToDisable([app]))).toEqual(['app'])
+    expect(lib.enabled).toBe(true)
   })
 })
 

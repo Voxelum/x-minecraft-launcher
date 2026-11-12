@@ -368,45 +368,12 @@ export function getEnabledModsWithNoDependent(mods: ModFile[], allowedLoaders: s
 }
 
 /**
- * Resolve the full set of mods that should be disabled together with the given mods.
- *
- * When a mod is disabled, its dependency mods are disabled as well, but only if they
- * are no longer required by any other mod that stays enabled. Dependencies are matched
- * by mod id via each mod's provided runtime.
+ * Disable only explicitly selected mods. A dependency can be a content mod in its
+ * own right; having no remaining dependents does not make it safe to disable.
+ * Library cleanup is a separate, user-invoked operation.
  */
-export function resolveModsToDisable(toDisable: ModFile[], allMods: ModFile[]): ModFile[] {
-  const providers = buildModProviderIndex(allMods)
-  const disabled = new Set(toDisable)
-  const queue = [...toDisable]
-
-  const isStillNeeded = (dep: ModFile) => {
-    const providedIds = Object.keys(dep.provideRuntime)
-    if (providedIds.length === 0) return false
-    const providedSet = new Set(providedIds)
-    for (const mod of allMods) {
-      if (mod === dep || disabled.has(mod) || !mod.enabled) continue
-      for (const depId of getRequiredModDependencyIds(mod)) {
-        if (providedSet.has(depId)) return true
-      }
-    }
-    return false
-  }
-
-  while (queue.length) {
-    const mod = queue.pop()!
-    for (const depId of getRequiredModDependencyIds(mod)) {
-      const provs = providers.get(depId)
-      if (!provs) continue
-      for (const dep of provs) {
-        if (disabled.has(dep) || !dep.enabled) continue
-        if (isStillNeeded(dep)) continue
-        disabled.add(dep)
-        queue.push(dep)
-      }
-    }
-  }
-
-  return [...disabled]
+export function resolveModsToDisable(toDisable: ModFile[]): ModFile[] {
+  return [...new Set(toDisable)]
 }
 
 /**
