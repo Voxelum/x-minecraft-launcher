@@ -11,7 +11,22 @@
         :tooltip="() => ({ text: group.name, list: instances.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`), direction: props.direction })"
         clickable
       >
-        <div class="instance-grid">
+        <div v-if="group.icon" class="instance-custom-icon">
+          <img
+            v-if="isImageUrl(group.icon)"
+            class="instance-custom-img"
+            :src="group.icon"
+          >
+          <v-icon
+            v-else
+            size="22"
+            :color="group.color ? 'white' : 'primary'"
+            class="group-folder-icon"
+          >
+            {{ group.icon }}
+          </v-icon>
+        </div>
+        <div v-else class="instance-grid">
           <img
             v-for="i in instances.slice(0, 4)"
             :key="i.path"
@@ -60,9 +75,34 @@ const instances = computed(() => {
     .map(path => allInstances.value.find(i => i.path === path))
     .filter(notNullish)
 })
+
+function isImageUrl(val?: string): boolean {
+  if (!val) return false
+  return val.startsWith('http://') || val.startsWith('https://') || val.startsWith('data:image/') || val.startsWith('image://')
+}
+
+function isGradient(val?: string): boolean {
+  if (!val) return false
+  return val.includes('gradient')
+}
 </script>
 
 <style scoped>
+.instance-custom-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instance-custom-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
 .instance-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -78,6 +118,14 @@ const instances = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.group-folder-icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+.group-folder-icon :deep(img) {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)) brightness(1.2) contrast(1.1);
 }
 </style>
 

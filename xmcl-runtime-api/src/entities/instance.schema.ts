@@ -5,7 +5,8 @@ export const InstanceGroupData = z.object({
   name: z.string(),
   id: z.string(),
   instances: z.array(z.string()),
-})
+  icon: z.string().optional(),
+}).passthrough()
 export type InstanceGroupData = z.infer<typeof InstanceGroupData>
 
 export const InstanceGroupDataOrString = z.union([InstanceGroupData, z.string()])
@@ -23,7 +24,7 @@ export const InstancesSchema = z.object({
   instances: z.array(z.string()).default([]),
   /** The instance groups */
   groups: InstanceGroupDataOrStringArray.default([]),
-})
+}).passthrough()
 export type InstancesSchema = z.infer<typeof InstancesSchema>
 
 /**

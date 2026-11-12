@@ -520,6 +520,22 @@ instanceAge:
   older: Più vecchio
   threeDay: In tre giorni
   today: Oggi
+instanceAutoGroup:
+  title: "Ordina automaticamente in cartelle"
+  subtitle: "Scegli come organizzare le tue istanze nella barra latérale e in «Le mie cose»"
+  autoRouteTitle: "Ordina automaticamente le nuove istanze alla creazione / download"
+  autoRouteDescription: "I modpack appena importati o scaricati finiranno automaticamente nella cartella corrispondente."
+  strategySection: "Strategia di raggruppamento"
+  byModloader: "Per modloader"
+  byModloaderDescription: "Raggruppa le istanze per Forge, Fabric, NeoForge, Quilt, Vanilla e Bedrock."
+  byVersion: "Per versione di Minecraft"
+  byVersionDescription: "Raggruppa le istanze per generazione di versione, dalla più recente."
+  bySource: "Per piattaforma e sorgente"
+  bySourceDescription: "Raggruppa le istanze per Modrinth, CurseForge, FTB, Server o Personalizzato."
+  active: "Attivo"
+  ungroupAll: "Separa tutto"
+  sortAllNow: "Ordina tutto ora"
+
 instanceDiscover:
   gameFolder: Scopri {count} cartelle di giochi
   instanceFolder: Trovate {count} istanze

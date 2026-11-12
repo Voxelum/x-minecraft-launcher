@@ -44,6 +44,8 @@ const xmcl: IconSet = {
       case 'iris': return h(ImageIcon, { src: BuiltinImages.iris })
       case 'oculus': return h(ImageIcon, { src: BuiltinImages.oculus })
       case 'mmc': return h(ImageIcon, { src: BuiltinImages.mmc })
+      case 'craftingTable': return h(ImageIcon, { src: BuiltinImages.craftingTable })
+      case 'bedrock': return h(ImageIcon, { src: BuiltinImages.bedrock })
       default: return null
     }
   },

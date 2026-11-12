@@ -540,6 +540,22 @@ instanceAge:
   older: Ескірек
   threeDay: Үш күн ішінде
   today: Бүгін
+instanceAutoGroup:
+  title: "Бумаларға автоматты сұрыптау"
+  subtitle: "Бүйірлік тақтада және «Менің деректерім» бөлімінде инстанстарды қалай реттеу керектігін таңдаңыз"
+  autoRouteTitle: "Жасау / жүктеу кезінде жаңа инстанстарды автоматты сұрыптау"
+  autoRouteDescription: "Жаңа импортталған немесе жүктелген модпактер сәйкес бумаға автоматты түрде түседі."
+  strategySection: "Топтастыру стратегиясы"
+  byModloader: "Мод жүктеуіш бойынша"
+  byModloaderDescription: "Инстанстарды Forge, Fabric, NeoForge, Quilt, Vanilla және Bedrock бойынша топтастыру."
+  byVersion: "Minecraft нұсқасы бойынша"
+  byVersionDescription: "Инстанстарды шығарылым ұрпағы бойынша, жаңасынан бастап топтастыру."
+  bySource: "Платформа және көз бойынша"
+  bySourceDescription: "Инстанстарды Modrinth, CurseForge, FTB, серверлер немесе таңдамалы бойынша топтастыру."
+  active: "Белсенді"
+  ungroupAll: "Барлығын топтан шығару"
+  sortAllNow: "Барлығын қазір сұрыптау"
+
 instanceDiscover:
   gameFolder: '{count} ойын қалтасы табылды'
   instanceFolder: '{count} жеке жағдай табылды'

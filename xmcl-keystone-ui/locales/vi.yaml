@@ -614,6 +614,22 @@ instanceAge:
   older: Cũ hơn
   threeDay: Trong vòng ba ngày
   today: Hôm nay
+instanceAutoGroup:
+  title: "Tự động sắp xếp vào thư mục"
+  subtitle: "Chọn cách sắp xếp các phiên bản của bạn trong thanh bên & «Của tôi»"
+  autoRouteTitle: "Tự động sắp xếp phiên bản mới khi tạo / tải về"
+  autoRouteDescription: "Các gói mod mới nhập hoặc tải về sẽ tự động chuyển vào thư mục phù hợp."
+  strategySection: "Chiến lược nhóm"
+  byModloader: "Theo trình tải mod"
+  byModloaderDescription: "Nhóm các phiên bản theo Forge, Fabric, NeoForge, Quilt, Vanilla và Bedrock."
+  byVersion: "Theo phiên bản Minecraft"
+  byVersionDescription: "Nhóm các phiên bản theo thế hệ phát hành, mới nhất lên đầu."
+  bySource: "Theo nền tảng & nguồn"
+  bySourceDescription: "Nhóm các phiên bản theo Modrinth, CurseForge, FTB, Máy chủ hoặc Tùy chỉnh."
+  active: "Đang kích hoạt"
+  ungroupAll: "Hủy nhóm tất cả"
+  sortAllNow: "Sắp xếp tất cả ngay"
+
 instanceDiscover:
   gameFolder: Phát hiện {count} thư mục game
   instanceFolder: Tìm thấy {count} phiên bản

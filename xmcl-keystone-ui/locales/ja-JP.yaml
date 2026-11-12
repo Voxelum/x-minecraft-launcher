@@ -542,6 +542,22 @@ instanceAge:
   older: 古い
   threeDay: 三日以内
   today: 今日
+instanceAutoGroup:
+  title: "フォルダーへ自動分類"
+  subtitle: "サイドバーや「マイ」画面でのインスタンスの整理方法を選択します"
+  autoRouteTitle: "新規インスタンス作成 / ダウンロード時に自動分類"
+  autoRouteDescription: "新しくインポートまたはダウンロードしたModパックは対応するフォルダーに自動配置されます。"
+  strategySection: "グループ化の戦略"
+  byModloader: "Modローダー別"
+  byModloaderDescription: "Forge、Fabric、NeoForge、Quilt、バニラ、Bedrockでインスタンスをグループ化します。"
+  byVersion: "Minecraftバージョン別"
+  byVersionDescription: "最新のリリース世代順にインスタンスをグループ化します。"
+  bySource: "プラットフォーム・ソース別"
+  bySourceDescription: "Modrinth、CurseForge、FTB、サーバー、カスタムでインスタンスをグループ化します。"
+  active: "有効"
+  ungroupAll: "すべてグループ解除"
+  sortAllNow: "今すぐすべて分類"
+
 instanceDiscover:
   gameFolder: '{count} 個のゲーム フォルダーを発見する'
   instanceFolder: '{count} 個のインスタンスが見つかりました'

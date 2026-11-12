@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 319 (in 327 Vue files)
+**Total anchors:** 320 (in 329 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -56,6 +56,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `auto-backup-enable-switch` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L134`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L134) |
 | `auto-backup-history-row` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L464`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L464) |
 | `auto-backup-run-now-btn` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L121`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L121) |
+| `auto-group-instances` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
 | `backup-create-cancel` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L588`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L588) |
 | `backup-create-close` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L26`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L26) |
 | `backup-create-collections-switch` | [`xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L97`](../xmcl-keystone-ui/src/views/BackupCreateDialog.vue#L97) |
@@ -129,7 +130,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `command-palette-instance-launch` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L176`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L176) |
 | `command-palette-instance-select` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L161`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L161) |
 | `create-backup-btn` | [`xmcl-keystone-ui/src/views/SettingBackup.vue#L18`](../xmcl-keystone-ui/src/views/SettingBackup.vue#L18) |
-| `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
+| `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L46`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L46) |
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
 | `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L320`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L320) |
 | `developer-mode` | [`xmcl-keystone-ui/src/views/SettingGeneral.vue#L72`](../xmcl-keystone-ui/src/views/SettingGeneral.vue#L72) |
@@ -289,7 +290,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `server-target-selector` | [`xmcl-keystone-ui/src/views/BaseSetting.vue#L346`](../xmcl-keystone-ui/src/views/BaseSetting.vue#L346)<br>[`xmcl-keystone-ui/src/views/BaseSettingServerManage.vue#L5`](../xmcl-keystone-ui/src/views/BaseSettingServerManage.vue#L5) |
 | `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L92`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L92) |
 | `server-worlds` | [`xmcl-keystone-ui/src/views/BaseSettingServerRun.vue#L107`](../xmcl-keystone-ui/src/views/BaseSettingServerRun.vue#L107) |
-| `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L27`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L27) |
+| `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L28`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L28) |
 | `settings-page` | [`xmcl-keystone-ui/src/views/Setting.vue#L3`](../xmcl-keystone-ui/src/views/Setting.vue#L3) |
 | `settings-proxy-host` | [`xmcl-keystone-ui/src/views/SettingNetwork.vue#L37`](../xmcl-keystone-ui/src/views/SettingNetwork.vue#L37) |
 | `setup-account` | [`xmcl-keystone-ui/src/views/SetupAccount.vue#L3`](../xmcl-keystone-ui/src/views/SetupAccount.vue#L3) |

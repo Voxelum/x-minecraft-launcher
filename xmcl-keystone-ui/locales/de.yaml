@@ -558,6 +558,22 @@ instanceAge:
   older: Alte
   threeDay: Innerhalb von drei Tagen
   today: Heute.
+instanceAutoGroup:
+  title: "Automatisch in Ordner sortieren"
+  subtitle: "Wähle, wie deine Instanzen in der Seitenleiste und unter «Mein Bereich» organisiert werden"
+  autoRouteTitle: "Neue Instanzen beim Erstellen / Herunterladen automatisch einsortieren"
+  autoRouteDescription: "Neu importierte oder heruntergeladene Modpacks landen automatisch im passenden Ordner."
+  strategySection: "Gruppierungsstrategie"
+  byModloader: "Nach Modloader"
+  byModloaderDescription: "Instanzen nach Forge, Fabric, NeoForge, Quilt, Vanilla und Bedrock gruppieren."
+  byVersion: "Nach Minecraft-Version"
+  byVersionDescription: "Instanzen nach Veröffentlichungsgeneration sortiert (neueste zuerst) gruppieren."
+  bySource: "Nach Plattform & Quelle"
+  bySourceDescription: "Instanzen nach Modrinth, CurseForge, FTB, Servern oder Benutzerdefiniert gruppieren."
+  active: "Aktiv"
+  ungroupAll: "Alle Gruppierungen aufheben"
+  sortAllNow: "Jetzt alle sortieren"
+
 instanceDiscover:
   gameFolder: Entdecken Sie {count} Spielordner
   instanceFolder: '{count} Instanzen gefunden'

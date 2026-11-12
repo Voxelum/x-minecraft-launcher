@@ -614,6 +614,22 @@ instanceAge:
   older: قديمة
   threeDay: خلال 3 أيام
   today: اليوم
+instanceAutoGroup:
+  title: "فرز تلقائي في الفولدرات"
+  subtitle: "اختار إزاي تنظم الحالات في الشريط الجانبي وصفحة «حاجتي»"
+  autoRouteTitle: "فرز الحالات الجديدة تلقائيًا عند الإنشاء / التحميل"
+  autoRouteDescription: "المودباكس المتنزلة أو المستوردة جديد هتروح أوتوماتيك في الفولدر المناسب."
+  strategySection: "استراتيجية التجميع"
+  byModloader: "حسب محمل المودات"
+  byModloaderDescription: "تجميع الحالات حسب Forge و Fabric و NeoForge و Quilt و Vanilla و Bedrock."
+  byVersion: "حسب إصدار Minecraft"
+  byVersionDescription: "تجميع الحالات حسب جيل الإصدار من الأحدث للأقدم."
+  bySource: "حسب المنصة والمصدر"
+  bySourceDescription: "تجميع الحالات حسب Modrinth و CurseForge و FTB أو السيرفرات أو مخصص."
+  active: "شغال"
+  ungroupAll: "فك تجميع الكل"
+  sortAllNow: "فرز الكل دلوقتي"
+
 instanceDiscover:
   gameFolder: تم اكتشاف {count} مجلدات لعبة
   instanceFolder: تم العثور على {count} نسخ

@@ -541,6 +541,22 @@ instanceAge:
   older: Antigo
   threeDay: Em três dias
   today: Hoje
+instanceAutoGroup:
+  title: "Organizar automaticamente em pastas"
+  subtitle: "Escolha como deseja organizar suas instâncias na barra lateral e em «Minhas coisas»"
+  autoRouteTitle: "Organizar novas instâncias automaticamente ao criar / baixar"
+  autoRouteDescription: "Modpacks recém-importados ou baixados irão automaticamente para a pasta correspondente."
+  strategySection: "Estratégia de agrupamento"
+  byModloader: "Por Modloader"
+  byModloaderDescription: "Agrupar instâncias por Forge, Fabric, NeoForge, Quilt, Vanilla e Bedrock."
+  byVersion: "Por versão do Minecraft"
+  byVersionDescription: "Agrupar instâncias por geração de lançamento, das mais recentes para as mais antigas."
+  bySource: "Por plataforma e fonte"
+  bySourceDescription: "Agrupar instâncias por Modrinth, CurseForge, FTB, Servidores ou Personalizado."
+  active: "Ativo"
+  ungroupAll: "Desagrupar tudo"
+  sortAllNow: "Organizar tudo agora"
+
 instanceDiscover:
   gameFolder: Descobrir {count} pastas de jogos
   instanceFolder: Encontradas {count} instâncias

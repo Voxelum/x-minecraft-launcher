@@ -23,7 +23,7 @@
         class="w-1 h-5 rounded-full mr-2.5 shrink-0 transition-all"
         :style="{
           background: color,
-          boxShadow: `0 0 10px ${color}88`,
+          boxShadow: `0 0 10px ${getBaseColor(color)}88`,
         }"
       />
 
@@ -35,7 +35,18 @@
         :style="avatarStyle"
       >
         <template v-if="icon">
-          <v-icon :size="dense ? 18 : 20" :color="color || 'primary'">
+          <v-img
+            v-if="isImageUrl(icon)"
+            :src="icon"
+            cover
+            class="w-full h-full rounded-lg"
+          />
+          <v-icon
+            v-else
+            :size="dense ? 18 : 20"
+            :color="color ? 'white' : 'primary'"
+            class="group-folder-icon"
+          >
             {{ icon }}
           </v-icon>
         </template>
@@ -127,6 +138,23 @@ const props = withDefaults(defineProps<{
   pinned: false,
 })
 
+function isImageUrl(val?: string): boolean {
+  if (!val) return false
+  return val.startsWith('http://') || val.startsWith('https://') || val.startsWith('data:image/') || val.startsWith('image://')
+}
+
+function isGradient(val?: string): boolean {
+  if (!val) return false
+  return val.includes('gradient')
+}
+
+function getBaseColor(val?: string, fallback = '#10B981'): string {
+  if (!val) return fallback
+  if (!isGradient(val)) return val
+  const match = val.match(/#(?:[0-9a-fA-F]{3,8})|rgba?\([^)]+\)/)
+  return match ? match[0] : fallback
+}
+
 const { t, locale } = useI18n()
 
 const displayName = computed(() => getGroupDisplayName(props.name, t, locale.value))
@@ -135,18 +163,20 @@ const cardStyle = computed(() => ({
   minHeight: props.height ? `${props.height}px` : undefined,
   maxHeight: props.height ? `${props.height}px` : undefined,
   background: props.color
-    ? `linear-gradient(90deg, ${props.color}15 0%, ${props.color}06 40%, rgba(255, 255, 255, 0.02) 100%)`
+    ? (isGradient(props.color)
+        ? `linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%), ${props.color}`
+        : `linear-gradient(90deg, ${props.color}15 0%, ${props.color}06 40%, rgba(255, 255, 255, 0.02) 100%)`)
     : 'rgba(255, 255, 255, 0.02)',
   borderColor: props.color
-    ? `${props.color}35`
+    ? (isGradient(props.color) ? 'rgba(255, 255, 255, 0.2)' : `${props.color}35`)
     : 'rgba(255, 255, 255, 0.06)',
 }))
 
 const avatarStyle = computed(() => ({
   background: props.color
-    ? `${props.color}22`
+    ? (isGradient(props.color) ? props.color : `${props.color}22`)
     : 'rgba(255, 255, 255, 0.05)',
-  border: `1px solid ${props.color ? `${props.color}40` : 'rgba(255, 255, 255, 0.08)'}`,
+  border: `1px solid ${props.color ? (isGradient(props.color) ? 'rgba(255, 255, 255, 0.2)' : `${props.color}40`) : 'rgba(255, 255, 255, 0.08)'}`,
 }))
 
 const avatars = computed(() => props.items.map((item) => item.icon).filter((icon): icon is string => !!icon))
@@ -313,5 +343,13 @@ function getContextMenu() {
   background: rgba(var(--v-theme-primary), 0.12) !important;
   border-radius: 12px !important;
   transform: scale(0.99);
+}
+
+.group-folder-icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+.group-folder-icon :deep(img) {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)) brightness(1.2) contrast(1.1);
 }
 </style>

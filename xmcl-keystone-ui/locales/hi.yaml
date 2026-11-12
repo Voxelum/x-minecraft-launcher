@@ -614,6 +614,22 @@ instanceAge:
   older: पुराना
   threeDay: तीन दिनों में
   today: आज
+instanceAutoGroup:
+  title: "फ़ोल्डरों में स्वचालित क्रमबद्ध करें"
+  subtitle: "चुनें कि आप साइडबार और «मेरी सामग्री» में अपने इंस्टेंस कैसे व्यवस्थित करना चाहते हैं"
+  autoRouteTitle: "निर्माण / डाउनलोड पर नए इंस्टेंस स्वचालित रूप से क्रमबद्ध करें"
+  autoRouteDescription: "नए आयातित या डाउनलोड किए गए मॉडपैक स्वचालित रूप से संबंधित फ़ोल्डर में आ जाएंगे।"
+  strategySection: "समूहीकरण रणनीति"
+  byModloader: "मॉडलोडर के अनुसार"
+  byModloaderDescription: "इंस्टेंस को Forge, Fabric, NeoForge, Quilt, Vanilla और Bedrock द्वारा समूहित करें।"
+  byVersion: "Minecraft संस्करण के अनुसार"
+  byVersionDescription: "रिलीज पीढ़ी के अनुसार सबसे नए पहले क्रम में इंस्टेंस समूहित करें।"
+  bySource: "प्लेटफ़ॉर्म और स्रोत के अनुसार"
+  bySourceDescription: "Modrinth, CurseForge, FTB, सर्वर या कस्टम के अनुसार इंस्टेंस समूहित करें।"
+  active: "सक्रिय"
+  ungroupAll: "सभी को अलग करें"
+  sortAllNow: "अभी सभी को क्रमबद्ध करें"
+
 instanceDiscover:
   gameFolder: '{count} गेम फ़ोल्डर खोजें'
   instanceFolder: '{count} इंस्टेंस मिले'

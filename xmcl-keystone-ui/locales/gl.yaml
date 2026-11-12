@@ -540,6 +540,22 @@ instanceAge:
   older: Ouder
   threeDay: Binnen drie dagen
   today: Vandaag
+instanceAutoGroup:
+  title: "Clasificar automaticamente en cartafoles"
+  subtitle: "Escolla como organizar as súas instancias na barra lateral e en «As miñas cousas»"
+  autoRouteTitle: "Clasificar automaticamente novas instancias ao crear / descargar"
+  autoRouteDescription: "Os modpacks recén importados ou descargados colocaranse automaticamente no cartafol correspondente."
+  strategySection: "Estratexia de agrupación"
+  byModloader: "Por cargador de mods"
+  byModloaderDescription: "Agrupar instancias por Forge, Fabric, NeoForge, Quilt, Vanilla e Bedrock."
+  byVersion: "Por versión de Minecraft"
+  byVersionDescription: "Agrupar instancias por xeración de lanzamento, as máis novas primeiro."
+  bySource: "Por plataforma e fonte"
+  bySourceDescription: "Agrupar instancias por Modrinth, CurseForge, FTB, Servidores ou Personalizado."
+  active: "Activo"
+  ungroupAll: "Desagrupar todo"
+  sortAllNow: "Clasificar todo agora"
+
 instanceDiscover:
   gameFolder: Ontdek {count} gamemappen
 instanceFileOperation:
