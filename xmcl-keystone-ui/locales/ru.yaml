@@ -513,8 +513,8 @@ instanceUpdate:
 instances:
   add: Создать экземпляр
   addCurseForgeDescription: |-
-    Импортируйте из папки данных Curseforge.
-    Вам нужно выбрать корневую папку данных Curseforge.
+    Импортируйте из папки данных CurseForge.
+    Вам нужно выбрать корневую папку данных CurseForge.
   addDescription: Создать новый экземпляр с нуля
   addMMCDescription: |-
     Импортируйте существующий экземпляр MultiMC.
@@ -848,7 +848,7 @@ modSearch:
   noModsInstalled: У вас не установлено ни одного мода.
   searchInMarket: Искать {keyword} на рынке
 modUpgradePolicy:
-  curseforge: Curseforge First
+  curseforge: CurseForge First
   curseforgeOnly: Только в Кёрсфордже
   modrinth: Modrinth Первый
   modrinthOnly: Только Модринт
@@ -1059,35 +1059,35 @@ multiplayer:
   updateSharedInstanceConfirm: Обновить и запустить
   updateSharedInstanceDescription: Общие моды отличаются от модов в {instance}. Обновить эту сборку в соответствии со сборкой хоста перед запуском? Для изменённых файлов будет создана резервная копия.
   updateSharedInstanceTitle: Обновить общую сборку?
-  addFunds: "Пополнить баланс"
-  availableBalance: "Доступный баланс"
-  balanceHint: "Доступно для сервисов XMCL Together"
-  billing: "Оплата"
-  billingDescription: "Управляйте доступом к ретранслятору, планом Together Home и платежами."
-  billingError: "Не удалось загрузить данные об оплате Together. Повторите попытку через некоторое время."
-  buyTogether: "Купить Together"
-  cancelTogether: "Отменить план"
-  checkout: "Открыть оплату Waffo"
-  connectionTogetherWarning: "Один из участников комнаты уже некоторое время не может подключиться к вам. Попробуйте XMCL Together, чтобы улучшить соединение для всех участников комнаты. Together нужен только владельцу комнаты."
-  masterPurchaseHint: "Together Home нужен только владельцу комнаты, чтобы улучшить соединение для всех участников комнаты."
-  natTogetherWarning: "У вашего роутера могут возникать проблемы с подключением к владельцу комнаты. Если подключения не работают, попробуйте XMCL Together, чтобы улучшить соединение между вами и друзьями. Купить Together для комнаты должен только её владелец."
-  togetherName: "Minecraft Together"
-  trialDescription: "Один 7-дневный пробный период с 1 GB ретрансляционного трафика."
-  trialTitle: "Пробный период подключения"
-  tryTogether: "Попробовать Together"
-  month: "месяц"
-  orderStatus: "Заказ Waffo: {status}"
-  planDescription: "20 GB управляемого ретрансляционного трафика в месяц, а также устранение неполадок модпака с помощью ИИ."
-  waffoHint: "Платежи безопасно обрабатываются через Waffo Pancake. XMCL никогда не получает номер вашей карты."
+  addFunds: 'Пополнить баланс'
+  availableBalance: 'Доступный баланс'
+  balanceHint: 'Доступно для сервисов XMCL Together'
+  billing: 'Оплата'
+  billingDescription: 'Управляйте доступом к ретранслятору, планом Together Home и платежами.'
+  billingError: 'Не удалось загрузить данные об оплате Together. Повторите попытку через некоторое время.'
+  buyTogether: 'Купить Together'
+  cancelTogether: 'Отменить план'
+  checkout: 'Открыть оплату Waffo'
+  connectionTogetherWarning: 'Один из участников комнаты уже некоторое время не может подключиться к вам. Попробуйте XMCL Together, чтобы улучшить соединение для всех участников комнаты. Together нужен только владельцу комнаты.'
+  masterPurchaseHint: 'Together Home нужен только владельцу комнаты, чтобы улучшить соединение для всех участников комнаты.'
+  natTogetherWarning: 'У вашего роутера могут возникать проблемы с подключением к владельцу комнаты. Если подключения не работают, попробуйте XMCL Together, чтобы улучшить соединение между вами и друзьями. Купить Together для комнаты должен только её владелец.'
+  togetherName: 'Minecraft Together'
+  trialDescription: 'Один 7-дневный пробный период с 1 GB ретрансляционного трафика.'
+  trialTitle: 'Пробный период подключения'
+  tryTogether: 'Попробовать Together'
+  month: 'месяц'
+  orderStatus: 'Заказ Waffo: {status}'
+  planDescription: '20 GB управляемого ретрансляционного трафика в месяц, а также устранение неполадок модпака с помощью ИИ.'
+  waffoHint: 'Платежи безопасно обрабатываются через Waffo Pancake. XMCL никогда не получает номер вашей карты.'
   subscription:
-    active: "Активна"
-    cancelled: "Отменена"
-    payment_due: "Требуется оплата"
+    active: 'Активна'
+    cancelled: 'Отменена'
+    payment_due: 'Требуется оплата'
   trial:
-    active: "Пробный период активен"
-    available: "Доступен бесплатный пробный период"
-    expired: "Пробный период использован"
-    unavailable: "Пробный период недоступен"
+    active: 'Пробный период активен'
+    available: 'Доступен бесплатный пробный период'
+    expired: 'Пробный период использован'
+    unavailable: 'Пробный период недоступен'
   loginRequiredDescription: Для сетевой игры P2P используются онлайн-сервисы XMCL. Войдите в аккаунт XMCL, чтобы продолжить.
   loginRequiredTitle: Войдите для игры по сети P2P
   complete: Завершено
@@ -1245,24 +1245,24 @@ save:
   independent: Экземпляр использует независимую папку сохранений
   levelName: Название уровня
   map:
-    tabTitle: "Карта мира"
+    tabTitle: 'Карта мира'
   mapHintPan: Перетащите для перемещения
   progress:
     zoomIn: Приблизить
     zoomOut: Отдалить
-    loading: "Загрузка прогресса…"
-    noData: "Прогресс не найден"
-    noDataHint: "Играйте в этом мире, чтобы появились достижения, статистика и прогресс заданий."
-    quests: "Задания"
-    advancements: "Достижения"
-    done: "Завершено"
-    inProgress: "В процессе"
-    all: "Все"
-    treeView: "Дерево"
-    filterPlaceholder: "Фильтр по названию…"
-    root: "Начало"
-    exitFullscreen: "Выйти из полноэкранного режима"
-    locked: "Заблокировано"
+    loading: 'Загрузка прогресса…'
+    noData: 'Прогресс не найден'
+    noDataHint: 'Играйте в этом мире, чтобы появились достижения, статистика и прогресс заданий.'
+    quests: 'Задания'
+    advancements: 'Достижения'
+    done: 'Завершено'
+    inProgress: 'В процессе'
+    all: 'Все'
+    treeView: 'Дерево'
+    filterPlaceholder: 'Фильтр по названию…'
+    root: 'Начало'
+    exitFullscreen: 'Выйти из полноэкранного режима'
+    locked: 'Заблокировано'
   name: Мир | Миры
   search: Поиск сохранений
   seed: Seed
@@ -1429,7 +1429,7 @@ setting:
   general: Общее
   githubRelease: Релиз GitHub
   globalJava: Предпочитаемая Java
-  globalJavaHint: "В автоматическом режиме сначала используется эта Java и только при несовместимости с версией игры выполняется переход к автоопределению."
+  globalJavaHint: 'В автоматическом режиме сначала используется эта Java и только при несовместимости с версией игры выполняется переход к автоопределению.'
   globalSetting: Глобальные настройки экземпляра
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
   importSettings: Импорт настроек

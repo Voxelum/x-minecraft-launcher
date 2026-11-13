@@ -287,7 +287,7 @@ diagnosis:
     message: Fare clic per installare questa versione
     name: La versione {version} non è installata!
   unresolvedFiles:
-    description: '{count} file non è stato risolto durante l''installazione | {count} file non sono stati risolti durante l''installazione'
+    description: "{count} file non è stato risolto durante l'installazione | {count} file non sono stati risolti durante l'installazione"
     title: File non risolti
   unzipFileNotFound:
     description: Impossibile trovare {file}
@@ -310,7 +310,7 @@ env:
     none: Non selezionare niente
 errors:
   BadForgeInstallerJarError: Impossibile analizzare il file jar dell'installatore di Forge. Forse Forge ha un nuovo formato di file di installazione? Contattare gli sviluppatori se il problema persiste.
-  BadInstanceType: 'Non è un''istanza valida: {type}'
+  BadInstanceType: "Non è un'istanza valida: {type}"
   BodyTimeoutError: Timeout del corpo HTTP
   ChecksumNotMatchError: Checksum non corrispondente! Aspettarsi {expect}. Reale {actual}.
   ConnectTimeoutError: Timeout della connessione al server.
@@ -424,7 +424,7 @@ installAssets:
   assetIndex: Controlla il file di indice degli asset
   name: Installa file di asset
 installAuthlibInjector: Installa authlib-injector
-installCurseforgeFile: Installa file di Curseforge
+installCurseforgeFile: Installa file di CurseForge
 installFabric:
   name: Installa Fabric
 installForge:
@@ -592,7 +592,7 @@ instances:
   editionBedrockHint: L'edizione Bedrock viene avviata tramite l'app Microsoft Store. Devi possedere una licenza Bedrock. Mod, pacchetti risorse e altre funzionalità esclusive di Java non sono disponibili.
   editionBedrockWindowsOnly: L'edizione Bedrock è supportata solo nella build per Windows.
   linkSharedFolders: Condividi le cartelle tra le istanze
-  linkSharedFoldersHint: 'Crea queste cartelle come collegamenti alle cartelle condivise del launcher in modo che questa istanza condivida il loro contenuto con tutte le altre istanze collegate. Questa non è una copia: le modifiche fatte in un''istanza compaiono in tutte. Le cartelle non selezionate restano private di questa istanza.'
+  linkSharedFoldersHint: "Crea queste cartelle come collegamenti alle cartelle condivise del launcher in modo che questa istanza condivida il loro contenuto con tutte le altre istanze collegate. Questa non è una copia: le modifiche fatte in un'istanza compaiono in tutte. Le cartelle non selezionate restano private di questa istanza."
   linkFailed: Impossibile collegare la cartella {folder} alla cartella condivisa
   addPrismDescription: Importa un'istanza PrismLauncher esistente.
 items:
@@ -848,7 +848,7 @@ modSearch:
   noModsInstalled: Non hai installato nessuna mod.
   searchInMarket: Cerca {keyword} nel mercato
 modUpgradePolicy:
-  curseforge: Curseforge  Maledizione
+  curseforge: CurseForge  Maledizione
   curseforgeOnly: Solo Forgiamaledizione
   modrinth: Modrinth Primo
   modrinthOnly: Solo Modrinth
@@ -859,11 +859,11 @@ modified:
   unsaved: La tua modifica non è stata salvata!
 modpack:
   author: Nome autore
-  authorHint: Questo potrebbe essere utilizzato per firmare l'esportazione del modpack (Curseforge)
+  authorHint: Questo potrebbe essere utilizzato per firmare l'esportazione del modpack (CurseForge)
   description: Descrizione
   descriptionHint: Descrizione generale del tuo modpack. Potrebbe essere utilizzato per l'esportazione come modpack curseforge.
   dropHint: Rilascia lo zip del modpack qui per importare
-  emitCurseforge: Emisfero Curseforge Modpack
+  emitCurseforge: Emisfero CurseForge Modpack
   emitModrinth: Emisfero Modrinth Modpack
   emitModrinthStrict: Formato Modrinth Strict
   emitModrinthStrictDescription: Sono consentiti solo gli URL dei 4 domini elencati nel documento modrinth
@@ -1818,16 +1818,16 @@ tutorial:
   instanceSelectDescription: Facendo clic su questo pulsante si passerà alla pagina per selezionare il gioco e leggere le notizie.
   launchDescription: Fai clic su questo pulsante per installare o avviare il gioco.
   mod:
-    defaultSourceDescription: Puoi scegliere la fonte dei dettagli dei mod qui. Ci sono mod pubblicate sia su Modrinth che su Curseforge. Se si desidera passare tra questi due provider di contenuti, è possibile modificare il valore qui.
+    defaultSourceDescription: Puoi scegliere la fonte dei dettagli dei mod qui. Ci sono mod pubblicate sia su Modrinth che su CurseForge. Se si desidera passare tra questi due provider di contenuti, è possibile modificare il valore qui.
     defaultSourceTitle: Seleziona la fonte del contenuto Mod
-    detailDescription: Quando selezioni un elemento a sinistra, vedrai il dettaglio del mod. Il contenuto può provenire da Modrinth, Curseforge o dal contenuto del mod analizzato.
+    detailDescription: Quando selezioni un elemento a sinistra, vedrai il dettaglio del mod. Il contenuto può provenire da Modrinth, CurseForge o dal contenuto del mod analizzato.
     detailTitle: Dettaglio Mod
     listDescription: Visualizzeremo i mod installati quando non hai alcun input. Vedrai i mod cercati una volta inserito un termine di ricerca o selezionata una categoria.
     listTitle: Installato o cercato
-    searchDescription: Puoi cercare mod da Modrinth, Curseforge o dalla tua cache locale utilizzando questa casella di ricerca.
+    searchDescription: Puoi cercare mod da Modrinth, CurseForge o dalla tua cache locale utilizzando questa casella di ricerca.
     searchTitle: Cerca Mod
   recentPlayDescription: I giochi creati saranno elencati qui. Puoi cambiare le visualizzazioni qui per vedere anche le versioni installate e i modpack scaricati.
-  storePoupularModpackDescription: In questa sezione vedrai i modpack più popolari in Curseforge e Modrinth.
+  storePoupularModpackDescription: In questa sezione vedrai i modpack più popolari in CurseForge e Modrinth.
   storeSearchCategoryDescription: Puoi anche attivare/disattivare le categorie o i filtri qui.
   storeSearchDescription: Puoi cercare un Modpack inserendo il testo in questa casella. Premi Invio per cercare.
   storeSearchResultDescription: Vedrai tutti i risultati della ricerca elencati qui.
