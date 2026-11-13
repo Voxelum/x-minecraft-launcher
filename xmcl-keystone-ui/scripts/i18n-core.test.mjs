@@ -189,7 +189,7 @@ describe('Electron main-process locales', () => {
   it('loads only bundled locales and keeps their used keys complete', () => {
     const state = buildMainState()
 
-    expect([...state.localeKeys.keys()].sort()).toEqual(['en', 'es-ES', 'ru', 'zh-CN'])
+    expect([...state.localeKeys.keys()].sort()).toEqual(['en', 'es-ES', 'ru', 'uk', 'zh-CN'])
     expect(computeLint(state).invalid).toEqual([])
     expect(computeLint(state).missing).toEqual([])
   })

@@ -1,4 +1,4 @@
-import { InjectionKey, Ref } from 'vue'
+import { InjectionKey, Ref, watch } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { injection } from '@/util/inject'
 
@@ -26,6 +26,12 @@ export function useSidebarSettings(): SidebarSettings {
   const autoHide = useLocalStorage('sidebar_autoHide', true, { writeDefaults: false })
   const showOnlyPinned = useLocalStorage('sidebar_showOnlyPinned', false, { writeDefaults: false })
   const pinnedInstances = useLocalStorage<string[]>('sidebar_pinnedInstances', [])
+
+  watch(pinnedInstances, (val) => {
+    if (typeof windowController !== 'undefined' && windowController.syncPinnedInstances) {
+      windowController.syncPinnedInstances(val ? [...val] : []).catch(() => {})
+    }
+  }, { immediate: true, deep: true })
 
   return {
     position,
