@@ -2858,8 +2858,8 @@ xmclAccount:
   session: 会話
   sessionActive: 有效
   sessionExpired: 已過期
-  signOutAll: 結束所有設備
-  signOutDevice: 結束此設備
+  signOutAll: 登出所有裝置
+  signOutDevice: 登出此裝置
   status:
     active: 有效
     deleted: 已刪除
