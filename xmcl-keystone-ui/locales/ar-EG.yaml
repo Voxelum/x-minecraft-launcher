@@ -1767,7 +1767,7 @@ screenshots:
   layerAdd: إضافة طبقة
   layerDuplicate: تكرار الطبقة
   layerDelete: حذف الطبقة
-  layerOpacity: الشفافية (Opacity)
+  layerOpacity: عدم الشفافية (Opacity)
   transformLayer: تحويل حر
   applyTransform: تطبيق التحويل (Enter)
   cancelTransform: إلغاء (Esc)
