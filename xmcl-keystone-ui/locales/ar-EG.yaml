@@ -510,7 +510,7 @@ installAssets:
   assetIndex: التحقق من ملف مؤشر الموارد
   name: تثبيت ملفات الموارد
 installAuthlibInjector: تثبيت authlib-injector
-installCurseforgeFile: تثبيت ملف Curseforge
+installCurseforgeFile: تثبيت ملف CurseForge
 installFabric:
   name: تثبيت فابريك (Fabric)
 installForge:
@@ -969,11 +969,11 @@ modified:
   unsaved: التعديلات بتاعتك مش محفوظة!
 modpack:
   author: اسم الكاتب/المطور
-  authorHint: الاسم ده ممكن يستخدم للتوقيع على حزمة مودات مصدرة (Curseforge)
+  authorHint: الاسم ده ممكن يستخدم للتوقيع على حزمة مودات مصدرة (CurseForge)
   description: الوصف
-  descriptionHint: وصف عام لحزمة المودات بتاعتك. ممكن يستخدم عند التصدير كحزمة مودات لـ Curseforge.
+  descriptionHint: وصف عام لحزمة المودات بتاعتك. ممكن يستخدم عند التصدير كحزمة مودات لـ CurseForge.
   dropHint: اسحب ملف حزمة المودات المضغوط (.zip) هنا لاستيراده
-  emitCurseforge: تصدير كحزمة مودات Curseforge
+  emitCurseforge: تصدير كحزمة مودات CurseForge
   emitModrinth: تصدير كحزمة مودات Modrinth
   emitModrinthStrict: صيغة Modrinth الصارمة
   emitModrinthStrictDescription: بيتم السماح بس بعناوين الـ URL من النطاقات الأربعة المذكورة في وثيقة modrinth
@@ -2045,16 +2045,16 @@ tutorial:
   instanceSelectDescription: الضغط على الزرار ده هيوديك لصفحة اختيار اللعبة وقراءة الأخبار.
   launchDescription: اضغط على الزرار ده لتثبيت أو تشغيل اللعبة.
   mod:
-    defaultSourceDescription: تقدر تختار مصدر معلومات وتفاصيل المودات من هنا. المودات دي منشورة على Modrinth و Curseforge. لو عاوز تبدل بين المنصتين دول، تقدر تغير الخيار من هنا.
+    defaultSourceDescription: تقدر تختار مصدر معلومات وتفاصيل المودات من هنا. المودات دي منشورة على Modrinth و CurseForge. لو عاوز تبدل بين المنصتين دول، تقدر تغير الخيار من هنا.
     defaultSourceTitle: اختر مصدر محتوى المودات
-    detailDescription: لما تختار عنصر على الشمال، هتشوف تفاصيل المود ده. المحتوى ممكن ييجي من Modrinth أو Curseforge أو معلومات المود المحلية بعد تحليلها.
+    detailDescription: لما تختار عنصر على الشمال، هتشوف تفاصيل المود ده. المحتوى ممكن ييجي من Modrinth أو CurseForge أو معلومات المود المحلية بعد تحليلها.
     detailTitle: تفاصيل المود
     listDescription: هنعرض المودات المتثبتة لما متكتبش حاجة في البحث. أول ما تكتب كلمة بحث أو تختار فئة معينة، هتشوف المودات اللي لقيناها.
     listTitle: المودات المثبتة أو نتائج البحث
-    searchDescription: تقدر تبحث عن المودات من Modrinth، أو Curseforge، أو من الكاش المحلي بتاعك باستخدام صندوق البحث ده.
+    searchDescription: تقدر تبحث عن المودات من Modrinth، أو CurseForge، أو من الكاش المحلي بتاعك باستخدام صندوق البحث ده.
     searchTitle: البحث في المودات
   recentPlayDescription: الألعاب والنسخ اللي عملتها هتظهر هنا في القائمة. تقدر تبدل طريقة العرض عشان تشوف برضه الإصدارات المثبتة وحزم المودات المتنزلة.
-  storePoupularModpackDescription: هتشوف حزم المودات الأكثر شعبية ورواجاً على Curseforge و Modrinth في القسم ده.
+  storePoupularModpackDescription: هتشوف حزم المودات الأكثر شعبية ورواجاً على CurseForge و Modrinth في القسم ده.
   storeSearchCategoryDescription: تقدر برضه تبدل الفئات والتصنيفات أو الفلاتر من هنا.
   storeSearchDescription: تقدر تبحث عن حزم المودات بالكتابة في الصندوق ده. اضغط Enter للبحث.
   storeSearchResultDescription: هتشوف كل نتائج البحث معروضة هنا في القائمة.

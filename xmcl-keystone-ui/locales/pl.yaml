@@ -1559,8 +1559,7 @@ setting:
   aboutBmclDescription: BMCL API zapewnia wygodne pobieranie dla chińskich użytkowników
   aboutContributors: 🧑‍💻 Współpracownicy 🧑‍💻
   aboutDenoDescription: XMCL wykorzystuje bezproblemową platformę Deno Deploy dla bezserwerowych aplikacji JavaScript
-  about: O
-  advancedJavaOptions: Zaawansowane opcje Java
+  aboutLauncherNotice: NIE JEST TO OFICJALNY PRODUKT MINECRAFT. NIE ZATWIERDZONY ANI NIE POWIĄZANY Z MOJANG LUB MICROSOFT.
   aboutLicense: LICENCJA MIT
   aboutLicenseInfo: Bezpłatne podpisywanie kodu w systemie Windows dostarczone przez SignPath.io, certyfikat SignPath Foundation
   aboutSponsors: 😇 Sponsorzy 😇

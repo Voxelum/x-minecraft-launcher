@@ -510,7 +510,7 @@ installAssets:
   assetIndex: Kiểm tra tệp chỉ mục tài nguyên
   name: Cài đặt các tệp tài nguyên
 installAuthlibInjector: Cài đặt authlib-injector
-installCurseforgeFile: Cài đặt tệp Curseforge
+installCurseforgeFile: Cài đặt tệp CurseForge
 installFabric:
   name: Cài đặt Fabric
 installForge:
@@ -658,7 +658,7 @@ instanceUpdate:
   update: Bắt đầu cập nhật
 instances:
   add: Tạo game
-  addCurseForgeDescription: Nhập từ thư mục dữ liệu Curseforge. Bạn cần chọn thư mục dữ liệu gốc của Curseforge
+  addCurseForgeDescription: Nhập từ thư mục dữ liệu CurseForge. Bạn cần chọn thư mục dữ liệu gốc của CurseForge
   addDescription: Tạo một phiên bản mới từ đầu
   addMMCDescription: Nhập phiên bản MultiMC hiện có. Bạn cần chọn thư mục dữ liệu từ MultiMC.
   addModrinthDescription: Nhập phiên bản Modrinth hiện có. Bạn cần chọn thư mục dữ liệu gốc của Modrinth.
@@ -969,11 +969,11 @@ modified:
   unsaved: Các thay đổi của bạn chưa được lưu!
 modpack:
   author: Tên tác giả
-  authorHint: Điều này có thể được sử dụng để ký một modpack được xuất (Curseforge)
+  authorHint: Điều này có thể được sử dụng để ký một modpack được xuất (CurseForge)
   description: Mô tả
-  descriptionHint: Mô tả chung cho modpack của bạn. Có thể được sử dụng để xuất dưới dạng modpack Curseforge.
+  descriptionHint: Mô tả chung cho modpack của bạn. Có thể được sử dụng để xuất dưới dạng modpack CurseForge.
   dropHint: Thả tệp zip của modpack vào đây để nhập
-  emitCurseforge: Xuất Modpack Curseforge
+  emitCurseforge: Xuất Modpack CurseForge
   emitModrinth: Xuất Modpack Modrinth
   emitModrinthStrict: Định dạng Modrinth nghiêm ngặt
   emitModrinthStrictDescription: Chỉ cho phép các URL từ 4 miền được liệt kê trong tài liệu Modrinth
@@ -2047,16 +2047,16 @@ tutorial:
   instanceSelectDescription: Nhấp vào nút này sẽ chuyển hướng đến trang để chọn trò chơi và đọc tin tức.
   launchDescription: Nhấp vào nút này để cài đặt hoặc khởi chạy trò chơi.
   mod:
-    defaultSourceDescription: Bạn có thể chọn nguồn chi tiết của mod tại đây. Đó là các mod được xuất bản trên cả Modrinth và Curseforge. Nếu muốn chuyển đổi giữa hai nhà cung cấp nội dung này, bạn có thể thay đổi giá trị tại đây.
+    defaultSourceDescription: Bạn có thể chọn nguồn chi tiết của mod tại đây. Đó là các mod được xuất bản trên cả Modrinth và CurseForge. Nếu muốn chuyển đổi giữa hai nhà cung cấp nội dung này, bạn có thể thay đổi giá trị tại đây.
     defaultSourceTitle: Chọn nguồn nội dung mod
-    detailDescription: Khi bạn chọn một mục bên trái, bạn sẽ thấy thông tin chi tiết về bản mod đó. Nội dung có thể đến từ Modrinth, Curseforge hoặc nội dung mod được phân tích cục bộ.
+    detailDescription: Khi bạn chọn một mục bên trái, bạn sẽ thấy thông tin chi tiết về bản mod đó. Nội dung có thể đến từ Modrinth, CurseForge hoặc nội dung mod được phân tích cục bộ.
     detailTitle: Chi tiết Mod
     listDescription: Chúng tôi sẽ hiển thị các mod đã cài đặt khi bạn không nhập bất kỳ thông tin nào. Bạn sẽ thấy các mod được tìm kiếm khi từ khóa nhập vào của bạn hoặc danh mục được chọn.
     listTitle: Mod đã cài đặt hoặc Tìm kiếm
-    searchDescription: Bạn có thể tìm kiếm mod từ Modrinth, Curseforge hoặc bộ đệm cục bộ của bạn bằng hộp tìm kiếm này.
+    searchDescription: Bạn có thể tìm kiếm mod từ Modrinth, CurseForge hoặc bộ đệm cục bộ của bạn bằng hộp tìm kiếm này.
     searchTitle: Tìm kiếm Mod
   recentPlayDescription: Các trò chơi đã tạo sẽ được liệt kê tại đây. Bạn có thể chuyển đổi các chế độ xem tại đây để xem cả các phiên bản đã cài đặt và các modpack đã tải xuống.
-  storePoupularModpackDescription: Bạn sẽ thấy các modpack phổ biến nhất trên Curseforge và Modrinth trong phần này.
+  storePoupularModpackDescription: Bạn sẽ thấy các modpack phổ biến nhất trên CurseForge và Modrinth trong phần này.
   storeSearchCategoryDescription: Bạn cũng có thể bật tắt các danh mục hoặc bộ lọc tại đây.
   storeSearchDescription: Bạn có thể tìm kiếm các Modpack bằng cách nhập vào hộp văn bản này. Nhấn Enter để tìm kiếm.
   storeSearchResultDescription: Bạn sẽ thấy tất cả kết quả tìm kiếm được liệt kê tại đây.

@@ -22,7 +22,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Incompatible Java
   incompatibleJavaHint: Current Java might be incompatible with selected Minecraft!
   missingJava: Missing Java
-  missingJavaHint: 'The Launcher cannot detect any java in your computer. You can:'
+  missingJavaHint: 'The Launcher cannot detect any Java in your computer. You can:'
   optionSwitch:
     name: Switch to {version}
 HomeLaunchMultiInstanceDialog:
@@ -325,12 +325,12 @@ diagnosis:
     message: Click to install this version
     name: Corrupted version jar for Minecraft %{version}.
   incompatibleJava:
-    name: The java version {javaVersion} is not suitable for {version}!
+    name: The Java version {javaVersion} is not suitable for {version}!
   instanceFiles:
     description: The instance installation includes {counts} files.
     title: Incompleted instance installation
   invalidJava:
-    name: Invalid java location.
+    name: Invalid Java location.
   missingJava:
     message: Click to resolve this problem
     name: Cannot find Java to launch Minecraft!
@@ -510,7 +510,7 @@ installAssets:
   assetIndex: Check Assets Index File
   name: Install Asset Files
 installAuthlibInjector: Install authlib-injector
-installCurseforgeFile: Install Curseforge File
+installCurseforgeFile: Install CurseForge File
 installFabric:
   name: Install Fabric
 installForge:
@@ -548,7 +548,7 @@ installVersion:
 instance:
   changeIcon: Change Icon
   contents: Content
-  current: Current Instance
+  current: Current Instances
   delete: Delete Game
   deleteFailed: Fail to delete instance
   deleteFailedPermission: Other program occupied the file
@@ -679,7 +679,7 @@ items:
   count: '{count} items'
   total: '{total} total'
 java:
-  allocatedLong: Use system default java
+  allocatedLong: Use default system Java
   allocatedShort: Auto Allocated
   allocation: Allocated
   autoHint: Min grows with installed mod count; max uses available system memory.
@@ -721,19 +721,19 @@ launchBlocked:
     description: Some errors cause the launch failed.
     title: Launch Failed
   launchInvalidJavaPath:
-    description: The selected java is missing or invalid. Please select a new one. <span class="highlight"> {javaPath} </span>
+    description: The selected Java is missing or invalid. Please select a new one. <span class="highlight"> {javaPath} </span>
     title: Invalid Java Path
   launchJavaNoPermission:
-    description: The launcher doesn't have permission to execute the java <span class="highlight"> {javaPath} </span>. Either change the permission of the java file or raise the permission of launcher.
+    description: The launcher doesn't have permission to execute the Java <span class="highlight"> {javaPath} </span>. Either change the permission of the Java file or raise the permission of launcher.
     title: No permission to launch
   launchNoProperJava:
-    description: No proper java can be selected to launch the game. ({javaPath} is invalid?)
-    title: No proper java found
+    description: No proper Java can be selected to launch the game. ({javaPath} is invalid?)
+    title: No proper Java found
   launchNoVersionInstalled:
     description: Cannot resolve version <span class="highlight">{version}</span> to launch.
     title: No version selected
   launchSpawnProcessFailed:
-    description: Please check your java, or give more permissions to the launcher and retry. If this still doesn't work, please contact the developers.
+    description: Please check your Java, or give more permissions to the launcher and retry. If this still doesn't work, please contact the developers.
     title: Fail to start game process
   unexpectedText: This is unexpected. You can restart the launcher to mitigate the issue. Please contact author if this issue happens again.
 launchFailed:
@@ -969,11 +969,11 @@ modified:
   unsaved: Your modification is unsaved!
 modpack:
   author: Author Name
-  authorHint: This might be used to sign an exported modpack (Curseforge)
+  authorHint: This might be used to sign an exported modpack (CurseForge)
   description: Description
   descriptionHint: General description for you modpack. Might be used for exporting as curseforge modpack.
   dropHint: Drop modpack zip to here to import
-  emitCurseforge: Export Curseforge Modpack
+  emitCurseforge: Export CurseForge Modpack
   emitModrinth: Export Modrinth Modpack
   emitModrinthStrict: Strict Modrinth Format
   emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
@@ -1672,7 +1672,7 @@ setting:
   backgroundColorAbove: Show background color as overlay
   backgroundColorAboveDescription: This will make background color display above the background image or video.
   backgroundImage: Background image
-  backgroundImageClear: clear
+  backgroundImageClear: Clear
   backgroundImageDescription: Select an image as background or clear
   useDesktopBackground: Use current desktop wallpaper
   backgroundImageFit:
@@ -1740,7 +1740,7 @@ setting:
   githubRelease: Github Release
   globalJava: Preferred Java
   globalJavaHint: In auto mode this Java is tried first, and only falls back to auto-detection when it is not compatible with the game version.
-  globalSetting: Global Instance Setting
+  globalSetting: Global Instance Settings
   globalSettingHint: Instance will use these settings by default.
   importSettings: Import Settings
   importSettingsHint: Load settings from a previously exported file
@@ -2021,9 +2021,9 @@ tutorial:
     appearanceThemeTitle: Instance Appearance
     iconDescription: Click to change icon.
     iconTitle: Instance icon
-    javaDescription: Choose or switch java version.
-    javaImportDescription: Import java from local storage.
-    javaImportTitle: Import java
+    javaDescription: Choose or switch Java version.
+    javaImportDescription: Import Java from local storage.
+    javaImportTitle: Import Java
     javaTitle: Java list
     modpackExportDescription: Build and package your configured instance into a ready-to-share modpack.
     modpackExportTitle: Export Modpack
@@ -2047,16 +2047,16 @@ tutorial:
   instanceSelectDescription: Clicking this button will navigate to the page to select game and read news.
   launchDescription: Click this button to install or launch the game.
   mod:
-    defaultSourceDescription: You can choose the source of mods details here. There are the mods published to both Modrinth and Curseforge. If you want to switch between these two content providers, you can change the value here.
+    defaultSourceDescription: You can choose the source of mods details here. There are the mods published to both Modrinth and CurseForge. If you want to switch between these two content providers, you can change the value here.
     defaultSourceTitle: Select Mod Content Source
-    detailDescription: When you select an item on the left. You will see the details of the mod. The content can come from Modrinth, Curseforge or parsed mod's content.
+    detailDescription: When you select an item on the left. You will see the details of the mod. The content can come from Modrinth, CurseForge or parsed mod's content.
     detailTitle: Mod Detail
     listDescription: We will display installed mods when you don't have any input. You will see the searched mods once your input has a keyword or category selected.
     listTitle: Installed or Search Mod
-    searchDescription: You could search mods from Modrinth, Curseforge or your local cache with this search box.
+    searchDescription: You could search mods from Modrinth, CurseForge or your local cache with this search box.
     searchTitle: Search Mods
   recentPlayDescription: The created games will be listed here. You can switch the views here to also see the installed versions and downloaded modpacks.
-  storePoupularModpackDescription: You will see the most popular modpacks in Curseforge and Modrinth in this section.
+  storePoupularModpackDescription: You will see the most popular modpacks in CurseForge and Modrinth in this section.
   storeSearchCategoryDescription: You can also toggle the categories or filters here.
   storeSearchDescription: You can search Modpacks by inputting in this text box. Press Enter to search.
   storeSearchResultDescription: You will see all search results listed here.

@@ -510,7 +510,7 @@ installAssets:
   assetIndex: संपत्-अनुक्रमणिकासञ्चिकां परीक्षताम्
   name: सम्पत्सञ्चिकाः संस्थापयतु
 installAuthlibInjector: authlib-injector संस्थापयतु
-installCurseforgeFile: Curseforge सञ्चिकां संस्थापयतु
+installCurseforgeFile: CurseForge सञ्चिकां संस्थापयतु
 installFabric:
   name: Fabric संस्थापयतु
 installForge:
@@ -658,7 +658,7 @@ instanceUpdate:
   update: नवीकरणम् आरभताम्
 instances:
   add: क्रीडां सृजतु
-  addCurseForgeDescription: Curseforge दत्तकोशात् आयातयतु। भवतः Curseforge इत्यस्य मूलदत्तकोशः चितव्यः
+  addCurseForgeDescription: CurseForge दत्तकोशात् आयातयतु। भवतः CurseForge इत्यस्य मूलदत्तकोशः चितव्यः
   addDescription: शून्यात् नूतनं क्षणम् सृजतु
   addMMCDescription: विद्यमानं MultiMC क्षणम् आयातयतु।
   addModrinthDescription: विद्यमानं Modrinth क्षणम् आयातयतु।
@@ -969,11 +969,11 @@ modified:
   unsaved: भवतः परिवर्तनं न रक्षितम्!
 modpack:
   author: लेखकनाम
-  authorHint: एतस्य प्रयोगः निर्यातित-मोडप्याक् (Curseforge) कृते भवितुं शक्नोति
+  authorHint: एतस्य प्रयोगः निर्यातित-मोडप्याक् (CurseForge) कृते भवितुं शक्नोति
   description: विवरणम्
   descriptionHint: मोडप्याक् कृते सामान्यं विवरणम्।
   dropHint: आयातनाय मोडप्याक् जिप (zip) सञ्चिकाम् अत्र क्षिपतु
-  emitCurseforge: Curseforge मोडप्याक् निर्यातयतु
+  emitCurseforge: CurseForge मोडप्याक् निर्यातयतु
   emitModrinth: Modrinth मोडप्याक् निर्यातयतु
   emitModrinthStrict: कठोरं Modrinth प्रारूपम्
   emitModrinthStrictDescription: केवलम् ४ क्षेत्राणां सङ्केताः एव अनुमताः सन्ति

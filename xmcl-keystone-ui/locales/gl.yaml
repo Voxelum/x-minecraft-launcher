@@ -446,7 +446,7 @@ installAssets:
   assetIndex: Controleer Assets Indexbestand
   name: Installeer Asset-bestanden
 installAuthlibInjector: Installeer authlib-injector
-installCurseforgeFile: Installeer Curseforge-bestand
+installCurseforgeFile: Installeer CurseForge-bestand
 installFabric:
   name: Installeer Fabric
 installForge:
@@ -854,11 +854,11 @@ modified:
   unsaved: Je wijziging is niet opgeslagen!
 modpack:
   author: Aueurnaam
-  authorHint: Dit kan worden gebruikt om een geëxporteerd modpack te ondertekenen (Curseforge)
+  authorHint: Dit kan worden gebruikt om een geëxporteerd modpack te ondertekenen (CurseForge)
   description: Beschrijving
   descriptionHint: Algemene beschrijving voor je modpack. Kan worden gebruikt voor exporteren als curseforge modpack.
   dropHint: Sleep modpack zip hierheen om te importeren
-  emitCurseforge: Exporteer Curseforge Modpack
+  emitCurseforge: Exporteer CurseForge Modpack
   emitModrinth: Exporteer Modrinth Modpack
   emitModrinthStrict: Strikt Modrinth Formaat
   emitModrinthStrictDescription: Alleen URL's van 4 domeinen vermeld in modrinth document zijn toegestaan
@@ -1810,16 +1810,16 @@ tutorial:
   instanceSelectDescription: Klikken op deze knop navigeert naar de pagina om game te selecteren en nieuws te lezen.
   launchDescription: Klik op deze knop om de game te installeren of te starten.
   mod:
-    defaultSourceDescription: Je kunt hier de bron van mods details kiezen. Er zijn mods gepubliceerd op zowel Modrinth als Curseforge. Als je wilt wisselen tussen deze twee content providers, kun je de waarde hier wijzigen.
+    defaultSourceDescription: Je kunt hier de bron van mods details kiezen. Er zijn mods gepubliceerd op zowel Modrinth als CurseForge. Als je wilt wisselen tussen deze twee content providers, kun je de waarde hier wijzigen.
     defaultSourceTitle: Selecteer Mod Content Bron
-    detailDescription: Wanneer je een item aan de linkerkant selecteert. Zie je de details van de mod. De inhoud kan komen van Modrinth, Curseforge of geparseerde mod's inhoud.
+    detailDescription: Wanneer je een item aan de linkerkant selecteert. Zie je de details van de mod. De inhoud kan komen van Modrinth, CurseForge of geparseerde mod's inhoud.
     detailTitle: Mod Detail
     listDescription: We tonen geïnstalleerde mods wanneer je geen invoer hebt. Je ziet de gezochte mods zodra je invoer een trefwoord of categorie geselecteerd heeft.
     listTitle: Geïnstalleerde of Zoek Mod
-    searchDescription: Je kunt mods zoeken van Modrinth, Curseforge of je lokale cache met dit zoekvak.
+    searchDescription: Je kunt mods zoeken van Modrinth, CurseForge of je lokale cache met dit zoekvak.
     searchTitle: Zoek Mods
   recentPlayDescription: De gemaakte games worden hier vermeld. Je kunt de weergaven hier wisselen om ook de geïnstalleerde versies en gedownloade modpacks te zien.
-  storePoupularModpackDescription: Je ziet de populairste modpacks in Curseforge en Modrinth in deze sectie.
+  storePoupularModpackDescription: Je ziet de populairste modpacks in CurseForge en Modrinth in deze sectie.
   storeSearchCategoryDescription: Je kunt hier ook de categorieën of filters schakelen.
   storeSearchDescription: Je kunt Modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om te zoeken.
   storeSearchResultDescription: Je ziet alle zoekresultaten hier vermeld.

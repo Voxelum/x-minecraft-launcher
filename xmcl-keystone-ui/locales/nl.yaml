@@ -446,7 +446,7 @@ installAssets:
   assetIndex: Controleer Assets Index Bestand
   name: Asset Bestanden Installeren
 installAuthlibInjector: Installeer authlib-injector
-installCurseforgeFile: Installeer Curseforge Bestand
+installCurseforgeFile: Installeer CurseForge Bestand
 installFabric:
   name: Fabric Installeren
 installForge:
@@ -583,7 +583,7 @@ instanceUpdate:
   update: Start Update
 instances:
   add: Spel Aanmaken
-  addCurseForgeDescription: Importeer vanuit de Curseforge-datamap. U moet de hoofddatamap van Curseforge selecteren
+  addCurseForgeDescription: Importeer vanuit de CurseForge-datamap. U moet de hoofddatamap van CurseForge selecteren
   addDescription: Maak een nieuwe instance helemaal opnieuw
   addMMCDescription: Importeer een bestaande MultiMC instance. U moet de datamap van MultiMC selecteren.
   addModrinthDescription: Importeer een bestaande Modrinth instance. U moet de Modrinth hoofddatamap selecteren.
@@ -844,8 +844,8 @@ modSearch:
   noModsInstalled: U heeft geen mods geïnstalleerd.
   searchInMarket: Zoek {keyword} in de Markt
 modUpgradePolicy:
-  curseforge: Curseforge Eerst
-  curseforgeOnly: Alleen Curseforge
+  curseforge: CurseForge Eerst
+  curseforgeOnly: Alleen CurseForge
   modrinth: Modrinth Eerst
   modrinthOnly: Alleen Modrinth
   name: Upgrade Beleid
@@ -855,11 +855,11 @@ modified:
   unsaved: Uw wijziging is niet opgeslagen!
 modpack:
   author: Auteursnaam
-  authorHint: Dit kan worden gebruikt om een geëxporteerd modpack te ondertekenen (Curseforge)
+  authorHint: Dit kan worden gebruikt om een geëxporteerd modpack te ondertekenen (CurseForge)
   description: Beschrijving
   descriptionHint: Algemene beschrijving voor uw modpack. Kan worden gebruikt voor export als curseforge modpack.
   dropHint: Sleep de modpack zip hier om te importeren
-  emitCurseforge: Exporteer Curseforge Modpack
+  emitCurseforge: Exporteer CurseForge Modpack
   emitModrinth: Exporteer Modrinth Modpack
   emitModrinthStrict: Strikt Modrinth Formaat
   emitModrinthStrictDescription: Alleen URL's van de 4 domeinen die in de Modrinth-documentatie zijn vermeld zijn toegestaan
@@ -1808,16 +1808,16 @@ tutorial:
   instanceSelectDescription: Klik op deze knop om naar de pagina te navigeren om een spel te selecteren en nieuws te lezen.
   launchDescription: Klik op deze knop om het spel te installeren of te starten.
   mod:
-    defaultSourceDescription: U kunt hier de bron van mod-details kiezen. Er zijn mods die zowel naar Modrinth als Curseforge zijn gepubliceerd. Als u tussen deze twee contentproviders wilt wisselen, kunt u de waarde hier wijzigen.
+    defaultSourceDescription: U kunt hier de bron van mod-details kiezen. Er zijn mods die zowel naar Modrinth als CurseForge zijn gepubliceerd. Als u tussen deze twee contentproviders wilt wisselen, kunt u de waarde hier wijzigen.
     defaultSourceTitle: Selecteer Mod Content Bron
-    detailDescription: Wanneer u een item aan de linkerkant selecteert. Zult u de details van de mod zien. De content kan afkomstig zijn van Modrinth, Curseforge of geparseerde mod-content.
+    detailDescription: Wanneer u een item aan de linkerkant selecteert. Zult u de details van de mod zien. De content kan afkomstig zijn van Modrinth, CurseForge of geparseerde mod-content.
     detailTitle: Mod Detail
     listDescription: We zullen geïnstalleerde mods weergeven wanneer u geen invoer heeft. U zult de gezochte mods zien zodra uw invoer een trefwoord of categorie heeft geselecteerd.
     listTitle: Geïnstalleerde of Zoek Mod
-    searchDescription: U kunt mods zoeken van Modrinth, Curseforge of uw lokale cache met dit zoekvak.
+    searchDescription: U kunt mods zoeken van Modrinth, CurseForge of uw lokale cache met dit zoekvak.
     searchTitle: Zoek Mods
   recentPlayDescription: De gemaakte spellen worden hier vermeld. U kunt de weergaven hier ook wisselen om de geïnstalleerde versies en gedownloade modpacks te zien.
-  storePoupularModpackDescription: U zult de meest populaire modpacks in Curseforge en Modrinth in deze sectie zien.
+  storePoupularModpackDescription: U zult de meest populaire modpacks in CurseForge en Modrinth in deze sectie zien.
   storeSearchCategoryDescription: U kunt hier ook de categorieën of filters omschakelen.
   storeSearchDescription: U kunt modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om te zoeken.
   storeSearchResultDescription: U zult hier alle zoekresultaten zien weergegeven.
