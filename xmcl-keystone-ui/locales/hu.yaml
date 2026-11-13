@@ -457,7 +457,7 @@ installAssets:
   assetIndex: Elem indexfájl ellenőrzése
   name: Elemek telepítése
 installAuthlibInjector: Authlib-injector telepítése
-installCurseforgeFile: Curseforge fájl telepítése
+installCurseforgeFile: CurseForge fájl telepítése
 installFabric:
   name: Fabric telepítése
 installForge:
@@ -881,8 +881,8 @@ modSearch:
   noModsInstalled: Nincs telepített modod.
   searchInMarket: Keresés {keyword} a piacon
 modUpgradePolicy:
-  curseforge: Curseforge először
-  curseforgeOnly: Csak Curseforge
+  curseforge: CurseForge először
+  curseforgeOnly: Csak CurseForge
   modrinth: Modrinth először
   modrinthOnly: Csak Modrinth
   name: Frissítési politika
@@ -892,11 +892,11 @@ modified:
   unsaved: A módosításod még nincs mentve!
 modpack:
   author: Készítő neve
-  authorHint: Ezt lehet használni, hogy aláírd az exportált modcsomagot (Curseforge)
+  authorHint: Ezt lehet használni, hogy aláírd az exportált modcsomagot (CurseForge)
   description: Leírás
   descriptionHint: A modcsomag általános leírása. Használható a curseforge modcsomag exportálásához.
   dropHint: Húzd ide a modcsomag zip fájlát az importáláshoz
-  emitCurseforge: Emit Curseforge modcsomag
+  emitCurseforge: Emit CurseForge modcsomag
   emitModrinth: Emit Modrinth modcsomag
   emitModrinthStrict: Szigorú Modrinth formátum
   emitModrinthStrictDescription: Csak a modrinth dokumentumban felsorolt 4 domain URL-je engedélyezett.
@@ -1865,18 +1865,18 @@ tutorial:
   instanceSelectDescription: Erre a gombra kattintva a játék kiválasztásához és a hírek olvasásához szükséges oldalra navigál.
   launchDescription: Kattints erre a gombra a játék telepítéséhez vagy elindításához.
   mod:
-    defaultSourceDescription: Itt kiválaszthatja a modok forrását. Vannak a Modrinth és a Curseforge által közzétett modok. Ha váltani akarsz e két tartalomszolgáltató között. Itt módosíthatod az értéket.
+    defaultSourceDescription: Itt kiválaszthatja a modok forrását. Vannak a Modrinth és a CurseForge által közzétett modok. Ha váltani akarsz e két tartalomszolgáltató között. Itt módosíthatod az értéket.
     defaultSourceTitle: Mod tartalom forrásának kiválasztása
-    detailDescription: Amikor kiválaszt egy elemet a bal oldalon. Látni fogja a mod részleteit. A tartalom származhat Modrinth, Curseforge vagy elemzett mod tartalmából.
+    detailDescription: Amikor kiválaszt egy elemet a bal oldalon. Látni fogja a mod részleteit. A tartalom származhat Modrinth, CurseForge vagy elemzett mod tartalmából.
     detailTitle: Mod részletek
     listDescription: Megjelenítjük a telepített modokat, ha nincs inputja. A keresett modokat akkor fogja látni, ha a kulcsszó vagy a kategória kiválasztása megtörtént.
     listTitle: Installed or Searched Mod
-    searchDescription: A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel a keresőmezővel.
+    searchDescription: A Modrinth, CurseForge vagy a helyi gyorsítótár modjait keresheted ezzel a keresőmezővel.
     searchTitle: Modok keresése
   recentPlayDescription: |-
     A létrehozott játékok itt lesznek felsorolva.
     Itt váltogathatja a nézeteket, hogy megtekinthesse a telepített verziókat és a letöltött modpackokat is.
-  storePoupularModpackDescription: Ebben a részben láthatja a Curseforge és Modrinth legnépszerűbb modpackjait.
+  storePoupularModpackDescription: Ebben a részben láthatja a CurseForge és Modrinth legnépszerűbb modpackjait.
   storeSearchCategoryDescription: Itt is válthat a kategóriák és a szűrők között.
   storeSearchDescription: |-
     Ebbe a szövegmezőbe beírva kereshet a Modpack között.

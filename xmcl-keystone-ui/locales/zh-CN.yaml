@@ -541,7 +541,7 @@ installAssets:
   assetIndex: 检查资源文件目录
   name: 检查游戏资源文件
 installAuthlibInjector: 安装 authlib-injector
-installCurseforgeFile: 安装 Curseforge 文件
+installCurseforgeFile: 安装 CurseForge 文件
 installFabric:
   name: 安装 Fabric
 installForge:
@@ -1042,8 +1042,8 @@ modSearch:
   noModsInstalled: 您尚未安装任何模组。
   searchInMarket: 在市场中搜索 {keyword}
 modUpgradePolicy:
-  curseforge: Curseforge 优先
-  curseforgeOnly: 仅限 Curseforge
+  curseforge: CurseForge 优先
+  curseforgeOnly: 仅限 CurseForge
   modrinth: Modrinth 优先
   modrinthOnly: 仅限 Modrinth
   name: 更新策略
@@ -1055,9 +1055,9 @@ modpack:
   author: 署名
   authorHint: 这个游戏/整合包的制作人
   description: 游戏简介
-  descriptionHint: 通用的整合包简介。在导出成 Curseforge 整合包或者其他格式时会使用
+  descriptionHint: 通用的整合包简介。在导出成 CurseForge 整合包或者其他格式时会使用
   dropHint: 通过拖拽导入整合包文件
-  emitCurseforge: 生成 Curseforge 整合包
+  emitCurseforge: 生成 CurseForge 整合包
   emitModrinth: 生成 Modrinth 整合包
   emitModrinthStrict: 严格遵守 Modrinth 整合包格式
   emitModrinthStrictDescription: 下载链接只允许包含 Modrinth 官网定义的四个域名
@@ -2384,25 +2384,25 @@ tutorial:
   mod:
     defaultSourceDescription: |-
       您可以在此处选择模组详细信息的来源。
-      Modrinth 和 Curseforge 均发布了模组。
+      Modrinth 和 CurseForge 均发布了模组。
       如果您想在这两个内容提供商之间切换。
       您可以在此处更改该值。
     defaultSourceTitle: 选择模组详情来源
     detailDescription: |-
       当您选择左侧的项目时。
       您将看到该模组的详细信息。
-      内容可以来自 Modrinth、Curseforge 或解析的模组内容。
+      内容可以来自 Modrinth、CurseForge 或解析的模组内容。
     detailTitle: 模组详情
     listDescription: |-
       这里会显示已安装的模组。
       当您输入关键字或选择类别后，这里会显示搜索到的模组。
     listTitle: 安装/搜索的模组
-    searchDescription: 您可以通过此搜索框从 Modrinth、Curseforge 或本地缓存中搜索模组。
+    searchDescription: 您可以通过此搜索框从 Modrinth、CurseForge 或本地缓存中搜索模组。
     searchTitle: 搜索、发现模组
   recentPlayDescription: |-
     创建的游戏将在此处列出。
     您可以在此处切换视图以查看已安装的版本和下载的整合包。
-  storePoupularModpackDescription: 您将在这里看到 Curseforge 和 Modrinth 中最流行的整合包。
+  storePoupularModpackDescription: 您将在这里看到 CurseForge 和 Modrinth 中最流行的整合包。
   storeSearchCategoryDescription: 您还可以在此处切换类别或过滤器。
   storeSearchDescription: |-
     您可以通过在此文本框中输入来搜索整合包。

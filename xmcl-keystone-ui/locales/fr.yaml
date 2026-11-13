@@ -89,7 +89,7 @@ backup:
   instances: Instances
   selectAll: Tout sélectionner
   deselectAll: Tout désélectionner
-  instanceDataOptions: 'Options des données d''instance'
+  instanceDataOptions: "Options des données d'instance"
   includeConfigs: 'Configurations & options'
   includeSaves: Sauvegardes (Mondes)
   includeResourcePacks: Packs de ressources
@@ -99,17 +99,17 @@ backup:
   modsListOnly: Liste des mods uniquement (léger)
   modsNone: Exclure les mods
   noInstancesFound: Aucune instance trouvée dans le lanceur.
-  excludeLibrariesNotice: 'Les bibliothèques principales, les ressources Minecraft et les caches temporaires sont automatiquement exclus pour garder l''archive compacte. Ils seront retéléchargés au lancement.'
+  excludeLibrariesNotice: "Les bibliothèques principales, les ressources Minecraft et les caches temporaires sont automatiquement exclus pour garder l'archive compacte. Ils seront retéléchargés au lancement."
   create: Créer une sauvegarde
   createTitle: Créer une archive de sauvegarde XMCL
-  saveDialogTitle: 'Enregistrer l''archive de sauvegarde XMCL'
+  saveDialogTitle: "Enregistrer l'archive de sauvegarde XMCL"
   fileFilterName: 'Archive de sauvegarde XMCL (*.xmclbackup, *.zip)'
   createError: Échec de la création de la sauvegarde
-  loadManifestError: 'Échec de la lecture de l''archive de sauvegarde'
+  loadManifestError: "Échec de la lecture de l'archive de sauvegarde"
   restore: Restaurer
   restoreTitle: Restaurer depuis une sauvegarde
   preparing: Préparation...
-  workingTitle: 'Création de l''archive de sauvegarde...'
+  workingTitle: "Création de l'archive de sauvegarde..."
   restoringTitle: Restauration depuis la sauvegarde...
   elapsedTime: Temps écoulé
   remainingTime: Temps restant estimé
@@ -121,7 +121,7 @@ backup:
   resourcePacksCategory: Packs de ressources
   shaderPacksCategory: Shaders
   configsCategory: Configurations
-  activityLog: 'Journal d''activité'
+  activityLog: "Journal d'activité"
   copyLog: Copier le journal
   copiedLog: Journal copié dans le presse-papiers
   openFolder: Afficher dans le dossier
@@ -137,7 +137,7 @@ backup:
   stageCollections: Collections enregistrées
   stageThemes: 'Thèmes & médias'
   stageInstances: Instances de jeu
-  stageCompressing: 'Compression de l''archive'
+  stageCompressing: "Compression de l'archive"
   stageComplete: Terminé
   stageLabel: 'Étape : {stage}'
   searchInstancesPlaceholder: Rechercher des instances par nom ou version...
@@ -155,9 +155,9 @@ backup:
   restoreThemes: 'Restaurer les thèmes & médias'
   restoreThemesHint: Réinstaller les thèmes, le CSS personnalisé et les médias de fond
   noLauncherDataInBackup: Aucun paramètre ou thème du lanceur trouvé dans cette archive.
-  conflictStrategyTitle: 'Gestion des conflits de noms d''instance'
-  conflictRename: 'Conserver l''existante et renommer l''instance restaurée (ex. name-restored)'
-  conflictOverwrite: 'Écraser les fichiers de l''instance existante'
+  conflictStrategyTitle: "Gestion des conflits de noms d'instance"
+  conflictRename: "Conserver l'existante et renommer l'instance restaurée (ex. name-restored)"
+  conflictOverwrite: "Écraser les fichiers de l'instance existante"
   conflictSkip: Ignorer les instances déjà présentes sur le disque
   restoreError: Échec de la restauration de la sauvegarde
   restorePartialTitle: Restore Completed with Warnings
@@ -312,7 +312,7 @@ diagnosis:
     message: Cliquez pour installer cette version
     name: La version {version} n'est pas installée !
   unresolvedFiles:
-    description: '{count} fichier n''a pas pu être résolu lors de l''installation | {count} fichiers n''ont pas pu être résolus lors de l''installation'
+    description: "{count} fichier n'a pas pu être résolu lors de l'installation | {count} fichiers n'ont pas pu être résolus lors de l'installation"
     title: Fichiers non résolus
   unzipFileNotFound:
     description: Impossible de trouver {file}
@@ -450,7 +450,7 @@ installAssets:
   assetIndex: Vérifier le fichier d'index des assets
   name: Installer les fichiers d'assets
 installAuthlibInjector: Installer authlib-injecteur
-installCurseforgeFile: Installer le fichier Curseforge
+installCurseforgeFile: Installer le fichier CurseForge
 installFabric:
   name: Installer Fabric
 installForge:
@@ -594,8 +594,8 @@ instanceUpdate:
 instances:
   add: Créer un jeu
   addCurseForgeDescription: |-
-    Importer depuis le dossier de données Curseforge.
-    Vous devez sélectionner le dossier de données racine de Curseforge
+    Importer depuis le dossier de données CurseForge.
+    Vous devez sélectionner le dossier de données racine de CurseForge
   addDescription: Créer une nouvelle instance à partir de zéro
   addMMCDescription: |-
     Importez une instance MultiMC existante.
@@ -898,13 +898,13 @@ modified:
   unsaved: Votre modification n'est pas enregistrée !
 modpack:
   author: Nom de l'auteur
-  authorHint: Cela peut être utilisé pour signer le modpack exporté (Curseforge)
+  authorHint: Cela peut être utilisé pour signer le modpack exporté (CurseForge)
   description: La description
   descriptionHint: |-
     Description générale pour votre modpack.
     Peut être utilisé pour l'exportation en tant que modpack curseforge.
   dropHint: Déposez le zip du modpack ici pour l'importer
-  emitCurseforge: Émettre le Modpack Curseforge
+  emitCurseforge: Émettre le Modpack CurseForge
   emitModrinth: Emit le Modpack Modrinth
   emitModrinthStrict: Format Modrinth strict
   emitModrinthStrictDescription: Seules les URL des 4 domaines répertoriés dans le document modrinth sont autorisées
@@ -1211,7 +1211,7 @@ peerSignalingState:
   have-local-offer: En attente de la description du pair
 presence:
   instance: Inactif dans l'instance {instance}
-  instanceSetting: 'Modifie les paramètres de l''instance : {instance}'
+  instanceSetting: "Modifie les paramètres de l'instance : {instance}"
   mod: Regarde les mods dans {instance}
   modrinthProject: Explore {name} sur Modrinth
   resourcePack: Regarde les packs de ressources dans {instance}
@@ -1805,7 +1805,7 @@ task:
   empty: Aucune tâche en cours d'exécution
   failed: Échec
   manager: Gestionnaire des tâches
-  nTaskRunning: '{count} tâches sont en cours d''exécution'
+  nTaskRunning: "{count} tâches sont en cours d'exécution"
   name: |-
     Tâche |
     Tâches
@@ -1864,25 +1864,25 @@ tutorial:
   mod:
     defaultSourceDescription: |-
       Vous pouvez choisir la source des détails des mods ici.
-      Il existe des mods publiés sur Modrinth et Curseforge.
+      Il existe des mods publiés sur Modrinth et CurseForge.
       Si vous souhaitez basculer entre ces deux fournisseurs de contenu.
       Vous pouvez modifier la valeur ici.
     defaultSourceTitle: Sélectionnez la source de contenu du module
     detailDescription: |-
       Lorsque vous sélectionnez un élément sur la gauche.
       Vous verrez le détail du mod.
-      Le contenu peut provenir de Modrinth, Curseforge ou du contenu analysé du mod.
+      Le contenu peut provenir de Modrinth, CurseForge ou du contenu analysé du mod.
     detailTitle: Détails du module
     listDescription: |-
       Nous afficherons les mods installés lorsque vous n’avez aucune entrée.
       Vous verrez les mods recherchés une fois que vous aurez saisi le mot-clé ou la catégorie sélectionné.
     listTitle: Mod installé ou recherché
-    searchDescription: Vous pouvez rechercher des mods depuis Modrinth, Curseforge ou votre cache local grâce à ce champ de recherche.
+    searchDescription: Vous pouvez rechercher des mods depuis Modrinth, CurseForge ou votre cache local grâce à ce champ de recherche.
     searchTitle: Rechercher des modules
   recentPlayDescription: |-
     Les jeux créés seront répertoriés ici.
     Vous pouvez changer les vues ici pour voir également les versions installées et les modpacks téléchargés.
-  storePoupularModpackDescription: Vous verrez les modpacks les plus populaires de Curseforge et Modrinth dans cette section.
+  storePoupularModpackDescription: Vous verrez les modpacks les plus populaires de CurseForge et Modrinth dans cette section.
   storeSearchCategoryDescription: Vous pouvez également basculer les catégories ou les filtres ici.
   storeSearchDescription: |-
     Vous pouvez rechercher Modpack en saisissant dans cette zone de texte.

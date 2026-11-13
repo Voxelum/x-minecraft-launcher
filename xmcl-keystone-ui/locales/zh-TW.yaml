@@ -456,7 +456,7 @@ installAssets:
   assetIndex: 下載資源檔案目錄
   name: 下載遊戲資源檔案
 installAuthlibInjector: 安裝 authlib-injector
-installCurseforgeFile: 安裝 Curseforge 檔案
+installCurseforgeFile: 安裝 CurseForge 檔案
 installFabric:
   name: 安裝 Fabric
 installForge:
@@ -604,8 +604,8 @@ instanceUpdate:
 instances:
   add: 建立遊戲
   addCurseForgeDescription: |-
-    從 Curseforge 儲存資料夾匯入。
-    您需要選擇 Curseforge 的根儲存資料夾
+    從 CurseForge 儲存資料夾匯入。
+    您需要選擇 CurseForge 的根儲存資料夾
   addDescription: 從零開始建立一個新實例
   addMMCDescription: |-
     匯入現有的 MultiMC 實例。
@@ -912,8 +912,8 @@ modSearch:
   noModsInstalled: 您尚未安裝任何模組。
   searchInMarket: 在市場中搜尋 {keyword}
 modUpgradePolicy:
-  curseforge: Curseforge 優先
-  curseforgeOnly: 僅限 Curseforge
+  curseforge: CurseForge 優先
+  curseforgeOnly: 僅限 CurseForge
   modrinth: Modrinth 優先
   modrinthOnly: 僅限 Modrinth
   name: 更新原則
@@ -925,9 +925,9 @@ modpack:
   author: 署名
   authorHint: 這個遊戲/模組包的製作人
   description: 遊戲簡介
-  descriptionHint: 通用的模組包簡介。在匯出成 Curseforge 模組包或者其他格式時會使用。
+  descriptionHint: 通用的模組包簡介。在匯出成 CurseForge 模組包或者其他格式時會使用。
   dropHint: 透過拖曳匯入模組包檔案
-  emitCurseforge: 匯出 Curseforge 模組包
+  emitCurseforge: 匯出 CurseForge 模組包
   emitModrinth: 匯出 Modrinth 模組包
   emitModrinthStrict: 嚴格遵守 Modrinth 模組包格式
   emitModrinthStrictDescription: 下載連結只允許包含 Modrinth 官網定義的四個網域
@@ -1997,20 +1997,20 @@ tutorial:
   mod:
     defaultSourceDescription: |-
       您可以在此處選擇模組詳細資訊的來源。
-      Modrinth 和 Curseforge 均釋出了模組。
+      Modrinth 和 CurseForge 均釋出了模組。
       如果您想在這兩個內容提供商之間切換。
       您可以在此處更改該值。
     defaultSourceTitle: 選擇模組詳情來源
     detailDescription: |-
       當您選擇左側的專案時。
       您將看到該模組的詳細資訊。
-      內容可以來自 Modrinth、Curseforge 或解析的模組內容。
+      內容可以來自 Modrinth、CurseForge 或解析的模組內容。
     detailTitle: 模組詳情
     listDescription: |-
       這裡會顯示已安裝的模組。
       當您輸入關鍵字或選擇類別後，這裡會顯示搜尋到的模組。
     listTitle: 安裝/搜尋的模組
-    searchDescription: 您可以透過此搜尋框從 Modrinth、Curseforge 或本地快取中搜尋模組。
+    searchDescription: 您可以透過此搜尋框從 Modrinth、CurseForge 或本地快取中搜尋模組。
     searchTitle: 搜尋、發現模組
   recentPlayDescription: |-
     建立的遊戲將在此處列出。

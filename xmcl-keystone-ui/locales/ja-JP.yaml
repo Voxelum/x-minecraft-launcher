@@ -446,7 +446,7 @@ installAssets:
   assetIndex: アセットインデックスファイルを確認
   name: アセットファイルをインストール
 installAuthlibInjector: authlib-injectorをインストール
-installCurseforgeFile: Curseforge ファイルをインストール
+installCurseforgeFile: CurseForge ファイルをインストール
 installFabric:
   name: Fabric をインストール
 installForge:
@@ -874,11 +874,11 @@ modified:
   unsaved: 変更が保存されていません!
 modpack:
   author: 著者名
-  authorHint: これらはエクスポートされたModpackに署名する際使われます (Curseforge)
+  authorHint: これらはエクスポートされたModpackに署名する際使われます (CurseForge)
   description: 説明
-  descriptionHint: このModpackにおける全般的な説明です。Curseforge Modpackとしてエクスポートする際使われます。
+  descriptionHint: このModpackにおける全般的な説明です。CurseForge Modpackとしてエクスポートする際使われます。
   dropHint: ここにModpackのzipをドロップしてインポートします。
-  emitCurseforge: Curseforge modpackをエクスポートします
+  emitCurseforge: CurseForge modpackをエクスポートします
   emitModrinth: Modrinth Modpackをエクスポートします
   emitModrinthStrict: 厳密なModrinthフォーマット
   emitModrinthStrictDescription: Modrinthのドキュメントに記載された4つのドメインのURLのみ許可します

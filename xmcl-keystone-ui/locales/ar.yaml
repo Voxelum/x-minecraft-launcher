@@ -462,7 +462,7 @@ installAssets:
   assetIndex: التحقق من ملف فهرس الأصول
   name: تثبيت ملفات الأصول
 installAuthlibInjector: قم بتثبيت حاقن autlib
-installCurseforgeFile: تثبيت ملف Curseforge
+installCurseforgeFile: تثبيت ملف CurseForge
 installFabric:
   name: تثبيت النسيج
 installForge:
@@ -609,7 +609,7 @@ instanceUpdate:
   update: ابدأ التحديث
 instances:
   add: إنشاء لعبة
-  addCurseForgeDescription: الاستيراد من مجلد بيانات cursforge. تحتاج إلى تحديد مجلد البيانات الجذر الخاص بـ cursforge
+  addCurseForgeDescription: الاستيراد من مجلد بيانات CurseForge. تحتاج إلى تحديد مجلد البيانات الجذر الخاص بـ CurseForge
   addDescription: إنشاء مثيل جديد من البداية
   addMMCDescription: استيراد مثيل MultiMC الموجود. تحتاج إلى تحديد مجلد البيانات من MultiMC.
   addModrinthDescription: استيراد مثيل Modrinth الموجود. تحتاج إلى تحديد مجلد البيانات الجذر Modrinth.
@@ -896,11 +896,11 @@ modified:
   unsaved: التعديل الخاص بك غير محفوظ!
 modpack:
   author: اسم المؤلف
-  authorHint: يمكن استخدام هذا للتوقيع على modpack المُصدَّر (Curseforge)
+  authorHint: يمكن استخدام هذا للتوقيع على modpack المُصدَّر (CurseForge)
   description: وصف
-  descriptionHint: وصف عام لك modpack. يمكن استخدامه للتصدير كـ cursforge modpack.
+  descriptionHint: وصف عام لك modpack. يمكن استخدامه للتصدير كـ CurseForge modpack.
   dropHint: قم بإسقاط modpack zip إلى هنا للاستيراد
-  emitCurseforge: تصدير Curseforge Modpack
+  emitCurseforge: تصدير CurseForge Modpack
   emitModrinth: تصدير Modrinth Modpack
   emitModrinthStrict: تنسيق Modrinth الصارم
   emitModrinthStrictDescription: يُسمح فقط بعناوين URL من 4 نطاقات مدرجة في مستند modrinth
@@ -1870,14 +1870,14 @@ tutorial:
   mod:
     defaultSourceDescription: يمكنك اختيار مصدر تفاصيل التعديلات هنا. هناك تعديلات تم نشرها لكل من Modrinth وCurseforge. إذا كنت تريد التبديل بين موفري المحتوى هذين، فيمكنك تغيير القيمة هنا.
     defaultSourceTitle: حدد مصدر محتوى التعديل
-    detailDescription: عند تحديد عنصر على اليسار. سترى تفاصيل الوضع. يمكن أن يأتي المحتوى من محتوى Modrinth أو Curseforge أو التعديل الذي تم تحليله.
+    detailDescription: عند تحديد عنصر على اليسار. سترى تفاصيل الوضع. يمكن أن يأتي المحتوى من محتوى Modrinth أو CurseForge أو التعديل الذي تم تحليله.
     detailTitle: تفاصيل التعديل
     listDescription: سنعرض التعديلات المثبتة عندما لا يكون لديك أي مدخلات. سترى التعديلات التي تم البحث عنها بمجرد تحديد كلمة رئيسية أو فئة لمدخلاتك.
     listTitle: تم التثبيت أو البحث في Mod
-    searchDescription: يمكنك البحث عن التعديلات من Modrinth أو Curseforge أو ذاكرة التخزين المؤقت المحلية باستخدام مربع البحث هذا.
+    searchDescription: يمكنك البحث عن التعديلات من Modrinth أو CurseForge أو ذاكرة التخزين المؤقت المحلية باستخدام مربع البحث هذا.
     searchTitle: تعديل البحث
   recentPlayDescription: سيتم إدراج الألعاب التي تم إنشاؤها هنا. يمكنك تبديل طرق العرض هنا لرؤية الإصدارات المثبتة وحزم التعديل التي تم تنزيلها أيضًا.
-  storePoupularModpackDescription: سترى حزم التعديل الأكثر شيوعًا في Curseforge وModrinth في هذا القسم.
+  storePoupularModpackDescription: سترى حزم التعديل الأكثر شيوعًا في CurseForge وModrinth في هذا القسم.
   storeSearchCategoryDescription: يمكنك أيضًا تبديل الفئات أو المرشحات هنا.
   storeSearchDescription: يمكنك البحث في Modpacks عن طريق الإدخال في مربع النص هذا. اضغط على Enter للبحث.
   storeSearchResultDescription: سترى جميع نتائج البحث مدرجة هنا.
