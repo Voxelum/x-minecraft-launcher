@@ -32,26 +32,63 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Вибрати кореневий каталог
 agent:
-  accessRequiredHint: Оформіть підписку XMCL, щоб використовувати вбудований Agent, або налаштуйте власного постачальника ШІ в налаштуваннях.
-  subscribeXmcl: Оформити підписку XMCL
-  title: XMCL Agent
-  statusReady: Готово
-  statusWorking: Працюю…
-  statusDisabled: Вимкнено — немає API key
-  reset: Скинути розмову
-  notConfiguredTitle: Agent не налаштовано
-  notConfiguredHint: Вкажіть API key, модель та OpenAI-сумісний endpoint у Налаштування → Загальні → AI Agent. Наприклад, використайте OpenAI або gateway, сумісний із Claude.
+  accessRequiredHint: Отримайте підписку XMCL або налаштуйте власного постачальника ШІ в налаштуваннях.
+  subscribeXmcl: Підписатися на XMCL
+  title: XMCL Асистент
+  statusReady: Готовий
+  statusWorking: Працює...
+  statusDisabled: Вимкнено — увійдіть або налаштуйте постачальника
+  reset: Новий діалог
+  notConfiguredTitle: Асистент недоступний
+  notConfiguredHint: Будь ласка, вкажіть API ключ, модель і сумісний з OpenAI Endpoint у Налаштуваннях → Загальні → ШІ Асистент.
   openSettings: Відкрити налаштування
-  setupGuide: Посібник з налаштування
+  setupGuide: Посібник із налаштування
   emptyHint: Попросіть агента перевірити екземпляр, увімкнути/вимкнути моди, читати логи або діагностувати краш.
   suggestion1: Оновіть цей екземпляр до новішої версії Minecraft і оновіть моди
   suggestion2: Мої моди падають — знайдіть причину та підкажіть, як виправити
   suggestion3: 'Зібрати модпак: знайдіть моди для потрібної функції та встановіть їх у цей екземпляр'
-  thinking: думаю…
+  thinking: Обдумування...
   callingTool: виклик {name}…
-  inputPlaceholder: Запитайте агента… (Enter — надіслати, Shift+Enter — новий рядок)
+  inputPlaceholder: Запитайте про збої, логи або моди...
   disabledPlaceholder: Agent вимкнено
-  toggleHint: перемкнути
+  toggleHint: Перемкнути панель асистента (Ctrl+K)
+  confirmPending: Очікування підтвердження
+  passiveGameCrashed: Гра аварійно завершилася
+  passiveGameExitCode: Код виходу {code}
+  passiveGameExited: Гру завершено
+  passiveGameExitSignal: Сигнал {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: Немає статусу виходу
+  passiveGameStarted: Гру запущено
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Звіт сумісності модів
+  passiveModDiagnosisError: Помилка діагностики сумісності
+  passiveModDiagnosisSummary: Перевірено {checked} модів · {incompatibilities} несумісностей · {duplicates} дублікатів
+  passiveModDuplicate: 'Дублікат {mod}: {files}'
+  passiveModInstalled: встановлено {version}
+  abort: Зупинити генерацію
+  confirmAccept: Продовжити
+  confirmAllowAll: Дозволити все
+  confirmCancel: Скасувати
+  confirmTitle: Підтвердження дії асистента
+  errorTitle: У роботі асистента сталася помилка
+  reasoning: Міркування
+  toolArguments: Аргументи
+  toolResult: Результат
+  toolRunning: Очікування результату…
+  marketConfirmMessage: Встановити {name} у поточний екземпляр?
+  marketConfirmTarget: 'Ціль: {instance}'
+  marketConfirmTitle: Встановити {type}
+  marketInstall: Встановити
+  marketInstalled: Встановлено
+  marketInstallFailed: Не вдалося встановити {type}
+  marketType:
+    datapack: датапак
+    mod: мод
+    modpack: модпак
+    resourcepack: ресурспак
+    shader: шейдерпак
+  marketResultCount: '{count} результатів'
 ago:
   day: '{duration} день тому | {duration} дні тому | {duration} днів тому'
   hour: '{duration} годину тому | {duration} години тому | {duration} годин тому'
@@ -63,6 +100,10 @@ askAICrash:
     Нехай AI допоможе вам зрозуміти краху гри!
     Дотримуйтесь інструкцій нижче, щоб запитати AI про цю гру!
   selectPlatform: Відкрийте платформу AI та вставте підказку, яку ви щойно скопіювали.
+  agentNotConfigured: Додайте постачальника ШІ та ключ API в Налаштуваннях, щоб вбудований асистент міг продіагностувати та виправити цю проблему.
+  askAgent: Діагностувати за допомогою вбудованого ШІ асистента
+  orExternal: або скористайтеся зовнішнім ШІ
+  setupAgent: Налаштувати ШІ асистента
 authProfileAddedNotification: Профіль автентифікації {name} додано
 bedrock:
   description: Minecraft Bedrock Edition встановлюється та запускається через Microsoft Store. Вам потрібно мати ліцензію Bedrock на вашому обліковому записі Microsoft.
@@ -128,7 +169,7 @@ backup:
   elapsedTime: Минуло часу
   remainingTime: Залишилось приблизно
   calculatingRemaining: Розрахунок...
-  lessThanMinute: '< 1 хв'
+  lessThanMinute: < 1 хв
   itemsProgress: '{current}/{total}'
   savesCategory: Світи (Карти)
   modsCategory: Моди
@@ -159,7 +200,7 @@ backup:
   selectBackupFileDescription: Виберіть файл .xmclbackup або .zip зі збереженими даними та інстанціями XMCL.
   selectFile: Вибрати файл
   selectBackupFileTitle: Відкрити резервну копію XMCL
-  createdOn: 'Створено {date}'
+  createdOn: Створено {date}
   changeFile: Змінити файл
   dataToRestore: Дані для відновлення
   restoreSettings: Відновити налаштування
@@ -193,7 +234,7 @@ backup:
   autoBackupRunNow: Зробити зараз
   autoBackupLastRun: Останній авто-бекап
   autoBackupNeverRun: Ніколи
-  selectedCount: 'Обрано {selected} з {total}'
+  selectedCount: Обрано {selected} з {total}
   autoBackupSelectInstances: Інстанції для авто-бекапу (одна або декілька)
   searchInstances: Пошук інстанцій...
   autoBackupInterval: Частота створення копій
@@ -219,6 +260,24 @@ backup:
   keepCount: Зберігати останні {count} копій
 baseSetting:
   title: Основні налаштування
+  info:
+    offline: Офлайн режим
+    address: Адреса
+    changes: Зміни
+    custom: Власний
+    disabled: Вимкнено
+    enabled: Увімкнено
+    exportFormats: Формати експорту
+    inherited: Успадковано
+    modLoader: Завантажувач модів
+    notConfigured: Не налаштовано
+    notSet: Не встановлено
+    projectId: ID проєкту
+    running: Працює
+    saved: Збережено
+    status: Статус
+    stopped: Зупинено
+    vanilla: Ванільний
 browseApp:
   createShortcut: Створити ярлик
   default: ЗА ЗАМОВЧУВАННЯМ
@@ -378,6 +437,23 @@ errors:
   HeadersTimeoutError: Час очікування заголовків HTTP-запиту вичерпано
   NotFoundError: 404 Не знайдено
   SocketError: Помилка сокета сервера
+  bedrockDownloadUrlUnavailable: Ця версія Bedrock недоступна для поточного облікового запису Microsoft.
+  bedrockDeveloperModeRequired: Для реєстрації цієї версії Bedrock потрібен режим розробника Windows.
+  bedrockRegisterFailed: Не вдалося зареєструвати цю версію Bedrock у Windows.
+  bedrockVersionNotFound: Цю версію Bedrock не знайдено локально.
+  InstallBackendUnresponsive:
+    body: Фоновий процес лаунчера перестав відповідати. Будь ласка, повністю перезапустіть лаунчер і спробуйте знову.
+    title: Лаунчер не відповідає
+  CorruptedResourceMetadata: Виявлено та очищено пошкоджені метадані для {count} ресурсів. Файли працюють, але їх прив'язку до Modrinth/CurseForge було втрачено, її буде перевірено автоматично.
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Не вдалося встановити файли Minecraft
+  InstallNetworkError:
+    body: Проблема з мережею перервала встановлення. Перевірте з'єднання з Інтернетом або проксі та спробуйте знову.
+    title: Не вдалося завантажити файли Minecraft
+  InstallPermissionDenied:
+    body: Антивірус або обмежені права доступу до папки заблокували встановлення. Додайте лаунчер до виключень антивірусу або виберіть іншу папку в налаштуваннях.
+    title: Немає доступу на запис до папки лаунчера
 eula:
   body: Поставивши прапорець, ви погоджуєтеся з {eula} Minecraft.
 exception:
@@ -419,12 +495,13 @@ commandPalette:
   openHint: Відкрити палітру команд ({shortcut})
   empty: Введіть запит для пошуку.
   noResults: Немає збігів.
-  searching: Пошук…
+  searching: Пошук команд...
   hintNavigate: навігація
   hintInvoke: виконати
   hintEnter: відкрити
   hintBack: назад
   hintClose: закрити
+  hintAskAgent: запитати в Асистента
 feedback:
   channel: Канали
   description: Я знайшов помилку або хочу внести пропозицію
@@ -522,8 +599,8 @@ instance:
   deleteFailedPermission: Інша програма зайняла файл
   deleteFile: Видалити файли екземпляра
   deleteHint: Дані екземпляра будуть назавжди видалені з диска. Ви впевнені?
-  deleteHintBedrock: Minecraft Bedrock Edition та всі його дані будуть повністю видалені з вашого комп'ютера. Ви впевнені?
-  duplicate: Дублювати гру
+  deleteHintBedrock: Minecraft Bedrock Edition та всі його дані будуть повністю видалені з вашого комп'ютера. Продовжити?
+  duplicate: Дублювати екземпляр
   duplicatedName: Повторювана назва
   fileApi: URL-адреса API сервера синхронізації файлів
   fileApiHint: URL-адреса для синхронізації файлів екземпляра з віддаленого сервера конфігурації.
@@ -537,7 +614,7 @@ instance:
   installModpack: Оновити екземпляр з модпаку
   lastPlayed: Востаннє запущенно
   launchArguments: Попередній перегляд аргументів запуску
-  launchServer: Запустити локальний сервер
+  launchServer: Запустити сервер
   linkFileDesc: Це перезапише локальний файл екземпляра {file} глобальним файлом {file}. Ви впевнені, що хочете зв'язати його?
   linkFileTitle: Ви впевнені, що хочете зв'язати {file}?
   mcOptions: Опції Minecraft
@@ -573,6 +650,15 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: значення
   fileApiPlaceholder: Введіть тут URL віддаленої синхронізації, якщо хочете підтримувати синхронізацію ресурсів
+  monitor: Монітор для повного екрана
+  monitorDefault: За замовчуванням (основний монітор)
+  monitorNumber: Монітор {number}
+  monitorPrimary: Основний
+  nameInvalidChars: 'Назва не може містити такі символи: < > : " / \ | ? *'
+  namePathTraversal: Назва не може містити перехід по шляху ("..")
+  nameReservedName: Ця назва зарезервована системою і не може використовуватися
+  nameTrailingDotOrSpace: Назва не може закінчуватися крапкою або пробілом
+  nameWhitespaceOnly: Назва не може складатися лише з пробілів або крапок
 instanceAge:
   older: Старші
   threeDay: Протягом трьох днів
@@ -636,6 +722,8 @@ instances:
   linkSharedFoldersHint: Створіть ці папки як посилання на спільні папки лаунчера, щоб ця збірка ділила їхній вміст з усіма іншими пов'язаними збірками. Це не копіювання — зміни в одній збірці з'являються в усіх. Непозначені папки залишаються приватними для цієї збірки.
   linkFailed: Не вдалося пов'язати папку {folder} зі спільною папкою
   addPrismDescription: Імпортувати існуючий інстанс PrismLauncher.
+  instanceCount: '{count} екземплярів'
+  folder: Папка
 items:
   count: '{count} елементів'
   total: '{total} всього'
@@ -674,11 +762,12 @@ launch:
   cancel: Скасувати
   createShortcut: Створити ярлик
   kill: Зупинити
-  killServer: Зупинити локальний сервер
+  killServer: Зупинити сервер
   launch: Запустити
   launchAnyway: Запустити все одно
   launchAs: Запустити від імені
   forceKill: Примусово завершити
+  launchTo: Запустити у
 launchBlocked:
   launchBadVersion:
     description: Файл JSON версії {version} пошкоджено. Можливо, перевстановити цю версію?
@@ -702,6 +791,13 @@ launchBlocked:
     description: Будь ласка, перевірте вашу Java або надайте більше дозволів лаунчеру та спробуйте ще раз. Якщо це все ще не працює, будь ласка, зв'яжіться з розробниками.
     title: Не вдалося запустити ігровий процес
   unexpectedText: Це неочікувано. Ви можете перезапустити лаунчер, щоб вирішити проблему. Будь ласка, зв'яжіться з автором, якщо ця проблема виникне знову.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL не зміг отримати інформацію про дисплей X11 вашого сеансу. Перезапустіть XMCL із терміналу в поточному сеансі або перезайдіть у систему.
+    noGraphicalSession: XMCL запущено не в графічному сеансі стільниці. Запустіть XMCL із графічного середовища перед стартом гри.
+    sandboxDenied: Пісочниця програми не має доступу до X11. Надайте XMCL доступ до сокета X11 у налаштуваннях Flatpak і перезапустіть лаунчер.
+    title: Дисплей X11 недоступний
+    xwaylandMissing: Minecraft потребує XWayland у цьому сеансі Wayland. Встановіть пакет XWayland вашого дистрибутива Linux, потім перезайдіть у систему.
+    xwaylandNotRunning: XWayland встановлено, але дисплей X11 не запущено. Увімкніть XWayland у налаштуваннях композитора та перезайдіть у систему.
 launchFailed:
   crash: Гра аварійно завершилася!!
   description: Звіту про збій немає. Це лог помилок та останній лог.
@@ -729,6 +825,11 @@ launcherUpdate:
   installAndQuit: Перезапустити для встановлення
   noUpdateAvailable: Оновлень немає
   updateToThisVersion: Завантажити та встановити
+  automaticUnavailable: Автоматичні оновлення недоступні
+  automaticNotImplemented: Автоматичне оновлення не реалізовано для цієї платформи.
+  automaticNotConfigured: Автоматичне оновлення не налаштовано для цієї платформи.
+  manualCheckHint: Перевірка оновлень не проводилася. Перевірте GitHub Releases на наявність сумісного пакета та встановіть його вручну.
+  manualCheckRequired: Ця платформа не підтримує автоматичну перевірку та встановлення оновлень. Скористайтеся офіційною сторінкою релізів.
 localVersion:
   auto: Обчислено автоматично
   empty: Жодної версії не встановлено
@@ -758,7 +859,7 @@ loginError:
   connectionReset: Не вдалося увійти, оскільки з'єднання було скинуто сервером
   fetchMinecraftProfileFailed: 'Не вдалося отримати профіль Minecraft: {reason}'
   illegalEmail: Електронна пошта має бути дійсною
-  invalidCredentials: Недійсні облікові дані. Неправильне ім'я користувача або пароль.
+  invalidCredentials: Невірний логін або пароль.
   loginMinecraftByXboxFailed: Не вдалося обміняти токен Minecraft за допомогою токена Xbox. Будь ласка, переконайтеся, що у вас є Minecraft в Xbox, або спробуйте ще раз.
   loginXboxAgeRestricted: |-
     Не ввійти в систему xbox через епоху віку.
@@ -772,15 +873,29 @@ loginError:
   requireEmail: Електронна пошта обов'язкова
   requirePassword: Пароль обов'язковий
   requireUsername: Ім'я користувача обов'язкове
-  cyrillicNotAllowed: Використання кирилиці заборонено
-  illegalOfflineUsername: Ім'я користувача має містити від 3 до 16 символів і складатися лише з англійських літер, цифр і підкреслень
+  cyrillicNotAllowed: Кириличні символи не дозволені
+  illegalOfflineUsername: Ім'я користувача має містити від 3 до 16 символів і складатися лише з латинських літер, цифр і підкреслень
   timeout: Час очікування входу вичерпано. Будь ласка, спробуйте ще раз або перевірте ваше мережеве з'єднання.
+  loginCanceled: Вхід через Microsoft скасовано.
+  loginMinecraftByXboxRateLimited: Служба автентифікації Minecraft від Microsoft тимчасово обмежує кількість запитів (HTTP 429). Будь ласка, зачекайте та спробуйте знову.
+  loginMinecraftByXboxRateLimitedWithRetry: Служба автентифікації Minecraft від Microsoft обмежує кількість запитів (HTTP 429). Будь ласка, зачекайте приблизно {seconds} с. і спробуйте знову.
+  loginMinecraftByXboxServerError: Служба автентифікації Minecraft від Microsoft повернула помилку сервера (HTTP {status}). Це проблема на їхньому боці. Спробуйте знову за кілька хвилин.
+  loginMinecraftByXboxStatus: Не вдалося обміняти токен Xbox на токен Minecraft (HTTP {status}). Переконайтеся, що ви маєте Minecraft у профілі Xbox, або повторіть спробу.
+  loginXboxAdultVerification: Ваш обліковий запис Microsoft потребує підтвердження повноліття (вимагається в деяких регіонах) перед входом в Xbox. Відкрийте {url} у браузері для проходження перевірки, потім спробуйте знову.
+  loginXboxBadXsts: Microsoft повернула відповідь XSTS без очікуваних даних користувача. Зазвичай це тимчасово — повторіть спробу за кілька хвилин.
+  loginXboxBanned: Цей обліковий запис Microsoft / Xbox призупинено або заблоковано компанією Microsoft. Ви не можете увійти в Minecraft. Будь ласка, зверніться до підтримки Microsoft / Xbox.
+  loginXboxChildAccount: Ваш обліковий запис Microsoft є дитячим і має бути доданий до Microsoft Family перед входом в Xbox / Minecraft. Відкрийте {url} у браузері, щоб виправити це, потім спробуйте знову.
+  loginXboxFailedWithCode: Не вдалося увійти в Xbox за токеном Microsoft (XErr {code}). Пошукайте цей код для довідки або повторіть спробу пізніше.
+  loginXboxNoXboxProfile: Цей обліковий запис Microsoft ще не має профілю Xbox. Відкрийте {url} у браузері, щоб створити його, потім спробуйте знову.
+  loginXboxRegionLocked: Xbox Live недоступний у регіоні вашого облікового запису. Будь ласка, змініть країну/регіон у налаштуваннях облікового запису Microsoft і спробуйте знову.
 logsCrashes:
   crashes: Звіти про збої
   logs: Логи
   placeholder: Файлів не знайдено
   title: Логи або звіти про збої
-  failures: Помилки запуску
+  failures: Невдачі
+  showFile: Показати у папці
+  serverLogs: Логи сервера
 me:
   groupByDate: Групувати за датою
   groupByFolder: Групувати за папкою
@@ -903,6 +1018,7 @@ modInstall:
   skipVersion: Пропустити моди з іншою версією Minecraft
   source: Джерело модів
   switch: Змінити версію
+  scanUnusedLibraries: Сканувати невикористані бібліотеки
 modSearch:
   noLocalModsFound: Не знайдено локальних модів, що відповідають вашому пошуку.
   noModsFound: Модів не знайдено.
@@ -919,30 +1035,30 @@ modified:
   save: Зберегти
   unsaved: Ваші зміни не збережено!
 modpack:
-  author: Автор збірки
-  authorHint: Ім'я автора або назва команди розробників
-  description: Опис модпаку
-  descriptionHint: Короткий опис або анотація вашого модпаку
+  author: Автор
+  authorHint: Ім'я автора або команди
+  description: Опис
+  descriptionHint: Детальний опис модпака у форматі Markdown
   dropHint: Перетягніть сюди zip-файл модпаку для імпорту
   emitCurseforge: Експортувати CurseForge (.zip)
-  emitCurseforgeDescription: Стандартний архів збірки для CurseForge
+  emitCurseforgeDescription: Стандартний zip-архів модпака для CurseForge
   emitModrinth: Експортувати Modrinth (.mrpack)
-  emitModrinthDescription: Офіційний швидкий та легкий формат Modrinth
+  emitModrinthDescription: Офіційний полегшений формат зі швидким завантаженням через CDN
   emitModrinthStrict: Сувора політика доменів Modrinth
   emitModrinthStrictDescription: Дозволяти завантаження лише з перевірених джерел (Modrinth, GitHub, GitLab)
-  emitPackwiz: Експортувати Packwiz (.zip)
-  emitPackwizDescription: Зручний формат для Git (pack.toml, index.toml та посилання на моди)
+  emitPackwiz: Експортувати модпак Packwiz
+  emitPackwizDescription: Полегшений git-сумісний формат (файли pack.toml, index.toml та .pw.toml)
   export: Експортувати як модпак
   exportSuccess: Модпак успішно експортовано!
   exportSuccessWithWarnings: Модпак експортовано з попередженнями
-  exportSkippedFiles: "{count} недоступних або заблокованих файлів було пропущено"
+  exportSkippedFiles: '{count} файлів, недоступних для читання або заблокованих, було пропущено під час експорту'
   exportFailed: Не вдалося експортувати модпак
   skippedFilesDialogTitle: Деякі файли не вдалося експортувати
   skippedFilesDialogDescription: Модпак створено, але {count} файлів було пропущено
   skippedReasonEperm: Доступ заборонено (заблоковано системою або іншим процесом)
-  skippedReasonEbusy: Файл зайнятий іншою програмою
+  skippedReasonEbusy: Файл використовується іншою програмою
   skippedReasonEnoent: Файл не знайдено або пошкоджено
-  skippedFilesNotice: Решта файлів успішно збережена до вашого модпаку. Зазначені файли не вдалося додати через системні обмеження Windows або відсутність прав доступу.
+  skippedFilesNotice: Решту ваших файлів успішно запаковано в модпак. Зазначені файли пропущено через системні обмеження Windows або відсутність прав доступу.
   openExportFolder: Відкрити папку з модпаком
   closeDialog: Зрозуміло
   exportDirectory: Каталог для збереження
@@ -952,14 +1068,98 @@ modpack:
   expandAll: Розгорнути всі папки
   collapseAll: Згорнути всі папки
   modpackVersion: Версія модпаку
-  modpackVersionHint: Версія збірки (наприклад, 1.0.0). Кнопки + збільшують патч або мінорну версію
-  name: Модпак | Модпаки
+  modpackVersionHint: Семантична версія (наприклад, 1.0.0). Використовуйте + для збільшення версії
+  name: Назва
   overrides: Перевизначення
   selectDefaultFiles: Обрати файли за замовчуванням
-  selectAllFiles: Обрати всі файли
+  selectAllFiles: Вибрати всі файли
   deselectAllFiles: Зняти вибір з усіх файлів
   url: URL
   urlHint: URL-адреса домашньої сторінки вашого модпаку
+  publish: Опублікувати
+  publishExistingProject: Опублікувати до існуючого проєкту
+  publishIconHint: Іконка модпака (рекомендовано 512x512)
+  publishLogin: Увійти для публікації
+  publishModrinth: Опублікувати на Modrinth
+  publishProjectDetailsTab: Деталі проєкту
+  publishProjectRequired: Обов'язкові поля проєкту
+  publishVersionTab: Версія
+  projectNoChanges: Змін не виявлено
+  projectUnsavedChanges: Змінено {count} полів проєкту
+  publishCategories: Категорії
+  publishChangelog: Список змін
+  publishLicense: Ліцензія
+  publishProjectUrl: URL проєкту (необов'язково)
+  publishProjectUrlHint: Залиште порожнім, щоб використати {slug}.
+  publishProjectSaved: Дані проєкту оновлено.
+  publishSourceUrl: URL вихідного коду
+  publishSubmit: Надіслати на модерацію
+  publishSummary: Короткий опис
+  publishSummaryMinWords: Короткий опис має містити щонайменше 3 слова.
+  publishVersionTitle: Заголовок версії
+  publishVersion: Опублікувати версію
+  publishVisibility: Видимість
+  publishWikiUrl: Посилання на Вікі
+  visibilityPrivate: Приватний
+  visibilityPublic: Публічний
+  visibilityUnlisted: За посиланням
+  modrinthProject: Проєкт Modrinth
+  bindProject: Прив'язати проєкт
+  bindProjectHint: Виберіть проєкт модпака Modrinth, керований поточним акаунтом.
+  bindProjectTypeImmutableHint: Modrinth фіксує тип проєкту під час завантаження його першої версії, і після цього його не можна змінити. Чернетки проєктів без версій можна прив'язати тут, але проєкт, уже опублікований як мод чи ресурспак, не можна перетворити на модпак — натомість скористайтеся "Створити новий проєкт".
+  bindProjectNoProjects: Для вашого акаунта не знайдено проєктів Modrinth.
+  unbindProject: Відв'язати проєкт
+  unbindProjectConfirmTitle: Відв'язати проєкт Modrinth?
+  unbindProjectConfirmMessage: Це лише видалить локальний зв'язок між цим екземпляром і проєктом Modrinth. Проєкт та його версії на Modrinth не зміняться.
+  editProject: Редагувати проєкт
+  projectDiscovery: Пошук і сумісність
+  projectGallery: Галерея
+  projectGalleryAdd: Додати зображення
+  projectGalleryEmpty: У галереї ще немає зображень.
+  projectGalleryFeatured: Головне
+  projectGalleryFromScreenshots: Вибрати зі скріншотів
+  projectGalleryHint: Додавайте зображення розміром до 5 МіБ та виберіть головне зображення проєкту.
+  projectGallerySelectScreenshot: Виберіть скріншот екземпляра
+  projectIdentity: Ідентифікація та опис
+  projectLinks: Посилання проєкту
+  projectLoadFailed: Не вдалося завантажити прив'язаний проєкт Modrinth.
+  projectNotBound: Жодного проєкту Modrinth не прив'язано
+  projectNotBoundHint: Прив'яжіть наявний проєкт або створіть новий проєкт Modrinth.
+  projectLatestDraft: Чернетка
+  projectVersions: версій
+  publishChannel: Канал релізу
+  publishChangelogGenerate: Згенерувати за допомогою ШІ
+  publishConfirmProjectChanges: Підтвердити зміни проєкту
+  publishCreateProject: Створити проєкт
+  publishCreateDraft: Зібрати та створити чернетку
+  publishCustomVersion: Власна
+  publishDescription: Опис проєкту
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: Чернетку версії завантажено.
+  publishSubmitted: Версію надіслано на перевірку.
+  publishIcon: Іконка проєкту
+  publishIconKeep: Залишити без змін, якщо не вибрано нове зображення
+  publishIconUseInstance: Використати іконку екземпляра
+  publishIssuesUrl: URL баг-трекера
+  publishFiles: вибраних файлів
+  publishLinkageSummary: '{linked} з {total} модів/ресурспаків/шейдерпаків будуть прив''язані безпосередньо до їхнього завантаження з Modrinth замість повторного вивантаження.'
+  publishLinkageEmbeddedSummary: '{count} файлів неможливо прив''язати, вони будуть завантажені (вбудовані) разом із цією версією.'
+  publishLinkageShowFiles: Показати файли, які необхідно завантажити
+  publishLinkageReason:
+    missing-file: Файл не знайдено на диску
+    not-linked-to-modrinth: Не розпізнано як ресурс Modrinth
+    no-downloadable-url: Не знайдено загальнодоступної URL-адреси для завантаження
+  publishNewProject: Новий проєкт
+  publishOpenProject: Відкрити проєкт
+  publishOpenVersion: Відкрити версію
+  publishProfile: Профіль MRPack
+  publishProfileClient: Тільки для клієнта
+  publishProfileServer: Тільки для сервера
+  publishProfileSplit: Універсальний + окремі файли для клієнта/сервера
+  publishProfileUniversal: Універсальний
+  publishProject: Проєкт
+  publishProjectName: Назва проєкту
+  publishProjectSlug: Слаґ проєкту (ідентифікатор)
 modpackImportConfirm:
   description: Виявлено, що ви перетягнули файл у лаунчер. Ви намагаєтеся імпортувати модпак?
   title: Ви намагаєтеся імпортувати модпак?
@@ -1181,7 +1381,7 @@ multiplayer:
   difficultyLevelHint: Рівень складності створення з'єднання
   disconnect: Роз'єднати
   disconnectDescription: Ви впевнені, що хочете роз'єднатися з користувачем {user}({id})?
-  disconnected: роз'єднано
+  disconnected: Відключено від кімнати
   enterRemoteToken: Ввести віддалений токен
   enterRemoteTokenHint: Після того, як ваш вузол введе ваш токен, вам потрібно ввести його токен у текстове поле нижче. Натисніть "Підтвердити", щоб з'єднатися.
   exposedPortDescription: Порт, який ви відкрили для інших вузлів
@@ -1200,7 +1400,7 @@ multiplayer:
   leaveGroup: Покинути групу
   localToken: Локальний токен
   manualConnect: Підключитися вручну
-  name: Мультиплеєр
+  name: Мережева гра
   networkInfo: Інформація про мережу
   next: Далі
   otherExposedPortDescription: Порт, перенаправлений {user}
@@ -1217,6 +1417,16 @@ multiplayer:
   startNewP2PConnection: Натисніть кнопку "Почати", щоб створити нове з'єднання з вузлом
   connectionError: Помилка з'єднання
   connectionFailedHint: Не вдалося встановити з'єднання. Перевірте, чи мають обидві сторони сумісні типи NAT.
+  connectedToMaster: Підключено до хоста кімнати
+  directConnection: Пряме підключення
+  master: Хост
+  masterHostsGameHint: Хост кімнати є центром з'єднання та має створити світ LAN у грі. Передайте роль хоста перед зміною сервера.
+  member: Учасник
+  joinCreatesMissingRoomHint: Якщо кімната не існує, ви створите її та станете її хостом.
+  relayConnection: Через ретранслятор
+  relayAllowanceSummary: Залишилося {remaining} з {total} за цей період
+  relayServiceAvailable: Служба ретрансляції XMCL Together доступна
+  waitingForMaster: Очікування повторного підключення хоста кімнати
 myStuff: Мої речі
 natType:
   blocked: Заблоковано
@@ -1263,6 +1473,11 @@ presence:
   save: Перегляд збережень у {instance}
   setting: Перегляд сторінки налаштувань
   shaderPack: Перегляд пакетів шейдерів у {instance}
+  away: Відійшов
+  offline: Офлайн
+  online: Онлайн
+  playing: Грає в {game}
+  playingGeneric: У грі
 proxy:
   host: Хост
   port: Порт
@@ -1286,8 +1501,10 @@ resourcepack:
   showDirectory: Показати каталог пакетів ресурсів
   showFile: Показати пакет ресурсів у папці {file}
   unselected: Невибрані пакети ресурсів
-  noPacks: Ресурспаки не знайдено
+  noPacks: Немає ресурспаків
   search: Пошук ресурспаків...
+  noPacksInstalled: Ресурспаки не встановлено
+  noLocalPacksFound: Не знайдено локальних ресурспаків, що відповідають пошуку.
 save:
   resetView: Скинути вигляд
   mapHintPan: Перетягніть, щоб перемістити огляд
@@ -1304,13 +1521,13 @@ save:
     name: Дата-пак | Дата-паки
     noSaveHint: Спочатку створіть або виберіть світ для встановлення дата-пака
     packFormat: 'Формат пака: {format}'
-    imported: Дата-пак імпортовано до {save}
-  export: Експортувати збереження
+    imported: Датапак імпортовано до {save}
+  export: Експортувати світ
   exportMessage: Експортувати збереження як zip-файл
   exportTitle: Експортувати збереження
-  gameMode: режим гри
+  gameMode: Режим гри
   independent: Екземпляр використовує незалежну папку збережень
-  levelName: Назва рівня
+  levelName: Назва світу
   map:
     tabTitle: Карта світу
   progress:
@@ -1331,38 +1548,73 @@ save:
     locked: Заблоковано
   name: Збереження | Збереження
   search: Шукати збереження
-  seed: Seed
+  seed: Сід (ключ генератора)
   selected: Локальні збереження
   shared: Екземпляр використовує спільну папку збережень
   showDirectory: Показати каталог збережень
   unselected: Спільні збереження
   useCurrent: Використовувати поточний світ
-  openFolder: Відкрити теку збережень
-  searchHint: Пошук світів на CurseForge
-  searchSaves: Пошук збережень
+  openFolder: Відкрити папку збережень
+  searchHint: Введіть текст для пошуку збережень
+  searchSaves: Пошук збережень...
   empty: Світів не знайдено
+  world: Світ
+  chunkSelectMode: Режим вибору чанків
+  loadMap: Завантажити карту
+  mapError: Помилка відображення карти
+  mapInfo: Інформація про карту
+  mapLoaded: Карту успішно завантажено
+  mapPreview: Попередній перегляд карти
+  noLocalSavesFound: Локальних збережень не знайдено
+  noSavesFound: Збережень не знайдено
+  panMode: Режим переміщення карти
+  useMouseRotate: Обертання правою кнопкою миші
+  useScrollZoom: Масштабування колесом миші
+  difficulty: Складність
+  allowCheats: Дозволити чіти
+  duplicate: Дублювати збереження
+  chunkSelected: Вибрано {count} чанків
+  mapHintSelect: Вибрати
+  mapHintDeselect: Зняти вибір
+  toggleGrid: Увімкнути сітку регіонів
+  heightTop: Зверху
+  clearSelection: Очистити вибір
+  copyChunks: Копіювати чанки
+  pasteChunks: Вставити {count} чанків
+  pasteChunksPlaceHint: Перемістіть курсор, щоб розмістити {count} чанків, потім клікніть для вставки. Існуючі чанки в цільовій області буде замінено. Натисніть Esc для скасування.
+  pasteChunksCancel: Скасувати
+  deleteChunks: Видалити чанки
+  deleteChunksTitle: Видалити вибрані чанки
+  deleteChunksHint: Видалити {count} вибраних чанків? Цю дію неможливо скасувати. Чанки будуть згенеровані наново під час наступного відвідування області в грі.
+  mapLoading: Завантаження карти…
+  noRegions: Цей світ не має згенерованих регіонів для попереднього перегляду.
+  dimOverworld: Звичайний світ (Overworld)
+  dimNether: Нижній світ (The Nether)
+  dimEnd: Край (The End)
+  noSavesInstalled: У вас немає збережень.
+  properties: Властивості світу
 screenshots:
   title: Скріншоти та фото
   gallery: Галерея скріншотів
   manage: Менеджер скріншотів
   empty: У вас немає знімків екрана
-  emptyTitle: Скріншотів поки немає
-  emptyDescription: Натисніть F2 у грі, щоб зробити знімок екрана, або імпортуйте фотографії вручну.
+  emptyTitle: Скріншотів ще немає
+  emptyDescription: Натисніть F2 у грі або імпортуйте фотографії вручну.
   hint: У грі натисніть F2 для скріншоту
   dropHint: Перетягніть сюди фото або скріншоти для збереження
   openFolder: Відкрити теку скріншотів
   playRandom: Перемішати
   playSequence: Відтворити по порядку
-  backToHome: На головну
+  backToHome: Назад на головну
   import: Додати фото
   images: Зображення
-  importSuccess: Успішно імпортовано {count} фото
+  importSuccess: Успішно імпортовано {count} зображень
   copy: Копіювати зображення
   copied: Скопійовано в буфер обміну!
   setWallpaper: Встановити як фон
   setWallpaperSuccess: Встановлено як фонове зображення збірки!
   setIcon: Встановити як іконку
-  setIconSuccess: Встановлено як іконку збірки!
+  setIconSuccess: Встановлено як іконку екземпляра!
   export: Зберегти файл
   exportSuccess: Скріншот успішно збережено!
   exportSelected: Експортувати обрані
@@ -1370,11 +1622,11 @@ screenshots:
   exportSelectedSuccess: Успішно експортовано {count} скріншотів
   deleteConfirmTitle: Видалити скріншоти?
   deleteConfirmMessage: Ви дійсно бажаєте видалити {count} скріншотів? Цю дію неможливо скасувати.
-  deleteSuccess: Скріншоти успішно видалено
-  selectedCount: "Обрано: {count}"
+  deleteSuccess: Скріншот успішно видалено
+  selectedCount: 'Обрано: {count}'
   selectAll: Обрати всі
   clearSelection: Зняти вибір
-  countLabel: "{count} скріншотів"
+  countLabel: '{count} скріншотів'
   searchPlaceholder: Пошук за назвою або датою...
   noSearchResults: Нічого не знайдено
   noSearchResultsHint: Спробуйте змінити пошуковий запит
@@ -1394,7 +1646,7 @@ screenshots:
   saveOverwrite: Перезаписати
   saveSuccess: Скріншот збережено!
   saveCopySuccess: Збережено як новий скріншот!
-  toolSelect: Переміщення
+  toolSelect: Вибір / Панорамування
   toolMove: Пересування та трансформація (Ctrl+T / V)
   toolPan: Панорамування (Space+Drag)
   layers: Шари
@@ -1416,7 +1668,7 @@ screenshots:
   toolLine: Лінія
   toolText: Текст
   toolHighlighter: Маркер
-  toolBlur: "Пікселізація / Розмиття"
+  toolBlur: Пікселізація / Розмиття
   toolCrop: Обрізати
   applyCrop: Застосувати обрізку
   cancelCrop: Скасувати обрізку
@@ -1435,6 +1687,22 @@ screenshots:
   zoomIn: Наблизити
   zoomOut: Віддалити
   resetZoom: Скинути масштаб
+  layer: Шар
+  dragToMove: Потягніть для переміщення
+  transformHint: Перетягніть область для переміщення • Тягніть за краї для масштабування • Enter для застосування
+  customColor: Власний колір
+  fill: Заливка
+  brushPreview: Попередній перегляд пензля
+  fontPreview: Попередній перегляд шрифту
+  textBgNone: Немає
+  textBgShadow: Тінь
+  textBgBox: Рамка
+  cropHint: Перетягніть рамку, щоб вибрати область обрізання.
+  textPlacementHint: Enter для розміщення • Esc для скасування
+  layerMoveUp: Підняти вгору
+  layerMoveDown: Опустити вниз
+  layerCopy: '{name} (Копія)'
+  pixels: пікс.
 search:
   favorate: Колекція
   local: Встановлені
@@ -1620,7 +1888,7 @@ setting:
     assistantTitle: CSS-асистент
     dropHint: Перетягніть файл .css, щоб завантажити його
     editorPlaceholder: /* Напишіть свій CSS тут */
-    globalToggle: Увімкнути власний CSS
+    globalToggle: Увімкнути власний CSS для інтерфейсу
     openInDialog: Відкрити у діалозі агента
     title: Власний CSS
     warning: Власний CSS дозволяє налаштувати будь-який аспект лаунчера. Будьте обережні при вставленні CSS з ненадійних джерел, оскільки це може змінити інтерфейс.
@@ -1630,7 +1898,7 @@ setting:
   advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
   aiAgentApiKey: API key AI Agent
   aiAgentApiKeyDescription: Налаштуйте OpenAI-сумісного провайдера, наприклад OpenAI або gateway для Claude. Ключ зберігається локально на цьому пристрої.
-  aiAgentApiKeyPlaceholder: API key провайдера OpenAI або Claude
+  aiAgentApiKeyPlaceholder: Введіть ваш API ключ (sk-...)
   aiAgentEndpoint: Endpoint AI Agent
   aiAgentEndpointDescription: URL endpoint для chat completions.
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -1705,7 +1973,7 @@ setting:
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
   importSettings: Імпорт налаштувань
-  importSettingsHint: Завантажити налаштування з раніше експортованого файлу
+  importSettingsHint: Імпортувати конфігурацію лаунчера з файлу
   instanceTheme:
     activeDescription: |-
       Цей екземпляр використовує спеціальну тему.
@@ -1720,14 +1988,14 @@ setting:
   layout:
     default: Типовий макет
     focus: Макет фокусування
-  layoutDescription: Макет інтерфейсу лаунчера
-  layoutTitle: Макет
-  linuxEnableDedicatedGPUOptimization: Призначення виділеного графічного процесора
-  linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначає виділений GPU для процесу Minecraft.
+  layoutDescription: Налаштування розміщення елементів головного екрана
+  layoutTitle: Макет інтерфейсу
+  linuxEnableDedicatedGPUOptimization: Оптимізація дискретної відеокарти (Linux)
+  linuxEnableDedicatedGPUOptimizationDescription: Запускати гру на потужнішій дискретній GPU через prime-run/DRI_PRIME.
   linuxTitlebar: Нативний заголовок вікна
   linuxTitlebarDescription: Використовувати нативний заголовок вікна Linux для лаунчера
   location: Місце зберігання
-  manualUpdateHint: Версія не може бути оновлена автоматично. Будь ласка, завантажте лаунчер ще раз з офіційного сайту!
+  manualUpdateHint: Перевіряти наявність нових версій вручну
   maunalUpdateHint: Версію неможливо оновити автоматично. Будь ласка, завантажте лаунчер з вебсайту знову!
   maxSockets: На хост
   maxSocketsDescription: Обмежити максимальну кількість сокетів на хост або для всіх хостів загалом. 0 означає без обмежень.
@@ -1737,7 +2005,7 @@ setting:
   minecraftOptions: Налаштування Minecraft
   name: Глобальне налаштування | Глобальні налаштування
   network: Мережеві налаштування
-  newsPosition: Перемістити розділ новин
+  newsPosition: Позиція блоку новин
   officialWebsite: Офіційний вебсайт
   particleMode:
     bubble: Бульбашка
@@ -1756,15 +2024,15 @@ setting:
   resetAllSettingsConfirmMessage: Це назавжди видалить всі налаштування, облікові записи, екземпляри, групи та кешовані дані. Цю дію неможливо скасувати. Ви впевнені?
   resetAllSettingsConfirmTitle: Скинути всі налаштування?
   resetAllSettingsHint: Скинути лаунчер до заводських налаштувань (видаляє все)
-  resetAllSettingsSuccess: Всі налаштування було скинуто. Лаунчер перезапуститься.
-  resetSettingsError: 'Помилка під час скидання налаштувань: {error}'
+  resetAllSettingsSuccess: Усі налаштування успішно скинуто
+  resetSettingsError: 'Помилка скидання налаштувань: {error}'
   resetToDefault: Скинути до типових
   select: вибрати
   settingsExported: Налаштування успішно експортовано
-  settingsImportError: Не вдалося імпортувати налаштування. Перевірте формат файлу.
+  settingsImportError: Помилка імпортування налаштувань
   settingsImported: Налаштування успішно імпортовано
-  settingsReloadHint: Лаунчер перезавантажиться для застосування всіх налаштувань.
-  showNewsHeader: Показати вітрину новин
+  settingsReloadHint: Для застосування деяких параметрів потрібен перезапуск лаунчера.
+  showNewsHeader: Показувати заголовок новин на головній
   showRoot: Показати
   sidebarAlign: Вирівнювання бічної панелі
   sidebarAutoHide: Автоматично приховувати бічну панель
@@ -1808,6 +2076,32 @@ setting:
     successGlobal: Фонове зображення оновлено.
     successInstance: Фонове зображення інстансу оновлено.
     failed: Не вдалося встановити фонове зображення
+  aiAgentApiKeyNotNeeded: Ключ API не потрібен для вбудованої підписки
+  aiAgentApiKeyNotNeededHint: При активній підписці XMCL запити обробляються автоматично через захищений шлюз.
+  aiAgentCustom: Власний постачальник ШІ
+  multiplayerTransport: Транспорт для Together
+  multiplayerTransportDescription: Виберіть реалізацію WebRTC для зв'язку в Together. Зміна транспорту відключить активні з'єднання.
+  aboutBmclDescription: BMCL API надає швидкі та надійні дзеркала завантажень
+  aboutContributors: 🧑‍💻 Автори та контриб'ютори 🧑‍💻
+  aboutDenoDescription: XMCL використовує надійну платформу Deno Deploy для хмарних сервісів
+  aboutLicense: ЛІЦЕНЗІЯ MIT
+  aboutLicenseInfo: Безкоштовний цифровий підпис коду для Windows надано SignPath.io, сертифікат від SignPath Foundation
+  aboutSponsors: 😇 Спонсори проєкту 😇
+  aiAgentApiKeyClear: Очистити ключ
+  aiAgentApiKeyEmpty: Вставте ваш API ключ
+  aiAgentApiKeySaved: Збережено
+  aiAgentApiKeyStored: Ключ збережено — почніть вводити для заміни
+  aiAgentBuiltin: Вбудований
+  useDesktopBackground: Використовувати шпалери робочого столу
+  devModeLabel: DEV
+  livePreview: Живий перегляд
+  appImageUpdateMode: Керування оновленнями AppImage
+  appImageExternalMode: Зовнішній менеджер / ручна заміна (за замовчуванням)
+  appImageSelfMode: Керується XMCL (самостійне керування цим AppImage)
+  appImageAutoDownload: Автоматично завантажувати оновлення
+  appImageAutoInstall: Встановлювати завантажені оновлення під час виходу
+  appImageExternalUpdateHint: Якщо лаунчер встановлено через Shelly або інший менеджер пакетів, оновлюйте його там і залишайте зовнішній режим. В іншому випадку самостійно замініть файл AppImage за його поточним шляхом. XMCL не завантажує і не встановлює оновлення у зовнішньому режимі та не змінює записи менеджера чи ярлики стільниці.
+  appImageSelfUpdateHint: Вибирайте автономний режим лише для AppImage, яким ви керуєте особисто, а не через Shelly чи інший менеджер. Вбудоване оновлення вимагає абсолютного шляху до AppImage без номера версії в назві файлу (наприклад, xmcl.AppImage). Якщо назва містить версію, наприклад 0.73.0, закрийте XMCL, перейменуйте файл, оновіть власний ярлик стільниці на цей постійний шлях і запустіть програму знову. Доти оновлення залишатимуться ручними. XMCL не перейменовуватиме файли за вас. Після зміни режиму перевірте наявність оновлень знову.
 settingLabel:
   global: Глобальний
   globalHint: Це налаштування буде слідувати глобальним налаштуванням
@@ -1854,13 +2148,15 @@ shaderPack:
   noShaderModHint: Ви не можете використовувати шейдери без мода для шейдерів
   noShaderModInstallHint: Вам потрібно встановити один з наступних модів, щоб завантажити пакет шейдерів.
   searchHint: Шукати пакет шейдерів
-  selectSearchHint: Шукати та вибрати пакет шейдерів
+  selectSearchHint: Введіть назву для пошуку шейдерпаків
   showDirectory: Показати каталог пакетів шейдерів
   showFile: Показати цей пакет шейдерів у папці
   market: Ринок шейдерів
   noPacks: Шейдерпаки не встановлені
   search: Пошук шейдерпаків...
   'off': Вимкнено
+  noLocalPacksFound: Локальних шейдерів не знайдено
+  noPacksInstalled: У вас немає встановлених шейдерів.
 shared:
   openFolder: Відкрити папку
   reset: Скинути
@@ -1902,6 +2198,10 @@ shared:
   'yes': Так
   delete: Видалити
   view: Переглянути
+  failed: Помилка
+  save: Зберегти
+  copied: Скопійовано
+  copy: Копіювати
 sidebar:
   pin: Закріпити
   unpin: Відкріпити
@@ -2250,6 +2550,8 @@ minecraftFriends:
     inviteRejected: Цей гравець не має увімкнених друзів або не приймає запити.
     tokenExpired: Сесія Microsoft закінчилась. Будь ласка, увійдіть знову.
     generic: Щось пішло не так. Спробуйте ще раз.
+    friendsDisabled: Для вашого облікового запису Minecraft вимкнено функцію друзів. Увімкніть її в налаштуваннях облікового запису Minecraft і спробуйте знову.
+    invalidName: Ім'я користувача Minecraft має містити від 3 до 16 символів.
 relative:
   justNow: щойно
   secondsAgo: '{count} секунду тому | {count} секунд тому'
@@ -2268,13 +2570,13 @@ gamepad:
   modInstalledNotify: '{name} встановлено для підтримки контролера в грі.'
   modNotFound: Сумісну версію для {loader} на Minecraft {version} не знайдено.
   autoEnableLabel: Авто-увімкнення керування
-  autoEnableHint: Автоматично вмикати керування геймпадом при виявленні контролера.
+  autoEnableHint: Автоматично вмикати навігацію геймпадом при натисканні кнопок
   autoOpenKeyboardLabel: Відкривати клавіатуру Steam
   autoOpenKeyboardHint: Відкривати екранну клавіатуру Steam при фокусі на текстових полях.
   focusTooltipsLabel: Підказки при фокусі
-  focusTooltipsHint: Показувати вспливаючі підказки при навігації елементами геймпадом.
+  focusTooltipsHint: Показувати підказки навігації при фокусі з геймпада
   disableModPromptLabel: Вимкнути пропозиції модів контролера
-  disableModPromptHint: Не показувати пропозицію встановлення модів для контролера при запуску з геймпадом.
+  disableModPromptHint: Не запитувати про встановлення мода для підтримки контролера в грі
   settingSteamTitle: Додати лаунчер до Steam
   steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
   steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
@@ -2284,6 +2586,19 @@ gamepad:
   steamDeckCancelBtn: Скасувати ({btn})
   connected: Геймпад підключено
   disconnected: Геймпад відключено
+  disabledState: Керування геймпадом вимкнено
+  enabledState: Керування геймпадом увімкнено
+  guideTitle: Керування геймпадом
+  enableSwitchLabel: Керування геймпадом
+  toggle: Перемкнути
+  disabledNotify: Керування геймпадом вимкнено.
+  guide:
+    confirm: Вибрати
+    navigate: Навігація
+    tabs: Перемикання вкладок
+    sections: Перемикання секцій
+    launch: Запуск гри
+    instanceSettings: Налаштування екземпляра
 blueprint:
   name: Креслення | Креслення
   count: '{count} креслень'
@@ -2484,4 +2799,37 @@ localCollection:
   alreadyInCollection: Вже додано
   noMatchingMods: Не знайдено модів за запитом
   addSelectedMods: Додати {count} модів
-
+difficulty:
+  peaceful: Мирний
+  easy: Легкий
+  normal: Нормальний
+  hard: Важкий
+xmclAccount:
+  title: Акаунт XMCL
+  status:
+    active: Активний
+    deleted: Видалено
+    deletion_pending: Очікує видалення
+    merged: Об'єднано
+  expiresAt: 'Дійсна до: {date}'
+  accountSummary: Акаунт
+  confirmMerge: Підтвердити об'єднання акаунтів
+  createdAt: Створено {date}
+  description: Ваш паролевий або безпарольний акаунт XMCL, окремий від ігрових акаунтів Minecraft.
+  gameAccountsSeparate: Видалення ігрового акаунта не відв'язує спосіб входу XMCL.
+  guest: Гість
+  identityConflict: Цей спосіб входу через {provider} належить іншому акаунту XMCL. Акаунти ніколи не об'єднуються автоматично.
+  linkAccountWith: Прив'язати акаунт через
+  mergePreview: Перегляньте ресурси, які будуть перенесені, перед підтвердженням.
+  mergeNeedsSession: Увійдіть в акаунт XMCL, який хочете зберегти, перед переглядом об'єднання.
+  mergeQueued: Триває об'єднання акаунтів.
+  requestFailed: Сервіс XMCL Account не зміг виконати цей запит. Ваш ігровий акаунт не змінено.
+  reviewMerge: Переглянути об'єднання
+  session: Сесія
+  sessionActive: Активна
+  sessionExpired: Закінчилася
+  signOutAll: Вийти на всіх пристроях
+  signOutDevice: Вийти на цьому пристрої
+resourceError:
+  body: Не вдалося розібрати "{path}" ({code}). Файл може бути пошкодженим, заблокованим або неповним. Спробуйте завантажити його знову або видалити.
+  title: Не вдалося прочитати {file}

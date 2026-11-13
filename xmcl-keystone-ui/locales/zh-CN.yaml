@@ -80,6 +80,20 @@ agent:
     resourcepack: 资源包
     shader: 光影包
   toggleHint: 切换
+  confirmPending: 等待确认
+  passiveGameCrashed: 游戏崩溃
+  passiveGameExitCode: 退出代码 {code}
+  passiveGameExited: 游戏已退出
+  passiveGameExitSignal: 信号 {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: 无退出状态
+  passiveGameStarted: 游戏已启动
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: 模组兼容性报告
+  passiveModDiagnosisError: 兼容性诊断失败
+  passiveModDiagnosisSummary: 已检查 {checked} 个模组 · {incompatibilities} 个不兼容 · {duplicates} 个重复
+  passiveModDuplicate: 重复的 {mod}：{files}
+  passiveModInstalled: 已安装 {version}
 ago:
   day: '{duration} 天前'
   hour: '{duration} 小时前'
@@ -115,6 +129,13 @@ bedrock:
   downloadFailed: 下载基岩版 {version} 失败
   launchFailed: 启动此基岩版失败
   removeFailed: 移除基岩版 {version} 失败
+  description: Minecraft 基岩版通过 Microsoft Store 安装和启动。您的微软账户需要拥有基岩版许可证。
+  install: 从 Microsoft Store 获取
+  installFailed: 打开 Microsoft Store 失败
+  installed: 已安装：{version}
+  launchHint: 使用“启动”按钮启动基岩版。
+  licenseRequired: 请登录拥有 Minecraft 许可证的微软账户以安装和游玩基岩版。
+  refresh: 刷新
 backup:
   title: 备份与恢复
   description: 备份和恢复您的启动器设置、收藏夹、主题以及游戏实例
@@ -142,7 +163,7 @@ backup:
   create: 创建备份
   createTitle: 创建 XMCL 备份归档
   saveDialogTitle: 保存 XMCL 备份归档
-  fileFilterName: 'XMCL 备份归档 (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL 备份归档 (*.xmclbackup, *.zip)
   createError: 创建备份失败
   loadManifestError: 读取备份归档失败
   restore: 恢复
@@ -153,7 +174,7 @@ backup:
   elapsedTime: 已用时间
   remainingTime: 预计剩余
   calculatingRemaining: 计算中...
-  lessThanMinute: '< 1 分钟'
+  lessThanMinute: < 1 分钟
   itemsProgress: '{current}/{total}'
   savesCategory: 存档
   modsCategory: 模组
@@ -169,8 +190,8 @@ backup:
   backupDoneHint: 您的备份归档已创建并校验完成。
   restoreDone: 恢复完成！
   restoreDoneHint: 所有选中的数据与实例已成功恢复。
-  timeTaken: '耗时：{time}'
-  destinationFile: '保存至：{path}'
+  timeTaken: 耗时：{time}
+  destinationFile: 保存至：{path}
   stagePreparing: 准备中
   stageSettings: 启动器设置
   stageCollections: 已保存收藏夹
@@ -178,13 +199,13 @@ backup:
   stageInstances: 游戏实例
   stageCompressing: 压缩归档
   stageComplete: 完成
-  stageLabel: '阶段：{stage}'
+  stageLabel: 阶段：{stage}
   searchInstancesPlaceholder: 按名称或版本搜索实例...
   selectBackupFilePrompt: 选择要恢复的备份归档
   selectBackupFileDescription: 包含已保存 XMCL 数据和实例的 .xmclbackup 或 .zip 文件。
   selectFile: 选择文件
   selectBackupFileTitle: 打开 XMCL 备份归档
-  createdOn: '创建于 {date}'
+  createdOn: 创建于 {date}
   changeFile: 更换文件
   dataToRestore: 要恢复的数据
   restoreSettings: 恢复设置
@@ -201,8 +222,8 @@ backup:
   restoreError: 恢复备份失败
   restorePartialTitle: 恢复完成，存在警告
   restorePartialHint: 部分组件或实例未能完全恢复。请查看活动日志了解详情。
-  restoreFailedCategory: '恢复 {category} 失败'
-  instancesSkipped: '已跳过 {count} 个已存在的实例'
+  restoreFailedCategory: 恢复 {category} 失败
+  instancesSkipped: 已跳过 {count} 个已存在的实例
   instancesFailed: '{count} 个实例恢复失败'
   createBackupTitle: 创建备份
   createBackupDescription: 将启动器设置、收藏夹、自定义主题和实例保存为单个便携归档文件。
@@ -218,7 +239,7 @@ backup:
   autoBackupRunNow: 立即备份
   autoBackupLastRun: 上次自动备份
   autoBackupNeverRun: 从未
-  selectedCount: '已选 {selected} / {total}'
+  selectedCount: 已选 {selected} / {total}
   autoBackupSelectInstances: 要自动备份的实例（可选择一个或多个）
   searchInstances: 搜索实例...
   autoBackupInterval: 备份频率
@@ -241,7 +262,7 @@ backup:
   interval6h: 每 6 小时
   interval12h: 每 12 小时
   interval24h: 每 24 小时
-  keepCount: '保留最近 {count} 个备份'
+  keepCount: 保留最近 {count} 个备份
 baseSetting:
   info:
     address: 地址
@@ -441,6 +462,17 @@ errors:
     body: 杀毒软件或目录权限阻止了安装。请将启动器加入杀毒软件白名单，或在设置中选择其他数据目录。
   NotFoundError: 404 未找到资源
   SocketError: 服务器连接断开
+  bedrockUnsupportedPlatform: Minecraft 基岩版仅在 Windows 版本上受支持。
+  bedrockNotInstalled: 未安装 Minecraft 基岩版。
+  bedrockLaunchFailed: 启动 Minecraft 基岩版失败。
+  bedrockInstallFailed: 安装 Minecraft 基岩版失败。
+  bedrockDownloadUrlUnavailable: 当前微软账户无法获取此基岩版版本。Beta 和 Preview 版本需要账户加入 Minecraft 测试计划。
+  bedrockDeveloperModeRequired: 注册此基岩版版本需要开启 Windows 开发者模式。
+  bedrockRegisterFailed: 向 Windows 注册此基岩版版本失败。
+  bedrockVersionNotFound: 本地未安装此基岩版版本。
+  InstallBackendUnresponsive:
+    body: 启动器后台进程无响应，安装无法完成。请完全退出并重新打开启动器，然后重试。
+    title: 启动器无响应
 eula:
   body: 选中复选框按钮即表示您同意 Minecraft 的 {eula}。
 exception:
@@ -458,15 +490,20 @@ command:
   instance:
     launch:
       title: 启动实例
+      description: 启动 Minecraft 实例
     create:
       title: 创建实例
+      description: 创建新实例
     delete:
       title: 删除实例
+      description: 删除现有实例
   user:
     login:
       title: 用户登录
+      description: 登录您的账户
     refresh:
       title: 刷新用户
+      description: 刷新用户会话
 commandPalette:
   placeholder: 搜索命令、实例、模组…
   commands: 命令
@@ -502,6 +539,8 @@ feedback:
   qq: QQ 群
   qqDescription: 加入反馈群直接和作者聊聊吧，群号 {number}
   qqEnterGroup: 加群
+  reddit: Reddit
+  redditDescription: 加入 r/XMCL 社区
 fileDetail:
   fileSize: 文件大小
   filesize: 文件大小
@@ -646,6 +685,7 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: value
   width: 宽度
+  deleteHintBedrock: Minecraft 基岩版及其所有数据将从您的电脑中完全删除。确定要继续吗？
 instanceAge:
   older: 三天前
   threeDay: 三天内
@@ -729,6 +769,7 @@ instances:
   linkSharedFolders: 在多个实例间共享文件夹
   linkSharedFoldersHint: 将这些文件夹创建为指向启动器共享文件夹的链接，使此实例与其他所有已链接的实例共享其内容。这不是复制——在一个实例中所做的更改会显示在所有实例中。未勾选的文件夹将保持此实例私有。
   linkFailed: 无法将 {folder} 文件夹链接到共享文件夹
+  instanceCount: '{count} 个实例'
 items:
   count: '{count} 个'
   total: 共 {total} 个
@@ -898,6 +939,9 @@ loginError:
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
   timeout: 登录超时，请重试或检查您的网络！
+  loginCanceled: 已取消微软登录。
+  cyrillicNotAllowed: 不允许包含西里尔字符
+  illegalOfflineUsername: 用户名长度必须为 3-16 个字符，且只能包含英文字母、数字和下划线
 logsCrashes:
   crashes: 崩溃报告
   failures: 启动失败
@@ -905,6 +949,7 @@ logsCrashes:
   placeholder: 没有找到文件
   serverLogs: 服务器日志
   title: 日志或崩溃报告
+  showFile: 在文件夹中显示
 me:
   groupByDate: 按日期分组
   groupByFolder: 按文件夹分组
@@ -1036,6 +1081,7 @@ modInstall:
   skipVersion: 忽略不同 Minecraft 版本的 Mod
   source: 模组来源
   switch: 切换版本
+  scanUnusedLibraries: 扫描未使用的库
 modSearch:
   noLocalModsFound: 未找到匹配搜索的本地模组。
   noModsFound: 未找到模组。
@@ -1156,6 +1202,27 @@ modpack:
   visibilityUnlisted: 不公开列出
   url: URL
   urlHint: 整合包的主页 URL 地址
+  emitCurseforgeDescription: 适用于 CurseForge 的标准 zip 模组包归档
+  emitModrinthDescription: 带有高速 CDN 下载的官方轻量格式
+  emitPackwiz: 导出 Packwiz 模组包
+  emitPackwizDescription: 轻量且对 git 友好的格式（pack.toml、index.toml 和 .pw.toml 文件）
+  exportSuccess: 模组包导出成功！
+  exportSuccessWithWarnings: 模组包已导出，但包含警告
+  exportSkippedFiles: 导出过程中跳过了 {count} 个无法读取或已锁定的文件
+  exportFailed: 导出模组包失败
+  skippedFilesDialogTitle: 部分文件无法导出
+  skippedFilesDialogDescription: 模组包已创建，但跳过了 {count} 个文件
+  skippedReasonEperm: 拒绝访问（已被系统或其他进程锁定）
+  skippedReasonEbusy: 文件正被另一个程序使用
+  skippedReasonEnoent: 文件未找到或损坏
+  skippedFilesNotice: 其余文件已成功打包至模组包。上述文件因 Windows 系统限制或缺少访问权限而被跳过。
+  openExportFolder: 打开模组包文件夹
+  closeDialog: 知道了
+  expandAll: 展开所有文件夹
+  collapseAll: 折叠所有文件夹
+  modpackVersionHint: 语义化版本号（例如 1.0.0）。使用 + 递增修订/次版本号
+  selectAllFiles: 全选文件
+  deselectAllFiles: 取消全选文件
 modpackImportConfirm:
   description: |-
     检测您将文件放入启动器中。
@@ -1477,6 +1544,11 @@ presence:
   save: '{instance}中的世界观'
   setting: 查看设置页面
   shaderPack: 查看 {instance}中的着色器集
+  away: 离开
+  offline: 离线
+  online: 在线
+  playing: 正在游玩 {game}
+  playingGeneric: 正在游玩
 proxy:
   host: 服务器地址
   port: 端口号
@@ -1650,6 +1722,7 @@ save:
   useMouseRotate: 使用鼠标旋转视图
   useScrollZoom: 使用滚轮缩放
   empty: No worlds found
+  world: 世界
 screenshots:
   empty: 您还没有截图
   gallery: 截图画廊
@@ -1680,7 +1753,7 @@ screenshots:
   deleteConfirmTitle: 删除截图？
   deleteConfirmMessage: 确定要删除 {count} 张截图吗？此操作无法撤销。
   deleteSuccess: 截图已删除
-  selectedCount: '已选择：{count}'
+  selectedCount: 已选择：{count}
   selectAll: 全选
   clearSelection: 取消全选
   countLabel: '{count} 张截图'
@@ -1779,6 +1852,28 @@ localCollection:
   installAll: 全部安装
   incompatibleAlert: 有 {count} 个项目与当前实例不兼容，已跳过：
   projects: 无项目 | {count} 个项目 | {count} 个项目
+  saveCurrentMods: 将已安装模组保存为收藏集
+  saveCurrentModsSuccess: 已将 {count} 个模组保存至收藏集“{name}”
+  viewMods: 查看模组
+  editCollection: 编辑收藏集
+  collectionDescription: 收藏集描述
+  noModsInCollection: 此收藏集中尚无模组
+  exportCollection: 导出收藏集
+  importCollection: 导入收藏集
+  removeEntryConfirm: 从收藏集中移除
+  addMods: 添加模组
+  addModsTo: 添加模组至“{name}”
+  addModsHint: 从实例添加已安装的模组，或在市场中点击书签按钮添加模组。
+  addModsDialogDesc: 选择此实例中要包含在此收藏集中的已安装模组。
+  addAllCurrent: 添加当前所有模组
+  addedModsSuccess: 已添加 {count} 个模组至收藏集
+  searchMods: 搜索模组……
+  selectAll: 全选
+  deselectAll: 取消全选
+  selected: 项已选
+  alreadyInCollection: 已添加
+  noMatchingMods: 没有找到匹配的模组
+  addSelectedMods: 添加 {count} 个模组
 server:
   launch: 启动服务端
   stop: 停止服务端
@@ -2172,6 +2267,7 @@ setting:
   useProxy: HTTP 代理服务器设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
   viewBackgroundMusic: 查看背景音乐
+  useDesktopBackground: 使用当前桌面壁纸
 settingLabel:
   global: 全局配置
   globalHint: 此配置已使用全局配置
@@ -2281,6 +2377,8 @@ shared:
   'yes': 是
   delete: 删除
   view: 查看
+  openFolder: 打开文件夹
+  failed: 失败
 sidebar:
   pin: 固定
   unpin: 取消固定
@@ -2652,6 +2750,8 @@ minecraftFriends:
     inviteRejected: 该玩家未启用好友功能或不接受邀请。
     tokenExpired: 你的 Microsoft 会话已过期，请重新登录。
     generic: 出现了一些问题，请重试。
+    friendsDisabled: 您的 Minecraft 账户未启用好友功能或无法使用好友。请在 Minecraft 账户设置中启用好友，然后重试。
+    invalidName: Minecraft 用户名必须介于 3 到 16 个字符之间。
 relative:
   justNow: 刚刚
   secondsAgo: '{count} 秒前'
@@ -2698,6 +2798,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: 检测到手柄
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.

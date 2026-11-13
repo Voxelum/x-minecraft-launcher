@@ -40,6 +40,10 @@ askAICrash:
   copyPrompt: انسخ المطالبة لطرح AI
   description: دع الذكاء الاصطناعي يساعدك على فهم تعطل اللعبة! اتبع الإرشادات أدناه لسؤال الذكاء الاصطناعي عن تعطل اللعبة!
   selectPlatform: افتح منصة AI والصق المطالبة التي نسختها للتو.
+  agentNotConfigured: أضف مزوّد ذكاء اصطناعي ومفتاح API في الإعدادات ليقوم وكيل المشغّل المدمج بتشخيص المشكلة وإصلاحها لك.
+  askAgent: تشخيص باستخدام وكيل الذكاء الاصطناعي المدمج
+  orExternal: أو استخدم ذكاءً اصطناعيًا خارجيًا
+  setupAgent: إعداد وكيل الذكاء الاصطناعي
 authProfileAddedNotification: تمت إضافة ملف تعريف المصادقة {name}
 bedrock:
   installBedrockVersion: Downloading Bedrock {version}
@@ -60,6 +64,13 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+  description: يتم تثبيت وتشغيل Minecraft Bedrock Edition عبر Microsoft Store. يجب أن تمتلك ترخيص Bedrock على حساب Microsoft الخاص بك.
+  install: الحصول عليه من Microsoft Store
+  installFailed: فشل فتح Microsoft Store
+  installed: 'المثبت: {version}'
+  launchHint: استخدم زر الإطلاق لبدء تشغيل Bedrock Edition.
+  licenseRequired: سجل الدخول بحساب Microsoft يمتلك Minecraft لتثبيت ولعب Bedrock Edition.
+  refresh: تحديث
 backup:
   title: النسخ الاحتياطي والاستعادة
   description: قم بنسخ إعداداتك ومجموعاتك وسماتك ونسخ اللعبة احتياطيًا واستعادتها
@@ -87,7 +98,7 @@ backup:
   create: إنشاء نسخة احتياطية
   createTitle: إنشاء أرشيف نسخ احتياطي XMCL
   saveDialogTitle: حفظ أرشيف النسخ الاحتياطي XMCL
-  fileFilterName: 'أرشيف النسخ الاحتياطي XMCL (*.xmclbackup, *.zip)'
+  fileFilterName: أرشيف النسخ الاحتياطي XMCL (*.xmclbackup, *.zip)
   createError: فشل إنشاء النسخة الاحتياطية
   loadManifestError: فشل قراءة أرشيف النسخة الاحتياطية
   restore: استعادة
@@ -98,7 +109,7 @@ backup:
   elapsedTime: الوقت المنقضي
   remainingTime: الوقت المتبقي المقدر
   calculatingRemaining: جاري الحساب...
-  lessThanMinute: '< 1 دقيقة'
+  lessThanMinute: < 1 دقيقة
   itemsProgress: '{current}/{total}'
   savesCategory: العوالم
   modsCategory: المودات
@@ -110,9 +121,9 @@ backup:
   copiedLog: تم نسخ السجل إلى الحافظة
   openFolder: إظهار في المجلد
   done: تم
-  backupDone: 'اكتمل النسخ الاحتياطي!'
+  backupDone: اكتمل النسخ الاحتياطي!
   backupDoneHint: تم إنشاء أرشيف النسخة الاحتياطية والتحقق منه.
-  restoreDone: 'اكتملت الاستعادة!'
+  restoreDone: اكتملت الاستعادة!
   restoreDoneHint: تمت استعادة جميع البيانات والنسخ المحددة بنجاح.
   timeTaken: 'الوقت المستغرق: {time}'
   destinationFile: 'تم الحفظ في: {path}'
@@ -129,7 +140,7 @@ backup:
   selectBackupFileDescription: اختر ملف .xmclbackup أو .zip يحتوي على بيانات ونسخ XMCL المحفوظة.
   selectFile: اختر ملفًا
   selectBackupFileTitle: فتح أرشيف النسخ الاحتياطي XMCL
-  createdOn: 'تم الإنشاء في {date}'
+  createdOn: تم الإنشاء في {date}
   changeFile: تغيير الملف
   dataToRestore: البيانات المراد استعادتها
   restoreSettings: استعادة الإعدادات
@@ -146,9 +157,9 @@ backup:
   restoreError: فشلت استعادة النسخة الاحتياطية
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: إنشاء نسخة احتياطية
   createBackupDescription: احفظ إعدادات المشغل والمجموعات والسمات المخصصة والنسخ في ملف أرشيف محمول واحد.
   restoreBackupTitle: استعادة نسخة احتياطية
@@ -163,7 +174,7 @@ backup:
   autoBackupRunNow: تشغيل الآن
   autoBackupLastRun: آخر نسخ تلقائي
   autoBackupNeverRun: أبدًا
-  selectedCount: 'تم تحديد {selected} / {total}'
+  selectedCount: تم تحديد {selected} / {total}
   autoBackupSelectInstances: النسخ المراد نسخها تلقائيًا (حدد واحدة أو أكثر)
   searchInstances: البحث عن النسخ...
   autoBackupInterval: تكرار النسخ الاحتياطي
@@ -186,9 +197,27 @@ backup:
   interval6h: كل 6 ساعات
   interval12h: كل 12 ساعة
   interval24h: كل 24 ساعة
-  keepCount: 'الاحتفاظ بآخر {count} نسخ احتياطية'
+  keepCount: الاحتفاظ بآخر {count} نسخ احتياطية
 baseSetting:
   title: إعدادات المثيل
+  info:
+    address: العنوان
+    changes: التغييرات
+    custom: مخصص
+    disabled: معطل
+    enabled: مفعل
+    exportFormats: صيغ التصدير
+    inherited: موروث
+    modLoader: محمّل التعديلات
+    notConfigured: غير مهيأ
+    notSet: غير محدد
+    offline: أرشيف غير متصل
+    projectId: معرّف المشروع (Project ID)
+    running: قيد التشغيل
+    saved: تم الحفظ
+    status: الحالة
+    stopped: متوقف
+    vanilla: فانيلا (أصلي)
 browseApp:
   createShortcut: إنشاء اختصار
   default: تقصير
@@ -363,6 +392,17 @@ errors:
     body: قامت أداة مكافحة الفيروسات أو أذونات المجلد المقيدة بحظر التثبيت. أضف المشغل إلى قائمة استبعاد AV، أو اختر جذر بيانات مختلفًا في إعدادات المشغل.
   NotFoundError: 404 غير موجود
   SocketError: خطأ في مأخذ توصيل الخادم
+  bedrockUnsupportedPlatform: إصدار Minecraft Bedrock مدعوم فقط على نظام Windows.
+  bedrockNotInstalled: إصدار Minecraft Bedrock غير مثبت.
+  bedrockLaunchFailed: فشل تشغيل Minecraft Bedrock Edition.
+  bedrockInstallFailed: فشل تثبيت Minecraft Bedrock Edition.
+  bedrockDownloadUrlUnavailable: إصدار Bedrock هذا غير متوفر لحساب Microsoft الحالي. تتطلب الإصدارات التجريبية حسابًا مسجلاً في برنامج Minecraft التجريبي.
+  bedrockDeveloperModeRequired: يلزم وضع المطور في Windows لتسجيل إصدار Bedrock هذا.
+  bedrockRegisterFailed: فشل تسجيل إصدار Bedrock هذا مع Windows.
+  bedrockVersionNotFound: إصدار Bedrock هذا غير مثبت محليًا.
+  InstallBackendUnresponsive:
+    body: توقفت العملية الخلفية للمشغّل عن الاستجابة، لذا تعذر إكمال التثبيت. يُرجى إغلاق المشغّل بالكامل ثم إعادة فتحه والمحاولة مجددًا.
+    title: المشغّل لا يستجيب
 eula:
   body: من خلال تحديد زر مربع الاختيار، فإنك تشير إلى موافقتك على {eula} الخاصة بـ Minecraft.
 exception:
@@ -382,15 +422,20 @@ command:
   instance:
     launch:
       title: إطلاق المثيل
+      description: تشغيل نسخة Minecraft
     create:
       title: إنشاء مثيل
+      description: إنشاء نسخة جديدة
     delete:
       title: حذف المثيل
+      description: حذف نسخة موجودة
   user:
     login:
       title: مستخدم تسجيل الدخول
+      description: تسجيل الدخول إلى حسابك
     refresh:
       title: تحديث المستخدم
+      description: تحديث جلسة المستخدم
 commandPalette:
   placeholder: أوامر البحث، والمثيلات، والتعديلات...
   commands: الأوامر
@@ -407,6 +452,7 @@ commandPalette:
   hintEnter: يدخل
   hintBack: خلف
   hintClose: يغلق
+  hintAskAgent: اسأل الوكيل
 feedback:
   channel: القنوات
   description: لقد وجدت خطأ أو أريد تقديم اقتراح
@@ -425,6 +471,8 @@ feedback:
   qq: مجموعة كيو كيو
   qqDescription: 'أدخل مجموعة التعليقات QQ وتحدث مباشرة مع المؤلفين. رقم المجموعة: {number}'
   qqEnterGroup: ينضم
+  reddit: Reddit
+  redditDescription: انضم إلى مجتمع r/XMCL على ريديت
 fileDetail:
   fileSize: حجم الملف
   filesize: حجم الملف
@@ -561,6 +609,11 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: قيمة
   width: عرض
+  deleteHintBedrock: سيتم حذف Minecraft Bedrock Edition وجميع بياناته تمامًا من جهازك. هل أنت متأكد؟
+  monitor: شاشة ملء الشاشة
+  monitorDefault: افتراضي (الشاشة الرئيسية)
+  monitorNumber: شاشة {number}
+  monitorPrimary: الرئيسية
 instanceAge:
   older: أقدم
   threeDay: في ثلاثة أيام
@@ -629,6 +682,7 @@ instances:
   linkSharedFolders: مشاركة المجلدات بين النسخ
   linkSharedFoldersHint: أنشئ هذه المجلدات كروابط إلى المجلدات المشتركة للمشغّل حتى تشارك هذه النسخة محتواها مع جميع النسخ المرتبطة الأخرى. هذه ليست نسخة — التغييرات التي تُجرى في نسخة واحدة تظهر في جميع النسخ. تبقى المجلدات غير المحددة خاصة بهذه النسخة.
   linkFailed: فشل ربط المجلد {folder} بالمجلد المشترك
+  instanceCount: '{count} نسخة'
 items:
   count: '{count} العناصر'
   total: '{total} الإجمالي'
@@ -672,6 +726,7 @@ launch:
   launch: يطلق
   launchAnyway: إطلاق على أي حال
   launchAs: إطلاق باسم
+  launchTo: تشغيل إلى
 launchBlocked:
   launchBadVersion:
     description: الإصدار {version} json معطل. ربما إعادة تثبيت هذا الإصدار؟
@@ -695,6 +750,13 @@ launchBlocked:
     description: يرجى التحقق من جافا لديك، أو منح المزيد من الأذونات للمشغل وإعادة المحاولة. إذا كان هذا لا يزال لا يعمل، يرجى الاتصال بالمطورين.
     title: فشل في بدء عملية اللعبة
   unexpectedText: هذا غير متوقع. يمكنك إعادة تشغيل المشغل للتخفيف من المشكلة. يرجى الاتصال بالمؤلف إذا حدثت هذه المشكلة مرة أخرى.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: تعذر على XMCL استرداد معلومات شاشة X11 من جلسة سطح المكتب. أعد تشغيل XMCL من الطرفية في جلسة سطح المكتب الحالية، أو سجل الخروج ثم أعد الدخول.
+    noGraphicalSession: لا يعمل XMCL في جلسة سطح مكتب رسومية. ابدأ تشغيل XMCL من جلسة سطح المكتب قبل تشغيل Minecraft.
+    sandboxDenied: لا يمكن لبيئة العزل (Sandbox) للتطبيق الوصول إلى X11. امنح XMCL حق الوصول إلى مقبس X11 في أذونات Flatpak، ثم أعد تشغيل XMCL.
+    title: شاشة X11 غير متوفرة
+    xwaylandMissing: تتطلب لعبة Minecraft تشغيل XWayland في جلسة Wayland هذه. ثبّت حزمة XWayland المقدمة من توزيعة Linux الخاصة بك، ثم سجل الخروج وسجل الدخول ثانية.
+    xwaylandNotRunning: حزمة XWayland مثبتة ولكن لا توجد شاشة X11 قيد التشغيل. مكّن XWayland في إعدادات مدير النوافذ (Compositor)، ثم سجل الخروج وسجل الدخول مجددًا.
 launchFailed:
   crash: اللعبة تحطمت!!
   description: لا يوجد تقرير الأعطال. هذا هو سجل الأخطاء وأحدث سجل.
@@ -722,6 +784,11 @@ launcherUpdate:
   installAndQuit: أعد التشغيل للتثبيت
   noUpdateAvailable: لا يوجد تحديث متاح
   updateToThisVersion: تحميل وتثبيت
+  automaticUnavailable: التحديث التلقائي غير متوفر
+  automaticNotImplemented: التحديث التلقائي غير مدعوم على هذا النظام.
+  automaticNotConfigured: التحديث التلقائي غير مهيأ لمشغّل هذا النظام.
+  manualCheckHint: لم يتم فحص أي إصدارات جديدة. تحقق من صفحة إصدارات GitHub بحثًا عن حزمة متوافقة وثبتها يدويًا.
+  manualCheckRequired: لا يمكن لهذا النظام فحص التحديثات أو تثبيتها تلقائيًا. استخدم زر إصدارات GitHub للفحص اليدوي.
 localVersion:
   auto: محسوبة تلقائيًا
   empty: لم يتم تثبيت أي إصدار
@@ -774,12 +841,18 @@ loginError:
   cyrillicNotAllowed: غير مسموح بالأحرف السيريلية
   illegalOfflineUsername: يجب أن يتكون اسم المستخدم من 3 إلى 16 حرفًا وأن يحتوي فقط على أحرف وأرقام وشرطات سفلية باللغة الإنجليزية
   timeout: مهلة تسجيل الدخول. يرجى إعادة المحاولة أو التحقق من شبكتك.
+  loginCanceled: تم إلغاء تسجيل الدخول بحساب Microsoft.
+  xboxErrorGuideHint: هل تواجه مشكلة في تسجيل الدخول؟ تعرّف على كيفية حل مشكلات تسجيل الدخول إلى Microsoft و Xbox.
+  openLoginGuide: كيفية حل هذه المشكلة
+  openDiscordSupport: ما زلت بحاجة للمساعدة؟ انضم إلى خادم Discord الخاص بنا
 logsCrashes:
   crashes: تقارير الأعطال
   failures: فشل الإطلاق
   logs: سجلات
   placeholder: لم يتم العثور على ملفات
   title: السجلات أو تقارير الأعطال
+  serverLogs: سجلات الخادم
+  showFile: إظهار في المجلد
 me:
   groupByDate: تجميع حسب التاريخ
   groupByFolder: تجميع حسب المجلد
@@ -851,6 +924,23 @@ mod:
   syncGroupRules: حفظ قواعد التجميع
   toUpdate: '{count} التحديثات'
   ungroup: فك التجميع
+  autoCategorize: فرز تلقائي في مجلدات
+  autoCategorizeHint: تجميع التعديلات تلقائيًا في مجلدات الفئات (التحسين، المكتبات، العالم، أسلوب اللعب، إلخ)
+  autoCategorizeSuccess: تم فرز التعديلات تلقائيًا في {count} مجلد
+  collapseAll: طي كافة المجلدات
+  expandAll: توسيع كافة المجلدات
+  folderSetting: إعدادات المجلد
+  folderColor: لون المجلد
+  folderIcon: أيقونة المجلد
+  pinGroup: تثبيت في الأعلى
+  pinToTop: تثبيت في الأعلى
+  pinToTopHint: سيظهر المجلد في أعلى القائمة
+  pinned: مثبت
+  unpinGroup: إلغاء تثبيت المجلد
+  customColor: لون مخصص
+  preview: معاينة
+  ungroupAll: فك تجميع الكل
+  organization: تنظيم المجلدات
 modFilter:
   clear: مسح التصفية
   dependenciesInstallOnly: إظهار تعديلات التبعيات المفقودة فقط
@@ -879,6 +969,7 @@ modInstall:
   skipVersion: تخطي التعديلات مع إصدار Minecraft المختلف
   source: مصدر وزارة الدفاع
   switch: تبديل الإصدار
+  scanUnusedLibraries: فحص المكتبات غير المستخدمة
 modSearch:
   noLocalModsFound: لم يتم العثور على تعديلات محلية مطابقة لبحثك.
   noModsFound: لم يتم العثور على تعديلات
@@ -914,6 +1005,112 @@ modpack:
   overrides: يتجاوز
   url: عنوان URL
   urlHint: عنوان URL للصفحة الرئيسية الخاصة بـ modpack الخاص بك
+  emitCurseforgeDescription: أرشيف zip قياسي لحزمة تعديلات CurseForge
+  emitModrinthDescription: تنسيق رسمي خفيف مع تنزيل فائق السرعة عبر CDN
+  emitPackwiz: تصدير حزمة تعديلات Packwiz
+  emitPackwizDescription: تنسيق خفيف متوافق مع git (ملفات pack.toml و index.toml و .pw.toml)
+  exportSuccess: تم تصدير حزمة التعديلات بنجاح!
+  exportSuccessWithWarnings: تم تصدير حزمة التعديلات مع وجود تحذيرات
+  exportSkippedFiles: تم تخطي {count} ملف للقراءة فقط أو مقفل أثناء التصدير
+  exportFailed: فشل تصدير حزمة التعديلات
+  skippedFilesDialogTitle: تعذر تصدير بعض الملفات
+  skippedFilesDialogDescription: تم إنشاء حزمة التعديلات، ولكن تم تخطي {count} ملف
+  skippedReasonEperm: تم رفض الوصول (مقفل بواسطة نظام التشغيل أو عملية أخرى)
+  skippedReasonEbusy: الملف قيد الاستخدام بواسطة برنامج آخر
+  skippedReasonEnoent: الملف غير موجود أو تالف
+  skippedFilesNotice: تم تجميع بقية ملفاتك بنجاح في حزمة التعديلات. تم تخطي الملفات المذكورة أعلاه بسبب قيود نظام Windows أو نقص أذونات الوصول.
+  openExportFolder: فتح مجلد حزمة التعديلات
+  closeDialog: فهمت ذلك
+  expandAll: توسيع كافة المجلدات
+  collapseAll: طي كافة المجلدات
+  modpackVersionHint: سلسلة إصدار دلالية (مثل 1.0.0). استخدم + لزيادة الترقيع أو الإصدار الفرعي
+  modrinthProject: مشروع Modrinth
+  selectDefaultFiles: تحديد الملفات الافتراضية
+  selectAllFiles: تحديد كافة الملفات
+  deselectAllFiles: إلغاء تحديد كافة الملفات
+  bindProject: ربط المشروع
+  bindProjectHint: حدد مشروع حزمة تعديلات Modrinth تتم إدارته بواسطة الحساب الحالي.
+  bindProjectTypeImmutableHint: يحدد Modrinth نوع المشروع بشكل نهائي عند رفع أول إصدار له، ولا يمكن تغييره بعد ذلك. يمكن ربط مشاريع المسودات التي لا تحتوي على أي إصدار بعد هنا، ولكن لا يمكن تحويل مشروع منشور مسبقًا كتعديل أو حزمة موارد إلى حزمة تعديلات — استخدم "إنشاء مشروع جديد" بدلاً من ذلك.
+  bindProjectNoProjects: لم يتم العثور على أي مشاريع Modrinth تابعة لحسابك.
+  unbindProject: إلغاء ربط المشروع
+  unbindProjectConfirmTitle: إلغاء ربط مشروع Modrinth؟
+  unbindProjectConfirmMessage: يؤدي هذا فقط إلى إزالة الارتباط المحلي بين هذه النسخة ومشروع Modrinth. لا يتأثر المشروع وإصداراته على Modrinth.
+  editProject: تعديل المشروع
+  projectDiscovery: الاستكشاف والتوافق
+  projectGallery: المعرض
+  projectGalleryAdd: إضافة صورة
+  projectGalleryEmpty: لا توجد صور في المعرض حتى الآن.
+  projectGalleryFeatured: صورة مميزة
+  projectGalleryFromScreenshots: اختيار لقطة شاشة
+  projectGalleryHint: أضف صورًا بحجم يصل إلى 5 ميجابايت واختر الصورة المميزة للمشروع.
+  projectGallerySelectScreenshot: حدد لقطة شاشة من النسخة
+  projectIdentity: الهوية والوصف
+  projectLinks: روابط المشروع
+  projectLoadFailed: فشل تحميل مشروع Modrinth المرتبط.
+  projectNoChanges: لا توجد تغييرات غير محفوظة في المشروع.
+  projectNotBound: لا يوجد مشروع Modrinth مرتبط
+  projectNotBoundHint: اربط مشروعًا موجودًا، أو أنشئ مشروع Modrinth جديدًا.
+  projectUnsavedChanges: تم تغيير {count} حقل في المشروع
+  projectLatestDraft: مسودة (Draft)
+  projectVersions: الإصدارات
+  publish: نشر
+  publishCategories: الفئات (مفصولة بفواصل)
+  publishChannel: قناة الإصدار
+  publishChangelog: سجل التغييرات
+  publishChangelogGenerate: توليد بالذكاء الاصطناعي
+  publishConfirmProjectChanges: تأكيد تغييرات المشروع
+  publishCreateProject: إنشاء مشروع
+  publishCreateDraft: بناء وإنشاء مسودة
+  publishCustomVersion: مخصص
+  publishDescription: وصف المشروع
+  publishDiscordUrl: رابط Discord
+  publishDraftCreated: تم رفع إصدار المسودة.
+  publishSubmitted: تم إرسال الإصدار للمراجعة.
+  publishExistingProject: مشروع موجود
+  publishIcon: أيقونة المشروع
+  publishIconHint: PNG أو JPEG أو WebP
+  publishIconKeep: اتركها دون تغيير ما لم يتم تحديد صورة جديدة
+  publishIconUseInstance: استخدام أيقونة النسخة
+  publishIssuesUrl: رابط المشكلات (Issues)
+  publishLicense: معرّف الترخيص
+  publishLogin: تسجيل الدخول إلى Modrinth
+  publishFiles: الملفات المحددة
+  publishLinkageSummary: سيتم ربط {linked} من أصل {total} تعديل/حزمة موارد/شيدر مباشرة برابط تنزيلها على Modrinth بدلاً من رفعها.
+  publishLinkageEmbeddedSummary: يتعذر ربط {count} ملف وسيتم رفعها (مدمجة) مع هذا الإصدار.
+  publishLinkageShowFiles: إظهار الملفات التي يجب رفعها
+  publishLinkageReason:
+    missing-file: الملف غير موجود على القرص
+    not-linked-to-modrinth: لم يتم التعرف عليه كمورد في Modrinth
+    no-downloadable-url: لم يتم العثور على رابط تنزيل قابل لإعادة التوزيع
+  publishModrinth: نشر على Modrinth
+  publishNewProject: مشروع جديد
+  publishOpenProject: فتح المشروع
+  publishOpenVersion: فتح الإصدار
+  publishProfile: ملف تعريف MRPack
+  publishProfileClient: العميل فقط (Client)
+  publishProfileServer: الخادم فقط (Server)
+  publishProfileSplit: شامل + ملفات منفصلة للعميل/الخادم
+  publishProfileUniversal: شامل (Universal)
+  publishProject: المشروع
+  publishProjectDetailsTab: تفاصيل المشروع
+  publishProjectName: اسم المشروع
+  publishProjectRequired: حدد مشروعًا قبل النشر.
+  publishProjectSlug: الاسم المختصر للمشروع (Slug)
+  publishProjectUrl: رابط المشروع (اختياري)
+  publishProjectUrlHint: اتركه فارغًا لاستخدام {slug}.
+  publishProjectSaved: تم تحديث تفاصيل المشروع.
+  publishSourceUrl: رابط الكود المصدري
+  publishSubmit: إرسال المسودة للمراجعة
+  publishSummary: ملخص قصير
+  publishSummaryMinWords: يجب أن يحتوي الملخص على 3 كلمات على الأقل.
+  publishVersionTitle: عنوان الإصدار
+  publishVersionTab: نشر الإصدار
+  publishVersion: نشر الإصدار
+  publishVisibility: الظهور
+  publishWikiUrl: رابط الويكي
+  visibilityPrivate: خاص
+  visibilityPublic: عام
+  visibilityUnlisted: غير مدرج
 modpackImportConfirm:
   description: اكتشف أنك قمت بإسقاط ملف في المشغل. هل تحاول استيراد modpack؟
   title: هل تحاول استيراد modpack؟
@@ -1171,6 +1368,16 @@ multiplayer:
   sharing: مشاركة الملفات...
   start: يبدأ
   startNewP2PConnection: انقر فوق الزر "ابدأ" لإنشاء اتصال نظير جديد
+  connectedToMaster: متصل بمضيف الغرفة الرئيسي
+  directConnection: مباشر
+  master: المضيف (Master)
+  masterHostsGameHint: المضيف هو محور الاتصال ويجب أن يستضيف عالم Minecraft LAN. انقل صفة المضيف قبل تغيير الجهاز المستضيف.
+  member: عضو
+  joinCreatesMissingRoomHint: إذا لم تكن هذه الغرفة موجودة، فستقوم بإنشائها وتصبح مضيفها.
+  relayConnection: مُرحّل (Relay)
+  relayAllowanceSummary: المتبقي {remaining} من أصل {total} لهذه الفترة
+  relayServiceAvailable: خدمة الترحيل XMCL Together متوفرة
+  waitingForMaster: في انتظار إعادة اتصال المضيف الرئيسي
 myStuff: أشيائي
 natType:
   blocked: محظور
@@ -1217,6 +1424,11 @@ presence:
   save: عرض الحفظ في {instance}
   setting: عرض صفحة الإعداد
   shaderPack: عرض حزم التظليل في {instance}
+  away: بالخارج
+  offline: غير متصل
+  online: متصل
+  playing: يلعب {game}
+  playingGeneric: يلعب
 proxy:
   host: يستضيف
   port: ميناء
@@ -1310,6 +1522,33 @@ save:
   useMouseRotate: استخدم الماوس لتدوير العرض
   useScrollZoom: استخدم عجلة التمرير للتكبير
   empty: No worlds found
+  datapack:
+    name: حزمة بيانات | حزم بيانات
+    noSaveHint: أنشئ عالمًا أو حدده أولاً لتثبيت حزمة البيانات هذه
+    packFormat: 'تنسيق الحزمة: {format}'
+    imported: تم استيراد حزمة البيانات إلى {save}
+  duplicate: تكرار العالم المحفوظ
+  chunkSelectMode: تحديد القطع (Chunks)
+  panMode: تحريك الخريطة
+  chunkSelected: تم تحديد {count} قطعة
+  mapHintSelect: تحديد
+  mapHintDeselect: إلغاء التحديد
+  toggleGrid: تبديل شبكة المناطق
+  heightTop: الأعلى
+  clearSelection: مسح التحديد
+  copyChunks: نسخ القطع
+  pasteChunks: لصق {count} قطعة
+  pasteChunksPlaceHint: حرك الفأرة لتحديد موضع {count} قطعة، ثم انقر للصق. سيتم استبدال القطع الموجودة في الهدف. اضغط Esc للإلغاء.
+  pasteChunksCancel: إلغاء
+  deleteChunks: حذف القطع
+  deleteChunksTitle: حذف القطع المحددة
+  deleteChunksHint: هل تريد حذف {count} قطعة محددة؟ لا يمكن التراجع عن هذا الإجراء. ستتم إعادة توليد القطع في المرة القادمة التي يتم فيها تحميل المنطقة داخل اللعبة.
+  mapLoading: جارٍ تحميل الخريطة…
+  noRegions: لا يحتوي هذا العالم على مناطق تم توليدها لمعاينتها.
+  dimOverworld: العالم العادي (Overworld)
+  dimNether: النذر (The Nether)
+  dimEnd: النهاية (The End)
+  world: العالم
 screenshots:
   empty: ليس لديك أي لقطات شاشة
   gallery: معرض لقطة الشاشة
@@ -1317,6 +1556,109 @@ screenshots:
   openFolder: افتح مجلد لقطات الشاشة
   playRandom: خلط
   playSequence: العب بالترتيب
+  title: لقطات الشاشة والصور
+  manage: مدير لقطات الشاشة
+  emptyTitle: لا توجد لقطات شاشة حتى الآن
+  emptyDescription: اضغط على F2 داخل اللعبة لالتقاط صور، أو استورد صورك يدويًا.
+  dropHint: أسقط الصور أو لقطات الشاشة هنا لإضافتها إلى المعرض
+  backToHome: العودة إلى الصفحة الرئيسية
+  import: إضافة صور
+  images: الصور
+  importSuccess: تم استيراد {count} صورة بنجاح
+  copy: نسخ الصورة
+  copied: تم النسخ إلى الحافظة!
+  setWallpaper: تعيين كخلفية
+  setWallpaperSuccess: تم التعيين كصورة خلفية للنسخة!
+  setIcon: تعيين كأيقونة
+  setIconSuccess: تم التعيين كأيقونة للنسخة!
+  export: حفظ الملف
+  exportSuccess: تم حفظ لقطة الشاشة بنجاح!
+  exportSelected: تصدير المحدد
+  exportSelectedTitle: تحديد مجلد التصدير
+  exportSelectedSuccess: تم تصدير {count} لقطة شاشة بنجاح
+  deleteConfirmTitle: حذف لقطات الشاشة؟
+  deleteConfirmMessage: هل أنت متأكد من رغبتك في حذف {count} لقطة شاشة؟ لا يمكن التراجع عن هذا الإجراء.
+  deleteSuccess: تم حذف لقطات الشاشة بنجاح
+  selectedCount: 'المحدد: {count}'
+  selectAll: تحديد الكل
+  clearSelection: إلغاء تحديد الكل
+  countLabel: '{count} لقطة شاشة'
+  searchPlaceholder: البحث بالاسم...
+  noSearchResults: لا توجد لقطات شاشة مطابقة
+  noSearchResultsHint: حاول تعديل استعلام البحث الخاص بك
+  sort: فرز
+  sortDateDesc: الأحدث أولاً
+  sortDateAsc: الأقدم أولاً
+  sortSizeDesc: الأكبر حجمًا أولاً
+  sortSizeAsc: الأصغر حجمًا أولاً
+  sortNameAsc: الاسم (أ-ي)
+  sortNameDesc: الاسم (ي-أ)
+  viewGrid: شبكة كبيرة
+  viewGridCompact: شبكة مدمجة
+  viewList: عرض قائمة
+  edit: تعديل
+  editorTitle: تعديل لقطة الشاشة
+  layer: طبقة (Layer)
+  dragToMove: اسحب للتحريك
+  transformHint: اسحب التحديد للتحريك • اسحب المقابض لتغيير الحجم • اضغط Enter للتطبيق
+  customColor: لون مخصص
+  fill: تعبئة (Fill)
+  brushPreview: معاينة حجم الفرشاة
+  fontPreview: معاينة حجم الخط
+  textBgNone: بدون
+  textBgShadow: ظل (Shadow)
+  textBgBox: صندوق (Box)
+  cropHint: اسحب مربع التحديد لاختيار منطقة القص.
+  textPlacementHint: اضغط Enter لوضع النص • Esc للإلغاء
+  layerMoveUp: تحريك لأعلى
+  layerMoveDown: تحريك لأسفل
+  layerCopy: نسخة {name}
+  pixels: بكسل
+  saveCopy: حفظ نسخة
+  saveOverwrite: استبدال (Overwrite)
+  saveSuccess: تم حفظ لقطة الشاشة!
+  saveCopySuccess: تم الحفظ كلقطة شاشة جديدة!
+  toolSelect: تحديد / تحريك الكاميرا
+  toolMove: تحريك وتحويل (Ctrl+T / V)
+  toolPan: تحريك الكاميرا (Space+سحب)
+  layers: الطبقات (Layers)
+  layerAdd: إضافة طبقة
+  layerDuplicate: تكرار الطبقة
+  layerDelete: حذف الطبقة
+  layerOpacity: الشفافية (Opacity)
+  transformLayer: تحويل حر
+  applyTransform: تطبيق التحويل (Enter)
+  cancelTransform: إلغاء (Esc)
+  layerBackground: الخلفية
+  layerPaint: رسم
+  layerText: نص
+  layerBlur: تمويه (Blur)
+  toolPen: قلم
+  toolArrow: سهم
+  toolRect: مستطيل
+  toolCircle: دائرة
+  toolLine: خط
+  toolText: نص
+  toolHighlighter: قلم تظليل
+  toolBlur: بكسلة / تمويه
+  toolCrop: قص (Crop)
+  applyCrop: تطبيق القص
+  cancelCrop: إلغاء القص
+  strokeWidth: عرض الخط
+  fontSize: حجم الخط
+  color: اللون
+  undo: تراجع
+  redo: إعادة
+  clear: مسح الكل
+  textPlaceholder: انقر لكتابة النص...
+  fontFamily: الخط
+  fontBold: عريض
+  fontItalic: مائل
+  textApply: وضع النص
+  textBg: الخلفية
+  zoomIn: تكبير
+  zoomOut: تصغير
+  resetZoom: إعادة ضبط التكبير
 search:
   favorate: مجموعة
   local: تم التثبيت
@@ -1485,6 +1827,60 @@ agent:
   accessRequiredHint: اشترك في XMCL لاستخدام العميل المدمج، أو قم بتهيئة موفر الذكاء الاصطناعي الخاص بك في الإعدادات.
   subscribeXmcl: الاشتراك في XMCL
   notConfiguredHint: اضبط مفتاح API والنموذج ونقطة نهاية متوافقة مع OpenAI في الإعدادات → عام → عميل الذكاء الاصطناعي. على سبيل المثال، استخدم OpenAI أو بوابة متوافقة مع Claude.
+  abort: إيقاف التوليد
+  confirmAccept: متابعة
+  confirmAllowAll: السماح للكل
+  confirmCancel: إلغاء
+  confirmPending: في انتظار التأكيد
+  confirmTitle: تأكيد إجراء الوكيل
+  errorTitle: واجه الوكيل خطأً
+  passiveGameCrashed: انهارت اللعبة
+  passiveGameExitCode: رمز الخروج {code}
+  passiveGameExited: تم إنهاء اللعبة
+  passiveGameExitSignal: إشارة {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: لا توجد حالة خروج
+  reasoning: التفكير والتبرير (Reasoning)
+  passiveGameStarted: بدأت اللعبة
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: تقرير توافق التعديلات
+  passiveModDiagnosisError: فشل تشخيص التوافق
+  passiveModDiagnosisSummary: تم فحص {checked} تعديل · {incompatibilities} تعارض · {duplicates} مكرر
+  passiveModDuplicate: 'تعديل مكرر {mod}: {files}'
+  passiveModInstalled: تم تثبيت {version}
+  toolArguments: المعاملات (Arguments)
+  toolResult: النتيجة
+  toolRunning: في انتظار النتيجة…
+  marketConfirmMessage: هل ترغب في تثبيت {name} في النسخة الحالية؟
+  marketConfirmTarget: 'الهدف: {instance}'
+  marketConfirmTitle: تثبيت {type}
+  marketInstall: تثبيت
+  marketInstalled: تم التثبيت
+  marketInstallFailed: فشل تثبيت {type}
+  marketType:
+    datapack: حزمة بيانات
+    mod: تعديل (مود)
+    modpack: حزمة تعديلات (مودباك)
+    resourcepack: حزمة موارد
+    shader: حزمة تظليل
+  marketResultCount: '{count} نتيجة'
+  callingTool: استدعاء {name}…
+  disabledPlaceholder: الوكيل معطّل
+  emptyHint: اطلب من الوكيل فحص نسختك، أو تبديل تعديلاتك، أو قراءة السجلات، أو تشخيص سبب الانهيار.
+  inputPlaceholder: اسأل الوكيل… (اضغط Enter للإرسال، Shift+Enter لسطر جديد)
+  notConfiguredTitle: الوكيل غير متوفر
+  openSettings: فتح الإعدادات
+  reset: محادثة جديدة
+  setupGuide: دليل الإعداد
+  statusDisabled: معطّل — قم بتسجيل الدخول أو تكوين المزوّد
+  statusReady: جاهز
+  statusWorking: جارٍ العمل…
+  suggestion1: ترقية هذه النسخة إلى إصدار أحدث من Minecraft وتحديث التعديلات المتوافقة
+  suggestion2: تعديلاتي تسبب انهيار اللعبة — ابحث عن السبب وأخبرني بكيفية إصلاحه
+  suggestion3: 'إنشاء حزمة تعديلات: ابحث عن تعديلات لميزة معينة وثبتها في هذه النسخة'
+  thinking: جارٍ التفكير…
+  title: وكيل XMCL
+  toggleHint: للتبديل
 setting:
   aiAgentApiKeyDescription: قم بتكوين موفر متوافق مع OpenAI، مثل OpenAI أو بوابة لـ Claude. يتم تخزين المفتاح محليًا على هذا الجهاز.
   aiAgentApiKeyPlaceholder: مفتاح API لموفر OpenAI أو Claude
@@ -1681,6 +2077,41 @@ setting:
   useProxy: وكيل HTTP
   useProxyDescription: عنوان الخادم الوكيل لطلب http
   viewBackgroundMusic: عرض الموسيقى
+  multiplayerTransport: بروتوكول نقل Together
+  multiplayerTransportDescription: اختر تطبيق WebRTC المستخدم بواسطة Together. سيؤدي تغيير بروتوكول النقل إلى قطع اتصال الأجهزة المتصلة.
+  aiAgentApiKeyClear: مسح المفتاح
+  aiAgentApiKeyEmpty: الصق مفتاح API الخاص بك
+  aiAgentApiKeyNotNeeded: غير مطلوب
+  aiAgentApiKeyNotNeededHint: يعمل هذا المزوّد محليًا ولا يتطلب مفتاح API
+  aiAgentApiKeySaved: تم الحفظ
+  aiAgentApiKeyStored: تم حفظ المفتاح - اكتب للاستبدال
+  aiAgentBuiltin: مدمج (Built-in)
+  aiAgentCustom: مخصص
+  aiAgentApiKey: مفتاح API لوكيل الذكاء الاصطناعي
+  aiAgentEndpoint: نقطة نهاية وكيل الذكاء الاصطناعي
+  aiAgentEndpointDescription: عنوان URL لنقطة نهاية إكمال المحادثات.
+  aiAgentModel: نموذج وكيل الذكاء الاصطناعي
+  aiAgentModelDescription: اسم النموذج المطلوب إرساله في طلبات إكمال الدردشة.
+  useDesktopBackground: استخدام خلفية سطح المكتب الحالية
+  customCss:
+    advancedDescription: تجاوز النمط الحالي للمشغّل باستخدام كود CSS الخاص بك.
+    assistantHint: صف المظهر الذي تريده وسأكتب كود CSS لك.
+    assistantSuggestion1: اجعل الشريط الجانبي نصف شفاف
+    assistantSuggestion2: أضف تدرجًا لونيًا لطيفًا إلى خلفية البطاقات
+    assistantTitle: مساعد CSS
+    dropHint: أسقط ملف .css هنا لتحميله
+    editorPlaceholder: /* اكتب كود CSS المخصص هنا */
+    globalToggle: تبديل CSS المخصص
+    openInDialog: فتح في نافذة الوكيل
+    title: CSS مخصص
+    warning: يتيح لك CSS المخصص تعديل أي جزء من المشغّل. احذر عند لصق كود CSS من مصادر غير موثوقة، حيث يمكنه تغيير تخطيط الواجهة.
+  appImageUpdateMode: إدارة تحديثات AppImage
+  appImageExternalMode: مدير خارجي / استبدال يدوي (افتراضي)
+  appImageSelfMode: مُدار ذاتيًا بواسطة XMCL (أنا أمتلك هذا الـ AppImage)
+  appImageAutoDownload: تنزيل التحديثات تلقائيًا
+  appImageAutoInstall: تثبيت التحديثات المنزلة عند الإغلاق
+  appImageExternalUpdateHint: إذا تم التثبيت عبر Shelly أو مدير آخر، فقم بالتحديث من هناك واحتفظ بالوضع الخارجي. وإلا فاستبدل ملف AppImage بنفسك في مساره الحالي. لا يقوم XMCL بتنزيل التحديثات في الوضع الخارجي.
+  appImageSelfUpdateHint: اختر الإدارة الذاتية فقط لملف AppImage تديره بنفسك. تتطلب التحديثات المضمنة مسارًا مطلقًا دون رقم إصدار في اسم الملف (مثل xmcl.AppImage). إذا كان الاسم يحتوي على إصدار مثل 0.73.0، فأغلق XMCL وأعد تسمية الملف.
 settingLabel:
   global: عالمي
   globalHint: سيتبع هذا الإعداد الإعداد العام
@@ -1769,6 +2200,18 @@ shared:
   upgrade: ترقية
   'yes': نعم
   delete: حذف
+  openFolder: فتح المجلد
+  reset: إعادة ضبط
+  missing: مفقود
+  healthy: سليم
+  unused: غير مستخدم
+  failed: فشل
+  view: عرض
+  copied: تم النسخ
+  copy: نسخ
+  copyFailed: فشل النسخ
+  copyFailedHint: تعذر النسخ إلى الحافظة
+  save: حفظ
 sidebar:
   pin: دبوس
   unpin: إزالة التثبيت
@@ -2001,6 +2444,8 @@ minecraftFriends:
     inviteRejected: هذا اللاعب ليس لديه أصدقاء ممكّنين أو لا يقبل الدعوات.
     tokenExpired: انتهت صلاحية جلسة Microsoft الخاصة بك. الرجاء تسجيل الدخول مرة أخرى.
     generic: حدث خطأ ما. يرجى المحاولة مرة أخرى.
+    friendsDisabled: ميزة الأصدقاء معطلة في حساب Minecraft الخاص بك أو لا يمكن استخدامها. فعّل الأصدقاء في إعدادات حساب Minecraft، ثم حاول ثانية.
+    invalidName: يجب أن يتراوح اسم مستخدم Minecraft بين 3 و 16 حرفًا.
 relative:
   justNow: الآن
   secondsAgo: '{count} قبل ثانية | {count} قبل ثانية'
@@ -2093,6 +2538,9 @@ userSkin:
   skinDeleteFailed: تعذرت إزالة الجلد من الخزانة
   edit: تعديل
   fetch: تحميل
+  invalidImage: اختر صورة مظهر Minecraft صحيحة.
+  invalidImageTitle: صورة المظهر غير صالحة
+  uploadRejected: رفضت Minecraft رفع هذا المظهر. يُرجى المحاولة مجددًا لاحقًا.
 version:
   checkIntegrity: التحقق من النزاهة
   name: النسخة | الإصدارات
@@ -2131,6 +2579,7 @@ blueprint:
     empty: لا يحتوي هذا المخطط على كتل لعرضها.
     hint: '{count} كتل · {x}×{y}×{z}'
     controls: 'WASD: حركة · Space/Shift: أعلى/أسفل · السحب: نظر · التمرير: تكبير'
+    title: معاينة ثلاثية الأبعاد
   convert:
     title: تحويل التنسيق
     hint: حوّل هذا المخطط إلى تنسيق آخر. سيتم إنشاء ملف جديد.
@@ -2149,6 +2598,12 @@ blueprint:
     action: استبدال
   formats:
     structure: بنية فانيلا
+  local: محلي
+  allNamespaces: الكل
+  delete: حذف
+  cancel: إلغاء
+  loadMore: تحميل المزيد
+  cmsBrowseOnly: هذا المصدر للتصفح فقط؛ افتح الموقع للتنزيل.
 gamepad:
   connected: Controller Connected
   guideTitle: Controller Controls
@@ -2189,6 +2644,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: تم اكتشاف يد التحكم
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
@@ -2302,3 +2758,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: الحساب
+  confirmMerge: تأكيد دمج الحسابات
+  createdAt: 'تاريخ الإنشاء: {date}'
+  description: هوية XMCL الخاصة بك بدون كلمة مرور، منفصلة عن حسابات لعبة Minecraft.
+  expiresAt: 'ينتهي في: {date}'
+  gameAccountsSeparate: إزالة حساب اللعبة لا يؤدي إلى فك ارتباط طريقة تسجيل الدخول إلى XMCL.
+  guest: ضيف
+  identityConflict: تسجيل الدخول هذا عبر {provider} ينتمي إلى حساب XMCL آخر. لا يتم دمج الحسابات تلقائيًا أبدًا.
+  linkAccountWith: ربط الحساب بـ
+  mergePreview: راجع الموارد التي سيتم نقلها قبل التأكيد.
+  mergeNeedsSession: سجل الدخول إلى حساب XMCL الذي ترغب بالاحتفاظ به قبل مراجعة الدمج.
+  mergeQueued: عملية دمج الحسابات جارية.
+  requestFailed: تعذر على خدمة حسابات XMCL إكمال هذا الطلب. حساب اللعبة الخاص بك لم يتغير.
+  reviewMerge: مراجعة الدمج
+  session: الجلسة
+  sessionActive: نشطة
+  sessionExpired: منتهية
+  signOutAll: تسجيل الخروج من جميع الأجهزة
+  signOutDevice: تسجيل الخروج من هذا الجهاز
+  status:
+    active: نشط
+    deleted: محذوف
+    deletion_pending: قيد انتظار الحذف
+    merged: مدمج
+  title: حساب XMCL
+modCategory:
+  optimization: التحسين والأداء
+  libraries: المكتبات وواجهات البرمجة (APIs)
+  utilities: الواجهة والأدوات
+  world: العالم والمناطق الحيوية
+  visual: المؤثرات البصرية والصوتية
+  gameplay: أسلوب اللعب والمحتوى
+  miscellaneous: متنوع
+localCollection:
+  title: مجموعات المشغّل
+  newCollection: مجموعة جديدة
+  namePlaceholder: اسم المجموعة
+  addToCollection: إضافة إلى المجموعة
+  empty: لا توجد مجموعات مشغّل حتى الآن
+  corrupted: تعذرت قراءة مجموعاتك المحفوظة وتمت إعادة ضبطها. تم الاحتفاظ بنسخة احتياطية بجوار ملف البيانات.
+  modrinthSection: حساب Modrinth
+  installAll: تثبيت الكل
+  incompatibleAlert: 'مشروع واحد غير متوافق مع النسخة الحالية وتم تخطيه: | {count} مشاريع غير متوافقة مع النسخة الحالية وتم تخطيها:'
+  projects: لا توجد مشاريع | مشروع واحد ({count}) | {count} مشاريع
+  saveCurrentMods: حفظ التعديلات المثبتة كمجموعة
+  saveCurrentModsSuccess: تم حفظ {count} تعديل في المجموعة "{name}"
+  viewMods: عرض التعديلات
+  editCollection: تعديل المجموعة
+  collectionDescription: وصف المجموعة
+  noModsInCollection: لا توجد تعديلات في هذه المجموعة حتى الآن
+  exportCollection: تصدير المجموعة
+  importCollection: استيراد مجموعة
+  removeEntryConfirm: إزالة من المجموعة
+  addMods: إضافة تعديلات
+  addModsTo: إضافة تعديلات إلى "{name}"
+  addModsHint: أضف تعديلات مثبتة من نسختك أو انقر على زر الإشارة المرجعية في السوق لإضافة تعديلات.
+  addModsDialogDesc: حدد التعديلات المثبتة من هذه النسخة لتضمينها في هذه المجموعة.
+  addAllCurrent: إضافة كافة التعديلات الحالية
+  addedModsSuccess: تمت إضافة {count} تعديل إلى المجموعة
+  searchMods: بحث عن تعديلات...
+  selectAll: تحديد الكل
+  deselectAll: إلغاء تحديد الكل
+  selected: محدد
+  alreadyInCollection: تمت الإضافة
+  noMatchingMods: لا توجد تعديلات مطابقة لبحثك
+  addSelectedMods: إضافة {count} تعديل

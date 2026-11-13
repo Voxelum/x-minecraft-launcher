@@ -52,6 +52,43 @@ agent:
   thinking: berpikir…
   title: Agen XMCL
   toggleHint: untuk beralih
+  abort: Hentikan pembuatan
+  confirmAccept: Lanjutkan
+  confirmAllowAll: Izinkan semua
+  confirmCancel: Batal
+  confirmPending: Menunggu konfirmasi
+  confirmTitle: Konfirmasi tindakan agent
+  errorTitle: Agent mengalami kesalahan
+  passiveGameCrashed: Game macet
+  passiveGameExitCode: Kode keluar {code}
+  passiveGameExited: Game keluar
+  passiveGameExitSignal: Sinyal {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: Tidak ada status keluar
+  reasoning: Penalaran
+  passiveGameStarted: Game dimulai
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Laporan kompatibilitas mod
+  passiveModDiagnosisError: Diagnosis kompatibilitas gagal
+  passiveModDiagnosisSummary: '{checked} mod diperiksa · {incompatibilities} ketidakcocokan · {duplicates} duplikat'
+  passiveModDuplicate: 'Duplikat {mod}: {files}'
+  passiveModInstalled: terinstal {version}
+  toolArguments: Argumen
+  toolResult: Hasil
+  toolRunning: Menunggu hasil…
+  marketConfirmMessage: Instal {name} ke dalam instance saat ini?
+  marketConfirmTarget: 'Target: {instance}'
+  marketConfirmTitle: Instal {type}
+  marketInstall: Instal
+  marketInstalled: Terinstal
+  marketInstallFailed: Gagal menginstal {type}
+  marketType:
+    datapack: paket data
+    mod: mod
+    modpack: paket mod
+    resourcepack: paket sumber daya
+    shader: paket shader
+  marketResultCount: '{count} hasil'
 ago:
   day: '{duration} hari yang lalu | {duration} hari yang lalu'
   hour: '{duration} jam yang lalu | {duration} jam yang lalu'
@@ -93,20 +130,20 @@ bedrock:
   launchFailed: Gagal meluncurkan versi Bedrock ini
   removeFailed: Gagal menghapus Bedrock {version}
 backup:
-  title: 'Cadangan & Pemulihan'
+  title: Cadangan & Pemulihan
   description: Cadangkan dan pulihkan pengaturan, koleksi, tema, dan instance game Anda
   launcherData: Data Peluncur
   includeSettingsTitle: Pengaturan Peluncur
   includeSettingsHint: Preferensi umum, bahasa, mode pengembang, dan pengaturan tampilan
   includeCollectionsTitle: Koleksi Tersimpan
   includeCollectionsHint: Koleksi mod dan resource yang dikelola peluncur
-  includeThemesTitle: 'Tema & Media Kustom'
+  includeThemesTitle: Tema & Media Kustom
   includeThemesHint: Warna tema, gaya CSS kustom, dan media latar belakang
   instances: Instance
   selectAll: Pilih Semua
   deselectAll: Batalkan Pilihan
   instanceDataOptions: Opsi Data Instance
-  includeConfigs: 'Konfigurasi & Opsi'
+  includeConfigs: Konfigurasi & Opsi
   includeSaves: Dunia (Saves)
   includeResourcePacks: Paket Resource
   includeShaderPacks: Paket Shader
@@ -119,7 +156,7 @@ backup:
   create: Buat Cadangan
   createTitle: Buat Arsip Cadangan XMCL
   saveDialogTitle: Simpan Arsip Cadangan XMCL
-  fileFilterName: 'Arsip Cadangan XMCL (*.xmclbackup, *.zip)'
+  fileFilterName: Arsip Cadangan XMCL (*.xmclbackup, *.zip)
   createError: Gagal membuat cadangan
   loadManifestError: Gagal membaca arsip cadangan
   restore: Pulihkan
@@ -130,7 +167,7 @@ backup:
   elapsedTime: Waktu berlalu
   remainingTime: Perkiraan sisa waktu
   calculatingRemaining: Menghitung...
-  lessThanMinute: '< 1 mnt'
+  lessThanMinute: < 1 mnt
   itemsProgress: '{current}/{total}'
   savesCategory: Dunia
   modsCategory: Mod
@@ -142,16 +179,16 @@ backup:
   copiedLog: Log disalin ke papan klip
   openFolder: Tampilkan di Folder
   done: Selesai
-  backupDone: 'Cadangan Selesai!'
+  backupDone: Cadangan Selesai!
   backupDoneHint: Arsip cadangan Anda telah dibuat dan diverifikasi.
-  restoreDone: 'Pemulihan Selesai!'
+  restoreDone: Pemulihan Selesai!
   restoreDoneHint: Semua data dan instance yang dipilih berhasil dipulihkan.
   timeTaken: 'Waktu yang dibutuhkan: {time}'
   destinationFile: 'Disimpan ke: {path}'
   stagePreparing: Menyiapkan
   stageSettings: Pengaturan Peluncur
   stageCollections: Koleksi Tersimpan
-  stageThemes: 'Tema & Media'
+  stageThemes: Tema & Media
   stageInstances: Instance Game
   stageCompressing: Mengompresi Arsip
   stageComplete: Selesai
@@ -161,14 +198,14 @@ backup:
   selectBackupFileDescription: Pilih file .xmclbackup atau .zip yang berisi data dan instance XMCL Anda.
   selectFile: Pilih File
   selectBackupFileTitle: Buka Arsip Cadangan XMCL
-  createdOn: 'Dibuat pada {date}'
+  createdOn: Dibuat pada {date}
   changeFile: Ganti File
   dataToRestore: Data untuk Dipulihkan
   restoreSettings: Pulihkan Pengaturan
   restoreSettingsHint: Timpa preferensi peluncur saat ini dengan salinan cadangan
   restoreCollections: Pulihkan Koleksi
   restoreCollectionsHint: Impor dan gabungkan koleksi tersimpan ke peluncur
-  restoreThemes: 'Pulihkan Tema & Media'
+  restoreThemes: Pulihkan Tema & Media
   restoreThemesHint: Instal ulang tema, CSS kustom, dan media latar belakang
   noLauncherDataInBackup: Tidak ada pengaturan atau tema peluncur dalam arsip cadangan ini.
   conflictStrategyTitle: Penanganan Konflik Nama Instance
@@ -178,9 +215,9 @@ backup:
   restoreError: Gagal memulihkan cadangan
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Buat Cadangan
   createBackupDescription: Simpan pengaturan peluncur, koleksi, tema kustom, dan instance ke satu file arsip portabel.
   restoreBackupTitle: Pulihkan Cadangan
@@ -203,8 +240,8 @@ backup:
   autoBackupDestination: Folder Cadangan Otomatis
   browse: Telusuri
   autoBackupContentLabel: Konten yang Disertakan dalam Cadangan Latar Belakang
-  instanceSaves: 'Dunia & Saves'
-  instanceConfigs: 'Konfigurasi & Opsi'
+  instanceSaves: Dunia & Saves
+  instanceConfigs: Konfigurasi & Opsi
   instanceMods: Mod
   instanceResourcePacks: Paket Resource
   instanceShaderPacks: Paket Shader
@@ -218,9 +255,27 @@ backup:
   interval6h: Setiap 6 jam
   interval12h: Setiap 12 jam
   interval24h: Setiap 24 jam
-  keepCount: 'Simpan {count} cadangan terakhir'
+  keepCount: Simpan {count} cadangan terakhir
 baseSetting:
   title: Pengaturan Instansi
+  info:
+    address: Alamat
+    changes: Perubahan
+    custom: Kustom
+    disabled: Dinonaktifkan
+    enabled: Diaktifkan
+    exportFormats: Format ekspor
+    inherited: Diwarisi secara global
+    modLoader: Pemuat mod
+    notConfigured: Belum dikonfigurasi
+    notSet: Belum diatur
+    offline: Arsip luring
+    projectId: ID Proyek
+    running: Berjalan
+    saved: Tersimpan
+    status: Status
+    stopped: Berhenti
+    vanilla: Vanilla
 browseApp:
   createShortcut: Buat Pintasan
   default: BAWAAN
@@ -455,6 +510,7 @@ commandPalette:
   hintEnter: masuk
   hintBack: kembali
   hintClose: tutup
+  hintAskAgent: tanya Agent
 feedback:
   channel: Saluran
   description: Saya menemukan Bug atau saya ingin memberikan saran
@@ -473,6 +529,8 @@ feedback:
   qq: Grup QQ
   qqDescription: 'Masuk ke grup QQ umpan balik dan bicara langsung dengan pembuat. Nomor Grup: {number}'
   qqEnterGroup: Gabung
+  reddit: Reddit
+  redditDescription: Bergabunglah dengan komunitas subreddit r/XMCL
 fileDetail:
   fileSize: Ukuran Berkas
   filesize: Ukuran berkas
@@ -610,6 +668,10 @@ instance:
   vmVar: Variabel Lingkungan
   vmVarHint: Klik tombol + untuk menambahkan variabel lingkungan
   width: Lebar
+  monitor: Monitor Layar Penuh
+  monitorDefault: Default (monitor utama)
+  monitorNumber: Monitor {number}
+  monitorPrimary: Utama
 instanceAge:
   older: Lebih Lama
   threeDay: Dalam Tiga Hari
@@ -675,6 +737,10 @@ instances:
   folderSetting: Pengaturan Folder
   importFolderDescription: Impor Minecraft ke Peluncur
   loadingFiles: Memuat Berkas Modpack
+  instanceCount: '{count} instance'
+  linkSharedFolders: Bagikan folder antar instance
+  linkSharedFoldersHint: Buat folder ini sebagai tautan ke folder bersama peluncur sehingga instance ini membagikan kontennya dengan setiap instance tertaut lainnya. Ini bukan salinan — perubahan yang dibuat dalam satu instance muncul di semua instance. Folder yang tidak dicentang tetap bersifat pribadi untuk instance ini.
+  linkFailed: Gagal menautkan folder {folder} ke folder bersama
 items:
   count: '{count} item'
   total: total {total}
@@ -736,6 +802,13 @@ launchBlocked:
     description: Silakan periksa Java Anda, atau berikan lebih banyak izin ke peluncur dan coba lagi. Jika ini masih tidak berfungsi, silakan hubungi pengembang.
     title: Gagal memulai proses game
   unexpectedText: Ini tidak terduga. Anda dapat memulai ulang peluncur untuk mengurangi masalah. Silakan hubungi pembuat jika masalah ini terjadi lagi.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL tidak dapat memulihkan informasi tampilan X11 dari sesi desktop Anda. Mulai ulang XMCL dari terminal di sesi desktop saat ini, atau keluar dan masuk kembali.
+    noGraphicalSession: XMCL tidak berjalan dalam sesi desktop grafis. Mulai XMCL dari sesi desktop Anda sebelum meluncurkan Minecraft.
+    sandboxDenied: Sandbox aplikasi tidak dapat mengakses X11. Berikan XMCL akses ke soket X11 di izin Flatpak Anda, lalu mulai ulang XMCL.
+    title: Tampilan X11 tidak tersedia
+    xwaylandMissing: Minecraft membutuhkan XWayland dalam sesi Wayland ini. Instal paket XWayland yang disediakan oleh distribusi Linux Anda, lalu keluar dan masuk kembali.
+    xwaylandNotRunning: XWayland terinstal tetapi tidak ada tampilan X11 yang berjalan. Aktifkan XWayland dalam konfigurasi komposit Anda, lalu keluar dan masuk kembali.
 launchFailed:
   crash: Game Crash!!
   description: Tidak ada laporan crash. Ini adalah log kesalahan dan log terbaru.
@@ -763,6 +836,11 @@ launcherUpdate:
   installAndQuit: Mulai Ulang untuk Memasang
   noUpdateAvailable: Tidak Ada Pembaruan Tersedia
   updateToThisVersion: Unduh dan Pasang
+  automaticUnavailable: Pembaruan otomatis tidak tersedia
+  automaticNotImplemented: Pembaruan otomatis belum diimplementasikan untuk host peluncur ini.
+  automaticNotConfigured: Pembaruan otomatis belum dikonfigurasi untuk host peluncur ini.
+  manualCheckHint: Pemeriksaan rilis belum dilakukan. Periksa GitHub Releases untuk paket yang kompatibel dan instal secara manual.
+  manualCheckRequired: Host ini tidak dapat memeriksa atau menginstal pembaruan secara otomatis. Gunakan tombol GitHub Releases untuk memeriksa secara manual.
 localVersion:
   auto: Dihitung Otomatis
   empty: Tidak Ada Versi Terpasang
@@ -815,6 +893,10 @@ loginError:
   requirePassword: Kata sandi diperlukan
   requireUsername: Nama pengguna diperlukan
   timeout: Masuk habis waktu. Silakan coba lagi atau periksa jaringan Anda.
+  loginCanceled: Proses masuk Microsoft dibatalkan.
+  xboxErrorGuideHint: Mengalami masalah saat masuk? Pelajari cara memperbaiki masalah masuk Microsoft & Xbox.
+  openLoginGuide: Cara memperbaiki masalah ini
+  openDiscordSupport: Masih butuh bantuan? Bergabunglah dengan Discord kami
 logsCrashes:
   crashes: Laporan Crash
   failures: Kegagalan Peluncuran
@@ -844,6 +926,8 @@ minecraftFriends:
     inviteRejected: Pemain tersebut tidak mengaktifkan fitur pertemanan atau tidak menerima undangan.
     tokenExpired: Sesi Microsoft Anda kedaluwarsa. Silakan masuk lagi.
     unknownProfile: Kami tidak dapat menemukan pemain dengan nama tersebut.
+    friendsDisabled: Akun Minecraft Anda menonaktifkan fitur teman atau tidak dapat menggunakan fitur teman. Aktifkan teman di pengaturan akun Minecraft, lalu coba lagi.
+    invalidName: Nama pengguna Minecraft harus antara 3 dan 16 karakter.
   expiresRelative: Kedaluwarsa {time}
   friends: Teman
   heroEmptyHint: Tambahkan pemain Minecraft berdasarkan nama pengguna di atas untuk mengirim permintaan pertemanan.
@@ -924,6 +1008,23 @@ mod:
   syncGroupRules: Simpan aturan pengelompokan
   toUpdate: '{count} pembaruan'
   ungroup: Batalkan Pengelompokan
+  autoCategorize: Urutkan otomatis ke dalam folder
+  autoCategorizeHint: Kelompokkan mod secara otomatis ke dalam folder kategori (Optimasi, Pustaka, Dunia, Gameplay, dll.)
+  autoCategorizeSuccess: Mod otomatis diurutkan ke dalam {count} folder
+  collapseAll: Ciutkan Semua Folder
+  expandAll: Perluas Semua Folder
+  folderSetting: Pengaturan Folder
+  folderColor: Warna Folder
+  folderIcon: Ikon Folder
+  pinGroup: Sematkan ke Atas
+  pinToTop: Sematkan ke Atas
+  pinToTopHint: Folder akan muncul di bagian atas daftar
+  pinned: Disematkan
+  unpinGroup: Lepas Sematan Folder
+  customColor: Warna Kustom
+  preview: Pratinjau
+  ungroupAll: Batalkan semua grup
+  organization: Pengorganisasian Folder
 modFilter:
   clear: Bersihkan Filter
   dependenciesInstallOnly: Hanya tunjukkan mod yang kehilangan dependensi
@@ -952,6 +1053,7 @@ modInstall:
   skipVersion: Lewati mod dengan versi Minecraft yang berbeda
   source: Sumber Mod
   switch: Beralih Versi
+  scanUnusedLibraries: Pindai Pustaka yang Tidak Digunakan
 modSearch:
   noLocalModsFound: Tidak menemukan mod lokal yang cocok dengan pencarian Anda.
   noModsFound: Tidak menemukan mod
@@ -987,6 +1089,112 @@ modpack:
   overrides: Pengesampingan
   url: URL
   urlHint: URL beranda modpack Anda
+  emitCurseforgeDescription: Arsip zip modpack standar untuk CurseForge
+  emitModrinthDescription: Format resmi ringan dengan unduhan CDN cepat
+  emitPackwiz: Ekspor Modpack Packwiz
+  emitPackwizDescription: Format ringan yang ramah git (file pack.toml, index.toml, dan .pw.toml)
+  exportSuccess: Modpack berhasil diekspor!
+  exportSuccessWithWarnings: Modpack diekspor dengan peringatan
+  exportSkippedFiles: '{count} file yang tidak dapat dibaca atau terkunci dilewati selama ekspor'
+  exportFailed: Gagal mengekspor modpack
+  skippedFilesDialogTitle: Beberapa file tidak dapat diekspor
+  skippedFilesDialogDescription: Modpack dibuat, tetapi {count} file dilewati
+  skippedReasonEperm: Akses ditolak (dikunci oleh OS atau proses lain)
+  skippedReasonEbusy: File sedang digunakan oleh program lain
+  skippedReasonEnoent: File tidak ditemukan atau rusak
+  skippedFilesNotice: Sisa file Anda berhasil dikemas ke dalam modpack. File di atas dilewati karena pembatasan sistem Windows atau kurangnya izin akses.
+  openExportFolder: Buka folder modpack
+  closeDialog: Mengerti
+  expandAll: Perluas semua folder
+  collapseAll: Ciutkan semua folder
+  modpackVersionHint: String versi semantik (misalnya 1.0.0). Gunakan + untuk menaikkan patch/minor
+  modrinthProject: Proyek Modrinth
+  selectDefaultFiles: Pilih file default
+  selectAllFiles: Pilih semua file
+  deselectAllFiles: Batalkan pilihan semua file
+  bindProject: Tautkan proyek
+  bindProjectHint: Pilih proyek modpack Modrinth yang dikelola oleh akun saat ini.
+  bindProjectTypeImmutableHint: Modrinth menetapkan jenis proyek saat versi pertamanya diunggah, dan tidak dapat diubah setelahnya. Proyek draf yang belum memiliki versi masih dapat ditautkan di sini, tetapi proyek yang sudah dipublikasikan sebagai mod/paket sumber daya/dll. tidak dapat diubah menjadi modpack — gunakan "Buat proyek baru" sebagai gantinya.
+  bindProjectNoProjects: Tidak ada proyek Modrinth yang ditemukan untuk akun Anda.
+  unbindProject: Putuskan tautan proyek
+  unbindProjectConfirmTitle: Putuskan tautan proyek Modrinth?
+  unbindProjectConfirmMessage: Ini hanya menghapus keterkaitan lokal antara instance ini dan proyek Modrinth. Proyek dan versinya di Modrinth tidak terpengaruh.
+  editProject: Edit proyek
+  projectDiscovery: Penemuan dan kompatibilitas
+  projectGallery: Galeri
+  projectGalleryAdd: Tambah gambar
+  projectGalleryEmpty: Belum ada gambar galeri.
+  projectGalleryFeatured: Unggulan
+  projectGalleryFromScreenshots: Pilih tangkapan layar
+  projectGalleryHint: Tambahkan gambar hingga 5 MiB dan pilih gambar proyek unggulan.
+  projectGallerySelectScreenshot: Pilih tangkapan layar instance
+  projectIdentity: Identitas dan deskripsi
+  projectLinks: Tautan proyek
+  projectLoadFailed: Gagal memuat proyek Modrinth yang ditautkan.
+  projectNoChanges: Tidak ada perubahan proyek yang belum disimpan.
+  projectNotBound: Tidak ada proyek Modrinth yang ditautkan
+  projectNotBoundHint: Tautkan proyek yang ada, atau buat proyek Modrinth baru.
+  projectUnsavedChanges: '{count} bidang proyek diubah'
+  projectLatestDraft: Draf
+  projectVersions: versi
+  publish: Publikasikan
+  publishCategories: Kategori (dipisahkan koma)
+  publishChannel: Saluran rilis
+  publishChangelog: Catatan perubahan
+  publishChangelogGenerate: Hasilkan dengan AI
+  publishConfirmProjectChanges: Konfirmasi perubahan proyek
+  publishCreateProject: Buat proyek
+  publishCreateDraft: Bangun dan buat draf
+  publishCustomVersion: Kustom
+  publishDescription: Deskripsi proyek
+  publishDiscordUrl: URL Discord
+  publishDraftCreated: Versi draf diunggah.
+  publishSubmitted: Versi dikirimkan untuk ditinjau.
+  publishExistingProject: Proyek yang ada
+  publishIcon: Ikon proyek
+  publishIconHint: PNG, JPEG, atau WebP
+  publishIconKeep: Biarkan tidak berubah kecuali gambar baru dipilih
+  publishIconUseInstance: Gunakan ikon instance
+  publishIssuesUrl: URL Masalah
+  publishLicense: ID Lisensi
+  publishLogin: Masuk ke Modrinth
+  publishFiles: file yang dipilih
+  publishLinkageSummary: '{linked} dari {total} mod/paket sumber daya/paket shader akan ditautkan langsung ke unduhan Modrinth alih-alih diunggah.'
+  publishLinkageEmbeddedSummary: '{count} file tidak dapat ditautkan dan akan diunggah (disematkan) bersama versi ini.'
+  publishLinkageShowFiles: Tampilkan file yang harus diunggah
+  publishLinkageReason:
+    missing-file: File tidak ditemukan di disk
+    not-linked-to-modrinth: Tidak dikenali sebagai sumber daya Modrinth
+    no-downloadable-url: Tidak ada URL unduhan yang dapat didistribusikan ulang ditemukan
+  publishModrinth: Publikasikan ke Modrinth
+  publishNewProject: Proyek baru
+  publishOpenProject: Buka proyek
+  publishOpenVersion: Buka versi
+  publishProfile: Profil MRPack
+  publishProfileClient: Hanya klien
+  publishProfileServer: Hanya server
+  publishProfileSplit: Universal + file klien/server terpisah
+  publishProfileUniversal: Universal
+  publishProject: Proyek
+  publishProjectDetailsTab: Detail proyek
+  publishProjectName: Nama proyek
+  publishProjectRequired: Pilih proyek sebelum memublikasikan.
+  publishProjectSlug: Slug proyek
+  publishProjectUrl: URL proyek (opsional)
+  publishProjectUrlHint: Biarkan kosong untuk menggunakan {slug}.
+  publishProjectSaved: Detail proyek diperbarui.
+  publishSourceUrl: URL Sumber
+  publishSubmit: Kirim draf untuk ditinjau
+  publishSummary: Ringkasan singkat
+  publishSummaryMinWords: Ringkasan harus berisi setidaknya 3 kata.
+  publishVersionTitle: Judul versi
+  publishVersionTab: Publikasikan versi
+  publishVersion: Publikasikan versi
+  publishVisibility: Visibilitas
+  publishWikiUrl: URL Wiki
+  visibilityPrivate: Pribadi
+  visibilityPublic: Publik
+  visibilityUnlisted: Tidak terdaftar
 modpackImportConfirm:
   description: Mendeteksi Anda meletakkan berkas ke dalam peluncur. Apakah Anda mencoba mengimpor modpack?
   title: Apakah Anda mencoba mengimpor modpack?
@@ -1244,6 +1452,16 @@ multiplayer:
   sharing: Membagikan berkas...
   start: Mulai
   startNewP2PConnection: Klik tombol Mulai untuk membuat koneksi rekan baru
+  connectedToMaster: Terhubung ke master ruangan
+  directConnection: Langsung
+  master: Master
+  masterHostsGameHint: Master ruangan adalah pusat koneksi dan harus menghosting dunia LAN Minecraft. Transfer master sebelum berganti host.
+  member: Anggota
+  joinCreatesMissingRoomHint: Jika ruangan ini tidak ada, Anda akan membuatnya dan menjadi masternya.
+  relayConnection: Relai
+  relayAllowanceSummary: Tersisa {remaining} dari {total} periode ini
+  relayServiceAvailable: Layanan relai XMCL Together tersedia
+  waitingForMaster: Menunggu master ruangan untuk terhubung kembali
 myStuff: Barang Saya
 natType:
   blocked: Diblokir
@@ -1290,6 +1508,11 @@ presence:
   save: Melihat Save di {instance}
   setting: Melihat Halaman Pengaturan
   shaderPack: Melihat Paket Shader di {instance}
+  away: Pergi
+  offline: Luring
+  online: Daring
+  playing: Memainkan {game}
+  playingGeneric: Sedang Bermain
 proxy:
   host: Host
   port: Port
@@ -1477,6 +1700,109 @@ screenshots:
   openFolder: Buka Folder Tangkapan Layar
   playRandom: Acak
   playSequence: Putar berurutan
+  title: Tangkapan Layar & Foto
+  manage: Pengelola Tangkapan Layar
+  emptyTitle: Belum ada tangkapan layar
+  emptyDescription: Tekan F2 dalam game untuk mengambil tangkapan layar, atau impor foto Anda secara manual.
+  dropHint: Tarik foto atau tangkapan layar ke sini untuk ditambahkan ke galeri
+  backToHome: Kembali ke Beranda
+  import: Tambah Foto
+  images: Gambar
+  importSuccess: Berhasil mengimpor {count} foto
+  copy: Salin Gambar
+  copied: Disalin ke papan klip!
+  setWallpaper: Jadikan Latar Belakang
+  setWallpaperSuccess: Ditetapkan sebagai gambar latar belakang instance!
+  setIcon: Jadikan Ikon
+  setIconSuccess: Ditetapkan sebagai ikon instance!
+  export: Simpan File
+  exportSuccess: Tangkapan layar berhasil disimpan!
+  exportSelected: Ekspor yang Dipilih
+  exportSelectedTitle: Pilih Folder Ekspor
+  exportSelectedSuccess: Berhasil mengekspor {count} tangkapan layar
+  deleteConfirmTitle: Hapus tangkapan layar?
+  deleteConfirmMessage: Apakah Anda yakin ingin menghapus {count} tangkapan layar? Tindakan ini tidak dapat dibatalkan.
+  deleteSuccess: Tangkapan layar berhasil dihapus
+  selectedCount: 'Dipilih: {count}'
+  selectAll: Pilih semua
+  clearSelection: Batalkan pilihan semua
+  countLabel: '{count} tangkapan layar'
+  searchPlaceholder: Cari berdasarkan nama...
+  noSearchResults: Tidak ada tangkapan layar yang cocok
+  noSearchResultsHint: Coba sesuaikan kueri penelusuran Anda
+  sort: Urutkan
+  sortDateDesc: Terbaru lebih dulu
+  sortDateAsc: Terlama lebih dulu
+  sortSizeDesc: Terbesar lebih dulu
+  sortSizeAsc: Terkecil lebih dulu
+  sortNameAsc: Nama (A-Z)
+  sortNameDesc: Nama (Z-A)
+  viewGrid: Kisi besar
+  viewGridCompact: Kisi ringkas
+  viewList: Tampilan daftar
+  edit: Edit
+  editorTitle: Edit Tangkapan Layar
+  layer: Lapisan
+  dragToMove: Tarik untuk memindahkan
+  transformHint: Tarik pilihan untuk memindahkan • Tarik pegangan untuk mengubah ukuran • Tekan Enter untuk menerapkan
+  customColor: Warna kustom
+  fill: Isi
+  brushPreview: Pratinjau Ukuran Kuas
+  fontPreview: Pratinjau Ukuran Font
+  textBgNone: Tidak Ada
+  textBgShadow: Bayangan
+  textBgBox: Kotak
+  cropHint: Tarik kotak pembatas untuk memilih area pangkasan.
+  textPlacementHint: Tekan Enter untuk menempatkan • Esc untuk membatalkan
+  layerMoveUp: Pindahkan ke Atas
+  layerMoveDown: Pindahkan ke Bawah
+  layerCopy: Salinan {name}
+  pixels: px
+  saveCopy: Simpan Salinan
+  saveOverwrite: Timpa
+  saveSuccess: Tangkapan layar disimpan!
+  saveCopySuccess: Disimpan sebagai tangkapan layar baru!
+  toolSelect: Pilih / Geser
+  toolMove: Pindah & Transformasi (Ctrl+T / V)
+  toolPan: Geser (Space+Tarik)
+  layers: Lapisan
+  layerAdd: Tambah Lapisan
+  layerDuplicate: Duplikat Lapisan
+  layerDelete: Hapus Lapisan
+  layerOpacity: Opasitas
+  transformLayer: Transformasi Bebas
+  applyTransform: Terapkan Transformasi (Enter)
+  cancelTransform: Batal (Esc)
+  layerBackground: Latar Belakang
+  layerPaint: Gambar
+  layerText: Teks
+  layerBlur: Buram
+  toolPen: Pena
+  toolArrow: Panah
+  toolRect: Persegi Panjang
+  toolCircle: Lingkaran
+  toolLine: Garis
+  toolText: Teks
+  toolHighlighter: Stabilo
+  toolBlur: Pikselkan / Buramkan
+  toolCrop: Pangkas
+  applyCrop: Terapkan Pangkasan
+  cancelCrop: Batalkan Pangkasan
+  strokeWidth: Ketebalan garis
+  fontSize: Ukuran font
+  color: Warna
+  undo: Urungkan
+  redo: Ulangi
+  clear: Hapus semua
+  textPlaceholder: Klik untuk mengetik teks...
+  fontFamily: Font
+  fontBold: Tebal
+  fontItalic: Miring
+  textApply: Tempatkan Teks
+  textBg: Latar Belakang
+  zoomIn: Perbesar
+  zoomOut: Perkecil
+  resetZoom: Atur ulang zoom
 search:
   favorate: Koleksi
   local: Terpasang
@@ -1855,6 +2181,23 @@ setting:
   useProxy: Proksi HTTP
   useProxyDescription: Alamat server proksi untuk permintaan HTTP
   viewBackgroundMusic: Lihat Musik
+  multiplayerTransport: Transport Together
+  multiplayerTransportDescription: Pilih implementasi WebRTC yang digunakan oleh Together. Mengubah transport akan memutuskan koneksi peer yang aktif.
+  aiAgentApiKeyClear: Hapus kunci
+  aiAgentApiKeyEmpty: Tempel kunci API Anda
+  aiAgentApiKeyNotNeeded: Tidak diperlukan
+  aiAgentApiKeyNotNeededHint: Penyedia ini berjalan secara lokal dan tidak memerlukan kunci API
+  aiAgentApiKeySaved: Tersimpan
+  aiAgentApiKeyStored: Kunci disimpan - ketik untuk mengganti
+  aiAgentBuiltin: Bawaan
+  aiAgentCustom: Kustom
+  appImageUpdateMode: Kepemilikan pembaruan AppImage
+  appImageExternalMode: Pengelola eksternal / penggantian manual (default)
+  appImageSelfMode: Dikelola mandiri oleh XMCL (saya mengelola AppImage ini)
+  appImageAutoDownload: Unduh pembaruan secara otomatis
+  appImageAutoInstall: Pasang pembaruan yang diunduh saat keluar
+  appImageExternalUpdateHint: Jika dipasang melalui Shelly atau pengelola lain, perbarui di sana dan pertahankan mode eksternal. Jika tidak, ganti AppImage sendiri di jalur yang ada. XMCL tidak mengunduh atau memasang pembaruan dalam mode eksternal.
+  appImageSelfUpdateHint: Hanya pilih kelola mandiri untuk AppImage yang Anda kelola sendiri. Pembaruan bawaan memerlukan jalur absolut tanpa nomor versi di nama berkas (misalnya xmcl.AppImage). Jika nama berisi versi seperti 0.73.0, tutup XMCL dan ubah nama berkas.
 settingLabel:
   global: Global
   globalHint: Pengaturan ini akan mengikuti pengaturan global
@@ -1948,6 +2291,13 @@ shared:
   upgrade: Perbarui
   'yes': Ya
   delete: Hapus
+  openFolder: Buka Folder
+  reset: Atur Ulang
+  missing: hilang
+  healthy: Baik
+  unused: tidak digunakan
+  failed: Gagal
+  view: Lihat
 sidebar:
   pin: Sematkan
   unpin: Batal Sematkan
@@ -2242,6 +2592,9 @@ userSkin:
   skinDeleteFailed: Gagal menghapus skin dari lemari
   edit: Edit
   fetch: Muat
+  invalidImage: Pilih gambar skin Minecraft yang valid.
+  invalidImageTitle: Gambar Skin Tidak Valid
+  uploadRejected: Minecraft menolak unggahan skin ini. Silakan coba lagi nanti.
 version:
   checkIntegrity: Periksa Integritas
   name: Versi | Versi
@@ -2405,3 +2758,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: Akun
+  confirmMerge: Konfirmasi penggabungan akun
+  createdAt: Dibuat pada {date}
+  description: Identitas XMCL tanpa kata sandi Anda, terpisah dari akun game Minecraft.
+  expiresAt: Kedaluwarsa pada {date}
+  gameAccountsSeparate: Menghapus akun game tidak memutuskan tautan metode masuk XMCL.
+  guest: Tamu
+  identityConflict: Login {provider} ini milik Akun XMCL lain. Akun tidak pernah digabungkan secara otomatis.
+  linkAccountWith: Tautkan akun dengan
+  mergePreview: Tinjau sumber daya yang akan dipindahkan sebelum mengonfirmasi.
+  mergeNeedsSession: Masuk ke Akun XMCL yang ingin Anda pertahankan sebelum meninjau penggabungan.
+  mergeQueued: Penggabungan akun sedang berlangsung.
+  requestFailed: Layanan Akun XMCL tidak dapat menyelesaikan permintaan ini. Akun game Anda tidak berubah.
+  reviewMerge: Tinjau penggabungan
+  session: Sesi
+  sessionActive: Aktif
+  sessionExpired: Kedaluwarsa
+  signOutAll: Keluar dari semua perangkat
+  signOutDevice: Keluar dari perangkat ini
+  status:
+    active: Aktif
+    deleted: Dihapus
+    deletion_pending: Menunggu penghapusan
+    merged: Digabungkan
+  title: Akun XMCL
+modCategory:
+  optimization: Optimasi & Performa
+  libraries: Pustaka & API
+  utilities: Antarmuka & Utilitas
+  world: Dunia & Bioma
+  visual: Visual & Audio
+  gameplay: Gameplay & Konten
+  miscellaneous: Lain-lain
+localCollection:
+  title: Koleksi peluncur
+  newCollection: Koleksi baru
+  namePlaceholder: Nama koleksi
+  addToCollection: Tambahkan ke koleksi
+  empty: Belum ada koleksi peluncur
+  corrupted: Koleksi tersimpan Anda tidak dapat dibaca dan telah diatur ulang. Cadangan disimpan di samping file data.
+  modrinthSection: Akun Modrinth
+  installAll: Instal semua
+  incompatibleAlert: '1 proyek tidak kompatibel dengan instance saat ini dan dilewati: | {count} proyek tidak kompatibel dengan instance saat ini dan dilewati:'
+  projects: Tidak ada proyek | {count} proyek | {count} proyek
+  saveCurrentMods: Simpan mod terinstal sebagai koleksi
+  saveCurrentModsSuccess: Menyimpan {count} mod ke koleksi "{name}"
+  viewMods: Lihat mod
+  editCollection: Edit koleksi
+  collectionDescription: Deskripsi koleksi
+  noModsInCollection: Belum ada mod dalam koleksi ini
+  exportCollection: Ekspor koleksi
+  importCollection: Impor koleksi
+  removeEntryConfirm: Hapus dari koleksi
+  addMods: Tambah mod
+  addModsTo: Tambahkan mod ke "{name}"
+  addModsHint: Tambahkan mod terinstal dari instance Anda atau klik tombol bookmark di Pasar untuk menambahkan mod.
+  addModsDialogDesc: Pilih mod terinstal mana dari instance ini yang akan disertakan dalam koleksi ini.
+  addAllCurrent: Tambahkan semua mod saat ini
+  addedModsSuccess: Menambahkan {count} mod ke koleksi
+  searchMods: Cari mod...
+  selectAll: Pilih semua
+  deselectAll: Batalkan pilihan semua
+  selected: dipilih
+  alreadyInCollection: Ditambahkan
+  noMatchingMods: Tidak ada mod yang cocok dengan pencarian Anda
+  addSelectedMods: Tambahkan {count} mod

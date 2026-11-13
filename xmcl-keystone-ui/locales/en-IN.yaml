@@ -52,6 +52,43 @@ agent:
   thinking: thinking…
   title: XMCL Agent
   toggleHint: to toggle
+  abort: Stop generation
+  confirmAccept: Continue
+  confirmAllowAll: Allow all
+  confirmCancel: Cancel
+  confirmPending: Waiting for confirmation
+  confirmTitle: Confirm agent action
+  errorTitle: The agent hit an error
+  passiveGameCrashed: Game crashed
+  passiveGameExitCode: Exit code {code}
+  passiveGameExited: Game exited
+  passiveGameExitSignal: Signal {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: No exit status
+  reasoning: Reasoning
+  passiveGameStarted: Game started
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Mod compatibility report
+  passiveModDiagnosisError: Compatibility diagnosis failed
+  passiveModDiagnosisSummary: '{checked} mods checked · {incompatibilities} incompatibilities · {duplicates} duplicates'
+  passiveModDuplicate: 'Duplicate {mod}: {files}'
+  passiveModInstalled: installed {version}
+  toolArguments: Arguments
+  toolResult: Result
+  toolRunning: Waiting for result…
+  marketConfirmMessage: Install {name} into the current instance?
+  marketConfirmTarget: 'Target: {instance}'
+  marketConfirmTitle: Install {type}
+  marketInstall: Install
+  marketInstalled: Installed
+  marketInstallFailed: Failed to install {type}
+  marketType:
+    datapack: data pack
+    mod: mod
+    modpack: modpack
+    resourcepack: resource pack
+    shader: shader pack
+  marketResultCount: '{count} results'
 ago:
   day: '{duration} day ago | {duration} days ago'
   hour: '{duration} hour ago | {duration} hours ago'
@@ -93,20 +130,20 @@ bedrock:
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
 backup:
-  title: 'Backup & Restore'
+  title: Backup & Restore
   description: Back up and restore your settings, collections, themes, and game instances
   launcherData: Launcher Data
   includeSettingsTitle: Launcher Settings
   includeSettingsHint: General preferences, language, developer mode, and appearance settings
   includeCollectionsTitle: Saved Collections
   includeCollectionsHint: Launcher-managed mod and resource collections
-  includeThemesTitle: 'Custom Themes & Media'
+  includeThemesTitle: Custom Themes & Media
   includeThemesHint: Theme colors, custom CSS styles, and background media
   instances: Instances
   selectAll: Select All
   deselectAll: Deselect All
   instanceDataOptions: Instance Data Options
-  includeConfigs: 'Configs & Options'
+  includeConfigs: Configs & Options
   includeSaves: Saves (Worlds)
   includeResourcePacks: Resource Packs
   includeShaderPacks: Shader Packs
@@ -119,7 +156,7 @@ backup:
   create: Create Backup
   createTitle: Create XMCL Backup Archive
   saveDialogTitle: Save XMCL Backup Archive
-  fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL Backup Archive (*.xmclbackup, *.zip)
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
   restore: Restore
@@ -130,7 +167,7 @@ backup:
   elapsedTime: Elapsed
   remainingTime: Estimated remaining
   calculatingRemaining: Calculating...
-  lessThanMinute: '< 1 min'
+  lessThanMinute: < 1 min
   itemsProgress: '{current}/{total}'
   savesCategory: Saves
   modsCategory: Mods
@@ -142,16 +179,16 @@ backup:
   copiedLog: Log copied to clipboard
   openFolder: Show in Folder
   done: Done
-  backupDone: 'Backup Complete!'
+  backupDone: Backup Complete!
   backupDoneHint: Your backup archive has been created and verified.
-  restoreDone: 'Restore Complete!'
+  restoreDone: Restore Complete!
   restoreDoneHint: All selected data and instances have been restored successfully.
   timeTaken: 'Time taken: {time}'
   destinationFile: 'Saved to: {path}'
   stagePreparing: Preparing
   stageSettings: Launcher Settings
   stageCollections: Saved Collections
-  stageThemes: 'Themes & Media'
+  stageThemes: Themes & Media
   stageInstances: Game Instances
   stageCompressing: Compressing Archive
   stageComplete: Complete
@@ -161,14 +198,14 @@ backup:
   selectBackupFileDescription: Choose a .xmclbackup or .zip file containing your saved XMCL data and instances.
   selectFile: Choose File
   selectBackupFileTitle: Open XMCL Backup Archive
-  createdOn: 'Created on {date}'
+  createdOn: Created on {date}
   changeFile: Change File
   dataToRestore: Data to Restore
   restoreSettings: Restore Settings
   restoreSettingsHint: Overwrite current launcher preferences with the backup copy
   restoreCollections: Restore Collections
   restoreCollectionsHint: Import and merge saved collections into the launcher
-  restoreThemes: 'Restore Themes & Media'
+  restoreThemes: Restore Themes & Media
   restoreThemesHint: Reinstall themes, custom CSS, and background media
   noLauncherDataInBackup: No launcher settings or themes found in this backup archive.
   conflictStrategyTitle: Instance Name Conflict Handling
@@ -178,9 +215,9 @@ backup:
   restoreError: Failed to restore backup
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Create Backup
   createBackupDescription: Save your launcher settings, collections, custom themes, and instances to a single portable archive file.
   restoreBackupTitle: Restore Backup
@@ -203,8 +240,8 @@ backup:
   autoBackupDestination: Auto-Backup Folder
   browse: Browse
   autoBackupContentLabel: Content to Include in Background Backups
-  instanceSaves: 'Worlds & Saves'
-  instanceConfigs: 'Configs & Options'
+  instanceSaves: Worlds & Saves
+  instanceConfigs: Configs & Options
   instanceMods: Mods
   instanceResourcePacks: Resource Packs
   instanceShaderPacks: Shader Packs
@@ -218,9 +255,27 @@ backup:
   interval6h: Every 6 hours
   interval12h: Every 12 hours
   interval24h: Every 24 hours
-  keepCount: 'Keep last {count} backups'
+  keepCount: Keep last {count} backups
 baseSetting:
   title: Instance Settings
+  info:
+    address: Address
+    changes: Changes
+    custom: Custom
+    disabled: Disabled
+    enabled: Enabled
+    exportFormats: Export formats
+    inherited: Inherited
+    modLoader: Mod loader
+    notConfigured: Not configured
+    notSet: Not set
+    offline: Offline archive
+    projectId: Project ID
+    running: Running
+    saved: Saved
+    status: Status
+    stopped: Stopped
+    vanilla: Vanilla
 browseApp:
   createShortcut: Create Shortcut
   default: DEFAULT
@@ -455,6 +510,7 @@ commandPalette:
   hintEnter: enter
   hintBack: back
   hintClose: close
+  hintAskAgent: ask Agent
 feedback:
   channel: Channels
   description: I found a Bug or I want to make a suggestion
@@ -473,6 +529,8 @@ feedback:
   qq: QQ Group
   qqDescription: 'Enter the feedback QQ group and direct talk with authors. Group Number: {number}'
   qqEnterGroup: Join
+  reddit: Reddit
+  redditDescription: Join the r/XMCL subreddit community
 fileDetail:
   fileSize: File Size
   filesize: File size
@@ -610,6 +668,10 @@ instance:
   vmVar: Environment Variables
   vmVarHint: Click + button to add environment variables
   width: Width
+  monitor: Fullscreen Monitor
+  monitorDefault: Default (primary monitor)
+  monitorNumber: Monitor {number}
+  monitorPrimary: Primary
 instanceAge:
   older: Older
   threeDay: In Three Days
@@ -675,6 +737,10 @@ instances:
   folderSetting: Folder Settings
   importFolderDescription: Import Minecraft to Launcher
   loadingFiles: Loading Modpack Files
+  instanceCount: '{count} instances'
+  linkSharedFolders: Share folders across instances
+  linkSharedFoldersHint: Create these folders as links to the launcher's shared folders so this instance shares their content with every other linked instance. This is not a copy — changes made in one instance appear in all of them. Unchecked folders stay private to this instance.
+  linkFailed: Failed to link the {folder} folder to the shared folder
 items:
   count: '{count} items'
   total: '{total} total'
@@ -736,6 +802,13 @@ launchBlocked:
     description: Please check your java, or give more permissions to the launcher and retry. If this still doesn't work, please contact the developers.
     title: Fail to start game process
   unexpectedText: This is unexpected. You can restart the launcher to mitigate the issue. Please contact author if this issue happens again.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL could not recover the X11 display information from your desktop session. Restart XMCL from a terminal in the current desktop session, or sign out and sign in again.
+    noGraphicalSession: XMCL is not running in a graphical desktop session. Start XMCL from your desktop session before launching Minecraft.
+    sandboxDenied: The application sandbox cannot access X11. Grant XMCL access to the X11 socket in your Flatpak permissions, then restart XMCL.
+    title: X11 display unavailable
+    xwaylandMissing: Minecraft needs XWayland in this Wayland session. Install the XWayland package provided by your Linux distribution, then sign out and sign in again.
+    xwaylandNotRunning: XWayland is installed but no X11 display is running. Enable XWayland in your compositor configuration, then sign out and sign in again.
 launchFailed:
   crash: Game Crashed!!
   description: There is no crash report. This this the error log and latest log.
@@ -763,6 +836,11 @@ launcherUpdate:
   installAndQuit: Restart to Install
   noUpdateAvailable: No Update Available
   updateToThisVersion: Download and Install
+  automaticUnavailable: Automatic updates unavailable
+  automaticNotImplemented: Automatic updating is not implemented for this launcher host.
+  automaticNotConfigured: Automatic updating is not configured for this launcher host.
+  manualCheckHint: No release check has been performed. Check GitHub Releases for a compatible package and install it manually.
+  manualCheckRequired: This host cannot check or install updates automatically. Use the GitHub Releases button to check manually.
 localVersion:
   auto: Auto Computed
   empty: No Version Installed
@@ -815,6 +893,10 @@ loginError:
   requirePassword: Password is required
   requireUsername: Username is required
   timeout: Login timeout. Please retry or check your network.
+  loginCanceled: Microsoft sign-in was canceled.
+  xboxErrorGuideHint: Having trouble signing in? Learn how to fix Microsoft & Xbox login issues.
+  openLoginGuide: How to fix this issue
+  openDiscordSupport: Still need help? Join our Discord
 logsCrashes:
   crashes: Crash Reports
   failures: Launch Failures
@@ -844,6 +926,8 @@ minecraftFriends:
     inviteRejected: That player does not have friends enabled or does not accept invites.
     tokenExpired: Your Microsoft session expired. Please log in again.
     unknownProfile: We could not find a player with that name.
+    friendsDisabled: Your Minecraft account has friends disabled or cannot use friends. Enable friends in Minecraft account settings, then try again.
+    invalidName: Minecraft usernames must be between 3 and 16 characters.
   expiresRelative: Expires {time}
   friends: Friends
   heroEmptyHint: Add a Minecraft player by username above to send a friend request.
@@ -924,6 +1008,23 @@ mod:
   syncGroupRules: Save grouping rules
   toUpdate: '{count} updates'
   ungroup: Ungroup
+  autoCategorize: Auto-sort into folders
+  autoCategorizeHint: Automatically group mods into category folders (Optimization, Libraries, World, Gameplay, etc.)
+  autoCategorizeSuccess: Mods automatically sorted into {count} folders
+  collapseAll: Collapse All Folders
+  expandAll: Expand All Folders
+  folderSetting: Folder Settings
+  folderColor: Folder Color
+  folderIcon: Folder Icon
+  pinGroup: Pin to Top
+  pinToTop: Pin to Top
+  pinToTopHint: Folder will appear at the top of the list
+  pinned: Pinned
+  unpinGroup: Unpin Folder
+  customColor: Custom Color
+  preview: Preview
+  ungroupAll: Ungroup all
+  organization: Folder Organization
 modFilter:
   clear: Clear Filter
   dependenciesInstallOnly: Only show missed dependencies mods
@@ -952,6 +1053,7 @@ modInstall:
   skipVersion: Skip the Mods with different Minecraft version
   source: Mod Source
   switch: Switch Version
+  scanUnusedLibraries: Scan Unused Libraries
 modSearch:
   noLocalModsFound: No local mods found matching your search.
   noModsFound: No mods found
@@ -987,6 +1089,112 @@ modpack:
   overrides: Overrides
   url: URL
   urlHint: The home page url of your modpack
+  emitCurseforgeDescription: Standard zip modpack archive for CurseForge
+  emitModrinthDescription: Lightweight official format with fast CDN downloads
+  emitPackwiz: Export Packwiz Modpack
+  emitPackwizDescription: Lightweight git-friendly format (pack.toml, index.toml, and .pw.toml files)
+  exportSuccess: Modpack exported successfully!
+  exportSuccessWithWarnings: Modpack exported with warnings
+  exportSkippedFiles: '{count} unreadable or locked files were skipped during export'
+  exportFailed: Failed to export modpack
+  skippedFilesDialogTitle: Some files could not be exported
+  skippedFilesDialogDescription: Modpack created, but {count} files were skipped
+  skippedReasonEperm: Access denied (locked by OS or another process)
+  skippedReasonEbusy: File is in use by another program
+  skippedReasonEnoent: File not found or broken
+  skippedFilesNotice: The rest of your files were successfully packaged into the modpack. The files above were skipped due to Windows system restrictions or missing access permissions.
+  openExportFolder: Open modpack folder
+  closeDialog: Got it
+  expandAll: Expand all folders
+  collapseAll: Collapse all folders
+  modpackVersionHint: Semantic version string (e.g. 1.0.0). Use + to increment patch/minor
+  modrinthProject: Modrinth project
+  selectDefaultFiles: Select default files
+  selectAllFiles: Select all files
+  deselectAllFiles: Deselect all files
+  bindProject: Bind project
+  bindProjectHint: Select a Modrinth modpack project managed by the current account.
+  bindProjectTypeImmutableHint: Modrinth fixes a project's type when its first version is uploaded, and it can't be changed afterwards. Draft projects without any version yet can still be bound here, but a project already published as a mod/resource pack/etc. can't be converted into a modpack — use "Create new project" instead.
+  bindProjectNoProjects: No Modrinth projects were found for your account.
+  unbindProject: Unbind project
+  unbindProjectConfirmTitle: Unbind Modrinth project?
+  unbindProjectConfirmMessage: This only removes the local association between this instance and the Modrinth project. The project and its versions on Modrinth are not affected.
+  editProject: Edit project
+  projectDiscovery: Discovery and compatibility
+  projectGallery: Gallery
+  projectGalleryAdd: Add image
+  projectGalleryEmpty: No gallery images yet.
+  projectGalleryFeatured: Featured
+  projectGalleryFromScreenshots: Choose screenshot
+  projectGalleryHint: Add up to 5 MiB images and choose the featured project image.
+  projectGallerySelectScreenshot: Select an instance screenshot
+  projectIdentity: Identity and description
+  projectLinks: Project links
+  projectLoadFailed: Failed to load the bound Modrinth project.
+  projectNoChanges: No unsaved project changes.
+  projectNotBound: No Modrinth project is bound
+  projectNotBoundHint: Bind an existing project, or create a new Modrinth project.
+  projectUnsavedChanges: '{count} project field(s) changed'
+  projectLatestDraft: Draft
+  projectVersions: versions
+  publish: Publish
+  publishCategories: Categories (comma separated)
+  publishChannel: Release channel
+  publishChangelog: Changelog
+  publishChangelogGenerate: Generate with AI
+  publishConfirmProjectChanges: Confirm project changes
+  publishCreateProject: Create project
+  publishCreateDraft: Build and create draft
+  publishCustomVersion: Custom
+  publishDescription: Project description
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: Draft version uploaded.
+  publishSubmitted: Version submitted for review.
+  publishExistingProject: Existing project
+  publishIcon: Project icon
+  publishIconHint: PNG, JPEG, or WebP
+  publishIconKeep: Leave unchanged unless a new image is selected
+  publishIconUseInstance: Use instance icon
+  publishIssuesUrl: Issues URL
+  publishLicense: License ID
+  publishLogin: Sign in to Modrinth
+  publishFiles: selected files
+  publishLinkageSummary: '{linked} of {total} mods/resource packs/shader packs will be linked directly to their Modrinth download instead of being uploaded.'
+  publishLinkageEmbeddedSummary: '{count} file(s) can''t be linked and will be uploaded (embedded) with this version.'
+  publishLinkageShowFiles: Show files that must be uploaded
+  publishLinkageReason:
+    missing-file: File not found on disk
+    not-linked-to-modrinth: Not recognized as a Modrinth resource
+    no-downloadable-url: No redistributable download URL found
+  publishModrinth: Publish to Modrinth
+  publishNewProject: New project
+  publishOpenProject: Open project
+  publishOpenVersion: Open version
+  publishProfile: MRPack profile
+  publishProfileClient: Client only
+  publishProfileServer: Server only
+  publishProfileSplit: Universal + separate client/server files
+  publishProfileUniversal: Universal
+  publishProject: Project
+  publishProjectDetailsTab: Project details
+  publishProjectName: Project name
+  publishProjectRequired: Select a project before publishing.
+  publishProjectSlug: Project slug
+  publishProjectUrl: Project URL (optional)
+  publishProjectUrlHint: Leave blank to use {slug}.
+  publishProjectSaved: Project details updated.
+  publishSourceUrl: Source URL
+  publishSubmit: Submit draft for review
+  publishSummary: Short summary
+  publishSummaryMinWords: Summary must contain at least 3 words.
+  publishVersionTitle: Version title
+  publishVersionTab: Publish version
+  publishVersion: Publish version
+  publishVisibility: Visibility
+  publishWikiUrl: Wiki URL
+  visibilityPrivate: Private
+  visibilityPublic: Public
+  visibilityUnlisted: Unlisted
 modpackImportConfirm:
   description: Detect you drop a file into the launcher. Are you trying to import a modpack?
   title: Are you trying to import a modpack?
@@ -1244,6 +1452,16 @@ multiplayer:
   sharing: Sharing files...
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
+  connectedToMaster: Connected to the room master
+  directConnection: Direct
+  master: Master
+  masterHostsGameHint: The room master is the connection hub and should host the Minecraft LAN world. Transfer master before changing hosts.
+  member: Member
+  joinCreatesMissingRoomHint: If this room does not exist, you will create it and become its master.
+  relayConnection: Relay
+  relayAllowanceSummary: '{remaining} remaining of {total} this period'
+  relayServiceAvailable: XMCL Together relay service available
+  waitingForMaster: Waiting for the room master to reconnect
 myStuff: My Stuff
 natType:
   blocked: Blocked
@@ -1290,6 +1508,11 @@ presence:
   save: Viewing Saves in {instance}
   setting: Viewing Setting Page
   shaderPack: Viewing Shader Packs in {instance}
+  away: Away
+  offline: Offline
+  online: Online
+  playing: Playing {game}
+  playingGeneric: Playing
 proxy:
   host: Host
   port: Port
@@ -1477,6 +1700,109 @@ screenshots:
   openFolder: Open Screenshots Folder
   playRandom: Shuffle
   playSequence: Play in order
+  title: Screenshots & Photos
+  manage: Screenshot Manager
+  emptyTitle: No screenshots yet
+  emptyDescription: Press F2 in game to capture screenshots, or import your photos manually.
+  dropHint: Drop photos or screenshots here to add to gallery
+  backToHome: Back to Home
+  import: Add Photos
+  images: Images
+  importSuccess: Successfully imported {count} photos
+  copy: Copy Image
+  copied: Copied to clipboard!
+  setWallpaper: Set as Background
+  setWallpaperSuccess: Set as instance background image!
+  setIcon: Set as Icon
+  setIconSuccess: Set as instance icon!
+  export: Save File
+  exportSuccess: Screenshot saved successfully!
+  exportSelected: Export Selected
+  exportSelectedTitle: Select Export Folder
+  exportSelectedSuccess: Successfully exported {count} screenshots
+  deleteConfirmTitle: Delete screenshots?
+  deleteConfirmMessage: Are you sure you want to delete {count} screenshots? This cannot be undone.
+  deleteSuccess: Screenshots deleted successfully
+  selectedCount: 'Selected: {count}'
+  selectAll: Select all
+  clearSelection: Deselect all
+  countLabel: '{count} screenshots'
+  searchPlaceholder: Search by name...
+  noSearchResults: No matching screenshots
+  noSearchResultsHint: Try adjusting your search query
+  sort: Sort
+  sortDateDesc: Newest first
+  sortDateAsc: Oldest first
+  sortSizeDesc: Largest first
+  sortSizeAsc: Smallest first
+  sortNameAsc: Name (A-Z)
+  sortNameDesc: Name (Z-A)
+  viewGrid: Large grid
+  viewGridCompact: Compact grid
+  viewList: List view
+  edit: Edit
+  editorTitle: Edit Screenshot
+  layer: Layer
+  dragToMove: Drag to move
+  transformHint: Drag selection to move • Drag handles to resize • Enter to commit
+  customColor: Custom color
+  fill: Fill
+  brushPreview: Brush Size Preview
+  fontPreview: Font Size Preview
+  textBgNone: None
+  textBgShadow: Shadow
+  textBgBox: Box
+  cropHint: Drag bounding box to select crop area.
+  textPlacementHint: Enter to place • Esc to cancel
+  layerMoveUp: Move Up
+  layerMoveDown: Move Down
+  layerCopy: '{name} Copy'
+  pixels: px
+  saveCopy: Save Copy
+  saveOverwrite: Overwrite
+  saveSuccess: Screenshot saved!
+  saveCopySuccess: Saved as new screenshot!
+  toolSelect: Select / Pan
+  toolMove: Move & Transform (Ctrl+T / V)
+  toolPan: Pan (Space+Drag)
+  layers: Layers
+  layerAdd: Add Layer
+  layerDuplicate: Duplicate Layer
+  layerDelete: Delete Layer
+  layerOpacity: Opacity
+  transformLayer: Free Transform
+  applyTransform: Apply Transform (Enter)
+  cancelTransform: Cancel (Esc)
+  layerBackground: Background
+  layerPaint: Drawing
+  layerText: Text
+  layerBlur: Blur
+  toolPen: Pen
+  toolArrow: Arrow
+  toolRect: Rectangle
+  toolCircle: Circle
+  toolLine: Line
+  toolText: Text
+  toolHighlighter: Highlighter
+  toolBlur: Pixelate / Blur
+  toolCrop: Crop
+  applyCrop: Apply Crop
+  cancelCrop: Cancel Crop
+  strokeWidth: Stroke width
+  fontSize: Font size
+  color: Color
+  undo: Undo
+  redo: Redo
+  clear: Clear all
+  textPlaceholder: Click to type text...
+  fontFamily: Font
+  fontBold: Bold
+  fontItalic: Italic
+  textApply: Place Text
+  textBg: Background
+  zoomIn: Zoom in
+  zoomOut: Zoom out
+  resetZoom: Reset zoom
 search:
   favorate: Collection
   local: Installed
@@ -1855,6 +2181,23 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
+  multiplayerTransport: Together transport
+  multiplayerTransportDescription: Choose the WebRTC implementation used by Together. Changing transport disconnects active peers.
+  aiAgentApiKeyClear: Clear key
+  aiAgentApiKeyEmpty: Paste your API key
+  aiAgentApiKeyNotNeeded: Not required
+  aiAgentApiKeyNotNeededHint: This provider runs locally and needs no API key
+  aiAgentApiKeySaved: Saved
+  aiAgentApiKeyStored: Key saved - type to replace
+  aiAgentBuiltin: Built-in
+  aiAgentCustom: Custom
+  appImageUpdateMode: AppImage update ownership
+  appImageExternalMode: External manager / manual replacement (default)
+  appImageSelfMode: XMCL self-managed (I own this AppImage)
+  appImageAutoDownload: Automatically download updates
+  appImageAutoInstall: Install downloaded updates when quitting
+  appImageExternalUpdateHint: If installed through Shelly or another manager, update there and keep external mode. Otherwise replace the AppImage yourself at its existing path. XMCL does not download or install updates in external mode, and does not change manager records or desktop entries.
+  appImageSelfUpdateHint: Only choose self-managed for an AppImage you manage yourself, not one owned by Shelly or another manager. Built-in updates require an absolute AppImage path with no version number in the filename (for example xmcl.AppImage). If the name contains a version such as 0.73.0, quit XMCL, rename the file yourself, update your own desktop entry to that stable path, then launch it again. Until then updates remain manual. XMCL will not rename files for you. After changing modes, check for updates again.
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting
@@ -1948,6 +2291,13 @@ shared:
   upgrade: Upgrade
   'yes': 'Yes'
   delete: Delete
+  openFolder: Open Folder
+  reset: Reset
+  missing: missing
+  healthy: OK
+  unused: unused
+  failed: Failed
+  view: View
 sidebar:
   pin: Pin
   unpin: Unpin
@@ -2242,6 +2592,9 @@ userSkin:
   skinDeleteFailed: Could not remove the skin from the wardrobe
   edit: Edit
   fetch: Load
+  invalidImage: Choose a valid Minecraft skin image.
+  invalidImageTitle: Invalid Skin Image
+  uploadRejected: Minecraft rejected this skin upload. Please try again later.
 version:
   checkIntegrity: Check Integrity
   name: Version | Versions
@@ -2405,3 +2758,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: Account
+  confirmMerge: Confirm account merge
+  createdAt: Created {date}
+  description: Your passwordless XMCL identity, separate from Minecraft game accounts.
+  expiresAt: Expires {date}
+  gameAccountsSeparate: Removing a game account does not unlink an XMCL login method.
+  guest: Guest
+  identityConflict: This {provider} login belongs to another XMCL Account. Accounts are never merged automatically.
+  linkAccountWith: Link account with
+  mergePreview: Review the resources that will move before confirming.
+  mergeNeedsSession: Sign in to the XMCL Account you want to keep before reviewing the merge.
+  mergeQueued: Account merge is in progress.
+  requestFailed: The XMCL Account service could not complete this request. Your game account is unchanged.
+  reviewMerge: Review merge
+  session: Session
+  sessionActive: Active
+  sessionExpired: Expired
+  signOutAll: Sign out all devices
+  signOutDevice: Sign out this device
+  status:
+    active: Active
+    deleted: Deleted
+    deletion_pending: Deletion pending
+    merged: Merged
+  title: XMCL Account
+modCategory:
+  optimization: Optimization & Performance
+  libraries: Libraries & APIs
+  utilities: UI & Utilities
+  world: World & Biomes
+  visual: Visual & Audio
+  gameplay: Gameplay & Content
+  miscellaneous: Miscellaneous
+localCollection:
+  title: Launcher collections
+  newCollection: New collection
+  namePlaceholder: Collection name
+  addToCollection: Add to collection
+  empty: No launcher collections yet
+  corrupted: Your saved collections could not be read and have been reset. A backup was kept next to the data file.
+  modrinthSection: Modrinth account
+  installAll: Install all
+  incompatibleAlert: '1 project is not compatible with the current instance and was skipped: | {count} projects are not compatible with the current instance and were skipped:'
+  projects: No projects | {count} project | {count} projects
+  saveCurrentMods: Save installed mods as collection
+  saveCurrentModsSuccess: Saved {count} mods to collection "{name}"
+  viewMods: View mods
+  editCollection: Edit collection
+  collectionDescription: Collection description
+  noModsInCollection: No mods in this collection yet
+  exportCollection: Export collection
+  importCollection: Import collection
+  removeEntryConfirm: Remove from collection
+  addMods: Add mods
+  addModsTo: Add mods to "{name}"
+  addModsHint: Add installed mods from your instance or click the bookmark button in the Market to add mods.
+  addModsDialogDesc: Select which installed mods from this instance to include in this collection.
+  addAllCurrent: Add all current mods
+  addedModsSuccess: Added {count} mods to collection
+  searchMods: Search mods...
+  selectAll: Select all
+  deselectAll: Deselect all
+  selected: selected
+  alreadyInCollection: Added
+  noMatchingMods: No mods match your search
+  addSelectedMods: Add {count} mods

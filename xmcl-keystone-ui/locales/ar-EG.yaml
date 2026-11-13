@@ -52,6 +52,43 @@ agent:
   thinking: بيفكر…
   title: عميل XMCL
   toggleHint: للتبديل
+  abort: إيقاف التوليد
+  confirmAccept: متابعة
+  confirmAllowAll: السماح للكل
+  confirmCancel: إلغاء
+  confirmPending: في انتظار التأكيد
+  confirmTitle: تأكيد إجراء العميل
+  errorTitle: العميل واجه خطأ
+  passiveGameCrashed: اللعبة انهارت (كراش)
+  passiveGameExitCode: رمز الخروج {code}
+  passiveGameExited: اللعبة قفلت
+  passiveGameExitSignal: إشارة {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: مفيش حالة خروج
+  reasoning: التفكير (Reasoning)
+  passiveGameStarted: اللعبة اشتغلت
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: تقرير توافق المودات
+  passiveModDiagnosisError: فشل تشخيص التوافق
+  passiveModDiagnosisSummary: تم فحص {checked} مود · {incompatibilities} تعارض · {duplicates} مكرر
+  passiveModDuplicate: 'مود مكرر {mod}: {files}'
+  passiveModInstalled: تم تثبيت {version}
+  toolArguments: المعاملات (Arguments)
+  toolResult: النتيجة
+  toolRunning: في انتظار النتيجة…
+  marketConfirmMessage: هل تريد تثبيت {name} في النسخة الحالية؟
+  marketConfirmTarget: 'الهدف: {instance}'
+  marketConfirmTitle: تثبيت {type}
+  marketInstall: تثبيت
+  marketInstalled: تم التثبيت
+  marketInstallFailed: فشل تثبيت {type}
+  marketType:
+    datapack: داتا باك
+    mod: مود
+    modpack: مودباك
+    resourcepack: حزمة موارد
+    shader: حزمة شيدر
+  marketResultCount: '{count} نتيجة'
 ago:
   day: من {duration} يوم | من {duration} يوم
   hour: من {duration} ساعة | من {duration} ساعة
@@ -119,7 +156,7 @@ backup:
   create: إنشاء نسخة احتياطية
   createTitle: إنشاء أرشيف نسخ احتياطي XMCL
   saveDialogTitle: حفظ أرشيف النسخ الاحتياطي XMCL
-  fileFilterName: 'أرشيف النسخ الاحتياطي XMCL (*.xmclbackup, *.zip)'
+  fileFilterName: أرشيف النسخ الاحتياطي XMCL (*.xmclbackup, *.zip)
   createError: فشل إنشاء النسخة الاحتياطية
   loadManifestError: فشل قراءة أرشيف النسخة الاحتياطية
   restore: استعادة
@@ -130,7 +167,7 @@ backup:
   elapsedTime: الوقت المنقضي
   remainingTime: الوقت المتبقي المقدر
   calculatingRemaining: جاري الحساب...
-  lessThanMinute: '< 1 دقيقة'
+  lessThanMinute: < 1 دقيقة
   itemsProgress: '{current}/{total}'
   savesCategory: العوالم
   modsCategory: المودات
@@ -142,9 +179,9 @@ backup:
   copiedLog: تم نسخ السجل إلى الحافظة
   openFolder: إظهار في المجلد
   done: تم
-  backupDone: 'اكتمل النسخ الاحتياطي!'
+  backupDone: اكتمل النسخ الاحتياطي!
   backupDoneHint: تم إنشاء أرشيف النسخة الاحتياطية والتحقق منه.
-  restoreDone: 'اكتملت الاستعادة!'
+  restoreDone: اكتملت الاستعادة!
   restoreDoneHint: تمت استعادة جميع البيانات والنسخ المحددة بنجاح.
   timeTaken: 'الوقت المستغرق: {time}'
   destinationFile: 'تم الحفظ في: {path}'
@@ -161,7 +198,7 @@ backup:
   selectBackupFileDescription: اختر ملف .xmclbackup أو .zip يحتوي على بيانات ونسخ XMCL المحفوظة.
   selectFile: اختر ملفًا
   selectBackupFileTitle: فتح أرشيف النسخ الاحتياطي XMCL
-  createdOn: 'تم الإنشاء في {date}'
+  createdOn: تم الإنشاء في {date}
   changeFile: تغيير الملف
   dataToRestore: البيانات المراد استعادتها
   restoreSettings: استعادة الإعدادات
@@ -178,9 +215,9 @@ backup:
   restoreError: فشلت استعادة النسخة الاحتياطية
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: إنشاء نسخة احتياطية
   createBackupDescription: احفظ إعدادات المشغل والمجموعات والسمات المخصصة والنسخ في ملف أرشيف محمول واحد.
   restoreBackupTitle: استعادة نسخة احتياطية
@@ -195,7 +232,7 @@ backup:
   autoBackupRunNow: تشغيل الآن
   autoBackupLastRun: آخر نسخ تلقائي
   autoBackupNeverRun: أبدًا
-  selectedCount: 'تم تحديد {selected} / {total}'
+  selectedCount: تم تحديد {selected} / {total}
   autoBackupSelectInstances: النسخ المراد نسخها تلقائيًا (حدد واحدة أو أكثر)
   searchInstances: البحث عن النسخ...
   autoBackupInterval: تكرار النسخ الاحتياطي
@@ -218,9 +255,27 @@ backup:
   interval6h: كل 6 ساعات
   interval12h: كل 12 ساعة
   interval24h: كل 24 ساعة
-  keepCount: 'الاحتفاظ بآخر {count} نسخ احتياطية'
+  keepCount: الاحتفاظ بآخر {count} نسخ احتياطية
 baseSetting:
   title: إعدادات النسخة
+  info:
+    address: العنوان
+    changes: التغييرات
+    custom: مخصص
+    disabled: معطل
+    enabled: مفعل
+    exportFormats: صيغ التصدير
+    inherited: موروث
+    modLoader: محمل المودات
+    notConfigured: مش مهيأ
+    notSet: مش محدد
+    offline: أرشيف أوفلاين
+    projectId: معرف المشروع (Project ID)
+    running: شغال
+    saved: محفوظ
+    status: الحالة
+    stopped: متوقف
+    vanilla: فانيلا (أصلي)
 browseApp:
   createShortcut: إنشاء اختصار
   default: افتراضي
@@ -455,6 +510,7 @@ commandPalette:
   hintEnter: دخول
   hintBack: رجوع
   hintClose: إغلاق
+  hintAskAgent: اسأل العميل
 feedback:
   channel: القنوات
   description: لقيت مشكلة (Bug) أو عاوز أقول اقتراح
@@ -473,6 +529,8 @@ feedback:
   qq: جروب QQ
   qqDescription: 'ادخل جروب QQ وتكلم مع المطورين مباشرة. رقم الجروب: {number}'
   qqEnterGroup: انضم
+  reddit: Reddit
+  redditDescription: انضم لمجتمع r/XMCL على ريديت
 fileDetail:
   fileSize: حجم الملف
   filesize: حجم الملف
@@ -554,7 +612,7 @@ instance:
   deleteFailedPermission: ملف مستخدم بواسطة برنامج تاني حالياً
   deleteFile: مسح ملفات النسخة
   deleteHint: بيانات النسخة دي هتتمسح من القرص الصلب نهائياً. هل أنت متأكد؟
-  deleteHintBedrock: نسخة ماينكرافت بيدروك وكل بياناتها هتتمسح نهائياً من كمبيوترك. هل أنت متأكد؟
+  deleteHintBedrock: إصدار Minecraft Bedrock وكل بياناته هيتحذف تماماً من جهازك. هل أنت متأكد؟
   duplicate: نسخ اللعبة
   duplicatedName: الاسم مكرر
   envVarKey: المفتاح
@@ -610,6 +668,10 @@ instance:
   vmVar: متغيرات البيئة
   vmVarHint: اضغط على زرار + لإضافة متغيرات البيئة
   width: العرض
+  monitor: شاشة ملء الشاشة
+  monitorDefault: افتراضي (الشاشة الرئيسية)
+  monitorNumber: شاشة {number}
+  monitorPrimary: الرئيسية
 instanceAge:
   older: قديمة
   threeDay: خلال 3 أيام
@@ -675,6 +737,10 @@ instances:
   folderSetting: إعدادات المجلد
   importFolderDescription: استيراد ماينكرافت للانشر
   loadingFiles: جاري تحميل ملفات حزمة المودات
+  instanceCount: '{count} نسخة'
+  linkSharedFolders: مشاركة المجلدات بين النسخ
+  linkSharedFoldersHint: أنشئ المجلدات دي كروابط لمجلدات المشغل المشتركة عشان النسخة دي تشارك محتواها مع باقي النسخ المرتبطة. دي مش نسخة — أي تغيير في نسخة هيظهر في الباقي. المجلدات اللي مش متعلمة هتفضل خاصة بالنسخة دي بس.
+  linkFailed: فشل ربط مجلد {folder} بالمجلد المشترك
 items:
   count: '{count} عنصر | {count} عناصر'
   total: الإجمالي {total}
@@ -736,6 +802,13 @@ launchBlocked:
     description: يرجى فحص الجافا، أو إعطاء صلاحيات أكبر للانشر وإعادة المحاولة. لو المشكلة استمرت، يرجى الاتصال بالمطورين.
     title: فشل بدء عملية اللعبة
   unexpectedText: ده أمر غير متوقع. تقدر ترستر اللانشر عشان تخفف المشكلة. يرجى التواصل مع المطور لو المشكلة دي اتكررت.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL مقدرش يجيب معلومات شاشة X11 من جلسة سطح المكتب. أعد تشغيل XMCL من التيرمينال في جلسة سطح المكتب الحالية، أو سجل خروج وادخل تاني.
+    noGraphicalSession: XMCL مش شغال في جلسة سطح مكتب رسومية. شغل XMCL من جلسة سطح المكتب قبل ما تشغل Minecraft.
+    sandboxDenied: بيئة العزل (Sandbox) مش قادرة توصل لـ X11. ادي XMCL إذن الوصول لمقبس X11 في أذونات Flatpak، وبعدين أعد تشغيل XMCL.
+    title: شاشة X11 مش متوفرة
+    xwaylandMissing: Minecraft محتاجة XWayland في جلسة Wayland دي. ثبت حزمة XWayland الخاصة بتوزيعة لينكس بتاعتك، وسجل خروج وادخل تاني.
+    xwaylandNotRunning: XWayland متثبت بس مفيش شاشة X11 شغالة. فعل XWayland في إعدادات مدير النوافذ (Compositor)، وسجل خروج وادخل تاني.
 launchFailed:
   crash: اللعبة عملت كراش!!
   description: مفيش تقرير كراش (crash report) متوفر. ده سجل الأخطاء والسجل الأخير.
@@ -763,6 +836,11 @@ launcherUpdate:
   installAndQuit: إعادة التشغيل للتثبيت
   noUpdateAvailable: مفيش تحديثات متاحة
   updateToThisVersion: تنزيل وتثبيت
+  automaticUnavailable: التحديث التلقائي مش متوفر
+  automaticNotImplemented: التحديث التلقائي مش مدعوم في النظام ده.
+  automaticNotConfigured: التحديث التلقائي مش مهيأ للمشغل ده.
+  manualCheckHint: متمش فحص أي إصدارات جديدة. راجع صفحة إصدارات GitHub وثبت الحزمة المناسبة يدويًا.
+  manualCheckRequired: الجهاز ده مبيقدرش يفحص أو يثبت التحديثات تلقائيًا. استخدم زرار GitHub Releases عشان تفحص يدويًا.
 localVersion:
   auto: محسوب تلقائياً
   empty: مفيش إصدارات متثبتة
@@ -815,6 +893,10 @@ loginError:
   requirePassword: الباسورد مطلوب
   requireUsername: اسم المستخدم مطلوب
   timeout: انتهت مهلة تسجيل الدخول. يرجى إعادة المحاولة أو فحص الشبكة.
+  loginCanceled: تم إلغاء تسجيل الدخول بحساب Microsoft.
+  xboxErrorGuideHint: بتواجه مشكلة في تسجيل الدخول؟ اعرف إزاي تحل مشاكل تسجيل دخول Microsoft و Xbox.
+  openLoginGuide: طريقة حل المشكلة دي
+  openDiscordSupport: لسه محتاج مساعدة؟ انضم لدسكورد بتاعنا
 logsCrashes:
   crashes: تقارير الكراش
   failures: أخطاء التشغيل
@@ -844,6 +926,8 @@ minecraftFriends:
     inviteRejected: اللاعب ده مش مفعل ميزة الأصدقاء أو مش بيقبل الدعوات.
     tokenExpired: انتهت صلاحية جلسة مايكروسوفت الخاصة بك. يرجى تسجيل الدخول مرة تانية.
     unknownProfile: ملقناش لاعب بالاسم ده.
+    friendsDisabled: حساب Minecraft بتاعك معطل فيه ميزة الأصدقاء أو مش قادر يستخدمها. فعل الأصدقاء من إعدادات حساب Minecraft، وجرب تاني.
+    invalidName: اسم مستخدم Minecraft لازم يكون بين 3 و 16 حرف.
   expiresRelative: ينتهي {time}
   friends: الأصدقاء
   privacy:
@@ -924,6 +1008,23 @@ mod:
   syncGroupRules: حفظ قواعد التجميع
   toUpdate: '{count} تحديثات'
   ungroup: فك التجميع
+  autoCategorize: ترتيب تلقائي في مجلدات
+  autoCategorizeHint: تجميع المودات تلقائيًا في مجلدات حسب الفئة (تحسين الأداء، مكتبات، العالم، أسلوب اللعب، إلخ)
+  autoCategorizeSuccess: تم ترتيب المودات تلقائيًا في {count} مجلد
+  collapseAll: طي كل المجلدات
+  expandAll: توسيع كل المجلدات
+  folderSetting: إعدادات المجلد
+  folderColor: لون المجلد
+  folderIcon: أيقونة المجلد
+  pinGroup: تثبيت في الأعلى
+  pinToTop: تثبيت في الأعلى
+  pinToTopHint: المجلد هيظهر في أول القائمة
+  pinned: مثبت
+  unpinGroup: إلغاء تثبيت المجلد
+  customColor: لون مخصص
+  preview: معاينة
+  ungroupAll: فك كل المجموعات
+  organization: تنظيم المجلدات
 modFilter:
   clear: مسح الفلاتر
   dependenciesInstallOnly: عرض المودات اللي ناقصها متطلبات بس
@@ -952,6 +1053,7 @@ modInstall:
   skipVersion: تخطي المودات اللي ليها نسخ ماينكرافت تانية
   source: مصدر المود
   switch: تبديل الإصدار
+  scanUnusedLibraries: فحص المكتبات غير المستخدمة
 modSearch:
   noLocalModsFound: ملقناش مودات محلية مطابقة للبحث.
   noModsFound: ملقناش مودات
@@ -987,6 +1089,112 @@ modpack:
   overrides: التجاوزات (Overrides)
   url: رابط الويب (URL)
   urlHint: رابط الصفحة الرئيسية لحزمة المودات بتاعتك
+  emitCurseforgeDescription: أرشيف مودباك zip قياسي لمنصة CurseForge
+  emitModrinthDescription: صيغة رسمية خفيفة وسريعة التحميل عبر CDN
+  emitPackwiz: تصدير مودباك Packwiz
+  emitPackwizDescription: صيغة خفيفة مناسبة لـ git (ملفات pack.toml و index.toml و .pw.toml)
+  exportSuccess: تم تصدير المودباك بنجاح!
+  exportSuccessWithWarnings: تم تصدير المودباك مع بعض التحذيرات
+  exportSkippedFiles: تم تخطي {count} ملف للقراءة فقط أو مقفول أثناء التصدير
+  exportFailed: فشل تصدير المودباك
+  skippedFilesDialogTitle: في ملفات مقدرناش نصدرها
+  skippedFilesDialogDescription: تم إنشاء المودباك، بس في {count} ملف تم تخطيهم
+  skippedReasonEperm: تم رفض الوصول (مقفول من النظام أو برنامج تاني)
+  skippedReasonEbusy: الملف مستخدم بواسطة برنامج تاني
+  skippedReasonEnoent: الملف مش موجود أو تالف
+  skippedFilesNotice: باقي ملفاتك اتحزمت بنجاح في المودباك. الملفات اللي فوق تم تخطيها بسبب قيود نظام Windows أو نقص في أذونات الوصول.
+  openExportFolder: فتح مجلد المودباك
+  closeDialog: فهمت
+  expandAll: توسيع كل المجلدات
+  collapseAll: طي كل المجلدات
+  modpackVersionHint: صيغة الإصدار الدلالي (مثل 1.0.0). استخدم + لزيادة الترقيع أو الإصدار الفرعي
+  modrinthProject: مشروع Modrinth
+  selectDefaultFiles: تحديد الملفات الافتراضية
+  selectAllFiles: تحديد كل الملفات
+  deselectAllFiles: إلغاء تحديد كل الملفات
+  bindProject: ربط المشروع
+  bindProjectHint: اختر مشروع مودباك Modrinth مدار بالحساب الحالي.
+  bindProjectTypeImmutableHint: Modrinth بيحدد نوع المشروع لما أول إصدار يترفع، ومبيتقدرش تغيره بعدين. مشاريع المسودات اللي مفيهاش إصدارات ممكن تتربط هنا، لكن مشروع منشور كمود أو حزمة موارد مينفعش يتحول لمودباك — استخدم "إنشاء مشروع جديد" بدلاً من ذلك.
+  bindProjectNoProjects: ملقناش أي مشاريع Modrinth تابعة لحسابك.
+  unbindProject: إلغاء ربط المشروع
+  unbindProjectConfirmTitle: إلغاء ربط مشروع Modrinth؟
+  unbindProjectConfirmMessage: ده هيشيل الربط المحلي بس بين النسخة دي ومشروع Modrinth. المشروع وإصداراته على Modrinth مش هيتأثروا.
+  editProject: تعديل المشروع
+  projectDiscovery: الاستكشاف والتوافق
+  projectGallery: المعرض
+  projectGalleryAdd: إضافة صورة
+  projectGalleryEmpty: مفيش صور في المعرض لسه.
+  projectGalleryFeatured: صورة مميزة
+  projectGalleryFromScreenshots: اختر لقطة شاشة
+  projectGalleryHint: ضيف صور بحجم يصل لـ 5 ميجابايت واختر الصورة المميزة للمشروع.
+  projectGallerySelectScreenshot: اختر لقطة شاشة من النسخة
+  projectIdentity: الهوية والوصف
+  projectLinks: روابط المشروع
+  projectLoadFailed: فشل تحميل مشروع Modrinth المرتبط.
+  projectNoChanges: مفيش تغييرات مش محفوظة في المشروع.
+  projectNotBound: مفيش مشروع Modrinth مرتبط
+  projectNotBoundHint: اربط مشروع موجود، أو أنشئ مشروع Modrinth جديد.
+  projectUnsavedChanges: تم تغيير {count} حقل في المشروع
+  projectLatestDraft: مسودة (Draft)
+  projectVersions: الإصدارات
+  publish: نشر
+  publishCategories: الفئات (مفصولة بفواصل)
+  publishChannel: قناة الإصدار
+  publishChangelog: سجل التغييرات
+  publishChangelogGenerate: توليد بالذكاء الاصطناعي
+  publishConfirmProjectChanges: تأكيد تغييرات المشروع
+  publishCreateProject: إنشاء مشروع
+  publishCreateDraft: بناء وإنشاء مسودة
+  publishCustomVersion: مخصص
+  publishDescription: وصف المشروع
+  publishDiscordUrl: رابط Discord
+  publishDraftCreated: تم رفع إصدار المسودة.
+  publishSubmitted: تم إرسال الإصدار للمراجعة.
+  publishExistingProject: مشروع موجود
+  publishIcon: أيقونة المشروع
+  publishIconHint: PNG أو JPEG أو WebP
+  publishIconKeep: سيبها زي ما هي إلا لو اخترت صورة جديدة
+  publishIconUseInstance: استخدام أيقونة النسخة
+  publishIssuesUrl: رابط المشاكل (Issues)
+  publishLicense: معرف الرخصة
+  publishLogin: تسجيل الدخول في Modrinth
+  publishFiles: الملفات المحددة
+  publishLinkageSummary: '{linked} من أصل {total} مود/حزمة موارد/شيدر هيتم ربطهم برابط تحميلهم على Modrinth مباشرة بدل ما يترفعوا.'
+  publishLinkageEmbeddedSummary: في {count} ملف مقدرناش نربطهم وهيتترفعوا (مدمجين) مع الإصدار ده.
+  publishLinkageShowFiles: عرض الملفات اللي لازم تترفع
+  publishLinkageReason:
+    missing-file: الملف مش موجود على القرص
+    not-linked-to-modrinth: مش معروف كمورد على Modrinth
+    no-downloadable-url: ملقناش رابط تحميل متاح لإعادة التوزيع
+  publishModrinth: نشر على Modrinth
+  publishNewProject: مشروع جديد
+  publishOpenProject: فتح المشروع
+  publishOpenVersion: فتح الإصدار
+  publishProfile: ملف تعريف MRPack
+  publishProfileClient: العميل فقط (Client)
+  publishProfileServer: السيرفر فقط (Server)
+  publishProfileSplit: شامل + ملفات منفصلة للعميل/السيرفر
+  publishProfileUniversal: شامل (Universal)
+  publishProject: المشروع
+  publishProjectDetailsTab: تفاصيل المشروع
+  publishProjectName: اسم المشروع
+  publishProjectRequired: اختر مشروع قبل النشر.
+  publishProjectSlug: الاسم اللطيف للمشروع (Slug)
+  publishProjectUrl: رابط المشروع (اختياري)
+  publishProjectUrlHint: سيبه فاضي عشان تستخدم {slug}.
+  publishProjectSaved: تم تحديث تفاصيل المشروع.
+  publishSourceUrl: رابط الكود المصدري
+  publishSubmit: إرسال المسودة للمراجعة
+  publishSummary: ملخص قصير
+  publishSummaryMinWords: الملخص لازم يحتوي على 3 كلمات على الأقل.
+  publishVersionTitle: عنوان الإصدار
+  publishVersionTab: نشر الإصدار
+  publishVersion: نشر الإصدار
+  publishVisibility: الظهور
+  publishWikiUrl: رابط الويكي
+  visibilityPrivate: خاص
+  visibilityPublic: عام
+  visibilityUnlisted: غير مدرج
 modpackImportConfirm:
   description: اكتشفنا إنك سحبت ملف للانشر. هل بتحاول تستورد حزمة مودات (Modpack)؟
   title: هل بتحاول تستورد حزمة مودات؟
@@ -1242,6 +1450,16 @@ multiplayer:
   sharing: جاري مشاركة الملفات...
   start: البدء
   startNewP2PConnection: اضغط على زرار البدء لإنشاء اتصال جديد
+  connectedToMaster: متصل بالمضيف الرئيسي للغرفة
+  directConnection: مباشر
+  master: المضيف (Master)
+  masterHostsGameHint: المضيف هو نقطة الاتصال ولازم يستضيف عالم LAN في Minecraft. انقل صلاحية المضيف قبل تغيير الجهاز المستضيف.
+  member: عضو
+  joinCreatesMissingRoomHint: لو الغرفة دي مش موجودة، هتنشئها وتكون أنت المضيف بتاعها.
+  relayConnection: مُرحل (Relay)
+  relayAllowanceSummary: فاضل {remaining} من أصل {total} في الفترة دي
+  relayServiceAvailable: خدمة الترحيل XMCL Together متوفرة
+  waitingForMaster: في انتظار إعادة اتصال المضيف الرئيسي
 myStuff: حاجاتي
 natType:
   blocked: محظور
@@ -1288,6 +1506,11 @@ presence:
   save: عرض العوالم المحفوظة في {instance}
   setting: عرض صفحة الإعدادات
   shaderPack: عرض حزم الشيدر في {instance}
+  away: بالخارج
+  offline: أوفلاين
+  online: أونلاين
+  playing: بيلعب {game}
+  playingGeneric: بيلعب
 proxy:
   host: المضيف (Host)
   port: المنفذ (Port)
@@ -1475,6 +1698,109 @@ screenshots:
   openFolder: افتح مجلد لقطات الشاشة
   playRandom: خلط وتشغيل عشوائي
   playSequence: تشغيل بالترتيب
+  title: لقطات الشاشة والصور
+  manage: إدارة لقطات الشاشة
+  emptyTitle: مفيش لقطات شاشة لسه
+  emptyDescription: اضغط F2 جوه اللعبة عشان تاخد لقطة شاشة، أو استورد صورك يدويًا.
+  dropHint: اسحب الصور أو لقطات الشاشة هنا عشان تضيفها للمعرض
+  backToHome: رجوع للرئيسية
+  import: إضافة صور
+  images: الصور
+  importSuccess: تم استيراد {count} صورة بنجاح
+  copy: نسخ الصورة
+  copied: تم النسخ للحافظة!
+  setWallpaper: تعيين كخلفية
+  setWallpaperSuccess: تم التعيين كخلفية للنسخة!
+  setIcon: تعيين كأيقونة
+  setIconSuccess: تم التعيين كأيقونة للنسخة!
+  export: حفظ الملف
+  exportSuccess: تم حفظ لقطة الشاشة بنجاح!
+  exportSelected: تصدير المحدد
+  exportSelectedTitle: اختيار مجلد التصدير
+  exportSelectedSuccess: تم تصدير {count} لقطة شاشة بنجاح
+  deleteConfirmTitle: حذف لقطات الشاشة؟
+  deleteConfirmMessage: هل أنت متأكد أنك عايز تحذف {count} لقطة شاشة؟ العملية دي مش هتقدر ترجع فيها.
+  deleteSuccess: تم حذف لقطات الشاشة بنجاح
+  selectedCount: 'المحدد: {count}'
+  selectAll: تحديد الكل
+  clearSelection: إلغاء تحديد الكل
+  countLabel: '{count} لقطة شاشة'
+  searchPlaceholder: بحث بالاسم...
+  noSearchResults: مفيش لقطات شاشة مطابقة
+  noSearchResultsHint: جرب تغير كلمات البحث
+  sort: ترتيب
+  sortDateDesc: الأحدث أولاً
+  sortDateAsc: الأقدم أولاً
+  sortSizeDesc: الأكبر حجمًا أولاً
+  sortSizeAsc: الأصغر حجمًا أولاً
+  sortNameAsc: الاسم (أ-ي)
+  sortNameDesc: الاسم (ي-أ)
+  viewGrid: شبكة كبيرة
+  viewGridCompact: شبكة مدمجة
+  viewList: عرض قائمة
+  edit: تعديل
+  editorTitle: تعديل لقطة الشاشة
+  layer: طبقة (Layer)
+  dragToMove: اسحب عشان تحرك
+  transformHint: اسحب التحديد للتحريك • اسحب المقابض لتغيير الحجم • اضغط Enter للتطبيق
+  customColor: لون مخصص
+  fill: تعبئة (Fill)
+  brushPreview: معاينة حجم الفرشاة
+  fontPreview: معاينة حجم الخط
+  textBgNone: بدون
+  textBgShadow: ظل (Shadow)
+  textBgBox: صندوق (Box)
+  cropHint: اسحب مربع التحديد عشان تختار منطقة القص.
+  textPlacementHint: اضغط Enter عشان تحط النص • Esc للإلغاء
+  layerMoveUp: تحريك لأعلى
+  layerMoveDown: تحريك لأسفل
+  layerCopy: نسخة {name}
+  pixels: بكسل
+  saveCopy: حفظ نسخة
+  saveOverwrite: استبدال (Overwrite)
+  saveSuccess: تم حفظ لقطة الشاشة!
+  saveCopySuccess: تم الحفظ كلقطة شاشة جديدة!
+  toolSelect: تحديد / تحريك الكاميرا
+  toolMove: تحريك وتحويل (Ctrl+T / V)
+  toolPan: تحريك الكاميرا (Space+سحب)
+  layers: الطبقات (Layers)
+  layerAdd: إضافة طبقة
+  layerDuplicate: تكرار الطبقة
+  layerDelete: حذف الطبقة
+  layerOpacity: عدم الشفافية (Opacity)
+  transformLayer: تحويل حر
+  applyTransform: تطبيق التحويل (Enter)
+  cancelTransform: إلغاء (Esc)
+  layerBackground: الخلفية
+  layerPaint: رسم
+  layerText: نص
+  layerBlur: تمويه (Blur)
+  toolPen: قلم
+  toolArrow: سهم
+  toolRect: مستطيل
+  toolCircle: دائرة
+  toolLine: خط
+  toolText: نص
+  toolHighlighter: قلم تظليل
+  toolBlur: بكسلة / تمويه
+  toolCrop: قص (Crop)
+  applyCrop: تطبيق القص
+  cancelCrop: إلغاء القص
+  strokeWidth: سمك الخط
+  fontSize: حجم الخط
+  color: اللون
+  undo: تراجع
+  redo: إعادة
+  clear: مسح الكل
+  textPlaceholder: اضغط هنا لكتابة النص...
+  fontFamily: الخط
+  fontBold: عريض
+  fontItalic: مائل
+  textApply: وضع النص
+  textBg: الخلفية
+  zoomIn: تكبير
+  zoomOut: تصغير
+  resetZoom: إعادة ضبط التكبير
 search:
   favorate: المجموعة المفضلة
   local: المثبتة
@@ -1709,7 +2035,7 @@ setting:
     sideBarColor: الشريط الجانبي (Side Bar)
     warningColor: لون التحذير
   customCss:
-    advancedDescription: تجاوز التصميم الحالي للانشر باستخدام كود CSS الخاص بك.
+    advancedDescription: خصص مظهر المشغل الحالي بكود CSS بتاعك.
     assistantHint: اوصف الشكل اللي عاوزه وأنا هكتب لك كود الـ CSS.
     assistantSuggestion1: خلي الشريط الجانبي شبه شفاف
     assistantSuggestion2: ضيف تدرج لوني خفيف لخلفية الكروت
@@ -1853,6 +2179,23 @@ setting:
   useProxy: بروكسي HTTP (Proxy)
   useProxyDescription: عنوان سيرفر البروكسي لطلبات الـ HTTP
   viewBackgroundMusic: عرض الأغاني والموسيقى
+  multiplayerTransport: بروتوكول نقل Together
+  multiplayerTransportDescription: اختر تطبيق WebRTC المستخدم في Together. تغيير بروتوكول النقل هيفصل الأجهزة المتصلة.
+  aiAgentApiKeyClear: مسح المفتاح
+  aiAgentApiKeyEmpty: الصق مفتاح API بتاعك
+  aiAgentApiKeyNotNeeded: مش مطلوب
+  aiAgentApiKeyNotNeededHint: المزود ده شغال محليًا ومش محتاج مفتاح API
+  aiAgentApiKeySaved: تم الحفظ
+  aiAgentApiKeyStored: تم حفظ المفتاح - اكتب للاستبدال
+  aiAgentBuiltin: مدمج (Built-in)
+  aiAgentCustom: مخصص
+  appImageUpdateMode: إدارة تحديثات AppImage
+  appImageExternalMode: مدير خارجي / استبدال يدوي (افتراضي)
+  appImageSelfMode: مُدار ذاتيًا بواسطة XMCL (أنا أمتلك هذا الـ AppImage)
+  appImageAutoDownload: تنزيل التحديثات تلقائيًا
+  appImageAutoInstall: تثبيت التحديثات المنزلة عند الإغلاق
+  appImageExternalUpdateHint: لو متثبت عن طريق Shelly أو برنامج إدارة تاني، حدث من هناك وخليك على الوضع الخارجي. غير كده استبدل الـ AppImage بنفسك في مساره الحالي. XMCL مش بينزل تحديثات في الوضع الخارجي.
+  appImageSelfUpdateHint: اختار الإدارة الذاتية بس لـ AppImage بتديره بنفسك. التحديثات المضمنة محتاجة مسار كامل من غير رقم إصدار في اسم الملف (زي xmcl.AppImage). لو الاسم فيه إصدار زي 0.73.0، اقفل XMCL وغير اسم الملف.
 settingLabel:
   global: عالمي
   globalHint: الإعداد ده هيتبع الإعداد العالمي المشترك
@@ -1946,6 +2289,13 @@ shared:
   upgrade: ترقية
   'yes': أيوة
   delete: حذف
+  openFolder: فتح المجلد
+  reset: إعادة ضبط
+  missing: مفقود
+  healthy: سليم
+  unused: غير مستخدم
+  failed: فشل
+  view: عرض
 sidebar:
   pin: تثبيت
   unpin: إلغاء التثبيت
@@ -2240,6 +2590,9 @@ userSkin:
   skinDeleteFailed: ما قدرناش نمسح السكن من الدولاب
   edit: تعديل
   fetch: تحميل
+  invalidImage: اختر صورة سكن صحيحة لـ Minecraft.
+  invalidImageTitle: صورة السكن غير صالحة
+  uploadRejected: Minecraft رفضت رفع السكن ده. من فضلك جرب تاني بعدين.
 version:
   checkIntegrity: التحقق من سلامة الملفات
   name: إصدار | إصدارات
@@ -2403,3 +2756,70 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: الحساب
+  confirmMerge: تأكيد دمج الحسابات
+  createdAt: 'تاريخ الإنشاء: {date}'
+  description: هوية XMCL بدون كلمة سر، منفصلة عن حسابات لعبة Minecraft.
+  expiresAt: 'ينتهي في: {date}'
+  gameAccountsSeparate: حذف حساب اللعبة مش بيفك ارتباط طريقة تسجيل دخول XMCL.
+  guest: ضيف
+  identityConflict: تسجيل الدخول ده عبر {provider} تابع لحساب XMCL تاني. الحسابات مش بتندمج تلقائيًا أبدًا.
+  linkAccountWith: ربط الحساب بـ
+  mergePreview: راجع الموارد اللي هتتنقل قبل ما تأكد الدمج.
+  mergeNeedsSession: سجل دخول لحساب XMCL اللي عايز تحتفظ بيه قبل مراجعة الدمج.
+  mergeQueued: جاري دمج الحسابات.
+  requestFailed: خدمة حسابات XMCL مقدرتش تكمل الطلب ده. حساب اللعبة بتاعك زي ما هو متأثرش.
+  reviewMerge: مراجعة الدمج
+  session: الجلسة
+  sessionActive: نشطة
+  sessionExpired: منتهية
+  signOutAll: تسجيل الخروج من كل الأجهزة
+  signOutDevice: تسجيل الخروج من الجهاز ده
+  status:
+    active: نشط
+    deleted: محذوف
+    deletion_pending: في انتظار الحذف
+    merged: مدموج
+  title: حساب XMCL
+modCategory:
+  optimization: التحسين والأداء
+  libraries: المكتبات وواجهات البرمجة (APIs)
+  utilities: الواجهة والأدوات
+  world: العالم والمناطق الحيوية (Biomes)
+  visual: المؤثرات البصرية والصوتية
+  gameplay: أسلوب اللعب والمحتوى
+  miscellaneous: متنوع
+localCollection:
+  title: مجموعات المشغل
+  newCollection: مجموعة جديدة
+  namePlaceholder: اسم المجموعة
+  addToCollection: إضافة إلى المجموعة
+  empty: مفيش مجموعات لسه
+  corrupted: مقدرناش نقرأ المجموعات المحفوظة وتم إعادة ضبطها. تم الاحتفاظ بنسخة احتياطية جنب ملف البيانات.
+  modrinthSection: حساب Modrinth
+  installAll: تثبيت الكل
+  incompatibleAlert: 'في مشروع مش متوافق مع النسخة الحالية وتم تخطيه: | في {count} مشاريع مش متوافقة مع النسخة الحالية وتم تخطيها:'
+  projects: مفيش مشاريع | مشروع واحد ({count}) | {count} مشاريع
+  saveCurrentMods: حفظ المودات المثبتة كمجموعة
+  saveCurrentModsSuccess: تم حفظ {count} مود في المجموعة "{name}"
+  viewMods: عرض المودات
+  editCollection: تعديل المجموعة
+  collectionDescription: وصف المجموعة
+  noModsInCollection: مفيش مودات في المجموعة دي لسه
+  exportCollection: تصدير المجموعة
+  importCollection: استيراد مجموعة
+  removeEntryConfirm: إزالة من المجموعة
+  addMods: إضافة مودات
+  addModsTo: إضافة مودات إلى "{name}"
+  addModsHint: ضيف مودات مثبتة من نسختك أو اضغط على علامة المرجعية في المتجر عشان تضيف مودات.
+  addModsDialogDesc: حدد المودات المثبتة من النسخة دي اللي عايز تضمها للمجموعة.
+  addAllCurrent: إضافة كل المودات الحالية
+  addedModsSuccess: تمت إضافة {count} مود للمجموعة
+  searchMods: بحث عن مودات...
+  selectAll: تحديد الكل
+  deselectAll: إلغاء تحديد الكل
+  selected: محدد
+  alreadyInCollection: مضاف بالفعل
+  noMatchingMods: مفيش مودات مطابقة لبحثك
+  addSelectedMods: إضافة {count} مود

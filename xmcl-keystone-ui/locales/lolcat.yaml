@@ -40,6 +40,10 @@ askAICrash:
   copyPrompt: COPY DA PROMPT TO ASK AI
   description: LET AI HALP U TO UNDERSTAND DA GAME CRASH! FOLLOW DA INSTRUKSHUNS BELOW TO ASK AI ABOUT THIS GAME CRASH!
   selectPlatform: OPEN AN AI PLATFORM AN PASTE DA PROMPT U JUS COPIED.
+  agentNotConfigured: ADD AI PROVIDER N API KEY IN SETTINGS SO TEH BUILT-IN CAT CAN DIAGNOSE N FIX DIS 4 U.
+  askAgent: DIAGNOSE WIT BUILT-IN AI HALPR
+  orExternal: OR USE OUTSIDE AI
+  setupAgent: SET UP AI HALPR
 authProfileAddedNotification: AUTH PROFILE {name} ADDED
 bedrock:
   installBedrockVersion: Downloading Bedrock {version}
@@ -60,21 +64,28 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+  description: MINECWAFT BEDROCK EDISHUN IZ INSTALLED N LAUNCHED THRU MICROSOFT STORE. U NEED 2 OWN BEDROCK ON UR MICROSOFT AKKOUNT.
+  install: GIT FROM MICROSOFT STORE
+  installFailed: FAILED 2 OPEN MICROSOFT STORE
+  installed: 'INSTALLED: {version}'
+  launchHint: USE TEH LAUNCH BUTTON 2 START BEDROCK EDISHUN.
+  licenseRequired: SIGN IN WIT MICROSOFT AKKOUNT DAT OWNZ MINECWAFT 2 INSTALL N PLAY BEDROCK EDISHUN.
+  refresh: REFRESH
 backup:
-  title: 'Backup & Restorez'
+  title: Backup & Restorez
   description: Back up and restore your settings, collections, themes, and game instances
   launcherData: Launcher Data
   includeSettingsTitle: Launcher Settings
   includeSettingsHint: General preferences, language, developer mode, and appearance settings
   includeCollectionsTitle: Saved Collections
   includeCollectionsHint: Launcher-managed mod and resource collections
-  includeThemesTitle: 'Custom Themes & Media'
+  includeThemesTitle: Custom Themes & Media
   includeThemesHint: Theme colors, custom CSS styles, and background media
   instances: Instances
   selectAll: Select All
   deselectAll: Deselect All
   instanceDataOptions: Instance Data Options
-  includeConfigs: 'Configs & Options'
+  includeConfigs: Configs & Options
   includeSaves: Saves (Worlds)
   includeResourcePacks: Resource Packs
   includeShaderPacks: Shader Packs
@@ -87,7 +98,7 @@ backup:
   create: Mek Backup
   createTitle: Create XMCL Backup Archive
   saveDialogTitle: Save XMCL Backup Archive
-  fileFilterName: 'XMCL Backup Archive (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL Backup Archive (*.xmclbackup, *.zip)
   createError: Failed to create backup
   loadManifestError: Failed to read backup archive
   restore: Bring Bak
@@ -98,7 +109,7 @@ backup:
   elapsedTime: Elapsed
   remainingTime: Estimated remaining
   calculatingRemaining: Calculating...
-  lessThanMinute: '< 1 min'
+  lessThanMinute: < 1 min
   itemsProgress: '{current}/{total}'
   savesCategory: Saves
   modsCategory: Mods
@@ -110,16 +121,16 @@ backup:
   copiedLog: Log copied to clipboard
   openFolder: Show in Folder
   done: Done
-  backupDone: 'Backup Complete!'
+  backupDone: Backup Complete!
   backupDoneHint: Your backup archive has been created and verified.
-  restoreDone: 'Restore Complete!'
+  restoreDone: Restore Complete!
   restoreDoneHint: All selected data and instances have been restored successfully.
   timeTaken: 'Time taken: {time}'
   destinationFile: 'Saved to: {path}'
   stagePreparing: Preparing
   stageSettings: Launcher Settings
   stageCollections: Saved Collections
-  stageThemes: 'Themes & Media'
+  stageThemes: Themes & Media
   stageInstances: Game Instances
   stageCompressing: Compressing Archive
   stageComplete: Complete
@@ -129,14 +140,14 @@ backup:
   selectBackupFileDescription: Choose a .xmclbackup or .zip file containing your saved XMCL data and instances.
   selectFile: Choose File
   selectBackupFileTitle: Open XMCL Backup Archive
-  createdOn: 'Created on {date}'
+  createdOn: Created on {date}
   changeFile: Change File
   dataToRestore: Data to Restore
   restoreSettings: Restore Settings
   restoreSettingsHint: Overwrite current launcher preferences with the backup copy
   restoreCollections: Restore Collections
   restoreCollectionsHint: Import and merge saved collections into the launcher
-  restoreThemes: 'Restore Themes & Media'
+  restoreThemes: Restore Themes & Media
   restoreThemesHint: Reinstall themes, custom CSS, and background media
   noLauncherDataInBackup: No launcher settings or themes found in this backup archive.
   conflictStrategyTitle: Instance Name Conflict Handling
@@ -146,9 +157,9 @@ backup:
   restoreError: Failed to restore backup
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Create Backup
   createBackupDescription: Save your launcher settings, collections, custom themes, and instances to a single portable archive file.
   restoreBackupTitle: Restore Backup
@@ -171,8 +182,8 @@ backup:
   autoBackupDestination: Auto-Backup Folder
   browse: Browse
   autoBackupContentLabel: Content to Include in Background Backups
-  instanceSaves: 'Worlds & Saves'
-  instanceConfigs: 'Configs & Options'
+  instanceSaves: Worlds & Saves
+  instanceConfigs: Configs & Options
   instanceMods: Mods
   instanceResourcePacks: Resource Packs
   instanceShaderPacks: Shader Packs
@@ -186,9 +197,27 @@ backup:
   interval6h: Every 6 hours
   interval12h: Every 12 hours
   interval24h: Every 24 hours
-  keepCount: 'Keep last {count} backups'
+  keepCount: Keep last {count} backups
 baseSetting:
-  title: INSTANCE SETTINGZ
+  title: BASE SETTINGZ
+  info:
+    address: ADDWESS
+    changes: CHANGEZ
+    custom: CUSTOM
+    disabled: DISABLED
+    enabled: ENABLED
+    exportFormats: EXPORT FORMATS
+    inherited: INHERITED
+    modLoader: MOD LOADER
+    notConfigured: NOT SET UP
+    notSet: NOT SET
+    projectId: PROJECT ID
+    running: RUNNIN
+    saved: SAVED
+    status: STATUS
+    stopped: STOPPED
+    vanilla: VANILLA
+    offline: OFFLINE ARCHIVE
 browseApp:
   createShortcut: MAKE SHORTCUT
   default: DEFAULT
@@ -315,10 +344,10 @@ diagnosis:
     description: CANNOT FIND {file}
     title: MODPACK FILE NOT FOUND
 difficulty:
-  easy: EZPZ
+  easy: EZ
   hard: HARD
   normal: NORMAL
-  peaceful: PEACE
+  peaceful: PEACEFUL
 disk:
   available: FREE SPACE
   used: USED
@@ -349,6 +378,27 @@ errors:
   HeadersTimeoutError: HTTP HEADER TIMEOUT
   NotFoundError: 404 NOT FOUND (SAD CAT)
   SocketError: SERVER SOCKET OOPSIE
+  bedrockUnsupportedPlatform: MINECWAFT BEDROCK EDISHUN ONLY WERK ON WINDOWS.
+  bedrockNotInstalled: MINECWAFT BEDROCK EDISHUN IZ NOT INSTALLED.
+  bedrockLaunchFailed: FAILED 2 LAUNCH MINECWAFT BEDROCK EDISHUN.
+  bedrockInstallFailed: FAILED 2 START BEDROCK INSTALL.
+  CorruptedResourceMetadata: FOUND N CLEARED BROKEN METADATA ON {count} RESORCE(S). FILEZ STILL WERK, BUT DEIR MODRINTH/CURSEFORGE LINKS WERE LOST N WILL BE RE-DETECTED AUTOMATIKALLY.
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: FAILED 2 INSTALL MINECWAFT FILEZ
+  InstallNetworkError:
+    body: TEH INTERNET HAD A HICCUP N STOPPED INSTALL. CHECK UR INTERNET OR PROXY N TRY AGAIN.
+    title: FAILED 2 DOWNLOD MINECWAFT FILEZ
+  InstallPermissionDenied:
+    body: ANTIVIRUS OR BAD PERMISSIONZ BLOCKED INSTALL. ADD LAUNCHER 2 ANTIVIRUS WHITELIST OR PICK ANOTHR FOLDER IN SETTINGS.
+    title: NO CAN WRITE 2 LAUNCHER DIRECTORY
+  bedrockDownloadUrlUnavailable: DIS BEDROCK VERSIUN NOT AVAILABLE 4 CURREN MICROSOFT AKKOUNT. BETA N PREVIEW NEED BETA PROGRAM JOIN.
+  bedrockDeveloperModeRequired: WINDOWS DEVELOPER MODE IZ NEEDED 2 REGISTER DIS BEDROCK VERSIUN.
+  bedrockRegisterFailed: FAILED 2 REGISTER DIS BEDROCK VERSIUN WIT WINDOWS.
+  bedrockVersionNotFound: DIS BEDROCK VERSIUN NOT FOUND ON UR COMPUTAH.
+  InstallBackendUnresponsive:
+    body: TEH BACKGROUND LAUNCHER PROCESS FELL ASLEEP. PLZ CLOSE N RESTART LAUNCHER, DEN TRY AGAIN.
+    title: LAUNCHER NOT RESPONDIN
 eula:
   body: BY CHECKING DA CHECKBOX BUTTON, U R INDICATING UR AGREEMENT TO MINECWAFT'S {eula}.
 exception:
@@ -366,15 +416,20 @@ command:
   instance:
     launch:
       title: LAUNCH INSTANCEZ
+      description: Launch a Minecraft instance
     create:
       title: MAEK NEW INSTANCEZ
+      description: Create a new instance
     delete:
       title: DELETEZ INSTANCEZ
+      description: Delete an existing instance
   user:
     login:
       title: LOG IN USERZ
+      description: Log in to your account
     refresh:
       title: REFRESHEZ USERZ
+      description: Refresh user session
 commandPalette:
   placeholder: SEARCH COMMANDZ, INSTANCEZ, MODZ…
   commands: COMMANDZ
@@ -391,13 +446,14 @@ commandPalette:
   hintEnter: GO IN
   hintBack: GO BAK
   hintClose: BAI
+  hintAskAgent: ASK TEH HALPR
 feedback:
   channel: CHANNELZ
   description: I FOUND A BUG OR I WANT TO MAKE A SUGGESTSHUN
   discord: DISCORD
   discordDescription: JOIN DISCORD CHANNEL
   discordJoin: JOIN
-  generateReport: GENERATE REPORT
+  generateReport: MAEK REPORT
   generateSaveAs: SAVE DA REPORT TO
   github: GITHUB ISSUE
   githubDescription: OPEN AN GITHUB ISSUE TO TELL UR THOT
@@ -409,6 +465,8 @@ feedback:
   qq: QQ GROUP
   qqDescription: 'ENTER DA FEEDBACK QQ GROUP AN DIRECT TALK WITH AUTHORZ. GROUP NUMBR: {number}'
   qqEnterGroup: JOIN
+  reddit: REDDIT
+  redditDescription: JOIN TEH r/XMCL SUBREDDIT KAN COMMUNITI
 fileDetail:
   fileSize: FILE SIZE
   filesize: FILE SIZE
@@ -536,6 +594,16 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: vallue
   fileApiPlaceholder: Type ur sync URLz heer if u wanna keepz reswurzes synchd
+  deleteHintBedrock: MINECWAFT BEDROCK EDISHUN N ALL ITS DATA WILL B COMPLETELI GONE FROM UR COMPUTAH. U SHUR?
+  monitor: FULLSCREEN MONITR
+  monitorDefault: DEFAULT (MAIN MONITR)
+  monitorNumber: MONITR {number}
+  monitorPrimary: MAIN
+  nameInvalidChars: 'NAME CANNOT HAZ ANY OF DEZ CHARS: < > : " / \ | ? *'
+  namePathTraversal: NAME CANNOT HAZ PATH HOPS ("..")
+  nameReservedName: DIS NAME IZ RESERVED BY SYSTEM N CANNOT B USED
+  nameTrailingDotOrSpace: NAME CANNOT END WIT DOT OR SPACE
+  nameWhitespaceOnly: NAME CANNOT B JUS SPACES OR DOTS
 instanceAge:
   older: OLDR
   threeDay: IN THREE DAYZ
@@ -581,6 +649,7 @@ instanceUpdate:
   summary: ADD {add} FILEZ. REMOVE {remove} FILEZ. KEEP {keep} FILEZ.
   title: UPDAT INSTANCE
   update: START UPDAT
+  noFiles: NO FILE CHANGEZ
 instances:
   add: MAKE GAME
   addCurseForgeDescription: IMPORT FROM CURSEFORGE DATA FOLDR. U NEED TO PICK CURSEFORGE'S ROOT DATA FOLDR
@@ -590,7 +659,7 @@ instances:
   addVanilla: MAKE FROM VANILLA-LIKE MINECWAFT
   addVanillaDescription: IMPORT FROM COMMON .MINECRAFT FOLDR. THIS WILL DUPLCIATE DA ORIGINAL GAME PROFILE TO XMCL.
   fix: REPAIR
-  folder: FOLDR
+  folder: FOLDER
   folderSetting: FOLDR SETTINGZ
   importFolderDescription: IMPORT MINECWAFT TO LAUNCHER
   loadingFiles: LOADING MODPACK FILEZ
@@ -603,6 +672,7 @@ instances:
   linkSharedFoldersHint: MAEK DEEZ FOLDERZ INTO LINKZ TO DA LAUNCHR SHARD FOLDERZ SO DIS INSTANCE SHARE STUFFZ WIF ALL OTHR LINKD INSTANCEZ. DIS NOT A COPY — CHANGEZ IN ONE INSTANCE SHOW UP IN ALL OF DEM. UNCHEKD FOLDERZ STAY PRIVATE TO DIS INSTANCE.
   linkFailed: COULD NOT LINK DA {folder} FOLDR TO DA SHARD FOLDR
   addPrismDescription: Imprt exsting PrismLauncher instnce.
+  instanceCount: '{count} INSTANCEZ'
 items:
   count: '{count} ITEMZ'
   total: '{total} TOTAL'
@@ -646,6 +716,7 @@ launch:
   launchAnyway: LAUNCH ANYWAY
   launchAs: LAUNCH AZ
   forceKill: KILLZ HARDIR
+  launchTo: LAUNCH 2
 launchBlocked:
   launchBadVersion:
     description: TEH VERSHUN {version} JSON IS BREAKING. MAYBE RE-INSTALL THIS VERSHUN?
@@ -669,6 +740,13 @@ launchBlocked:
     description: PLZ CHECK UR JAVA, OR GIVE MORE PERMISSIONS TO DA LAWNCHER AN RETRY. IF THIS STILL DOESNT WORK, PLZ CONTACT DA DEVS.
     title: FAIL TO START GAME PROCESS
   unexpectedText: THIS IS UNEXPECTED. U CAN RESTART DA LAWNCHER TO MITIGATE DA ISSUE. PLZ CONTACT AUTHOR IF THIS ISSUE HAPPENS AGAIN.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL COULD NOT RECOVER X11 DISPLAY INFO FROM UR DESKTOP SESSHUN. RESTART XMCL FROM TERMINAL OR SIGN OUT N IN AGAIN.
+    noGraphicalSession: XMCL IZ NOT RUNNIN IN A GRAPHICAL DESKTOP SESSHUN. START XMCL FROM DESKTOP SESSHUN BEFORE LAUNCHIN MINECWAFT.
+    sandboxDenied: TEH APP SANDBOX CANNOT ACCESS X11. GRANT XMCL ACCESS 2 X11 SOCKET IN FLATPAK PERMISSIONZ, DEN RESTART XMCL.
+    title: X11 DISPLAY NOT FOUND
+    xwaylandMissing: MINECWAFT NEEDZ XWAYLAND IN DIS WAYLAND SESSHUN. INSTALL XWAYLAND PACKAGE 4 UR LINUX, DEN SIGN IN AGAIN.
+    xwaylandNotRunning: XWAYLAND IZ INSTALLED BUT X11 DISPLAY IZ NOT RUNNIN. ENABLE XWAYLAND IN COMPOSITR SETTINGS N SIGN IN AGAIN.
 launchFailed:
   crash: GAME CRASHED!! (SAD CAT)
   description: THERE IS NO CRASH REPORT. THIS THIS DA ERROR LOG AN LATEST LOG.
@@ -696,6 +774,11 @@ launcherUpdate:
   installAndQuit: RESTART TO INSTALL
   noUpdateAvailable: NO UPDAT AVAILABLE
   updateToThisVersion: DOWNLOD AN INSTALL
+  automaticUnavailable: AUTOMATIK UPDATEZ NOT AVAILABLE
+  automaticNotImplemented: AUTOMATIK UPDATIN IZ NOT IMPLEMENTED 4 DIS LAUNCHER HOST.
+  automaticNotConfigured: AUTOMATIK UPDATIN IZ NOT CONFIGURED 4 DIS LAUNCHER HOST.
+  manualCheckHint: NO UPDATE CHECK WAS RUN. CHECK GITHUB RELEASES 4 KOMPATIBLE PACKAGE N INSTALL BY HAND.
+  manualCheckRequired: DIS PLATFORM DOES NOT SUPPORT AUTOMATIK UPDATE CHECK OR INSTALL. PLZ VISIT RELEASES PAGE.
 localVersion:
   auto: AUTO COMPUTED
   empty: NO VERSHUN INSTALLED
@@ -735,12 +818,31 @@ loginError:
   requirePassword: PASSWORD IS REQUIRED
   requireUsername: USERNAME IS REQUIRED
   timeout: LOGIN TIMEOUT. PLZ RETRY OR CHECK UR NETWORK.
+  loginCanceled: MICROSOFT SIGN-IN WAS CANCELED.
+  cyrillicNotAllowed: CYRILLIC CHARS R NOT ALLOWED
+  illegalOfflineUsername: USERNAEM MUST B 3-16 CHARS N ONLY ENGLISH LETTERZ, NUMBERZ, N UNDERSCOREZ
+  loginMinecraftByXboxRateLimited: MICROSOFT MINECWAFT AUTH SERVICE IZ LIMITIN REQUESTS (HTTP 429). PLZ WAIT A BIT N TRY AGAIN.
+  loginMinecraftByXboxRateLimitedWithRetry: MICROSOFT MINECWAFT AUTH SERVICE IZ SLOWIN DOWN REQUESTS (HTTP 429). PLZ WAIT ~{seconds}s N TRY AGAIN.
+  loginMinecraftByXboxServerError: MICROSOFT MINECWAFT AUTH SERVICE GAVE SERVER ERROR (HTTP {status}). DIS IZ DEIR FAULT. PLZ TRY AGAIN IN FEW MINITZ.
+  loginMinecraftByXboxStatus: FAILED 2 SWAP XBOX TOKEN 4 MINECWAFT TOKEN (HTTP {status}). MAEK SHUR UR XBOX PROFILE HAZ MINECWAFT, OR TRY AGAIN.
+  loginXboxAdultVerification: UR MICROSOFT AKKOUNT NEEDZ GROWN-UP VERIFIKASHUN BEFORE XBOX SIGN-IN. OPEN {url} IN BROWSER 2 FIX IT, DEN TRY AGAIN.
+  loginXboxBadXsts: MICROSOFT GAVE XSTS REPLY WITOUT EXPECTED USER DATA. DIS IZ USUALLY TEMPORARI — TRY AGAIN SOON.
+  loginXboxBanned: DIS MICROSOFT / XBOX AKKOUNT WAS SUSPENDED OR BANNED BY MICROSOFT. U CANNOT SIGN IN 2 MINECWAFT. TALK 2 MICROSOFT/XBOX SUPPORD.
+  loginXboxChildAccount: UR MICROSOFT AKKOUNT IZ A KID AKKOUNT N MUST B ADDED 2 MICROSOFT FAMILI BEFORE XBOX/MINECWAFT SIGN-IN. OPEN {url} IN BROWSER 2 FIX IT, DEN TRY AGAIN.
+  loginXboxFailedWithCode: FAILED 2 SIGN IN 2 XBOX WIT MICROSOFT TOKEN (XErr {code}). SEARCH DIS CODE 4 HALP OR TRY AGAIN LATER.
+  loginXboxNoXboxProfile: DIS MICROSOFT AKKOUNT HAZ NO XBOX PROFILE YET. OPEN {url} IN BROWSER 2 MAEK ONE, DEN TRY AGAIN.
+  loginXboxRegionLocked: XBOX LIVE IZ NOT AVAILABLE IN UR MICROSOFT AKKOUNT REGION. CHANGE COUNTRY/REGION IN MICROSOFT SETTINGS N TRY AGAIN.
+  xboxErrorGuideHint: HAVIN TROUBLE SIGNIN IN? LEARN HOW 2 FIX MICROSOFT N XBOX LOGIN ISSUEZ.
+  openLoginGuide: HOW 2 FIX DIS ISSUE
+  openDiscordSupport: STILL NEED HALP? JOIN OUR DISCORD
 logsCrashes:
   crashes: CRASH REPORTS
   logs: LOGS
   placeholder: NO FILEZ FOUND
   title: LOGZ OR CRASH REPORTS
   failures: LANCH FAYLZ
+  serverLogs: SERVR LOGZ
+  showFile: SHOW IN FOLDER
 me:
   groupByDate: GROOP BY DATE
   groupByFolder: GROOP BY FOLDR
@@ -764,14 +866,14 @@ minecraftVersion:
   showAlpha: SHOW SNAPSHOT
   snapshot: SNAPSHOT
 mod:
-  collapseAllGroups: COLLAPSE ALL GROUPS
+  collapseAllGroups: COLLAPSE ALL GROUPZ
   acceptVersion: ACCEPT {version}
   applyGroupRules: APPLY SAVED GROUPING RULEZ
   compatible: COMPATIBLE MOD.
   createGroup: MAKE GROUP
   currentVersion: CURREN {current}
   denseView: DENSE VUE
-  description: Descripshun
+  description: DESCRIPSHUN
   disableAll: DISABL ALL
   dropHint: DROP MOD'S .JAR/.LITEMOD HERE TO IMPORT.
   duplicatedDetected: '{count} DUPLICATED MODZ'
@@ -794,7 +896,7 @@ mod:
   modloaderSelectNotSupported: NOT FOUND {modloader} FUR MINECWAFT {minecraft}
   mods: '{count} MODZ'
   name: MOD | MODZ
-  newFolder: NEW FOLDR
+  newFolder: NU FOLDER
   noGroupsFound: NO GROUPS FOUND
   noGroupsYet: NO GROUPS YET. MAKE ONE!
   noModLoaderHint: DONT FORGET TO ENABL A MODLOADER TO USE MODZ!
@@ -806,10 +908,27 @@ mod:
   showDirectory: SHOW MODZ DIRECTORY
   showFile: SHOW DA MOD PATH {file}
   showInModrinth: SHOW {name} IN MODRINTH
-  switchDefaultSource: DEFAULT MOD SOURC
+  switchDefaultSource: SWITCH DEFAULT SOURCE
   syncGroupRules: SAVE GROUPING RULEZ
-  toUpdate: '{count} UPDATS'
+  toUpdate: '{count} UPDATEZ'
   ungroup: UNGROUP
+  autoCategorize: AUTO-SORT INTO FOLDERZ
+  autoCategorizeHint: AUTOMATIKALLY GROUP MODZ INTO CATEGORI FOLDERZ (OPTIMIZASHUN, LIBRARIES, WORLD, GAMEPLAY, ETC)
+  autoCategorizeSuccess: MODZ AUTOMATIKALLY SORTED INTO {count} FOLDERZ
+  collapseAll: COLLAPSE ALL FOLDERZ
+  expandAll: EXPAND ALL FOLDERZ
+  folderSetting: FOLDER SETTINGZ
+  folderColor: FOLDER COLOR
+  folderIcon: FOLDER ICON
+  pinGroup: PIN 2 TOP
+  pinToTop: PIN 2 TOP
+  pinToTopHint: FOLDER WILL APPEAR AT TOP OF LIST
+  pinned: PINNED
+  unpinGroup: UNPIN FOLDER
+  customColor: CUSTOM COLOR
+  preview: PREVIEW
+  ungroupAll: UNGROUP ALL
+  organization: FOLDER ORGANIZASHUN
 modFilter:
   clear: CLEAR FILTR
   dependenciesInstallOnly: ONLY SHOW MISSED DEPENDENCIEZ MODZ
@@ -838,6 +957,7 @@ modInstall:
   skipVersion: SKIP DA MODZ WITH DIFFERENT MINECWAFT VERSHUN
   source: MOD SOURC
   switch: SWITCH VERSHUN
+  scanUnusedLibraries: SCAN UNUSED LIBRARIES
 modSearch:
   noLocalModsFound: NO LOCAL MODZ FOUND MATCHING UR SEARCH.
   noModsFound: NO MODZ FOUND
@@ -873,6 +993,112 @@ modpack:
   overrides: OVERRIDES
   url: URL
   urlHint: TEH HOME PAGE URL OF UR MODPACK
+  emitCurseforgeDescription: STANDRD ZIP MODPACK ARCHIVE 4 CURSEFORGE
+  emitModrinthDescription: LITE OFFISHUL FORMAT WIT FAST CDN DOWNLODZ
+  emitPackwiz: EXPORT PACKWIZ MODPACK
+  emitPackwizDescription: GIT-FRENLI METADATA FORMAT, GREAT 4 VERSIUN CONTROL
+  exportSkippedFiles: '{count} UNREADABLE OR LOCKED FILEZ WERE SKIPPED DURIN EXPORT'
+  exportSuccessWithWarnings: MODPACK EXPORTED WIT WARNINZ
+  skippedFilesDialogDescription: MODPACK CREATED, BUT {count} FILEZ WERE SKIPPED
+  skippedFilesDialogTitle: SKIPPED FILEZ DURIN EXPORT
+  modrinthProject: MODRINTH PROJECT
+  bindProject: BIND PROJECT
+  bindProjectHint: PICK A MODRINTH MODPACK PROJECT MANAGED BY UR AKKOUNT.
+  bindProjectTypeImmutableHint: MODRINTH LOCKS PROJECT TYPE ONCE FIRST VERSIUN IZ UPLOADED. DRAFT PROJECTZ CAN B BOUND HERE, BUT PUBLISHED MODS OR RESOURCEPACKS CANNOT B CHANGED 2 MODPACKS — USE "MAEK NU PROJECT" INSTEAD.
+  bindProjectNoProjects: NO MODRINTH PROJECTZ FOUND 4 UR AKKOUNT.
+  unbindProject: UNBIND PROJECT
+  unbindProjectConfirmTitle: UNBIND MODRINTH PROJECT?
+  unbindProjectConfirmMessage: DIS ONLY REMOVES LOCAL LINK BETWEEN DIS GAEM N TEH MODRINTH PROJECT. PROJECT N VERSIUNS ON MODRINTH R UNCHANGED.
+  editProject: EDIT PROJECT
+  projectDiscovery: DISCOVERY & KOMPATIBILITY
+  projectGallery: GALLERY
+  projectGalleryAdd: ADD PIC
+  projectGalleryEmpty: NO PICZ IN GALLERY YET.
+  projectGalleryFeatured: FEATURED
+  projectGalleryFromScreenshots: PICK FROM SCREENSHOTS
+  projectGalleryHint: ADD PICS UP 2 5 MiB N CHOOZ A MAIN PIC 4 PROJECT.
+  projectGallerySelectScreenshot: PICK INSTANCE SCREENSHOT
+  projectIdentity: IDENTITY & DESCRIPSHUN
+  projectLinks: PROJECT LINKZ
+  projectLoadFailed: COULD NOT LOAD BOUND MODRINTH PROJECT.
+  projectNotBound: NO MODRINTH PROJECT BOUND
+  projectNotBoundHint: BIND AN EXISTIN PROJECT OR MAEK A NU ONE ON MODRINTH.
+  projectNoChanges: NO CHANGEZ 2 PROJECT
+  projectUnsavedChanges: '{count} PROJECT FIELD(S) CHANGED'
+  projectLatestDraft: DRAFT
+  projectVersions: VERSIUNS
+  publish: PUBLISH
+  publishChannel: RELEASE CHANNEL
+  publishChangelog: CHANGELOG
+  publishChangelogGenerate: GENERATE WIT AI
+  publishConfirmProjectChanges: CONFIRM PROJECT CHANGEZ
+  publishCreateProject: MAEK PROJECT
+  publishCreateDraft: BUILD N UPLOAD DRAFT
+  publishCustomVersion: CUSTOM
+  publishDescription: PROJECT DESCRIPSHUN
+  publishDiscordUrl: DISCORD URL
+  publishDraftCreated: VERSIUN DRAFT UPLOADED.
+  publishExistingProject: EXISTIN PROJECT
+  publishSubmitted: VERSIUN SUBMITTED 4 REVIEW.
+  publishIcon: PROJECT ICON
+  publishIconHint: SQUARE PNG OR JPEG RECOMMENDED.
+  publishIconKeep: KEEP CURRENT UNLESS NU PIC CHOSEN
+  publishIconUseInstance: USE GAEM ICON
+  publishIssuesUrl: BUG TRACKER URL
+  publishFiles: SELECTED FILEZ
+  publishLinkageSummary: '{linked} OF {total} MODZ/RESORCE PACKS/SHADR PACKS WILL B LINKED DIRECTLY 2 MODRINTH INSTEAD OF UPLOADIN.'
+  publishLinkageEmbeddedSummary: '{count} FILE(S) CANNOT B LINKED N WILL B UPLOADED WIT DIS VERSIUN.'
+  publishLinkageShowFiles: SHOW FILEZ NEEDIN UPLOAD
+  publishLinkageReason:
+    missing-file: FILE NOT FOUND ON DISK
+    not-linked-to-modrinth: NOT RECOGNIZED AS MODRINTH RESORCE
+    no-downloadable-url: NO PUBLIC DOWNLOD URL FOUND
+  publishLogin: LOGIN 2 PUBLISH
+  publishModrinth: PUBLISH 2 MODRINTH
+  publishNewProject: NU PROJECT
+  publishOpenProject: OPEN PROJECT
+  publishOpenVersion: OPEN VERSIUN
+  publishProfile: MRPACK PROFILE
+  publishProfileClient: CLIENT ONLY
+  publishProfileServer: SERVR ONLY
+  publishProfileSplit: UNIVERSAL + SEPARATE CLIENT/SERVR FILEZ
+  publishProfileUniversal: UNIVERSAL
+  publishProject: PROJECT
+  publishProjectDetailsTab: PROJECT DETAILZ
+  publishProjectName: PROJECT NAEM
+  publishProjectRequired: PROJECT NEEDED
+  publishProjectSlug: PROJECT SLUG (ID)
+  publishProjectUrlHint: LEAVE BLANK 2 USE {slug}.
+  publishSourceUrl: SOURCE CODE URL
+  publishSubmit: PUBLISH
+  publishVersion: VERSIUN
+  publishVersionTab: VERSIUN & FILEZ
+  publishWikiUrl: WIKI URL
+  exportSuccess: MODPACK EXPORTED SUCCESSFULLY
+  exportFailed: FAILED 2 EXPORT MODPACK
+  skippedReasonEperm: ACCESS DENIED (LOCKED BY OS OR PROCESS)
+  skippedReasonEbusy: FILE IN USE BY OTHR PROGRAM
+  skippedReasonEnoent: FILE NOT FOUND OR BROKEN
+  skippedFilesNotice: TEH REST OF UR FILEZ WERE PACKAGED NICELY. ABOVE FILEZ WERE SKIPPED CUZ OF SYSTEM LIMITS OR PERMISSIONS.
+  openExportFolder: OPEN MODPACK FOLDER
+  closeDialog: KTHXBAI
+  expandAll: EXPAND ALL FOLDERZ
+  collapseAll: COLLAPSE ALL FOLDERZ
+  modpackVersionHint: SEMANTIC VERSIUN (E.G. 1.0.0). USE + 2 BUMP
+  selectDefaultFiles: SELECT DEFAULT FILEZ
+  selectAllFiles: SELECT ALL FILEZ
+  deselectAllFiles: DESELECT ALL FILEZ
+  publishCategories: CATEGORIES (COMMA SEPARATED)
+  publishLicense: LICENSE ID
+  publishProjectUrl: PROJECT URL (OPTIONAL)
+  publishProjectSaved: PROJECT DETAILZ UPDATED.
+  publishSummary: SHORT SUMMARY
+  publishSummaryMinWords: SUMMARY MUST HAZ AT LEAST 3 WORDZ.
+  publishVersionTitle: VERSIUN TITLE
+  publishVisibility: VISIBILITY
+  visibilityPrivate: PRIVATE
+  visibilityPublic: PUBLIC
+  visibilityUnlisted: UNLISTED
 modpackImportConfirm:
   description: DETECT U DROP A FILE INTO DA LAWNCHER. ARE U TRYING TO IMPORT A MODPACK?
   title: ARE U TRYING TO IMPORT A MODPACK?
@@ -1006,7 +1232,7 @@ modrinth:
   licenses:
     name: LICENSES
   loginHint: TEH OPERASHUN REQUIRES MODRINTH TO PERFORM. TEH LAWNCHER WILL OPEN A BROWSR WINDOW TO LOGIN MODRINTH.
-  loginTitle: LOGIN TO MODRINTH
+  loginTitle: LOGIN 2 MODRINTH
   modLoaders:
     name: MOD LOADERS
   modpackSource:
@@ -1113,7 +1339,7 @@ multiplayer:
   leaveGroup: LEAVE GROUP
   localToken: LOCAL TOKEN
   manualConnect: MANUALLY CONNECT
-  name: MULTIPLAYR ON LAN
+  name: TOGETHR
   networkInfo: NETWORK INFO
   next: NEXT
   otherExposedPortDescription: TEH PORT FORWARDED BY {user}
@@ -1130,6 +1356,16 @@ multiplayer:
   startNewP2PConnection: CLICK DA START BUTTON TO MAKE A NEW PEER CONNEKSHUN
   connectionError: CONNEKSHN BORKED
   connectionFailedHint: Cant connectz. Bof NAT typez maybe sad.
+  connectedToMaster: CONNECTED 2 ROOM MASTR
+  directConnection: DIRECT
+  master: MASTR
+  masterHostsGameHint: ROOM MASTR IZ TEH HUB N SHOULD HOST MINECWAFT LAN WORLD. PASS MASTR BEFORE CHANGIN HOSTS.
+  member: MEMBER
+  joinCreatesMissingRoomHint: IF DIS ROOM DOES NOT EXIST, U WILL MAEK IT N BE MASTR.
+  relayConnection: RELAY
+  relayAllowanceSummary: '{remaining} LEFT OF {total} DIS PERIOD'
+  relayServiceAvailable: XMCL TOGETHR RELAY SERVICE AVAILABLE
+  waitingForMaster: WAITIN 4 ROOM MASTR 2 RECONNECT
 myStuff: MAH STUFF
 natType:
   blocked: BLOCKED
@@ -1176,6 +1412,11 @@ presence:
   save: VIEWING SAVES IN {instance}
   setting: VIEWING SETTING PAGE
   shaderPack: VIEWING SHADER PAKS IN {instance}
+  away: AFK
+  offline: OFFLINE
+  online: ONLINE
+  playing: PLAYIN {game}
+  playingGeneric: PLAYIN
 proxy:
   host: HOST
   port: PORT
@@ -1201,6 +1442,8 @@ resourcepack:
   unselected: UNSELECTED RESOURC PAKS
   noPacks: No reswurz packz fownd
   search: Sniff reswurz packz...
+  noLocalPacksFound: NO LOCAL RESORCE PACKS FOUND MATCHIN SEARCH.
+  noPacksInstalled: U DONT HAZ ANY RESORCE PACKS INSTALLED.
 save:
   resetView: Reset da view
   mapHintPan: Drag 2 move
@@ -1224,14 +1467,14 @@ save:
     locked: No can haz yet
   linkShared: SHARE UR SAVEZ ACROSS ALL INSTANCEZ
   linkSharedHint: LINKZ DIS INSTANCE saves FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ SAME WERLDZ. OLD SAVEZ GETS MERGD IN2 DA SHARY FOLDR.
-  allowCheats: ALLOW CHEATS
+  allowCheats: ALLOW CHEATZ
   copy:
-    name: COPY SAVE
+    name: COPY
   createNew: MAKE NEW WORLD
   createdWorlds: U HAZ {count} WORLDZ
   deleteHint: THIS OPERASHUN CANNOT BE REVERTED. U WILL LOSE DA SAVE DATA FOREVR. ARE U SURE U WANT TO DELET THIS SAVE?
   deleteTitle: DELET DA SAVE
-  difficulty: DIFFICULTY
+  difficulty: DIFFICULTI
   dropHint: DRAG SAVE ZIP HERE TO IMPORT
   export: EXPORT SAVE
   exportMessage: EXPORT DA SAVE AS ZIP
@@ -1240,12 +1483,12 @@ save:
   independent: INSTANCE USE INDEPENDENT SAVES FOLDR
   levelName: LEVEL NAME
   loadMap: LOAD MAP
-  mapError: MAP OOPSIE
-  mapInfo: 'INTERACTIVE 3D WORLD PREVUE:'
+  mapError: MAP ERROR
+  mapInfo: MAP INFO
   mapLoaded: MAP LOADED
-  mapPreview: MAP PREVUE
+  mapPreview: MAP PREVIEW
   name: SAVE | SAVES
-  properties: WORLD PROPERTIES
+  properties: PROPERTIES
   search: SEARCH SAVES
   seed: SEED
   selected: LOCAL SAVES
@@ -1253,12 +1496,42 @@ save:
   showDirectory: SHOW SAVES DIRECTORY
   unselected: SHARED SAVES
   useCurrent: USE CURREN WORLD
-  useMouseRotate: USE MOUSE TO ROTATE VUE
-  useScrollZoom: USE SCROLL WHEEL TO ZOOM
-  openFolder: Open savez fldr
-  searchHint: Sniff worldz on CurseForge
-  searchSaves: Sniff savez
+  useMouseRotate: USE RIGHT MOUSE BUTTON 2 ROTATE
+  useScrollZoom: USE SCROLL WHEEL 2 ZOOM
+  openFolder: OPEN FOLDER
+  searchHint: SEARCH SAVES…
+  searchSaves: SEARCH SAVES
   empty: No worlds found
+  datapack:
+    name: DATAPACK | DATAPACKS
+    packFormat: 'PACK FORMAT: {format}'
+    imported: DATAPACK IMPORTED INTO {save}
+    noSaveHint: MAEK OR PICK A WORLD FIRST 2 INSTALL DIS DATAPACK
+  chunkSelected: '{count} CHUNKS SELECTED'
+  chunkSelectMode: CHUNK SELECT MODE
+  clearSelection: CLEAR SELECSHUN
+  copyChunks: COPY CHUNKS
+  pasteChunks: PASTE {count} CHUNKS
+  pasteChunksPlaceHint: MOVE MOUSE 2 POSITION {count} CHUNK(S), DEN CLICK 2 PASTE. EXISTING CHUNKS R OVERWRITTEN. PRESS ESC 2 CANCEL.
+  deleteChunks: DELETE CHUNKS
+  deleteChunksHint: DELETE {count} SELECTED CHUNK(S)? CANNOT B UNDONE. CHUNKS REGENERATE NEXT TIME AREA LOADS.
+  noLocalSavesFound: NO LOCAL SAVES FOUND MATCHIN SEARCH.
+  noSavesFound: U DONT HAZ ANY SAVES.
+  panMode: PAN MODE
+  duplicate: DUPLICATE SAVE
+  mapHintSelect: SELECT
+  mapHintDeselect: DESELECT
+  toggleGrid: TOGGLE REGION GRID
+  heightTop: TOP
+  pasteChunksCancel: CANCEL
+  deleteChunksTitle: DELETE SELECTED CHUNKS
+  mapLoading: LOADIN MAP…
+  noRegions: DIS WORLD HAZ NO GENERATED REGIONZ 2 PREVIEW.
+  dimOverworld: OVERWORLD
+  dimNether: NETHER
+  dimEnd: THE END
+  noSavesInstalled: U DONT HAZ ANY SAVES.
+  world: WORLD
 screenshots:
   empty: U DONT HAZ ANY SCREENSHOTS
   playRandom: SHUFFLE
@@ -1266,6 +1539,109 @@ screenshots:
   gallery: Screenshotz Gallery
   hint: Pres F2 in gaem to maek screenshotz
   openFolder: Open screenshotz fldr
+  title: SCREENSHOTS & PHOETOS
+  manage: SCREENSHOT MANAGR
+  emptyTitle: NO SCREENSHOTS YET
+  emptyDescription: PRESS F2 IN GAEM 2 SNAP SCREENSHOTS. DEY SHOW UP HERE AUTOMATIKALLY.
+  importSuccess: IMPORTED {count} PHOETOS
+  exportSuccess: SCREENSHOT EXPORTED
+  exportSelectedSuccess: EXPORTED {count} SCREENSHOTS
+  deleteSuccess: SCREENSHOT DELETED
+  deleteConfirmTitle: DELETE SCREENSHOTS?
+  deleteConfirmMessage: U SHUR U WANT 2 DELETE {count} SCREENSHOTS? CANNOT B UNDONE.
+  selectedCount: 'SELECTED: {count}'
+  countLabel: '{count} SCREENSHOTS'
+  selectAll: SELECT ALL
+  edit: EDIT
+  saveCopy: SAV COPY
+  saveCopySuccess: SAVED COPY OK
+  saveSuccess: SAVED CHANGEZ OK
+  undo: UNDO
+  redo: REDO
+  textPlaceholder: TYPE TEXT HERE…
+  fontFamily: FONT
+  fontBold: BOLD
+  fontItalic: ITALIC
+  toolSelect: SELECT
+  toolCrop: CROP
+  toolText: TEXT
+  layers: LAYERZ
+  layerAdd: ADD LAYER
+  layerDelete: DELETE LAYER
+  layerDuplicate: DUPLICATE LAYER
+  layerCopy: '{name} COPY'
+  layerOpacity: OPACITY
+  zoomIn: ZOOM IN
+  zoomOut: ZOOM OUT
+  backToHome: BACK 2 HOME
+  setIcon: SET AS GAEM ICON
+  setIconSuccess: SET AS GAEM ICON OK
+  strokeWidth: STROKE WIDTH
+  dropHint: DROP PHOETOS OR SCREENSHOTS HERE 2 ADD 2 GALLERY
+  import: ADD PHOETOS
+  images: PICZ
+  copy: COPY PIC
+  copied: COPIED 2 CLIPBOARD!
+  setWallpaper: SET AS WALLPAPER
+  setWallpaperSuccess: SET AS GAEM BG PIC!
+  export: SAV FILE
+  exportSelected: EXPORT SELECTED
+  exportSelectedTitle: PICK EXPORT FOLDER
+  clearSelection: DESELECT ALL
+  searchPlaceholder: SEARCH BY NAEM…
+  noSearchResults: NO MATCHIN SCREENSHOTS
+  noSearchResultsHint: TRY CHANJIN SEARCH QUERY
+  sort: SORT
+  sortDateDesc: NEWEST FIRST
+  sortDateAsc: OLDEST FIRST
+  sortSizeDesc: BIGGEST FIRST
+  sortSizeAsc: SMALLEST FIRST
+  sortNameAsc: NAEM (A-Z)
+  sortNameDesc: NAEM (Z-A)
+  viewGrid: BIG GRID
+  viewGridCompact: COMPACT GRID
+  viewList: LIST VIEW
+  editorTitle: EDIT SCREENSHOT
+  layer: LAYER
+  dragToMove: DRAG 2 MOVE
+  transformHint: DRAG SELECSHUN 2 MOVE • DRAG HANDLES 2 RESIZE • ENTER 2 COMMIT
+  customColor: CUSTOM COLOR
+  fill: FILL
+  brushPreview: BRUSH SIZE PREVIEW
+  fontPreview: FONT SIZE PREVIEW
+  textBgNone: NONE
+  textBgShadow: SHADOW
+  textBgBox: BOX
+  cropHint: DRAG BOX 2 PICK CROP AREA.
+  textPlacementHint: ENTER 2 PLACE • ESC 2 CANCEL
+  layerMoveUp: MOVE UP
+  layerMoveDown: MOVE DOWN
+  pixels: px
+  saveOverwrite: OVERWRITE
+  toolMove: MOVE & TRANSFORM (Ctrl+T / V)
+  toolPan: PAN (Space+Drag)
+  transformLayer: FREE TRANSFORM
+  applyTransform: APPLY TRANSFORM (Enter)
+  cancelTransform: CANCEL (Esc)
+  layerBackground: BACKGROUND
+  layerPaint: DRAWIN
+  layerText: TEXT
+  layerBlur: BLUR
+  toolPen: PEN
+  toolArrow: ARROW
+  toolRect: RECTANGLE
+  toolCircle: CIRCLE
+  toolLine: LINE
+  toolHighlighter: HIGHLIGHTR
+  toolBlur: PIXELATE / BLUR
+  applyCrop: APPLY CROP
+  cancelCrop: CANCEL CROP
+  fontSize: FONT SIZE
+  color: COLOR
+  clear: CLEAR ALL
+  textApply: PLACE TEXT
+  textBg: BACKGROUND
+  resetZoom: RESET ZOOM
 search:
   favorate: COLLEKSHUN
   local: INSTALLED
@@ -1431,12 +1807,66 @@ serverStatus:
   refuse: §4SERVER REFUSED!
   timeout: §4CONNECT SERVR TIMEOUT!
 agent:
-  accessRequiredHint: SUBSCRIEB TO XMCL TO USE TEH BUILT-IN AGENT, OR CONFIGURE UR OWN AI PROVIDR IN SETTINGZ.
-  subscribeXmcl: SUBSCRIEB TO XMCL
+  accessRequiredHint: GIT XMCL SUBSCRIPSHUN OR SET UP UR OWN AI PROVIDER IN SETTINGS.
+  subscribeXmcl: SUBSCRIBE 2 XMCL
   notConfiguredHint: SET AN API KEY, MODEL AN OPENAI-COMPATIBL ENDPOINT IN SETTINGZ → GENERAL → AI AGENT. FUR EXAMPL, USE OPENAI OR A CLAUDE-COMPATIBL GATEWAY.
+  abort: STOP MAKIN DIS
+  callingTool: CALLIN {name}…
+  confirmAccept: KTHXBAI CONTINUE
+  confirmAllowAll: ALLOW ALL TEH THINGZ
+  confirmCancel: NOES CANCEL
+  confirmPending: WAITIN 4 U 2 SAY YES
+  confirmTitle: HALPR WANTZ 2 DO DIS
+  disabledPlaceholder: AI HALPR IZ ASLEEP. SET UP A PROVIDER IN SETTINGS.
+  emptyHint: ASK ME BOUT CRASHEZ, MODZ, OR UR SETTINGS.
+  errorTitle: OH NOES HALPR HAD A OOPSIE
+  inputPlaceholder: ASK BOUT CRASHEZ, LOGZ, OR MODZ…
+  notConfiguredTitle: HALPR NOT REDDY
+  openSettings: OPEN SETTINGS
+  passiveGameCrashed: GAEM WENT BOOM
+  passiveGameExitCode: EXIT CODE {code}
+  passiveGameExited: GAEM QUIT
+  passiveGameExitSignal: SIGNAL {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: NO EXIT STATUS
+  reasoning: CAT THINKIN THOUGHTS
+  toolArguments: ARGUMENTZ
+  toolResult: RESULT
+  toolRunning: WAITIN 4 RESULT…
+  marketConfirmMessage: INSTALL {name} INTO CURREN GAEM?
+  marketConfirmTarget: 'TARGET: {instance}'
+  marketConfirmTitle: INSTALL {type}
+  marketInstall: INSTALL
+  marketInstalled: INSTALLED
+  marketInstallFailed: FAILED 2 INSTALL {type}
+  marketType:
+    datapack: datapack
+    mod: mod
+    modpack: modpack
+    resourcepack: resorsepack
+    shader: shadrpack
+  marketResultCount: '{count} RESULTZ'
+  passiveGameStarted: GAEM STARTED
+  passiveGameStartedSummary: MINECWAFT {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: MOD KOMPATIBILITY REPORT
+  passiveModDiagnosisError: KOMPATIBILITY CHECK FAILED
+  passiveModDiagnosisSummary: '{checked} MODZ CHECKED · {incompatibilities} INKOMPATIBILITIES · {duplicates} DUPLICATES'
+  passiveModDuplicate: 'DUPLICATE {mod}: {files}'
+  passiveModInstalled: INSTALLED {version}
+  title: XMCL HALPR
+  statusDisabled: DISABLED — LOG IN OR SET UP PROVIDER
+  reset: NU CHAT
+  thinking: CAT THINKIN…
+  setupGuide: SETUP GIDE
+  statusReady: REDDY 2 GO
+  statusWorking: WERKIN HARD…
+  suggestion1: UPGRADE DIS GAEM 2 NEWER MINECWAFT N UPDATE MODZ
+  suggestion2: MY MODZ R CRASHIN — FIND WHY N HALP ME FIX IT
+  suggestion3: 'MAEK A MODPACK: FIND MODZ I WANT N PUT IN DIS GAEM'
+  toggleHint: 2 TOGGLE
 setting:
   aiAgentApiKeyDescription: CONFIGUR AN OPENAI-COMPATIBL PROVIDR, SUCH AS OPENAI OR A GATEWAY FUR CLAUDE. TEH KEY IZ STORED LOCALY ON DIS DEVICE.
-  aiAgentApiKeyPlaceholder: OPENAI OR CLAUDE PROVIDR API KEY
+  aiAgentApiKeyPlaceholder: PASTE API KEY HERE…
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
   aiAgentModelPlaceholder: gpt-5.6 OR claude-sonnet-4-5
   themeStore:
@@ -1529,7 +1959,7 @@ setting:
   globalSetting: GLOBAL INSTANCE SETTING
   globalSettingHint: INSTANCE WILL USE THESE SETTINGZ BY DEFAULT.
   importSettings: IMPORT SETTINGZ
-  importSettingsHint: LOAD SETTINGZ FROM A PREVIOUSLY EXPORTED FILE
+  importSettingsHint: LOAD SETTINGZ FROM JSON FILE.
   instanceTheme:
     activeDescription: THIS INSTANCE IS USING A CUSTOM THEEM. U CAN DELET IT TO USE DA GLOBAL THEEM.
     description: ENABL A CUSTOM THEEM FUR THIS INSTANCE. THIS WILL MAKE A COPY OF DA CURREN GLOBAL THEEM.
@@ -1540,14 +1970,14 @@ setting:
   layout:
     default: DEFAULT LAYOUT
     focus: FOCUS LAYOUT
-  layoutDescription: PICK UR PREFERRED INTERFAC STYLE
-  layoutTitle: INTERFAC LAYOUT
-  linuxEnableDedicatedGPUOptimization: ASSIGNMENT OF A DEDICATED GRAPHICS PROCESSR
-  linuxEnableDedicatedGPUOptimizationDescription: THIS OPSHUN ASSIGNS A DEDICATED GPU TO DA MINECWAFT PROCESS.
+  layoutDescription: PICK UR FAV LAYOUT 4 LAUNCHER.
+  layoutTitle: LAYOUT STYLE
+  linuxEnableDedicatedGPUOptimization: USE DEDICATED GPU ON LINUX
+  linuxEnableDedicatedGPUOptimizationDescription: LAUNCH GAEM WIT DISCRETE GPU ENVS (DRI_PRIME=1, __NV_PRIME_RENDER_OFFLOAD=1).
   linuxTitlebar: NATIVE TITLE BAR
   linuxTitlebarDescription: USE NATIVE LINUX TITLE BAR FUR LAUNCHER
   location: STORE LOCASHUN
-  manualUpdateHint: TEH VERSHUN CANNOT BE UPDATED AUTOMATICALLY. PLZ DOWNLOD DA LAUNCHER AGAIN FROM DA OFFISHUL WEBSITE!
+  manualUpdateHint: CLICK HERE 2 CHECK 4 LAUNCHER UPDATEZ BY HAND.
   maunalUpdateHint: TEH VERSHUN CANNOT BE AUTO-UPDATED. PLZ REDOWNLOD DA LAUNCHER FROM DA WEBSITE!
   maxSockets: PER HOST
   maxSocketsDescription: LIMIT DA MAXIMUM NUMBR OF SOCKETS TO ALLOW PER HOST OR FUR ALL HOSTS IN TOTAL. 0 MEANS NO LIMIT.
@@ -1557,7 +1987,7 @@ setting:
   minecraftOptions: MINECWAFT OPSHUNS
   name: GLOBAL SETTING | GLOBAL SETTINGZ
   network: NETWORK SETTINGZ
-  newsPosition: MOVE NEWZ SECSHUN
+  newsPosition: NEWS POSISHUN
   officialWebsite: OFFISHUL WEBSITE
   particleMode:
     bubble: BUBBLE
@@ -1576,15 +2006,15 @@ setting:
   resetAllSettingsConfirmMessage: THIS WILL PERMANENTLY DELET ALL SETTINGZ, ACCOUNTS, INSTANCES, GROUPS, AN CACHED DATA. THIS ACSHUN CANNOT BE UNDONE. U SURE?
   resetAllSettingsConfirmTitle: RESET ALL SETTINGZ?
   resetAllSettingsHint: RESET LAUNCHER TO FACTORY DEFAULTS (DELETES EVRYTHING)
-  resetAllSettingsSuccess: ALL SETTINGZ HAZ BEEN RESET. TEH LAUNCHER WILL RESTART.
-  resetSettingsError: 'EROR RESETTIN SETTINGS: {error}'
+  resetAllSettingsSuccess: ALL SETTINGZ RESET 2 DEFAULTZ.
+  resetSettingsError: 'ERROR RESETTIN SETTINGS: {error}'
   resetToDefault: RESET TO DEFAULT
   select: PICK
-  settingsExported: SETTINGZ EXPORTED SUCCESSFULLY
-  settingsImportError: FAILED TO IMPORT SETTINGZ. PLZ CHECK DA FILE FORMAT.
-  settingsImported: SETTINGZ IMPORTED SUCCESSFULLY
-  settingsReloadHint: TEH LAUNCHER WILL RESTART 2 APPLY ALL SETTINGS.
-  showNewsHeader: UNHIDE NEWZ SHOWCASE
+  settingsExported: SETTINGZ EXPORTED OK.
+  settingsImportError: ERROR IMPORTIN SETTINGZ.
+  settingsImported: SETTINGZ IMPORTED OK.
+  settingsReloadHint: NEED 2 RESTART LAUNCHER 2 APPLY ALL CHANGEZ.
+  showNewsHeader: SHOW NEWS BANNER
   showRoot: SHOW
   sidebarAlign: SIDEBAR ALIGNMENT
   sidebarAutoHide: AUTO-HIDE SIDEBAR
@@ -1626,6 +2056,45 @@ setting:
     successGlobal: Bakgrnd pic chaengd.
     successInstance: Instnce bakgrnd pic chaengd.
     failed: Cudnt set bakgrnd pic
+  multiplayerTransport: TOGETHR TRANSPORT
+  multiplayerTransportDescription: CHOOZ WEBRTC USED BY TOGETHR. CHANGIN WILL DISCONNECT PEERS.
+  aiAgentApiKey: AI HALPR API KEY
+  aiAgentApiKeyNotNeeded: NO API KEY NEEDED
+  aiAgentApiKeyNotNeededHint: NO API KEY NEEDED 4 DIS MODEL OR ENDPOINT.
+  aiAgentCustom: CUSTOM PROVIDER
+  aiAgentEndpoint: API ENDPOINT
+  aiAgentModel: MODEL NAEM
+  customCss:
+    globalToggle: ENABLE CUSTOM CSS
+    advancedDescription: OVERRIDE LAUNCHER STYLE WIT UR OWN CSS.
+    assistantHint: DESCRIBE LOOK U WANT N I WRITE CSS 4 U.
+    assistantSuggestion1: MAEK SIDEBAR TRANSLUCENT
+    assistantSuggestion2: ADD SOFT GRADIENT BG 2 CARDS
+    assistantTitle: CSS HALPR
+    dropHint: DROP A .CSS FILE 2 LOAD IT
+    editorPlaceholder: /* WRITE UR CUSTOM CSS HERE */
+    openInDialog: OPEN IN HALPR DIALOG
+    title: CUSTOM CSS
+    warning: CUSTOM CSS LETS U CHANGE ANYTHING IN LAUNCHER. B CAREFUL PASTIN CSS FROM STRANGERZ.
+  aiAgentApiKeyClear: CLEAR KEY
+  aiAgentApiKeyEmpty: PASTE UR API KEY
+  aiAgentApiKeySaved: SAVED
+  aiAgentApiKeyStored: KEY SAVED — TYPE 2 REPLACE
+  aiAgentBuiltin: BUILT-IN
+  aiAgentEndpointDescription: CHAT COMPLETIONS ENDPOINT URL.
+  aiAgentModelDescription: MODEL NAEM 2 SEND IN CHAT COMPLETION REQUESTS.
+  useDesktopBackground: USE CURRENT DESKTOP WALLPAPER
+  devModeLabel: DEV
+  livePreview: LIVE PREVIEW
+  sidebarShowOnlyPinned: ONLY SHOW PINNED GAEMS
+  sidebarShowOnlyPinnedHint: ONLY DISPLAY PINNED GAEMS IN SIDEBAR
+  appImageUpdateMode: AppImage update boss
+  appImageExternalMode: Outsyd managr / hand swap (defawlt)
+  appImageSelfMode: XMCL self-boss (I owns dis AppImage)
+  appImageAutoDownload: Auto leech updates plz
+  appImageAutoInstall: Put in downloded updates wen bai bai
+  appImageExternalUpdateHint: If put by Shelly or othr boss, update thr n keep outsyd mode. Else swap AppImage urself. XMCL no leech or put in updates in outsyd mode.
+  appImageSelfUpdateHint: Only pik self-boss for AppImage u owns urself. In-hous updates wunts absoloot path wid no vershun numbr in naem (liek xmcl.AppImage). Bai bai XMCL, renaem file, den play agin.
 settingLabel:
   global: GLOBAL
   globalHint: THIS SETTING WILL FOLLOW DA GLOBAL SETTING
@@ -1679,6 +2148,8 @@ shaderPack:
   noPacks: No shadr packz instold
   search: Sniff shadr packz...
   'off': 'Off'
+  noLocalPacksFound: NO LOCAL SHADR PACKS FOUND MATCHIN SEARCH.
+  noPacksInstalled: U DONT HAZ ANY SHADR PACKS INSTALLED.
 shared:
   close: Close dis
   pressKeyCombination: PRESS KEY COMBO...
@@ -1711,7 +2182,19 @@ shared:
   skipForNow: SKIP FUR NAO
   upgrade: UPGRAYDD
   'yes': YAS
-  delete: DELET
+  delete: DELETE
+  openFolder: OPEN FOLDER
+  reset: RESET
+  missing: MISSIN
+  copy: COPY
+  copied: COPIED
+  save: SAV
+  healthy: OK
+  unused: UNUSED
+  copyFailed: COPY FAILED
+  copyFailedHint: COULD NOT COPY 2 CLIPBOARD
+  failed: FAILED
+  view: VIEW
 sidebar:
   pin: STIK IT
   unpin: UNSTIK IT
@@ -1765,7 +2248,7 @@ theme:
   selectMusic: PICK MUSIC
   selectVideo: PICK VIDEO
   title: X MINECWAFT LAUNCHER
-title: X MINECWAFT LAUNCHER
+title: XMCL
 transportType:
   host: HOST CANDIDATE
   prflx: PEER REFLEXIVE CANDIDATE
@@ -1773,13 +2256,13 @@ transportType:
   srflx: SERVER REFLEXIVE CANDIDATE
 turnRegion:
   fr: FRENCE
-  guangzhou: GUANGZHOU, CHINA
+  guangzhou: Guangzhou, China
   hk: HONG KONG
-  liaoning: LIAONING, CHINA
+  liaoning: Liaoning, China
   po: POLAND
 tutorial:
   feedbackDescription: IF U ENCOUNTER ANY PROBLEMZ, PLZ CLICK THIS BUTTON TO SEND FEEDBACK!
-  hideNewsHeaderDescription: U CAN SEE DA NEWZ SHOWCASE ON DA LEFT. CLICKING THIS BUTTON CAN HIDE THIS SHOWCASE.
+  hideNewsHeaderDescription: CLICK 2 HIDE NEWS HEADER.
   instance:
     appearanceThemeDescription: SET WALLPAPER N COLORS FOR DIS INSTANC.
     appearanceThemeTitle: INSTANC LOOKZ
@@ -1808,7 +2291,7 @@ tutorial:
     versionDescription: PICK MINECRAFT VERSION & FORGE, FABRIC, QUILT OR NEOFORGE.
     versionTitle: MINECRAFT & LOADER
   instanceAddDescription: CLICK THIS BUTTON TO IMPORT EXISTING MINECWAFT INSTANCE OR MAKE A NEW ONE FROM SCRATCH OR MODPACK.
-  instanceSelectDescription: CLICKING THIS BUTTON WILL NAVIGATE TO DA PAGE TO PICK GAME AN READ NEWZ.
+  instanceSelectDescription: PICK A GAEM 2 MANAGE OR LAUNCH IT.
   launchDescription: CLICK THIS BUTTON TO INSTALL OR LAUNCH DA GAME.
   mod:
     defaultSourceDescription: U CAN PICK DA SOURCE OF MODZ DETAILS HERE. THERE ARE DA MODZ PUBLISHED TO BOTH MODRINTH AN CURSEFORGE. IF U WANT TO SWITCH BETWEEN THESE TWO CONTENT PROVIDERS, U CAN CHANGE DA VALUE HERE.
@@ -1872,6 +2355,12 @@ tutorial:
     listDescription: BROWSE SHADERS N SWITCH FAST.
     detailTitle: SHADER INFO
     detailDescription: MAKER, RES REQUIREMENTS N PRESETS.
+  recentPlayDescription: CREATED GAEMS SHOW HERE. SWITCH VIEWS 2 SEE INSTALLED VERSIUNS N DOWNLODED MODPACKS.
+  storePoupularModpackDescription: SEE POPULAR MODPACKS FROM CURSEFORGE N MODRINTH HERE.
+  storeSearchCategoryDescription: TOGGLE CATEGORIES N FILTERS HERE.
+  storeSearchResultDescription: SEARCH RESULTZ SHOW HERE.
+  storeSearchDescription: U CAN SEARCH MODPACKS BY TYPIN IN DIS BOX. HIT ENTER 2 SEARCH.
+  userAccountDescription: CLICK DIS ICON 2 ADD OR MANAGE UR MINECWAFT AKKOUNT.
 universalDrop:
   unknownResource: UNKNOWN
 unresolvedFiles:
@@ -1994,10 +2483,13 @@ userSkin:
   skinDeleteFailed: CUD NOT GET SKIN OUTTA CLOZET
   edit: EDIT
   fetch: LOAD
+  invalidImage: CHOOZ A VALID MINECWAFT SKIN PIC.
+  invalidImageTitle: BAD SKIN PIC
+  uploadRejected: MINECWAFT REJECTED DIS SKIN. PLZ TRY AGAIN LATER.
 version:
-  checkIntegrity: CHECK INTEGRITY
-  name: VERSHUN | VERSHUNS
-  notInstalled: VERSHUN IS NOT INSTALLED
+  checkIntegrity: CHECK INTEGRITI
+  name: VERSIUN | VERSIUNS
+  notInstalled: VERSIUN IZ NOT INSTALLED
 versionType:
   alpha: ALPHA
   beta: BETA
@@ -2046,6 +2538,7 @@ blueprint:
     empty: This blooPrint has no blockz 2 show.
     hint: '{count} blockz · {x}×{y}×{z}'
     controls: 'WASD: movez · Space/Shift: up/down · Drag: lookz · Scroll: zoomz'
+    title: PREVIEW
   convert:
     title: Convert format
     hint: Convert this blooPrint 2 another format. A new file will be made.
@@ -2064,6 +2557,12 @@ blueprint:
     action: Replace
   formats:
     structure: Vanilla Structure
+  local: LOCAL
+  allNamespaces: ALL
+  delete: DELETE
+  cancel: CANCEL
+  cmsBrowseOnly: BROWSE ONLY
+  loadMore: LOAD MORE
 gamepad:
   connected: Controller Connected
   guideTitle: Controller Controls
@@ -2104,6 +2603,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: GAMEPAD DETECTED
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
@@ -2217,3 +2717,111 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: AKKOUNT
+  confirmMerge: CONFIRM AKKOUNT MERGE
+  createdAt: KREATED {date}
+  description: UR PASSWORD OR PASSWORDLESS XMCL AKKOUNT, SEPARATE FROM MINECWAFT GAEM AKKOUNTZ.
+  gameAccountsSeparate: DELETIN A GAEM AKKOUNT DOES NOT UNLINK UR XMCL LOGIN METHOD.
+  guest: GUEST
+  identityConflict: DIS LOGIN METHOD WIT {provider} BELONGS 2 ANOTHR XMCL AKKOUNT. AKKOUNTZ NEVR MERGE AUTOMATIKALLY.
+  linkAccountWith: LINK AKKOUNT WIT
+  mergePreview: LOOK AT RESORCES DAT WILL MOVE BEFORE CONFIRMIN.
+  mergeNeedsSession: SIGN IN 2 TEH XMCL AKKOUNT U WANT 2 KEEP BEFORE PREVIEWIN MERGE.
+  mergeQueued: AKKOUNT MERGE IZ IN PROGRESS.
+  requestFailed: XMCL AKKOUNT SERVICE COULD NOT FINISH DIS REKWEST. UR GAEM AKKOUNT DID NOT CHANGE.
+  reviewMerge: REVIEW MERGE
+  session: SESSHUN
+  sessionActive: ACTIVE
+  sessionExpired: EXPIRED
+  signOutAll: SIGN OUT ON ALL DEVICEZ
+  signOutDevice: SIGN OUT ON DIS DEVICE
+  status:
+    active: ACTIVE
+    deleted: DELETED
+    deletion_pending: DELETION PENDIN
+    merged: MERGED
+  expiresAt: EXPIRES {date}
+  title: XMCL AKKOUNT
+minecraftFriends:
+  accept: ACCEPT
+  add: ADD A FREN
+  addPlaceholder: MINECWAFT USERNAEM
+  title: FRENS
+  addedRelative: ADDED {time}
+  errors:
+    cannotAddSelf: U CANNOT SEND A FREN REKWEST 2 URSELF.
+    duplicate: DAT PLAYR IZ ALREADY IN UR LIST.
+    friendsDisabled: UR MINECWAFT AKKOUNT HAZ FRENS DISABLED. ENABLE FRENS IN AKKOUNT SETTINGS N TRY AGAIN.
+    generic: SOMETHIN WENT WRONG. PLZ TRY AGAIN.
+    invalidName: MINECWAFT USERNAEMS MUST B BETWEEN 3 N 16 CHARS.
+    inviteRejected: DAT PLAYR HAS FRENS DISABLED OR DOES NOT ACCEPT INVITEZ.
+    tokenExpired: UR MICROSOFT SESSHUN EXPIRED. PLZ LOG IN AGAIN.
+    unknownProfile: COULD NOT FIND A PLAYR WIT DAT NAEM.
+  expiresRelative: EXPIRES {time}
+  friends: FRENS
+  heroEmptyHint: ADD A PLAYR BY USERNAEM ABOVE 2 SEND A FREN REKWEST.
+  heroEmptyTitle: UR FREN LIST IZ EMPTY
+  incoming: INCOMIN REKWESTS
+  incomingHint: 1 INCOMIN REKWEST | {count} INCOMIN REKWESTS
+  notifyAdded: FREN REKWEST SENT 2 {name}
+  outgoing: OUTGOIN REKWESTS
+  privacy:
+    acceptInvites: ACCEPT FREN INVITEZ
+    acceptInvitesHint: WEN OFF, OTHR PLAYRS CANNOT SEND U REKWESTS.
+    friendsEnabled: FREN LIST ENABLED
+  reconnectAction: RECONNECT
+  requiresMicrosoft: SIGN IN WIT MICROSOFT AKKOUNT 2 USE FRENS.
+  scopedTo: SIGNED IN AS {name}
+  send: SEND
+  unsupported: FRENS R ONLY 4 MICROSOFT AKKOUNTZ.
+modCategory:
+  optimization: OPTIMIZASHUN & SPEED
+  libraries: LIBRARIES & APIS
+  utilities: UI & TOOLZ
+  gameplay: GAMEPLAY
+  world: WORLD & DIMENSHUNS
+  visual: LOOKS & ANIMASHUNS
+  miscellaneous: OTHER STUFF
+relative:
+  daysAgo: '{count} DAY AGO | {count} DAYZ AGO'
+  hoursAgo: '{count} HOUR AGO | {count} HOURZ AGO'
+  justNow: JUS NOW
+  minutesAgo: '{count} MINIT AGO | {count} MINITZ AGO'
+  secondsAgo: '{count} SEC AGO | {count} SECZ AGO'
+resourceError:
+  body: '"{path}" COULD NOT B PARSED ({code}). FILE MITE B BROKEN, LOCKED, OR NOT COMPLETE. TRY DOWNLODIN AGAIN OR REMOV IT.'
+  title: CANNOT READ {file}
+localCollection:
+  title: LAUNCHER COLLECSHUNS
+  newCollection: NU COLLECSHUN
+  namePlaceholder: COLLECSHUN NAEM
+  empty: NO COLLECSHUNS YET
+  installAll: INSTALL ALL
+  exportCollection: EXPORT COLLECSHUN
+  importCollection: IMPORT COLLECSHUN
+  saveCurrentMods: SAV CURREN MODZ AS COLLECSHUN
+  saveCurrentModsSuccess: SAVED {count} MODZ 2 COLLECTION "{name}"
+  addModsTo: ADD MODZ 2 "{name}"
+  addedModsSuccess: ADDED {count} MODZ 2 COLLECTION
+  addSelectedMods: ADD {count} MODZ
+  incompatibleAlert: '1 PROJECT IZ NOT KOMPATIBLE N SKIPPED: | {count} PROJECTS R NOT KOMPATIBLE N SKIPPED:'
+  projects: NO PROJECTZ | {count} PROJECT | {count} PROJECTZ
+  modrinthSection: MODRINTH AKKOUNT
+  viewMods: VIEW MODZ
+  editCollection: EDIT COLLECSHUN
+  collectionDescription: COLLECSHUN DESCRIPSHUN
+  noModsInCollection: NO MODZ IN DIS COLLECSHUN YET
+  removeEntryConfirm: REMOV FROM COLLECSHUN
+  addMods: ADD MODZ
+  addModsHint: ADD INSTALLED MODZ FROM UR GAEM OR CLICK BOOKMARK IN MARKET.
+  addModsDialogDesc: PICK INSTALLED MODZ FROM DIS GAEM 2 PUT IN COLLECSHUN.
+  addAllCurrent: ADD ALL CURREN MODZ
+  searchMods: SEARCH MODZ…
+  selectAll: SELECT ALL
+  deselectAll: DESELECT ALL
+  selected: SELECTED
+  alreadyInCollection: ALREADY IN COLLECSHUN
+  noMatchingMods: NO MODZ MATCH SEARCH
+  addToCollection: ADD 2 COLLECSHUN
+  corrupted: UR SAVED COLLECSHUNS COULD NOT B READ N WERE RESET. BACKUP KEPT NEXT 2 DATA FILE.

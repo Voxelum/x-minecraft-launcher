@@ -48,6 +48,10 @@ askAICrash:
     Hagyja, hogy az AI segítsen megérteni a játék összeomlását!
     Kövesse az alábbi utasításokat, hogy megkérdezze az AI -t a játék összeomlásáról!
   selectPlatform: Nyisson meg egy AI platformot, és illessze be az éppen lemásolt promptot.
+  agentNotConfigured: Adj hozzá egy MI-szolgáltatót és API-kulcsot a Beállításokban, hogy a beépített asszisztens elemezhesse és megoldhassa a problémát.
+  askAgent: Diagnosztizálás a beépített MI-asszisztenssel
+  orExternal: vagy használj külső MI-t
+  setupAgent: MI-asszisztens beállítása
 authProfileAddedNotification: Belépési profil {name} hozzáadva
 bedrock:
   installBedrockVersion: Downloading Bedrock {version}
@@ -68,6 +72,13 @@ bedrock:
   downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
   removeFailed: Failed to remove Bedrock {version}
+  description: A Minecraft Bedrock Edition a Microsoft Store-on keresztül telepíthető és indítható. Microsoft-fiókoddal rendelkezned kell Bedrock licenccel.
+  install: Beszerzés a Microsoft Store-ból
+  installFailed: Nem sikerült megnyitni a Microsoft Store-t
+  installed: 'Telepítve: {version}'
+  launchHint: Használd az Indítás gombot a Bedrock Edition megnyitásához.
+  licenseRequired: Jelentkezz be egy Minecrafttal rendelkező Microsoft-fiókkal a Bedrock telepítéséhez és futtatásához.
+  refresh: Frissítés
 backup:
   title: Biztonsági mentés és visszaállítás
   description: Beállítások, gyűjtemények, témák és játékpéldányok biztonsági mentése és visszaállítása
@@ -95,7 +106,7 @@ backup:
   create: Mentés létrehozása
   createTitle: XMCL biztonsági mentés létrehozása
   saveDialogTitle: XMCL biztonsági mentés mentése
-  fileFilterName: 'XMCL biztonsági mentés (*.xmclbackup, *.zip)'
+  fileFilterName: XMCL biztonsági mentés (*.xmclbackup, *.zip)
   createError: Nem sikerült létrehozni a biztonsági mentést
   loadManifestError: Nem sikerült beolvasni a biztonsági mentést
   restore: Visszaállítás
@@ -106,7 +117,7 @@ backup:
   elapsedTime: Eltelt idő
   remainingTime: Becsült hátralévő idő
   calculatingRemaining: Számítás...
-  lessThanMinute: '< 1 perc'
+  lessThanMinute: < 1 perc
   itemsProgress: '{current}/{total}'
   savesCategory: Világok
   modsCategory: Modok
@@ -118,9 +129,9 @@ backup:
   copiedLog: Napló a vágólapra másolva
   openFolder: Megjelenítés mappában
   done: Kész
-  backupDone: 'Biztonsági mentés kész!'
+  backupDone: Biztonsági mentés kész!
   backupDoneHint: A biztonsági mentés elkészült és ellenőrizve lett.
-  restoreDone: 'Visszaállítás kész!'
+  restoreDone: Visszaállítás kész!
   restoreDoneHint: Minden kiválasztott adat és példány sikeresen visszaállítva.
   timeTaken: 'Időtartam: {time}'
   destinationFile: 'Mentve ide: {path}'
@@ -154,9 +165,9 @@ backup:
   restoreError: Nem sikerült visszaállítani a biztonsági mentést
   restorePartialTitle: Restore Completed with Warnings
   restorePartialHint: Some components or instances could not be restored. Check the activity log for details.
-  restoreFailedCategory: 'Failed to restore {category}'
-  instancesSkipped: 'Skipped {count} already existing instance(s)'
-  instancesFailed: 'Failed to restore {count} instance(s)'
+  restoreFailedCategory: Failed to restore {category}
+  instancesSkipped: Skipped {count} already existing instance(s)
+  instancesFailed: Failed to restore {count} instance(s)
   createBackupTitle: Biztonsági mentés létrehozása
   createBackupDescription: Mentse el az indító beállításait, gyűjteményeit, témáit és példányait egyetlen hordozható fájlba.
   restoreBackupTitle: Biztonsági mentés visszaállítása
@@ -194,9 +205,27 @@ backup:
   interval6h: 6 óránként
   interval12h: 12 óránként
   interval24h: 24 óránként
-  keepCount: 'Utolsó {count} mentés megtartása'
+  keepCount: Utolsó {count} mentés megtartása
 baseSetting:
   title: Alapbeállítások
+  info:
+    address: Cím
+    changes: Módosítások
+    custom: Egyéni
+    disabled: Letiltva
+    enabled: Engedélyezve
+    exportFormats: Exportálási formátumok
+    inherited: Örökölt
+    modLoader: Modbetöltő
+    notConfigured: Nincs beállítva
+    notSet: Nincs megadva
+    projectId: Projekt azonosító
+    running: Fut
+    saved: Mentve
+    status: Állapot
+    stopped: Leállítva
+    vanilla: Vanilla
+    offline: Offline archívum
 browseApp:
   createShortcut: Parancsikon létrehozása
   default: ALAPÉRTELMEZETT
@@ -360,6 +389,27 @@ errors:
   HeadersTimeoutError: HTTP Fejléc időtúllépés
   NotFoundError: 404 Nem található
   SocketError: Kiszolgálói foglalathiba
+  bedrockUnsupportedPlatform: A Minecraft Bedrock Edition csak Windows rendszeren támogatott.
+  bedrockNotInstalled: A Minecraft Bedrock Edition nincs telepítve.
+  bedrockLaunchFailed: Nem sikerült elindítani a Minecraft Bedrock Editiont.
+  bedrockInstallFailed: Nem sikerült elindítani a Minecraft Bedrock Edition telepítését.
+  CorruptedResourceMetadata: Sérült metaadatokat észleltünk és töröltünk {count} erőforrásnál. A fájlok továbbra is működnek, de a Modrinth/CurseForge hozzárendelés elveszett, és automatikusan újra fel lesz ismerve.
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Nem sikerült telepíteni a Minecraft fájlokat
+  InstallNetworkError:
+    body: Hálózati hiba szakította meg a telepítést. Ellenőrizd az internetkapcsolatot vagy a proxyt, majd próbáld újra.
+    title: Nem sikerült letölteni a Minecraft fájlokat
+  InstallPermissionDenied:
+    body: A víruskereső vagy a mappa jogosultságai blokkolták a telepítést. Add hozzá az indítót a víruskereső kivételeihez, vagy válassz másik mappát a beállításokban.
+    title: Nincs írási jogosultság az indító könyvtárához
+  bedrockDownloadUrlUnavailable: Ez a Bedrock verzió nem érhető el a jelenlegi Microsoft-fiókkal. A béta és preview verziókhoz be kell lépni a Minecraft béta programba.
+  bedrockDeveloperModeRequired: Windows Fejlesztői mód szükséges a Bedrock verzió regisztrálásához.
+  bedrockRegisterFailed: Nem sikerült regisztrálni ezt a Bedrock verziót a Windowsban.
+  bedrockVersionNotFound: Ez a Bedrock verzió nincs helyileg telepítve.
+  InstallBackendUnresponsive:
+    body: Az indító háttérfolyamata nem válaszol, ezért a telepítés megszakadt. Kérjük, zárd be teljesen és indítsd újra az alkalmazást.
+    title: Az indító nem válaszol
 eula:
   body: A jelölőnégyzet bejelölésével jelzi, hogy beleegyezik a Minecraft {eula}-be.
 exception:
@@ -377,15 +427,20 @@ command:
   instance:
     launch:
       title: Példány indítása
+      description: Minecraft példány indítása
     create:
       title: Példány létrehozása
+      description: Új példány létrehozása
     delete:
       title: Példány törlése
+      description: Meglévő példány törlése
   user:
     login:
       title: Felhasználó bejelentkezése
+      description: Bejelentkezés a fiókba
     refresh:
       title: Felhasználó frissítése
+      description: Felhasználói munkamenet frissítése
 commandPalette:
   placeholder: Parancsok, példányok, modok keresése…
   commands: Parancsok
@@ -402,6 +457,7 @@ commandPalette:
   hintEnter: belépés
   hintBack: vissza
   hintClose: bezárás
+  hintAskAgent: kérdezd az Asszisztenst
 feedback:
   channel: Csatornák
   description: Találtam egy hibát, vagy szeretnék javasolni valamit
@@ -420,6 +476,8 @@ feedback:
   qq: QQ Csoport
   qqDescription: 'Lépj be a visszajelző QQ-csoportba, és beszélgess közvetlenül a készítőkkel. Csoport száma: {number}'
   qqEnterGroup: Csatlakozás
+  reddit: Reddit
+  redditDescription: Csatlakozz az r/XMCL Reddit közösséghez
 fileDetail:
   fileSize: Fájl méret
   filesize: Fájl mérete
@@ -549,6 +607,16 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: érték
   fileApiPlaceholder: Add meg itt a távoli szinkronizáció URL-jét, ha meg szeretnéd tartani az erőforrás-szinkronizálást
+  deleteHintBedrock: A Minecraft Bedrock Edition és annak minden adata véglegesen törlődik a számítógépről. Biztos vagy benne?
+  monitor: Teljes képernyős monitor
+  monitorDefault: Alapértelmezett (fő monitor)
+  monitorNumber: '{number}. monitor'
+  monitorPrimary: Elsődleges
+  nameInvalidChars: 'A név nem tartalmazhatja a következő karaktereket: < > : " / \ | ? *'
+  namePathTraversal: A név nem tartalmazhat útvonal-navigációt ("..")
+  nameReservedName: Ez a név a rendszer által fenntartott, nem használható
+  nameTrailingDotOrSpace: A név nem végződhet ponttal vagy szóközzel
+  nameWhitespaceOnly: A név nem állhat csak szóközökből vagy pontokból
 instanceAge:
   older: Régebbi
   threeDay: Három napon belül
@@ -599,6 +667,7 @@ instanceUpdate:
     Tartsa a {keep} fájlokat.
   title: Példány frissítése
   update: Frissítés indítása
+  noFiles: Nincs fájlváltozás
 instances:
   add: Játék létrehozása
   addCurseForgeDescription: |-
@@ -627,6 +696,7 @@ instances:
   linkSharedFoldersHint: Hozza létre ezeket a mappákat az indító megosztott mappáira mutató hivatkozásként, hogy ez a példány megossza a tartalmukat az összes többi összekapcsolt példánnyal. Ez nem másolás — az egyik példányban végzett módosítások az összesben megjelennek. A be nem jelölt mappák a példány számára priváttak maradnak.
   linkFailed: Nem sikerült a(z) {folder} mappát a megosztott mappához kapcsolni
   addPrismDescription: Meglévő PrismLauncher-példány importálása.
+  instanceCount: '{count} példány'
 items:
   count: '{count} elem'
   total: '{total} összesen'
@@ -670,6 +740,7 @@ launch:
   launchAnyway: Indítsa el egyébként
   launchAs: Indítás más felhasználóként
   forceKill: Erőltetett kilépés
+  launchTo: Indítás ide
 launchBlocked:
   launchBadVersion:
     description: A verzió {version} json hibás. Talán telepítsd újra ezt a verziót?
@@ -693,6 +764,13 @@ launchBlocked:
     description: Kérlek ellenőrizd a java-t, vagy adj több engedélyt az Launchernek, és próbáld újra. Ha ez még mindig nem működik, kérlek, vedd fel a kapcsolatot a fejlesztőkkel.
     title: A játékfolyamat nem indul el
   unexpectedText: Ez váratlanul ért. A probléma enyhítése érdekében újraindíthatod a Launchert. Kérlek, vedd fel a kapcsolatot a készítővel, ha ez a probléma ismét előfordul.
+  launchLinuxDisplayUnavailable:
+    environmentMissing: Az XMCL nem tudta lekérni az X11 képernyőinformációkat az asztali munkamenetedből. Indítsd újra az XMCL-t terminálból, vagy jelentkezz ki és újra be.
+    noGraphicalSession: Az XMCL nem grafikus asztali munkamenetben fut. Indítsd el a grafikus felületből a játék megnyitása előtt.
+    sandboxDenied: Az alkalmazás homokozója nem éri el az X11-et. Engedélyezd az X11 socket elérését a Flatpak beállításokban, majd indítsd újra az XMCL-t.
+    title: X11 képernyő nem érhető el
+    xwaylandMissing: A Minecraftnak szüksége van az XWaylandre ebben a Wayland munkamenetben. Telepítsd a disztribúciód XWayland csomagját, majd jelentkezz be újra.
+    xwaylandNotRunning: Az XWayland telepítve van, de az X11 képernyőkiszolgáló nem fut. Engedélyezd az XWaylandet a kompozitor beállításaiban, majd jelentkezz be újra.
 launchFailed:
   crash: A játék összeomlott!!
   description: Nincs jelentést az összeomlásról. Ez a hibanapló és a legutóbbi napló.
@@ -720,6 +798,11 @@ launcherUpdate:
   installAndQuit: Újraindítás a telepítéshez
   noUpdateAvailable: Nincs elérhető frissítés
   updateToThisVersion: Letöltés és telepítés
+  automaticUnavailable: Automatikus frissítés nem érhető el
+  automaticNotImplemented: Az automatikus frissítés nincs megvalósítva ezen a platformon.
+  automaticNotConfigured: Az automatikus frissítés nincs konfigurálva ehhez az indítóhoz.
+  manualCheckHint: A frissítések ellenőrzése elmaradt. Ellenőrizd a GitHub kiadásokat kompatibilis csomagért, és telepítsd kézzel.
+  manualCheckRequired: Ez a platform nem támogatja az automatikus frissítéskeresést vagy telepítést. Kérjük, látogass el a kiadások oldalára.
 localVersion:
   auto: Automatikusan számolt
   empty: Nincs telepített verzió
@@ -763,12 +846,31 @@ loginError:
   requirePassword: Jelszó szükséges
   requireUsername: Felhasználónév szükséges
   timeout: Bejelentkezési időtúllépés. Próbáld újra vagy ellenőrizd a hálózati kapcsolatot.
+  loginCanceled: A Microsoft bejelentkezés meg lett szakítva.
+  cyrillicNotAllowed: Cirill betűk nem használhatók
+  illegalOfflineUsername: A felhasználónév 3-16 karakter hosszú lehet, és csak angol betűket, számokat és aláhúzásjeleket tartalmazhat
+  loginMinecraftByXboxRateLimited: A Microsoft Minecraft hitelesítési szolgáltatása átmenetileg korlátozza a kéréseket (HTTP 429). Kérjük, várj egy kicsit, majd próbáld újra.
+  loginMinecraftByXboxRateLimitedWithRetry: A Microsoft Minecraft hitelesítési szolgáltatása korlátozza a kéréseket (HTTP 429). Kérjük, várj kb. {seconds} másodpercet és próbáld újra.
+  loginMinecraftByXboxServerError: A Microsoft Minecraft hitelesítési szolgáltatása szerverhibát jelzett (HTTP {status}). Ez az ő oldalukon lévő probléma. Kérjük, próbáld újra pár perc múlva.
+  loginMinecraftByXboxStatus: Nem sikerült az Xbox tokent Minecraft tokenre váltani (HTTP {status}). Győződj meg róla, hogy ez az Xbox profil rendelkezik a Minecrafttal.
+  loginXboxAdultVerification: A Microsoft-fiókod nagykorúsági ellenőrzést igényel az Xbox bejelentkezés előtt. Nyisd meg a(z) {url} oldalt a böngésződben az ellenőrzéshez, majd próbáld újra.
+  loginXboxBadXsts: A Microsoft olyan XSTS választ adott, amely nem tartalmazza a várt felhasználói adatokat. Ez általában átmeneti — próbáld újra néhány perc múlva.
+  loginXboxBanned: Ezt a Microsoft / Xbox fiókot a Microsoft felfüggesztette vagy kitiltotta. Nem tudsz bejelentkezni a Minecraftba. Lépj kapcsolatba az ügyfélszolgálattal.
+  loginXboxChildAccount: A fiókod gyermekfiók, és hozzá kell adni egy Microsoft Családhoz az Xbox/Minecraft bejelentkezés előtt. Nyisd meg a(z) {url} címet a javításhoz.
+  loginXboxFailedWithCode: Nem sikerült bejelentkezni az Xboxba a Microsoft tokennel (XErr {code}). Keress rá erre a kódra segítségért vagy próbáld újra később.
+  loginXboxNoXboxProfile: Ehhez a Microsoft-fiókhoz még nem tartozik Xbox profil. Nyisd meg a(z) {url} oldalt egy profil létrehozásához, majd próbáld újra.
+  loginXboxRegionLocked: Az Xbox Live nem érhető el a Microsoft-fiókod régiójában. Módosítsd az országot/régiót a fiókbeállításokban, majd próbáld újra.
+  xboxErrorGuideHint: Gondod akadt a bejelentkezéssel? Nézd meg, hogyan javíthatók a Microsoft és Xbox bejelentkezési problémák.
+  openLoginGuide: A probléma megoldása
+  openDiscordSupport: Még mindig segítségre van szükséged? Csatlakozz a Discordunkhoz
 logsCrashes:
   crashes: Hibanaplók
   logs: Naplók
   placeholder: Nem találhatóak fájlok
   title: Napló vagy összeomlás jelentések
   failures: Indítási hibák
+  serverLogs: Szervernaplók
+  showFile: Megjelenítés mappában
 me:
   groupByDate: Dátum szerinti csoportosítás
   groupByFolder: Mappa szerinti csoportosítás
@@ -839,12 +941,29 @@ mod:
   selectOrCreateGroup: Csoport kiválasztása vagy létrehozása
   showDirectory: Modok mappájának megjelenítése
   showFile: A mod elérési útvonalának megjelenítése {file}
-  showInModrinth: '{name} megjelenítése Modrinth-en'
-  switchDefaultSource: Alapértelmezett mod forrás
+  showInModrinth: '{name} megtekintése a Modrinthen'
+  switchDefaultSource: Alapértelmezett forrás váltása
   syncGroupRules: A csoportosítási szabályok mentése
-  toUpdate: '{count} frissítendő'
+  toUpdate: '{count} frissítés'
   ungroup: Csoportosítás
   description: Leírás
+  autoCategorize: Automatikus rendezés mappákba
+  autoCategorizeHint: Automatikusan mappákba csoportosítja a modokat (Optimalizáció, Könyvtárak, Világ, Játékmenet stb.)
+  autoCategorizeSuccess: A modok sikeresen rendezve {count} mappába
+  collapseAll: Minden mappa összecsukása
+  expandAll: Minden mappa kibontása
+  folderSetting: Mappabeállítások
+  folderColor: Mappa színe
+  folderIcon: Mappa ikonja
+  pinGroup: Rögzítés felülre
+  pinToTop: Rögzítés felülre
+  pinToTopHint: A mappa a lista tetején fog megjelenni
+  pinned: Rögzítve
+  unpinGroup: Rögzítés feloldása
+  customColor: Egyéni szín
+  preview: Előnézet
+  ungroupAll: Összes csoport bontása
+  organization: Mapparendezés
 modFilter:
   clear: Átlátszó szűrő
   dependenciesInstallOnly: Csak az elmulasztott függőségi modokat mutatja be
@@ -875,6 +994,7 @@ modInstall:
   skipVersion: Hagyd ki a modokat a különböző Minecraft verziókkal
   source: Mod forrása
   switch: Verzió váltás
+  scanUnusedLibraries: Nem használt könyvtárak keresése
 modSearch:
   noLocalModsFound: Nem található helyi mod, amely megfelel a keresésnek.
   noModsFound: Nem található mod.
@@ -903,13 +1023,119 @@ modpack:
   export: Exportálás modcsomagként
   exportDirectory: Exportkönyvtár
   exportDirectoryDescription: A modpack alapértelmezés szerint a Modpack -t a letöltési mappába exportálják
-  includeAssets: Tartalmazott elemek
+  includeAssets: Erőforrások belefoglalása
   includes: Fájlok, amelyek tartalmazzák
   modpackVersion: Modpcsomag verzió
   name: Modcsomag | Modcsomagok
-  overrides: Felülírás
+  overrides: Felülírások
   url: URL
   urlHint: A modcsomag kezdőlapjának url-je
+  emitCurseforgeDescription: Standard zip formátumú modcsomag archívum CurseForge-hoz
+  emitModrinthDescription: Könnyű hivatalos formátum gyors CDN letöltésekkel
+  emitPackwiz: Packwiz modcsomag exportálása
+  emitPackwizDescription: Git-barát metaadatalapú formátum, ideális verziókövetéshez
+  exportSkippedFiles: '{count} nem olvasható vagy zárolt fájl kihagyva az exportálás során'
+  exportSuccessWithWarnings: Modcsomag figyelmeztetésekkel exportálva
+  skippedFilesDialogDescription: A modcsomag létrejött, de {count} fájl kihagyásra került
+  skippedFilesDialogTitle: Kihagyott fájlok az exportálás során
+  modrinthProject: Modrinth projekt
+  bindProject: Projekt összekapcsolása
+  bindProjectHint: Válassz egy Modrinth modcsomag projektet, amelyet a jelenlegi fiók kezel.
+  bindProjectTypeImmutableHint: A Modrinth zárolja a projekt típusát az első verzió feltöltése után, és ezt később nem lehet módosítani. Verzió nélküli vázlatprojektek összekapcsolhatók itt, de a már modként vagy erőforráscsomagként közzétett projekt nem alakítható modcsomaggá — ehelyett használd az "Új projekt létrehozása" lehetőséget.
+  bindProjectNoProjects: Nem található Modrinth projekt a fiókodhoz.
+  unbindProject: Projekt leválasztása
+  unbindProjectConfirmTitle: Lekapcsolod a Modrinth projektet?
+  unbindProjectConfirmMessage: Ez csak a helyi kapcsolatot távolítja el a példány és a Modrinth projekt között. A projekt és verziói a Modrinthen változatlanok maradnak.
+  editProject: Projekt szerkesztése
+  projectDiscovery: Felfedezés és kompatibilitás
+  projectGallery: Galéria
+  projectGalleryAdd: Kép hozzáadása
+  projectGalleryEmpty: Még nincsenek képek a galériában.
+  projectGalleryFeatured: Kiemelt
+  projectGalleryFromScreenshots: Kiválasztás képernyőképekből
+  projectGalleryHint: Adj hozzá legfeljebb 5 MiB méretű képeket, és válassz ki egy kiemelt képet.
+  projectGallerySelectScreenshot: Válassz ki egy példány képernyőképet
+  projectIdentity: Azonosító és leírás
+  projectLinks: Projekt hivatkozások
+  projectLoadFailed: Nem sikerült betölteni a csatolt Modrinth projektet.
+  projectNotBound: Nincs Modrinth projekt csatolva
+  projectNotBoundHint: Csatolj egy meglévő projektet, vagy hozz létre egy újat a Modrinthen.
+  projectNoChanges: Nincsenek változások a projektben
+  projectUnsavedChanges: '{count} projektmező módosult'
+  projectLatestDraft: Piszkozat
+  projectVersions: verzió
+  publish: Közzététel
+  publishChannel: Kiadási csatorna
+  publishChangelog: Változásnapló
+  publishChangelogGenerate: Generálás MI segítségével
+  publishConfirmProjectChanges: Projektmódosítások megerősítése
+  publishCreateProject: Projekt létrehozása
+  publishCreateDraft: Összeállítás és vázlat feltöltése
+  publishCustomVersion: Egyéni
+  publishDescription: Projekt leírása
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: Verzióvázlat feltöltve.
+  publishExistingProject: Meglévő projekt
+  publishSubmitted: Verzió elküldve ellenőrzésre.
+  publishIcon: Projekt ikon
+  publishIconHint: Négyzet alakú PNG vagy JPEG kép ajánlott.
+  publishIconKeep: Megtartás, hacsak nincs új kép kiválasztva
+  publishIconUseInstance: Példány ikonjának használata
+  publishIssuesUrl: Hibakövető URL
+  publishFiles: kiválasztott fájl
+  publishLinkageSummary: '{linked} / {total} mod/erőforráscsomag/shader közvetlenül a Modrinth letöltéséhez lesz kapcsolva az újrafeltöltés helyett.'
+  publishLinkageEmbeddedSummary: '{count} fájl nem kapcsolható, és ezzel a verzióval együtt kerül feltöltésre (beágyazva).'
+  publishLinkageShowFiles: Feltöltést igénylő fájlok megjelenítése
+  publishLinkageReason:
+    missing-file: A fájl nem található a lemezen
+    not-linked-to-modrinth: Nem ismerhető fel Modrinth erőforrásként
+    no-downloadable-url: Nem található nyilvánosan letölthető URL
+  publishLogin: Jelentkezz be a közzétételhez
+  publishModrinth: Közzététel a Modrinthen
+  publishNewProject: Új projekt
+  publishOpenProject: Projekt megnyitása
+  publishOpenVersion: Verzió megnyitása
+  publishProfile: MRPack profil
+  publishProfileClient: Csak kliens
+  publishProfileServer: Csak szerver
+  publishProfileSplit: Univerzális + külön kliens/szerver fájlok
+  publishProfileUniversal: Univerzális
+  publishProject: Projekt
+  publishProjectDetailsTab: Projekt részletei
+  publishProjectName: Projekt neve
+  publishProjectRequired: Projekt megadása kötelező
+  publishProjectSlug: Projekt azonosító (slug)
+  publishProjectUrlHint: Hagyd üresen a(z) {slug} használatához.
+  publishSourceUrl: Forráskód URL
+  publishSubmit: Közzététel
+  publishVersion: Verzió
+  publishVersionTab: Verzió és fájlok
+  publishWikiUrl: Wiki URL
+  exportSuccess: A modcsomag sikeresen exportálva
+  exportFailed: Nem sikerült exportálni a modcsomagot
+  skippedReasonEperm: Hozzáférés megtagadva (a rendszer vagy más folyamat zárolta)
+  skippedReasonEbusy: A fájlt egy másik program használja
+  skippedReasonEnoent: A fájl nem található vagy sérült
+  skippedFilesNotice: A többi fájl sikeresen bekerült a modcsomagba. A fenti fájlok kihagyásra kerültek rendszerkorlátozások vagy jogosultsági hibák miatt.
+  openExportFolder: Modcsomag mappa megnyitása
+  closeDialog: Értem
+  expandAll: Minden mappa kibontása
+  collapseAll: Minden mappa összecsukása
+  modpackVersionHint: Szemantikus verziószám (pl. 1.0.0). Használd a + jelet a növeléshez
+  selectDefaultFiles: Alapértelmezett fájlok kiválasztása
+  selectAllFiles: Minden fájl kiválasztása
+  deselectAllFiles: Összes kijelölés törlése
+  publishCategories: Kategóriák (vesszővel elválasztva)
+  publishLicense: Licenc azonosító
+  publishProjectUrl: Projekt URL (opcionális)
+  publishProjectSaved: A projekt részletei frissültek.
+  publishSummary: Rövid összefoglaló
+  publishSummaryMinWords: Az összefoglalónak legalább 3 szóból kell állnia.
+  publishVersionTitle: Verzió címe
+  publishVisibility: Láthatóság
+  visibilityPrivate: Privát
+  visibilityPublic: Nyilvános
+  visibilityUnlisted: Nem listázott
 modpackImportConfirm:
   description: |-
     Detektálja, hogy egy fájlt dobjon be az indítóba.
@@ -1047,7 +1273,7 @@ modrinth:
   loginHint: |-
     A művelethez a modrint elvégzéséhez szükséges.
     Az indító megnyitja a böngészőablakot a Modrinth bejelentkezéséhez.
-  loginTitle: Jelentkezzen be a Modrinthbe
+  loginTitle: Bejelentkezés a Modrinthbe
   modLoaders:
     name: Mod betöltők
   modpackSource:
@@ -1156,7 +1382,7 @@ multiplayer:
   leaveGroup: Csoport elhagyása
   localToken: Helyi token
   manualConnect: Manuális csatlakozás
-  name: Többjátékos LAN-on
+  name: Together
   networkInfo: Hálózati információk
   next: Következő
   otherExposedPortDescription: 'A port előszava: {user}'
@@ -1173,6 +1399,16 @@ multiplayer:
   startNewP2PConnection: Kattints az Indítás gombra egy új kapcsolat létrehozásához.
   connectionError: Kapcsolódási hiba
   connectionFailedHint: Nem sikerült kapcsolatot létesíteni. Ellenőrizze, hogy mindkét fél kompatibilis NAT-típussal rendelkezik-e.
+  connectedToMaster: Csatlakozva a szobagazdához
+  directConnection: Közvetlen
+  master: Gazda
+  masterHostsGameHint: A szobagazda a kapcsolati csomópont, neki kell megosztania a Minecraft LAN világot. Add át a gazda szerepet, mielőtt gazdát váltasz.
+  member: Tag
+  joinCreatesMissingRoomHint: Ha a szoba nem létezik, te hozod létre és te leszel a gazdája.
+  relayConnection: Relé
+  relayAllowanceSummary: '{remaining} maradt a(z) {total} keretből ebben az időszakban'
+  relayServiceAvailable: XMCL Together relészolgáltatás elérhető
+  waitingForMaster: Várakozás a szobagazda újracsatlakozására
 myStuff: Dolgaid
 natType:
   blocked: Blokkolva
@@ -1219,6 +1455,11 @@ presence:
   save: Mentés megtekintése a {instance}-ben
   setting: Beállítások megtekintése
   shaderPack: Shader csomagok megtekintése {instance}-ben
+  away: Nincs a gépnél
+  offline: Offline
+  online: Online
+  playing: 'Játszik: {game}'
+  playingGeneric: Játszik
 proxy:
   host: Hoszt
   port: Port
@@ -1244,6 +1485,8 @@ resourcepack:
   unselected: Nem kiválasztott forráscsomagok
   noPacks: Nem található erőforráscsomag
   search: Erőforráscsomagok keresése...
+  noLocalPacksFound: Nem található a keresésnek megfelelő helyi erőforráscsomag.
+  noPacksInstalled: Nincsenek telepített erőforráscsomagjaid.
 save:
   resetView: Nézet visszaállítása
   mapHintPan: Húzással mozgathatod a nézetet
@@ -1269,7 +1512,7 @@ save:
   linkSharedHint: Kösse össze ennek a példánynak a saves mappáját a globális megosztott mappával, hogy minden példány ugyanazokat a világokat használja. A meglévő mentések a megosztott mappába kerülnek.
   allowCheats: Csalások engedélyezése
   copy:
-    name: Mentés másolása
+    name: Másolás
   createNew: Új világ létrehozása
   createdWorlds: '{count} db világod van'
   deleteHint: Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre elveszted. Biztos, hogy törölni szeretnéd ezt a mentést?
@@ -1298,10 +1541,40 @@ save:
   useCurrent: Használja a jelenlegi világot
   useMouseRotate: Egér használata a nézet forgatásához
   useScrollZoom: Görgetés a nagyításhoz
-  openFolder: Mentések mappájának megnyitása
-  searchHint: Világok keresése a CurseForge-on
+  openFolder: Mappa megnyitása
+  searchHint: Mentések keresése…
   searchSaves: Mentések keresése
   empty: No worlds found
+  datapack:
+    packFormat: 'Csomagformátum: {format}'
+    imported: 'Adatcsomag importálva ide: {save}'
+    noSaveHint: Először hozz létre vagy válassz ki egy világot az adatcsomag telepítéséhez
+    name: Adatcsomag | Adatcsomagok
+  chunkSelected: '{count} chunk kiválasztva'
+  chunkSelectMode: Chunk kiválasztási mód
+  clearSelection: Kijelölés törlése
+  copyChunks: Chunkok másolása
+  pasteChunks: '{count} chunk beillesztése'
+  pasteChunksPlaceHint: Mozgasd az egeret a(z) {count} chunk pozicionálásához, majd kattints a beillesztéshez. A meglévő chunkok felülíródnak. Nyomd meg az Esc gombot a megszakításhoz.
+  deleteChunks: Chunkok törlése
+  deleteChunksHint: Törlöd a(z) {count} kiválasztott chunkot? Ez a művelet nem vonható vissza. A chunkok újragenerálódnak, amikor a területet betöltik a játékban.
+  noLocalSavesFound: Nem található a keresésnek megfelelő helyi mentés.
+  noSavesFound: Nincsenek mentéseid.
+  panMode: Mozgatási mód
+  duplicate: Mentés duplikálása
+  mapHintSelect: Kijelölés
+  mapHintDeselect: Kijelölés törlése
+  toggleGrid: Régiórács be/ki
+  heightTop: Teteje
+  pasteChunksCancel: Mégse
+  deleteChunksTitle: Kijelölt chunkok törlése
+  mapLoading: Térkép betöltése…
+  noRegions: Ennek a világnak nincsenek generált régiói az előnézethez.
+  dimOverworld: Felszín
+  dimNether: Nether
+  dimEnd: End
+  noSavesInstalled: Nincsenek mentéseid.
+  world: Világ
 screenshots:
   empty: Nincsenek képernyőképeid
   playRandom: Játék véletlenszerűen
@@ -1309,6 +1582,109 @@ screenshots:
   gallery: Képernyőkép-galéria
   hint: A játékban nyomd meg az F2-t képernyőképhez
   openFolder: Képernyőképek mappájának megnyitása
+  title: Képernyőképek és fotók
+  manage: Képernyőkép-kezelő
+  emptyTitle: Még nincsenek képernyőképek
+  emptyDescription: Nyomd meg az F2 billentyűt a játékban a képernyőkép készítéséhez. Automatikusan meg fognak jelenni itt.
+  importSuccess: '{count} fotó sikeresen importálva'
+  exportSuccess: A képernyőkép sikeresen exportálva
+  exportSelectedSuccess: '{count} képernyőkép sikeresen exportálva'
+  deleteSuccess: A képernyőkép sikeresen törölve
+  deleteConfirmTitle: Törlöd a képernyőképeket?
+  deleteConfirmMessage: Biztosan törölni szeretnél {count} képernyőképet? Ez a művelet nem vonható vissza.
+  selectedCount: 'Kiválasztva: {count}'
+  countLabel: '{count} képernyőkép'
+  selectAll: Összes kijelölése
+  edit: Szerkesztés
+  saveCopy: Másolat mentése
+  saveCopySuccess: A másolat sikeresen mentve
+  saveSuccess: A módosítások sikeresen mentve
+  undo: Visszavonás
+  redo: Újra
+  textPlaceholder: Írj be szöveget…
+  fontFamily: Betűtípus
+  fontBold: Félkövér
+  fontItalic: Dőlt
+  toolSelect: Kijelölés
+  toolCrop: Körbevágás
+  toolText: Szöveg
+  layers: Rétegek
+  layerAdd: Réteg hozzáadása
+  layerDelete: Réteg törlése
+  layerDuplicate: Réteg duplikálása
+  layerCopy: '{name} másolata'
+  layerOpacity: Átlátszatlanság
+  zoomIn: Nagyítás
+  zoomOut: Kicsinyítés
+  backToHome: Vissza a kezdőlapra
+  setIcon: Beállítás példányikonként
+  setIconSuccess: Sikeresen beállítva példányikonként
+  strokeWidth: Vonalszélesség
+  dropHint: Húzz ide képeket a galériához adáshoz
+  import: Fotók hozzáadása
+  images: Képek
+  copy: Kép másolása
+  copied: Vágólapra másolva!
+  setWallpaper: Beállítás háttérképként
+  setWallpaperSuccess: Beállítva példány háttérképeként!
+  export: Fájl mentése
+  exportSelected: Kijelöltek exportálása
+  exportSelectedTitle: Exportálási mappa kiválasztása
+  clearSelection: Kijelölés törlése
+  searchPlaceholder: Keresés név szerint…
+  noSearchResults: Nincs találat
+  noSearchResultsHint: Próbáld meg módosítani a keresési kifejezést
+  sort: Rendezés
+  sortDateDesc: Legújabb elöl
+  sortDateAsc: Legrégebbi elöl
+  sortSizeDesc: Legnagyobb elöl
+  sortSizeAsc: Legkisebb elöl
+  sortNameAsc: Név (A–Z)
+  sortNameDesc: Név (Z–A)
+  viewGrid: Nagy rács
+  viewGridCompact: Kompakt rács
+  viewList: Listanézet
+  editorTitle: Képernyőkép szerkesztése
+  layer: Réteg
+  dragToMove: Húzd a mozgatáshoz
+  transformHint: Húzd a kijelölést a mozgatáshoz • Húzd a fogantyúkat az átméretezéshez • Enter a véglegesítéshez
+  customColor: Egyéni szín
+  fill: Kitöltés
+  brushPreview: Ecsetméret előnézete
+  fontPreview: Betűméret előnézete
+  textBgNone: Nincs
+  textBgShadow: Árnyék
+  textBgBox: Keret
+  cropHint: Húzd a keretet a vágási terület kiválasztásához.
+  textPlacementHint: Enter az elhelyezéshez • Esc a megszakításhoz
+  layerMoveUp: Mozgatás feljebb
+  layerMoveDown: Mozgatás lejjebb
+  pixels: px
+  saveOverwrite: Felülírás
+  toolMove: Mozgatás és átméretezés (Ctrl+T / V)
+  toolPan: Mozgatás (Szóköz+Húzás)
+  transformLayer: Szabad átalakítás
+  applyTransform: Átalakítás alkalmazása (Enter)
+  cancelTransform: Mégse (Esc)
+  layerBackground: Háttér
+  layerPaint: Rajz
+  layerText: Szöveg
+  layerBlur: Homályosítás
+  toolPen: Toll
+  toolArrow: Nyíl
+  toolRect: Téglalap
+  toolCircle: Kör
+  toolLine: Vonal
+  toolHighlighter: Kiemelő
+  toolBlur: Pixelizálás / Homályosítás
+  applyCrop: Kivágás alkalmazása
+  cancelCrop: Kivágás megszakítása
+  fontSize: Betűméret
+  color: Szín
+  clear: Minden törlése
+  textApply: Szöveg elhelyezése
+  textBg: Háttér
+  resetZoom: Nagyítás visszaállítása
 search:
   favorate: Gyűjtemény
   local: Telepített
@@ -1474,12 +1850,66 @@ serverStatus:
   refuse: §4A szerver elutasítot!
   timeout: §4Szerver csatlakozási időtúllépés!
 agent:
-  accessRequiredHint: Fizess elő az XMCL-re a beépített ügynök használatához, vagy állítsd be a saját AI-szolgáltatódat a beállításokban.
-  subscribeXmcl: Előfizetés az XMCL-re
+  accessRequiredHint: Vásárolj XMCL előfizetést, vagy konfigurálj saját MI-szolgáltatót a beállításokban.
+  subscribeXmcl: XMCL előfizetés
   notConfiguredHint: Állítson be egy API-kulcsot, modellt és OpenAI-kompatibilis végpontot a Beállítások → Általános → AI ügynök alatt. Használhat például OpenAI-t vagy Claude-kompatibilis átjárót.
+  abort: Generálás leállítása
+  callingTool: '{name} meghívása…'
+  confirmAccept: Folytatás
+  confirmAllowAll: Mindent engedélyez
+  confirmCancel: Mégse
+  confirmPending: Megerősítésre vár
+  confirmTitle: Asszisztens műveletének megerősítése
+  disabledPlaceholder: Az MI-asszisztens le van tiltva. Állíts be egy szolgáltatót a beállításokban.
+  emptyHint: Tegyél fel egy kérdést az összeomlásokról, modokról vagy a konfigurációról.
+  errorTitle: Hiba történt az asszisztens futtatásakor
+  inputPlaceholder: Kérdezz összeomlásokról, naplófájlokról vagy modokról…
+  notConfiguredTitle: Az asszisztens nem érhető el
+  openSettings: Beállítások megnyitása
+  passiveGameCrashed: A játék összeomlott
+  passiveGameExitCode: 'Kilépési kód: {code}'
+  passiveGameExited: A játék bezárult
+  passiveGameExitSignal: 'Szignál: {signal}'
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: Nincs kilépési állapot
+  reasoning: Gondolatmenet
+  toolArguments: Argumentumok
+  toolResult: Eredmény
+  toolRunning: Várakozás az eredményre…
+  marketConfirmMessage: Telepíted a(z) {name} elemet az aktuális példányba?
+  marketConfirmTarget: 'Cél: {instance}'
+  marketConfirmTitle: '{type} telepítése'
+  marketInstall: Telepítés
+  marketInstalled: Telepítve
+  marketInstallFailed: Nem sikerült telepíteni a(z) {type} elemet
+  marketType:
+    datapack: adatcsomag
+    mod: mod
+    modpack: modcsomag
+    resourcepack: erőforráscsomag
+    shader: shader csomag
+  marketResultCount: '{count} találat'
+  passiveGameStarted: A játék elindult
+  passiveGameStartedSummary: Minecraft {minecraft} · {version} · PID {pid}
+  passiveModDiagnosis: Modkompatibilitási jelentés
+  passiveModDiagnosisError: Kompatibilitás-ellenőrzési hiba
+  passiveModDiagnosisSummary: '{checked} mod ellenőrizve · {incompatibilities} inkompatibilitás · {duplicates} duplikáció'
+  passiveModDuplicate: 'Duplikált {mod}: {files}'
+  passiveModInstalled: '{version} telepítve'
+  title: XMCL Asszisztens
+  statusDisabled: Letiltva — jelentkezz be vagy állíts be szolgáltatót
+  reset: Új beszélgetés
+  thinking: Gondolkodás…
+  setupGuide: Beállítási útmutató
+  statusReady: Kész
+  statusWorking: Folyamatban…
+  suggestion1: Frissítsd ezt a példányt újabb Minecraft verzióra és igazítsd hozzá a modokat
+  suggestion2: A modjaim összeomlanak — keresd meg az okát és mondd el, hogyan javítsam meg
+  suggestion3: 'Modcsomag készítése: keress modokat egy adott funkcióhoz és telepítsd őket ide'
+  toggleHint: a váltáshoz
 setting:
   aiAgentApiKeyDescription: Állítson be OpenAI-kompatibilis szolgáltatót, például OpenAI-t vagy Claude-hoz használható átjárót. A kulcs helyileg, ezen az eszközön lesz tárolva.
-  aiAgentApiKeyPlaceholder: OpenAI- vagy Claude-szolgáltató API-kulcsa
+  aiAgentApiKeyPlaceholder: Illeszd be az API-kulcsot…
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
   aiAgentModelPlaceholder: gpt-5.6 vagy claude-sonnet-4-5
   themeStore:
@@ -1572,7 +2002,7 @@ setting:
   globalSetting: Globális példány beállítás
   globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
   importSettings: Beállítások importálása
-  importSettingsHint: Beállítások betöltése korábban exportált fájlból
+  importSettingsHint: Beállítások betöltése JSON fájlból.
   instanceTheme:
     activeDescription: |-
       Ez a példány egyéni témát használ.
@@ -1587,14 +2017,14 @@ setting:
   layout:
     default: Alap elrendezés
     focus: Fókusz elrendezés
-  layoutDescription: A különböző UI logikát reprezentáló launcher elrendezés
-  layoutTitle: Elrendezés
-  linuxEnableDedicatedGPUOptimization: Dedikált grafikus processzor hozzárendelése
-  linuxEnableDedicatedGPUOptimizationDescription: Ez az opció dedikált GPU-t rendel a Minecraft-folyamathoz.
+  layoutDescription: Válaszd ki az indító felületének elrendezését.
+  layoutTitle: Elrendezési stílus
+  linuxEnableDedicatedGPUOptimization: Dedikált GPU engedélyezése Linuxon
+  linuxEnableDedicatedGPUOptimizationDescription: A játékot dedikált videokártyás környezeti változókkal indítja (DRI_PRIME=1, __NV_PRIME_RENDER_OFFLOAD=1).
   linuxTitlebar: Saját címsáv
   linuxTitlebarDescription: A natív linuxos címsor használata az launcherhez
   location: Áruház helye
-  manualUpdateHint: A verzió nem frissíthető automatikusan. Kérjük, töltse le újra az indítóprogramot a hivatalos honlapról!
+  manualUpdateHint: Kattints ide a frissítések kézi kereséséhez.
   maunalUpdateHint: A verzió nem frissíthető automatikusan. Kérlek, töltsd le újra az launchert a weboldalról!
   maxSockets: Kiszolgálónként
   maxSocketsDescription: Korlátozza a maximálisan engedélyezhető foglalatok számát állomásonként vagy az összes állomáson összesen. A 0 azt jelenti, hogy nincs korlátozás.
@@ -1604,7 +2034,7 @@ setting:
   minecraftOptions: Minecraft beállítások
   name: Globális beállítás | Globális beállítások
   network: Hálózati beállítások
-  newsPosition: Hírek szekció áthelyezése
+  newsPosition: Hírek elhelyezkedése
   officialWebsite: Hivatalos weboldal
   particleMode:
     bubble: Buborék
@@ -1619,19 +2049,19 @@ setting:
   replaceNatives:
     all: Összes
     legacy: Csak a Legacy verzió
-  resetAllSettings: Összes beállítás visszaállítása
+  resetAllSettings: Minden beállítás visszaállítása
   resetAllSettingsConfirmMessage: Ez véglegesen törli az összes beállítást, fiókot, példányt, csoportot és gyorsítótárazott adatot. Ez a művelet nem vonható vissza. Biztos vagy benne?
   resetAllSettingsConfirmTitle: Visszaállítja az összes beállítást?
   resetAllSettingsHint: Az indító visszaállítása gyári alapértelmezésre (mindent töröl)
-  resetAllSettingsSuccess: Az összes beállítás vissza lett állítva. Az indító újraindul.
-  resetSettingsError: 'Hiba a beállítások visszaállítása közben: {error}'
+  resetAllSettingsSuccess: Minden beállítás sikeresen visszaállt az alapértelmezettre.
+  resetSettingsError: 'Hiba a beállítások visszaállításakor: {error}'
   resetToDefault: Visszaállítás alapértelmezettre
   select: kiválasztás
-  settingsExported: Beállítások sikeresen exportálva
-  settingsImportError: Nem sikerült importálni a beállításokat. Kérjük, ellenőrizze a fájlformátumot.
-  settingsImported: Beállítások sikeresen importálva
-  settingsReloadHint: Az indító újraindul az összes beállítás alkalmazásához.
-  showNewsHeader: Hírek kirakatának megjelenítése
+  settingsExported: A beállítások sikeresen exportálva.
+  settingsImportError: Hiba a beállítások importálásakor.
+  settingsImported: A beállítások sikeresen importálva.
+  settingsReloadHint: Az indító újraindítása szükséges a változtatások érvénybe lépéséhez.
+  showNewsHeader: Hírszalag megjelenítése
   showRoot: Megjelenítés
   sidebarAlign: Oldalsáv igazítása
   sidebarAutoHide: Oldalsáv automatikus elrejtése
@@ -1675,6 +2105,43 @@ setting:
     successGlobal: Háttérkép frissítve.
     successInstance: Példány háttérképe frissítve.
     failed: Nem sikerült beállítani a háttérképet
+  multiplayerTransport: Together adatátvitel
+  multiplayerTransportDescription: Válaszd ki a Together által használt WebRTC implementációt. A módosítás lekapcsolja az aktív résztvevőket.
+  aiAgentApiKey: MI-asszisztens API-kulcs
+  aiAgentApiKeyNotNeeded: Nincs szükség API-kulcsra
+  aiAgentApiKeyNotNeededHint: Ehhez a modellhez vagy végponthoz nincs szükség API-kulcsra.
+  aiAgentCustom: Egyéni szolgáltató
+  aiAgentEndpoint: API végpont
+  aiAgentModel: Modell neve
+  customCss:
+    globalToggle: Egyéni CSS engedélyezése
+    advancedDescription: Felülírhatod az indító jelenlegi stílusát saját CSS-sel.
+    assistantHint: Írd le a kívánt megjelenést, és megírom a CSS-t neked.
+    assistantSuggestion1: Tedd az oldalsávot félig áttetszővé
+    assistantSuggestion2: Adj finom átmenetes hátteret a kártyáknak
+    assistantTitle: CSS Asszisztens
+    dropHint: Húzz ide egy .css fájlt a betöltéséhez
+    editorPlaceholder: /* Ide írd a saját CSS kódodat */
+    openInDialog: Megnyitás az asszisztens ablakban
+    title: Egyéni CSS
+    warning: Az egyéni CSS lehetővé teszi az indító bármely részének testreszabását. Légy óvatos az ismeretlen forrásból származó CSS beillesztésekor.
+  aiAgentApiKeyClear: Kulcs törlése
+  aiAgentApiKeyEmpty: Illeszd be az API-kulcsodat
+  aiAgentApiKeySaved: Mentve
+  aiAgentApiKeyStored: Kulcs elmentve — írj a cseréhez
+  aiAgentBuiltin: Beépített
+  aiAgentEndpointDescription: Chat completions végpont URL címe.
+  aiAgentModelDescription: A chat completion kérésekben küldendő modell neve.
+  useDesktopBackground: Jelenlegi asztali háttérkép használata
+  devModeLabel: Fejlesztői mód
+  livePreview: Élő előnézet
+  appImageUpdateMode: AppImage frissítéskezelés
+  appImageExternalMode: Külső kezelő / kézi csere (alapértelmezett)
+  appImageSelfMode: XMCL által kezelt (én kezelem ezt az AppImage-et)
+  appImageAutoDownload: Frissítések automatikus letöltése
+  appImageAutoInstall: Letöltött frissítések telepítése kilépéskor
+  appImageExternalUpdateHint: Ha Shelly-n vagy más kezelőn keresztül telepítette, ott frissítse, és tartsa meg a külső módot. Ellenkező esetben cserélje le az AppImage fájlt a meglévő elérési úton. Az XMCL külső módban nem tölt le és nem telepít frissítéseket.
+  appImageSelfUpdateHint: Csak olyan AppImage esetén válassza a saját kezelést, amelyet maga kezel. A beépített frissítésekhez verziószám nélküli abszolút elérési út szükséges (pl. xmcl.AppImage). Ha a név verziószámot tartalmaz, zárja be az XMCL-t és nevezze át a fájlt.
 settingLabel:
   global: Globális
   globalHint: Ez a beállítás követi a globális beállítást
@@ -1731,6 +2198,8 @@ shaderPack:
   noPacks: Nincs shadercsomag telepítve
   search: Shadercsomagok keresése...
   'off': 'Off'
+  noLocalPacksFound: Nem található a keresésnek megfelelő helyi shader csomag.
+  noPacksInstalled: Nincsenek telepített shader csomagjaid.
 shared:
   close: Bezárás
   pressKeyCombination: Nyomjon meg egy billentyűkombinációt...
@@ -1764,6 +2233,18 @@ shared:
   upgrade: Frissítés
   'yes': Igen
   delete: Törlés
+  openFolder: Mappa megnyitása
+  reset: Visszaállítás
+  missing: hiányzik
+  copy: Másolás
+  copied: Másolva
+  save: Mentés
+  healthy: Rendben
+  unused: nem használt
+  copyFailed: A másolás sikertelen
+  copyFailedHint: Nem sikerült a vágólapra másolni
+  failed: Sikertelen
+  view: Megtekintés
 sidebar:
   pin: Rögzít
   unpin: Rögzítés feloldása
@@ -1825,15 +2306,13 @@ transportType:
   srflx: Kiszolgáló Reflexív jelölt
 turnRegion:
   fr: Franciaország
-  guangzhou: Guangzhou, Kína
+  guangzhou: Kuangcsou, Kína
   hk: Hong Kong
   liaoning: Liaoning, Kína
   po: Lengyelország
 tutorial:
   feedbackDescription: Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy visszajelzést küldj!
-  hideNewsHeaderDescription: |-
-    Bal oldalon a Hírek bemutatója látható.
-    Erre a gombra kattintva elrejtheti ezt a kirakatot.
+  hideNewsHeaderDescription: Kattints ide a hírszalag elrejtéséhez.
   instance:
     appearanceThemeDescription: Egyéni háttérkép, színek és vizuális stílus beállítása ehhez a példányhoz.
     appearanceThemeTitle: Példány megjelenése
@@ -1862,7 +2341,7 @@ tutorial:
     versionDescription: Válassz Minecraft verziót és Forge, Fabric, Quilt vagy NeoForge betöltőt.
     versionTitle: Minecraft és Betöltő verzió
   instanceAddDescription: Erre a gombra kattintva importálhatsz létező Minecraftot vagy hozhatsz létre egy újat a vagy modcsomagot.
-  instanceSelectDescription: Erre a gombra kattintva a játék kiválasztásához és a hírek olvasásához szükséges oldalra navigál.
+  instanceSelectDescription: Válassz ki egy példányt a kezeléshez vagy indításhoz.
   launchDescription: Kattints erre a gombra a játék telepítéséhez vagy elindításához.
   mod:
     defaultSourceDescription: Itt kiválaszthatja a modok forrását. Vannak a Modrinth és a Curseforge által közzétett modok. Ha váltani akarsz e két tartalomszolgáltató között. Itt módosíthatod az értéket.
@@ -1873,15 +2352,13 @@ tutorial:
     listTitle: Installed or Searched Mod
     searchDescription: A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel a keresőmezővel.
     searchTitle: Modok keresése
-  recentPlayDescription: |-
-    A létrehozott játékok itt lesznek felsorolva.
-    Itt váltogathatja a nézeteket, hogy megtekinthesse a telepített verziókat és a letöltött modpackokat is.
-  storePoupularModpackDescription: Ebben a részben láthatja a Curseforge és Modrinth legnépszerűbb modpackjait.
-  storeSearchCategoryDescription: Itt is válthat a kategóriák és a szűrők között.
+  recentPlayDescription: A létrehozott játékok itt jelennek meg. A nézetet váltva a telepített verziók és letöltött modcsomagok is láthatók.
+  storePoupularModpackDescription: Ebben a szakaszban a legnépszerűbb CurseForge és Modrinth modcsomagok találhatók.
+  storeSearchCategoryDescription: Itt módosíthatod a kategóriákat és a szűrőket.
   storeSearchDescription: |-
     Ebbe a szövegmezőbe beírva kereshet a Modpack között.
     Nyomja meg az Entert a kereséshez.
-  storeSearchResultDescription: Itt látni fogja az összes keresési eredményt.
+  storeSearchResultDescription: Itt láthatók a keresési eredmények.
   userAccountDescription: Erre az ikonra kattintva adhatod hozzá vagy kezelheted Minecraft-fiókodat.
   tooltip: Súgó és Vezetés
   done: Értem!
@@ -2058,14 +2535,17 @@ userSkin:
   skinDeleteFailed: Nem sikerült eltávolítani a kinézetet a ruhatárból
   edit: Szerkesztés
   fetch: Betöltés
+  invalidImage: Válassz érvényes Minecraft skin képet.
+  invalidImageTitle: Érvénytelen skin kép
+  uploadRejected: A Minecraft elutasította a skin feltöltését. Kérjük, próbáld újra később.
 version:
-  checkIntegrity: Ellenőrizze az integritást
-  name: Verzió | Verzió
-  notInstalled: Verzió nincs telepítve
+  checkIntegrity: Integritás ellenőrzése
+  name: Verzió | Verziók
+  notInstalled: A verzió nincs telepítve
 versionType:
   alpha: Alfa
   beta: Béta
-  name: Státusz
+  name: Állapot
   release: Kiadás
 downloadModMetadataDb:
   name: Mod metaadat-adatbázis letöltése
@@ -2114,6 +2594,7 @@ blueprint:
     empty: Ez a tervrajz nem tartalmaz megjeleníthető blokkokat.
     hint: '{count} blokk · {x}×{y}×{z}'
     controls: 'WASD: mozgás · Szóköz/Shift: fel/le · Húzás: nézés · Görgetés: zoom'
+    title: Előnézet
   convert:
     title: Formátum átalakítása
     hint: Alakítsd át ezt a tervrajzot más formátumra. Új fájl jön létre.
@@ -2132,6 +2613,12 @@ blueprint:
     action: Csere
   formats:
     structure: Vanilla struktúra
+  local: Helyi
+  allNamespaces: Összes
+  delete: Törlés
+  cancel: Mégse
+  cmsBrowseOnly: Csak böngészés
+  loadMore: Továbbiak betöltése
 gamepad:
   connected: Controller Connected
   guideTitle: Controller Controls
@@ -2172,6 +2659,7 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
+  detectedTitle: Vezérlő észlelve
 bigPicture:
   title: Big Picture Mode
   description: Full-screen couch and gamepad experience inspired by Steam Big Picture.
@@ -2285,3 +2773,111 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+xmclAccount:
+  accountSummary: Fiók
+  confirmMerge: Fiókok egyesítésének megerősítése
+  createdAt: 'Létrehozva: {date}'
+  description: A jelszavas vagy jelszó nélküli XMCL fiókod, amely független a Minecraft játékfiókoktól.
+  gameAccountsSeparate: A játékfiók törlése nem választja le az XMCL bejelentkezési módot.
+  guest: Vendég
+  identityConflict: Ez a(z) {provider} bejelentkezési mód már egy másik XMCL fiókhoz tartozik. A fiókok soha nem egyesülnek automatikusan.
+  linkAccountWith: 'Fiók összekapcsolása:'
+  mergePreview: A megerősítés előtt tekintsd át az átvitelre kerülő elemeket.
+  mergeNeedsSession: Jelentkezz be abba az XMCL fiókba, amelyet meg szeretnél tartani az egyesítés előtt.
+  mergeQueued: A fiókok egyesítése folyamatban van.
+  requestFailed: Az XMCL fiókszolgáltatás nem tudta teljesíteni a kérést. A játékfiókod változatlan maradt.
+  reviewMerge: Egyesítés áttekintése
+  session: Munkamenet
+  sessionActive: Aktív
+  sessionExpired: Lejárt
+  signOutAll: Kijelentkezés minden eszközről
+  signOutDevice: Kijelentkezés erről az eszközről
+  status:
+    active: Aktív
+    deleted: Törölve
+    deletion_pending: Törlésre vár
+    merged: Egyesítve
+  expiresAt: 'Lejárat: {date}'
+  title: XMCL Fiók
+minecraftFriends:
+  accept: Elfogadás
+  add: Barát hozzáadása
+  addPlaceholder: Minecraft felhasználónév
+  title: Barátok
+  addedRelative: 'Hozzáadva: {time}'
+  errors:
+    cannotAddSelf: Nem küldhetsz barátfelkérést magadnak.
+    duplicate: Ez a játékos már a listádon van.
+    friendsDisabled: A Minecraft-fiókodban a barátok funkció le van tiltva. Engedélyezd a fiókbeállításokban, majd próbáld újra.
+    generic: Valami hiba történt. Kérjük, próbáld újra.
+    invalidName: A Minecraft felhasználónévnek 3 és 16 karakter között kell lennie.
+    inviteRejected: A játékos letiltotta a barátokat, vagy nem fogad meghívásokat.
+    tokenExpired: A Microsoft munkameneted lejárt. Kérjük, jelentkezz be újra.
+    unknownProfile: Nem találtunk ilyen nevű játékost.
+  expiresRelative: 'Lejárat: {time}'
+  friends: Barátok
+  heroEmptyHint: Adj hozzá egy Minecraft játékost a felhasználónevével felül barátfelkérés küldéséhez.
+  heroEmptyTitle: A barátlistád üres
+  incoming: Beérkező felkérések
+  incomingHint: 1 beérkező felkérés | {count} beérkező felkérés
+  notifyAdded: 'Barátfelkérés elküldve neki: {name}'
+  outgoing: Kimenő felkérések
+  privacy:
+    acceptInvites: Barátmeghívások elfogadása
+    acceptInvitesHint: Kikapcsolt állapotban más játékosok nem küldhetnek neked felkérést.
+    friendsEnabled: Barátlista engedélyezve
+  reconnectAction: Újracsatlakozás
+  requiresMicrosoft: Jelentkezz be egy Microsoft-fiókkal a barátok használatához.
+  scopedTo: Bejelentkezve mint {name}
+  send: Küldés
+  unsupported: A barátok funkció csak Microsoft-fiókokhoz érhető el.
+modCategory:
+  optimization: Optimalizáció és teljesítmény
+  libraries: Könyvtárak és API-k
+  utilities: Felület és segédeszközök
+  gameplay: Játékmenet
+  world: Világ és dimenziók
+  visual: Grafika és animációk
+  miscellaneous: Egyéb
+relative:
+  daysAgo: '{count} napja | {count} napja'
+  hoursAgo: '{count} órája | {count} órája'
+  justNow: épp most
+  minutesAgo: '{count} perce | {count} perce'
+  secondsAgo: '{count} másodperce | {count} másodperce'
+resourceError:
+  body: A(z) "{path}" fájl feldolgozása sikertelen ({code}). A fájl sérült, zárolt vagy hiányos lehet. Próbáld meg újra letölteni vagy eltávolítani.
+  title: A(z) {file} fájl nem olvasható
+localCollection:
+  title: Indító gyűjtemények
+  newCollection: Új gyűjtemény
+  namePlaceholder: Gyűjtemény neve
+  empty: Még nincsenek gyűjtemények
+  installAll: Összes telepítése
+  exportCollection: Gyűjtemény exportálása
+  importCollection: Gyűjtemény importálása
+  saveCurrentMods: Jelenlegi modok mentése gyűjteményként
+  saveCurrentModsSuccess: '{count} mod elmentve a(z) "{name}" gyűjteménybe'
+  addModsTo: Modok hozzáadása a(z) "{name}" gyűjteményhez
+  addedModsSuccess: '{count} mod hozzáadva a gyűjteményhez'
+  addSelectedMods: '{count} mod hozzáadása'
+  incompatibleAlert: '1 projekt nem kompatibilis a jelenlegi példánnyal, ezért kihagyva: | {count} projekt nem kompatibilis a jelenlegi példánnyal, ezért kihagyva:'
+  projects: Nincsenek projektek | {count} projekt | {count} projekt
+  modrinthSection: Modrinth fiók
+  viewMods: Modok megtekintése
+  editCollection: Gyűjtemény szerkesztése
+  collectionDescription: Gyűjtemény leírása
+  noModsInCollection: Még nincsenek modok ebben a gyűjteményben
+  removeEntryConfirm: Eltávolítás a gyűjteményből
+  addMods: Modok hozzáadása
+  addModsHint: Adj hozzá telepített modokat a példányodból, vagy kattints a könyvjelző gombra az Áruházban.
+  addModsDialogDesc: Válaszd ki a példányból azokat a modokat, amelyeket a gyűjteménybe szeretnél foglalni.
+  addAllCurrent: Összes jelenlegi mod hozzáadása
+  searchMods: Modok keresése…
+  selectAll: Összes kijelölése
+  deselectAll: Kijelölés törlése
+  selected: kiválasztva
+  alreadyInCollection: Már hozzáadva
+  noMatchingMods: Nem található a keresésnek megfelelő mod
+  addToCollection: Hozzáadás a gyűjteményhez
+  corrupted: A mentett gyűjtemények nem voltak olvashatók és visszaállításra kerültek. Egy biztonsági mentés készült az adatfájl mellé.
