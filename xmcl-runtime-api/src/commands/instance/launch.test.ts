@@ -1,5 +1,4 @@
 import { describe, test, expect, vi } from 'vitest'
-import { z } from 'zod'
 import { launchInstanceCommand, LaunchInstanceInputSchema } from './launch'
 import type { CommandContext } from '../types'
 import { AuthlibInjectorServiceKey } from '../../services/AuthlibInjectorService'
@@ -15,7 +14,15 @@ function makeInstance(overrides: Partial<any> = {}) {
   return {
     path: '/home/u/inst/foo',
     name: 'foo',
-    runtime: { minecraft: '1.21.1', forge: '', fabricLoader: '', quiltLoader: '', neoForged: '', optifine: '', labyMod: '' },
+    runtime: {
+      minecraft: '1.21.1',
+      forge: '',
+      fabricLoader: '',
+      quiltLoader: '',
+      neoForged: '',
+      optifine: '',
+      labyMod: '',
+    },
     java: '',
     version: '',
     ...overrides,
@@ -35,9 +42,7 @@ function makeUser(overrides: Partial<any> = {}) {
 function makeSettings(overrides: Partial<any> = {}) {
   return {
     globalEnv: {},
-    globalVmOptions: [],
     globalMcOptions: [],
-    globalPrependCommand: '',
     globalAssignMemory: false,
     globalMinMemory: 0,
     globalMaxMemory: 0,
@@ -55,7 +60,9 @@ function makeCtx(callImpl: (key: string, method: string, ...args: any[]) => any)
   const ctx: CommandContext = {
     mode: 'cli',
     signal: new AbortController().signal,
-    call: vi.fn((key: any, method: any, ...args: any[]) => Promise.resolve(callImpl(String(key), String(method), ...args))) as any,
+    call: vi.fn((key: any, method: any, ...args: any[]) =>
+      Promise.resolve(callImpl(String(key), String(method), ...args)),
+    ) as any,
     state: vi.fn() as any,
     resolveInstance: vi.fn(async (ref: string) => makeInstance({ path: ref })) as any,
     resolveUser: vi.fn(async () => makeUser()) as any,
@@ -64,7 +71,7 @@ function makeCtx(callImpl: (key: string, method: string, ...args: any[]) => any)
     prompt: vi.fn() as any,
     confirm: vi.fn() as any,
     select: vi.fn() as any,
-    task: ((_n: string, run: any) => run({ update: () => {}, child: () => ({} as any) })) as any,
+    task: ((_n: string, run: any) => run({ update: () => {}, child: () => ({}) as any })) as any,
     out: { log: vi.fn(), json: vi.fn(), table: vi.fn() },
   }
   return ctx
@@ -82,14 +89,18 @@ describe('LaunchInstanceInputSchema', () => {
   })
 
   test('validates server shape', () => {
-    expect(() => LaunchInstanceInputSchema.parse({
-      instance: '/p/i',
-      server: { host: 'mc.example.com', port: 25565 },
-    })).not.toThrow()
-    expect(() => LaunchInstanceInputSchema.parse({
-      instance: '/p/i',
-      server: { host: '', port: 25565 },
-    })).toThrow()
+    expect(() =>
+      LaunchInstanceInputSchema.parse({
+        instance: '/p/i',
+        server: { host: 'mc.example.com', port: 25565 },
+      }),
+    ).not.toThrow()
+    expect(() =>
+      LaunchInstanceInputSchema.parse({
+        instance: '/p/i',
+        server: { host: '', port: 25565 },
+      }),
+    ).toThrow()
   })
 
   test('rejects empty instance ref', () => {
@@ -104,11 +115,17 @@ describe('launchInstanceCommand', () => {
       if (key === UserServiceKey && method === 'refreshUser') return makeUser()
       if (key === VersionInstallServiceKey && method === 'installInstance') return { version: 'v1' }
       if (key === InstanceServiceKey && method === 'editInstance') return undefined
-      if (key === VersionServiceKey && method === 'resolveLocalVersion') return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
-      if (key === JavaServiceKey && method === 'getJavaState') return { all: [{ path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }] }
-      if (key === JavaServiceKey && method === 'resolveJava') return { path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }
+      if (key === VersionServiceKey && method === 'resolveLocalVersion')
+        return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
+      if (key === JavaServiceKey && method === 'getJavaState')
+        return {
+          all: [{ path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }],
+        }
+      if (key === JavaServiceKey && method === 'resolveJava')
+        return { path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }
       if (key === BaseServiceKey && method === 'getSettings') return makeSettings()
-      if (key === AuthlibInjectorServiceKey && method === 'getOrInstallAuthlibInjector') return '/authlib.jar'
+      if (key === AuthlibInjectorServiceKey && method === 'getOrInstallAuthlibInjector')
+        return '/authlib.jar'
       if (key === LaunchServiceKey && method === 'launch') return launchSpy()
       throw new Error(`Unexpected ctx.call(${key}, ${method})`)
     })
@@ -122,11 +139,15 @@ describe('launchInstanceCommand', () => {
     expect(launchSpy).toHaveBeenCalledOnce()
     expect(ctx.resolveInstance).toHaveBeenCalledWith('/inst/foo')
     expect(ctx.resolveUser).toHaveBeenCalledWith('u1')
-    expect(ctx.call).toHaveBeenCalledWith(VersionInstallServiceKey, 'installInstance', expect.objectContaining({
-      type: 'instance',
-      instancePath: '/inst/foo',
-      selectedVersion: '',
-    }))
+    expect(ctx.call).toHaveBeenCalledWith(
+      VersionInstallServiceKey,
+      'installInstance',
+      expect.objectContaining({
+        type: 'instance',
+        instancePath: '/inst/foo',
+        selectedVersion: '',
+      }),
+    )
     expect(ctx.call).toHaveBeenCalledWith(InstanceServiceKey, 'editInstance', {
       instancePath: '/inst/foo',
       version: 'v1',
@@ -140,9 +161,14 @@ describe('launchInstanceCommand', () => {
       if (key === UserServiceKey && method === 'refreshUser') return makeUser()
       if (key === VersionInstallServiceKey && method === 'installInstance') return installSpy()
       if (key === InstanceServiceKey && method === 'editInstance') return undefined
-      if (key === VersionServiceKey && method === 'resolveLocalVersion') return { id: 'installed-v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
-      if (key === JavaServiceKey && method === 'getJavaState') return { all: [{ path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }] }
-      if (key === JavaServiceKey && method === 'resolveJava') return { path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }
+      if (key === VersionServiceKey && method === 'resolveLocalVersion')
+        return { id: 'installed-v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
+      if (key === JavaServiceKey && method === 'getJavaState')
+        return {
+          all: [{ path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }],
+        }
+      if (key === JavaServiceKey && method === 'resolveJava')
+        return { path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }
       if (key === BaseServiceKey && method === 'getSettings') return makeSettings()
       if (key === LaunchServiceKey && method === 'launch') {
         launchedVersion = options.version
@@ -151,10 +177,12 @@ describe('launchInstanceCommand', () => {
       throw new Error(`Unexpected ctx.call(${key}, ${method})`)
     })
 
-    await expect(launchInstanceCommand.handler(
-      LaunchInstanceInputSchema.parse({ instance: '/inst/foo' }),
-      ctx,
-    )).resolves.toBe(4242)
+    await expect(
+      launchInstanceCommand.handler(
+        LaunchInstanceInputSchema.parse({ instance: '/inst/foo' }),
+        ctx,
+      ),
+    ).resolves.toBe(4242)
     expect(installSpy).toHaveBeenCalledOnce()
     expect(launchedVersion).toBe('installed-v1')
   })
@@ -165,10 +193,12 @@ describe('launchInstanceCommand', () => {
       throw new Error(`Unexpected ctx.call(${key}, ${method})`)
     })
 
-    await expect(launchInstanceCommand.handler(
-      LaunchInstanceInputSchema.parse({ instance: '/inst/foo', dry: true }),
-      ctx,
-    )).rejects.toThrow(/No local version matches/)
+    await expect(
+      launchInstanceCommand.handler(
+        LaunchInstanceInputSchema.parse({ instance: '/inst/foo', dry: true }),
+        ctx,
+      ),
+    ).rejects.toThrow(/No local version matches/)
   })
 
   test('does not launch when the instance changes during installation', async () => {
@@ -182,10 +212,12 @@ describe('launchInstanceCommand', () => {
       .mockResolvedValueOnce(makeInstance({ path: '/inst/foo', version: 'old' }))
       .mockResolvedValueOnce(makeInstance({ path: '/inst/foo', version: 'changed' }))
 
-    await expect(launchInstanceCommand.handler(
-      LaunchInstanceInputSchema.parse({ instance: '/inst/foo' }),
-      ctx,
-    )).rejects.toThrow(/changed while preparing launch/)
+    await expect(
+      launchInstanceCommand.handler(
+        LaunchInstanceInputSchema.parse({ instance: '/inst/foo' }),
+        ctx,
+      ),
+    ).rejects.toThrow(/changed while preparing launch/)
     expect(launchSpy).not.toHaveBeenCalled()
   })
 
@@ -198,9 +230,20 @@ describe('launchInstanceCommand', () => {
       if (key === UserServiceKey && method === 'refreshUser') return makeUser()
       if (key === VersionInstallServiceKey && method === 'installInstance') return { version: 'v1' }
       if (key === InstanceServiceKey && method === 'editInstance') return undefined
-      if (key === VersionServiceKey && method === 'resolveLocalVersion') return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
+      if (key === VersionServiceKey && method === 'resolveLocalVersion')
+        return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
       if (key === JavaServiceKey && method === 'getJavaState') {
-        return { all: [{ path: '/usr/local/jdk-21/bin/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }] }
+        return {
+          all: [
+            {
+              path: '/usr/local/jdk-21/bin/java',
+              valid: true,
+              version: '21',
+              majorVersion: 21,
+              arch: 'x64',
+            },
+          ],
+        }
       }
       if (key === JavaServiceKey && method === 'resolveJava') {
         // Pinned path no longer exists on disk.
@@ -215,10 +258,12 @@ describe('launchInstanceCommand', () => {
     })
 
     // Pin a deleted path.
-    ;(ctx.resolveInstance as any).mockImplementation(async (ref: string) => makeInstance({
-      path: ref,
-      java: '/deleted/old-jdk/bin/java',
-    }))
+    ;(ctx.resolveInstance as any).mockImplementation(async (ref: string) =>
+      makeInstance({
+        path: ref,
+        java: '/deleted/old-jdk/bin/java',
+      }),
+    )
 
     const pid = await launchInstanceCommand.handler(
       LaunchInstanceInputSchema.parse({ instance: '/inst/foo' }),
@@ -233,12 +278,21 @@ describe('launchInstanceCommand', () => {
     const launchSpy = vi.fn()
     const ctx = makeCtx((key, method) => {
       if (key === UserServiceKey && method === 'refreshUser') return makeUser()
-      if (key === VersionServiceKey && method === 'getLocalVersions') return { local: [{ id: 'v1', minecraft: '1.21.1' }] }
-      if (key === VersionServiceKey && method === 'resolveLocalVersion') return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
-      if (key === JavaServiceKey && method === 'getJavaState') return { all: [{ path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }] }
-      if (key === JavaServiceKey && method === 'resolveJava') return { path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }
+      if (key === VersionServiceKey && method === 'getLocalVersions')
+        return { local: [{ id: 'v1', minecraft: '1.21.1' }] }
+      if (key === VersionServiceKey && method === 'resolveLocalVersion')
+        return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
+      if (key === JavaServiceKey && method === 'getJavaState')
+        return {
+          all: [{ path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }],
+        }
+      if (key === JavaServiceKey && method === 'resolveJava')
+        return { path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }
       if (key === BaseServiceKey && method === 'getSettings') return makeSettings()
-      if (key === LaunchServiceKey && method === 'launch') { launchSpy(); return 0 }
+      if (key === LaunchServiceKey && method === 'launch') {
+        launchSpy()
+        return 0
+      }
       throw new Error(`Unexpected ctx.call(${key}, ${method})`)
     })
 

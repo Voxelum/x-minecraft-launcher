@@ -1,10 +1,12 @@
 <template>
-  <div
-    data-testid="settings-page"
-    class="d-flex fill-height setting-page"
-  >
+  <div data-testid="settings-page" class="d-flex fill-height setting-page">
     <!-- Navigation Sidebar (Only in Wide/Scroll Mode) -->
-    <nav v-if="!isNarrowView" id="settings-nav" class="setting-sidebar pt-6 pl-4 pr-2" :aria-label="t('setting.name', 2)">
+    <nav
+      v-if="!isNarrowView"
+      id="settings-nav"
+      class="setting-sidebar pt-6 pl-4 pr-2"
+      :aria-label="t('setting.name', 2)"
+    >
       <v-card class="surface-card-subsection" :elevation="tokens.cardSubsectionElevation.value">
         <v-list ref="sidebarContainer" nav density="compact" color="transparent">
           <v-list-subheader
@@ -32,8 +34,8 @@
     </nav>
 
     <!-- Content Area -->
-    <div 
-      class="flex-grow-1 overflow-y-auto fill-height scroll-container visible-scroll" 
+    <div
+      class="flex-grow-1 overflow-y-auto fill-height scroll-container visible-scroll"
       :class="{ 'has-sticky-tabs': isNarrowView }"
       ref="scrollContainer"
       @scroll="onScroll"
@@ -60,37 +62,61 @@
 
       <div class="content-wrapper mx-auto pa-4 pa-md-6" :class="{ 'tabs-mode': isNarrowView }">
         <!-- All sections rendered vertically in both modes -->
-        <section id="general" class="mb-8 scroll-target" role="region" :aria-label="t('setting.general')">
-          <SettingHeader
-            :title="t('setting.general')"
-            icon="settings"
-          />
+        <section
+          id="general"
+          class="mb-8 scroll-target"
+          role="region"
+          :aria-label="t('setting.general')"
+        >
+          <SettingHeader :title="t('setting.general')" icon="tune" />
           <SettingGeneral class="mb-4" />
           <SettingAdvanced />
         </section>
-        <section id="appearance" class="mb-8 scroll-target" role="region" :aria-label="t('setting.appearance')">
+        <section
+          id="appearance"
+          class="mb-8 scroll-target"
+          role="region"
+          :aria-label="t('setting.appearance')"
+        >
           <SettingHeader
-            icon="brush"
+            icon="palette"
             :title="t('setting.appearance')"
             :subtitle="t('setting.appearanceDescription')"
           />
           <SettingGlobalUI />
         </section>
-        <section id="global" class="mb-8 scroll-target" role="region" :aria-label="t('setting.globalSetting')">
+        <section
+          id="global"
+          class="mb-8 scroll-target"
+          role="region"
+          :aria-label="t('setting.globalSetting')"
+        >
           <SettingHeader
-            :title="'🌍 ' + t('setting.globalSetting')"
+            :title="t('setting.globalSetting')"
             :subtitle="t('setting.globalSettingHint')"
+            icon="videogame_asset"
           />
           <SettingGlobal />
         </section>
-        <section id="network" class="mb-8 scroll-target" role="region" :aria-label="t('setting.network')">
-          <SettingHeader
-            :title="t('setting.network')"
-            icon="public"
-          />
+        <section id="java" class="mb-8 scroll-target" role="region" :aria-label="t('setting.java')">
+          <SettingHeader :title="t('setting.java')" icon="coffee" />
+          <SettingJava />
+        </section>
+        <section
+          id="network"
+          class="mb-8 scroll-target"
+          role="region"
+          :aria-label="t('setting.network')"
+        >
+          <SettingHeader :title="t('setting.network')" icon="wifi" />
           <SettingNetwork />
         </section>
-        <section id="backup" class="mb-8 scroll-target" role="region" :aria-label="t('backup.title')">
+        <section
+          id="backup"
+          class="mb-8 scroll-target"
+          role="region"
+          :aria-label="t('backup.title')"
+        >
           <SettingHeader
             :title="t('backup.title')"
             :subtitle="t('backup.description')"
@@ -98,15 +124,19 @@
           />
           <SettingBackup />
         </section>
-        <section id="about" class="mb-12 scroll-target" role="region" :aria-label="t('setting.about')">
-          <SettingHeader
-            :title="t('setting.about')"
-            icon="info"
-          />
+        <section
+          id="about"
+          class="mb-12 scroll-target"
+          role="region"
+          :aria-label="t('setting.about')"
+        >
+          <SettingHeader :title="t('setting.about')" icon="info" />
           <SettingUpdate class="mb-4" />
           <SettingAbout />
         </section>
       </div>
+
+      <SettingJavaInstaller />
 
       <SettingUpdateInfoDialog />
       <SettingMigrationDialog />
@@ -139,6 +169,8 @@ import SettingGlobalUI from './SettingGlobalUI.vue'
 import { useMediaQuery } from '@vueuse/core'
 import SettingAdvanced from './SettingAdvanced.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
+import SettingJava from './SettingJava.vue'
+import SettingJavaInstaller from './SettingJavaInstaller.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -161,6 +193,7 @@ const sections = [
   { id: 'general', title: 'setting.general', icon: 'tune' },
   { id: 'appearance', title: 'setting.appearance', icon: 'palette' },
   { id: 'global', title: 'setting.globalSetting', icon: 'videogame_asset' },
+  { id: 'java', title: 'setting.java', icon: 'coffee' },
   { id: 'network', title: 'setting.network', icon: 'wifi' },
   { id: 'backup', title: 'backup.title', icon: 'archive' },
   { id: 'about', title: 'setting.about', icon: 'info' },
@@ -283,6 +316,13 @@ useTutorial(
       popover: {
         title: t('setting.globalSetting'),
         description: t('tutorial.settings.globalDescription'),
+      },
+    },
+    {
+      element: '#java',
+      popover: {
+        title: t('setting.java'),
+        description: t('tutorial.settings.javaDescription'),
       },
     },
     {

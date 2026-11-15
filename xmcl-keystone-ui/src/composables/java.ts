@@ -1,9 +1,33 @@
 import { useRefreshable, useService } from '@/composables'
-import { mergeJavaUpdate } from '@/util/javaState'
+import { mergeJavaUpdate, sortJavaRecords } from '@/util/javaState'
 import { JavaRecord, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
 import { computed, InjectionKey } from 'vue'
 import { DialogKey } from './dialog'
 import { useState } from './syncableState'
+import { BuiltinImages } from '@/constant'
+
+export const javaVendors = [
+  {
+    title: 'Mojang',
+    uid: 'net.minecraft.java',
+    icon: BuiltinImages.mojang,
+  },
+  {
+    title: 'Adoptium',
+    uid: 'net.adoptium.java',
+    icon: BuiltinImages.adoptium,
+  },
+  {
+    title: 'Azul Zulu',
+    uid: 'com.azul.java',
+    icon: BuiltinImages.azul,
+  },
+  {
+    title: 'IBM Semeru',
+    uid: 'com.ibm.java',
+    icon: BuiltinImages.ibmSemeru,
+  },
+]
 
 export const JavaIssueDialogKey: DialogKey<void> = 'java-issue'
 export const kJavaContext: InjectionKey<ReturnType<typeof useJavaContext>> = Symbol('JavaContext')
@@ -26,9 +50,9 @@ class ReactiveJavaState extends JavaState {
 }
 
 export function useJavaContext() {
-  const { getJavaState, removeJava } = useService(JavaServiceKey)
+  const { getJavaState, setJavaSettings, removeJava } = useService(JavaServiceKey)
   const { state, isValidating, error } = useState(getJavaState, ReactiveJavaState)
-  const all = computed(() => state.value?.all ?? [])
+  const all = computed(() => sortJavaRecords(state.value?.all ?? []))
   const missing = computed(() => state.value?.all.length === 0)
 
   const { refreshLocalJava } = useService(JavaServiceKey)
@@ -39,8 +63,11 @@ export function useJavaContext() {
     missing,
     all,
     error,
-    remove: (java: JavaRecord) => {
-      removeJava(java.path)
+    update: (java: JavaRecord, prependCommand?: string, vmOptions?: string[]) => {
+      setJavaSettings(java.path, prependCommand, vmOptions)
+    },
+    remove: async (java: JavaRecord, attemptUninstall: boolean = false) => {
+      await removeJava(java.path, attemptUninstall)
     },
     refresh: (v?: boolean) => refresh(v),
     refreshing,

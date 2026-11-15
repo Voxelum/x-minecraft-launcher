@@ -589,7 +589,11 @@ items:
 java:
   allocatedLong: Użyj domyślnego systemu java
   allocatedShort: Automatyczne przydzielanie
-  importFromFile: Import Java z pliku
+  importedJava: Zewnętrzna
+  importedJavaHint: Ręcznie zaimportowana z pliku
+  importFromFile: Importuj Javę z pliku
+  internalJava: Wewnętrzna
+  internalJavaHint: Zainstalowana przez XMCL
   invalid: Nieprawidłowa lokalizacja Java
   location: Lokalizacja Java
   maxMemory: Maksymalna pamięć
@@ -1517,6 +1521,7 @@ setting:
   globalSettingHint: Instancja będzie używać tych ustawień domyślnie.
   importSettings: Importuj ustawienia
   importSettingsHint: Wczytaj ustawienia z wcześniej wyeksportowanego pliku
+  installJava: Zainstaluj Javę
   instanceTheme:
     activeDescription: |-
       Ta instancja używa motywu niestandardowego.
@@ -1525,6 +1530,12 @@ setting:
       Włącz niestandardowy motyw dla tej instancji.
       Spowoduje to utworzenie kopii bieżącego motywu globalnego.
     name: Motyw instancji
+  java: Ustawienia Javy
+  javaInstaller:
+    preferredVendor: Preferowany dostawca Javy
+    preferredVendorDescription: Preferowany dostawca używany do automatycznych instalacji Javy.
+    showAllVersions: Wszystkie wersje
+  javaProfiles: Profile Javy
   language: Język
   languageDescription: Język wyświetlacza
   latestVersion: Najnowsza wersja
@@ -1685,6 +1696,7 @@ shared:
   cancel: Anuluj
   checkUpgrade: Sprawdź aktualizacje
   client: Klient
+  defaultOption: Domyślne
   description: Opis
   disable: Wyłącz
   download: Pobierz
@@ -1859,10 +1871,11 @@ tutorial:
     detailTitle: Szczegóły świata i Akcje
     detailDescription: Twórz kopie zapasowe, eksportuj, sprawdzaj level.dat lub zmieniaj opcje świata.
   settings:
-    navDescription: Przełączaj między Ogólnymi, Wyglądem, Globalnymi ustawieniami gry a Siecią.
-    generalDescription: Konfiguruj język launchera, katalog danych, kanały aktualizacji i opcje startu.
-    appearanceDescription: Dostosuj motyw, tapety tła, kolory akcentów i układ interfejsu.
-    globalDescription: Ustaw domyślną wersję Javy, alokację pamięci RAM i argumenty JVM.
+    appearanceDescription: Dostosuj motyw, obraz tła, kolory akcentów i układ interfejsu.
+    generalDescription: Konfiguruj język launchera, katalog główny, kanały aktualizacji i opcje startu.
+    globalDescription: Ustaw domyślną rozdzielczość gry, zmienne środowiskowe i argumenty uruchamiania.
+    javaDescription: Ustaw domyślne środowisko Javy, preferowanego dostawcę Javy, alokację pamięci i argumenty uruchamiania JVM. Tutaj możesz również zainstalować Javę od różnych dostawców.
+    navDescription: Przełączaj między różnymi zakładkami.
     networkDescription: Konfiguruj serwery lustrzane pobierania, proxy i limity jednoczesnych zadań.
   shaderpack:
     searchTitle: Szukaj shaderów

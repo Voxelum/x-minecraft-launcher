@@ -86,14 +86,14 @@ export class ParseJavaVersionError extends Error {
 function execFileOutput(command: string, args: string[]) {
   return new Promise<string>((resolve) => {
     try {
-      execFile(command, args, { windowsHide: true }, (error, stdout) => resolve(error ? '' : stdout))
-        .once('error', () => resolve(''))
+      execFile(command, args, { windowsHide: true }, (error, stdout) =>
+        resolve(error ? '' : stdout),
+      ).once('error', () => resolve(''))
     } catch {
       resolve('')
     }
   })
 }
-
 
 /**
  * Parse version string and major version number from `java -version` output.
@@ -110,7 +110,7 @@ export function parseJavaVersion(
     if (!/(?:^|\s)(?:openjdk|java(?:[ _]version)?)(?:\s|=)/im.test(str)) {
       return undefined
     }
-    const match = /(\d+)\.(\d)+\.(\d+)(_\d+)?/.exec(str)
+    const match = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?(_\d+)?/.exec(str)
     if (match === null) {
       // Fallback: handle modern major-only version strings such as
       //   java version "25" 2025-09-16 LTS         (Oracle JDK)
@@ -129,17 +129,26 @@ export function parseJavaVersion(
       }
       return undefined
     }
+    const versionWithoutZeroFourthComponent =
+      match[4] === '0' ? `${match[1]}.${match[2]}.${match[3]}${match[5] ?? ''}` : match[0]
     if (match[1] === '1') {
       return {
-        version: match[0],
+        version: versionWithoutZeroFourthComponent,
         majorVersion: Number.parseInt(match[2]),
-        patch: Number.parseInt(match[4]?.substring(1) ?? '-1'),
+        patch: Number.parseInt(match[5]?.substring(1) ?? '-1'),
       }
     }
+    const buildNumber =
+      match[4] ??
+      Array.from(str.matchAll(/(?:^|[^\d])(\d+\.\d+\.\d+)\+(\d+)(?=[-\s)]|$)/g)).find(
+        (build) => build[1] === match[0],
+      )?.[2]
     return {
-      version: match[0],
+      version: match[4]
+        ? versionWithoutZeroFourthComponent
+        : `${match[0]}${buildNumber && buildNumber !== '0' ? `.${buildNumber}` : ''}`,
       majorVersion: Number.parseInt(match[1]),
-      patch: Number.parseInt(match[3]),
+      patch: Number.parseInt(buildNumber ?? match[3]),
     }
   }
   try {
@@ -175,10 +184,13 @@ export async function getPotentialJavaLocations(): Promise<string[]> {
   const where = () => execFileOutput('where.exe', ['java']).then((stdout) => stdout.split('\r\n'))
 
   if (currentPlatform === 'win32') {
-    const registry = await execFileOutput(
-      'reg.exe',
-      ['QUERY', 'HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\', '/s', '/v', 'JavaHome'],
-    )
+    const registry = await execFileOutput('reg.exe', [
+      'QUERY',
+      'HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\',
+      '/s',
+      '/v',
+      'JavaHome',
+    ])
     const out = registry
       .split(EOL)
       .map((item) => item.replace(/[\r\n]/g, ''))

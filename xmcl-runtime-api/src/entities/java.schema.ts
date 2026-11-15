@@ -11,6 +11,10 @@ export const JavaSchema = z.object({
   version: z.string(),
   /** The major version number of the Java runtime */
   majorVersion: z.number(),
+  /** Prepend command before all the launch commands */
+  prependCommand: z.optional(z.string()),
+  /** Extra Java arguments */
+  vmOptions: z.optional(z.array(z.string())),
 })
 
 export type Java = z.infer<typeof JavaSchema>

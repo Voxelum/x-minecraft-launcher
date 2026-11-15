@@ -1,6 +1,12 @@
 import { recoverRestore } from '~/infra/recoverRestore'
 import { getRestoreGate } from '~/infra/restoreGate'
-import { isMissingVersionJsonError, MinecraftFolder, ResolvedVersion, Version, type JavaVersion } from '@xmcl/core'
+import {
+  isMissingVersionJsonError,
+  MinecraftFolder,
+  ResolvedVersion,
+  Version,
+  type JavaVersion,
+} from '@xmcl/core'
 import {
   AnyTracker,
   AssetsOptions,
@@ -94,7 +100,13 @@ import { VersionService } from '~/launch'
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
 import { joinUrl, replaceHost } from '~/util/url'
 import { kOptifineInstaller } from './optifine'
-import { applyJavaInstallManifest, resolveLauncherJavaInstallManifest } from '~/java/JavaInstall'
+import {
+  getSupportedMajorJavaVersions,
+  installJavaRuntime,
+  listJavaRuntimeOptions,
+  listJavaVendors,
+  listMajorJavaVersionsFromVendor,
+} from '~/java/JavaInstall'
 import { kResourceWorker, ResourceWorker } from '~/resource'
 import { getTracker } from '~/util/taskHelper'
 import { InstallManifestService } from './InstallManifestService'
@@ -114,7 +126,9 @@ export class InstallCoordinator {
   private installContext = new AsyncLocalStorage<{
     timings: Array<{ task: string; type: InstallTask['type']; startedAt: number; duration: number }>
   }>()
-  private readonly diagnosisCache = new FreshResultCache<InstallIssue | undefined>(DIAGNOSIS_FRESHNESS_MS)
+  private readonly diagnosisCache = new FreshResultCache<InstallIssue | undefined>(
+    DIAGNOSIS_FRESHNESS_MS,
+  )
   private readonly diagnosisChecksums = new InFlightCache<string>()
   private readonly logger
 
@@ -139,10 +153,34 @@ export class InstallCoordinator {
     return this.app.mutex.of(LockKey.forgePostProcess(minecraft)).runExclusive(action)
   }
 
-  private ensureJava(target: JavaVersion, forceZulu = false) {
-    return this.app.mutex
-      .of(`java/${target.component}/${forceZulu}`)
-      .runExclusive(() => this.applyJavaInstall(target, forceZulu))
+  private async installPreferredJava(target: JavaVersion) {
+    const preferredVendor = this.settings.globalPreferredJavaVendor
+    const vendor =
+      preferredVendor === 'default' ? this.settings.defaultPreferredJavaVendor : preferredVendor
+    const version = `java${target.majorVersion}`
+    const versions = await listMajorJavaVersionsFromVendor(this.app, this.getPath, vendor)
+    const selected = versions.find((entry) => entry.version === version)
+    if (!selected)
+      throw new Error(`Java ${target.majorVersion} is not available from vendor ${vendor}`)
+    const runtimes = await listJavaRuntimeOptions(
+      this.app,
+      this.getPath,
+      vendor,
+      version,
+      selected.sha256,
+    )
+    const runtime = runtimes[0]
+    if (!runtime)
+      throw new Error(
+        `No compatible Java ${target.majorVersion} runtime is available from vendor ${vendor}`,
+      )
+    return this.applyJavaInstall(
+      vendor,
+      version,
+      target.majorVersion,
+      selected.sha256,
+      runtime.runtimeUrl,
+    )
   }
 
   /**
@@ -162,28 +200,69 @@ export class InstallCoordinator {
     // Forge 1.18–1.20.4 needs Java 17 exactly; without `forge`, Java 21/25
     // looks compatible and java-runtime-gamma is never installed.
     const selected = getAutoSelectedJava(this.javaService.state.all, minecraft, forge, resolved)
-    return selected.java?.path ?? (await this.ensureJava(selected.javaVersion)).path
+    return selected.java?.path ?? (await this.installPreferredJava(selected.javaVersion)).path
   }
 
-  private async applyJavaInstall(target: JavaVersion, forceZulu = false) {
-    const manifest = await resolveLauncherJavaInstallManifest(
-      this.app,
-      this.getPath,
-      target,
-      forceZulu,
-    )
+  async getSupportedMajorJavaVersions() {
+    return getSupportedMajorJavaVersions(this.app, this.getPath)
+  }
+
+  async getJavaVendors(force = false) {
+    return listJavaVendors(this.app, this.getPath, force)
+  }
+
+  async getMajorJavaVersionsFromVendor(vendor: string, force = false) {
+    return listMajorJavaVersionsFromVendor(this.app, this.getPath, vendor, force)
+  }
+
+  async getJavaRuntimes(vendor: string, version: string, metadataSha256?: string, force = false) {
+    return listJavaRuntimeOptions(this.app, this.getPath, vendor, version, metadataSha256, force)
+  }
+
+  private applyJavaInstall(
+    vendor: string,
+    version: string,
+    majorVersion: number,
+    metadataSha256?: string,
+    runtimeUrl?: string,
+  ) {
+    return this.app.mutex
+      .of(`java/${vendor}/${version}`)
+      .runExclusive(() =>
+        this.runJavaInstall(vendor, version, majorVersion, metadataSha256, runtimeUrl),
+      )
+  }
+
+  private async runJavaInstall(
+    vendor: string,
+    version: string,
+    majorVersion: number,
+    metadataSha256?: string,
+    runtimeUrl?: string,
+  ) {
     const task = this.tasks.create<InstallJavaTask>({
       type: 'installJre',
-      key: `java-${target.majorVersion}-${target.component}`,
-      version: target.majorVersion,
+      key: `java-${vendor}-${version}-${
+        runtimeUrl
+          ? runtimeUrl
+              .split('/')
+              .pop()
+              ?.replace(/[^a-zA-Z0-9._-]/g, '_')
+          : 'default'
+      }`,
+      version: majorVersion,
     })
     try {
-      const result = await applyJavaInstallManifest(
+      const result = await installJavaRuntime(
         this.app,
+        this.getPath,
         this.manifestInstaller,
         task,
-        manifest,
+        vendor,
+        version,
         (path) => this.javaService.resolveJava(path),
+        metadataSha256,
+        runtimeUrl,
       )
       task.complete()
       return result
@@ -369,7 +448,9 @@ export class InstallCoordinator {
   private async runWorkflow<T>(
     workflow: InstallWorkflow<T>,
     options: LibraryOptions & AssetsOptions & InstallForgeOptions & JarOption,
-    tracker?: ProgressTrackerMultiple | ((plan: InstallManifest, stage: number) => ProgressTrackerMultiple | undefined),
+    tracker?:
+      | ProgressTrackerMultiple
+      | ((plan: InstallManifest, stage: number) => ProgressTrackerMultiple | undefined),
   ) {
     return runInstallWorkflow(workflow, async (plan, stage) => {
       const result = await this.manifestInstaller.install(plan, {
@@ -437,7 +518,9 @@ export class InstallCoordinator {
         }),
       )
       task.complete()
-      this.logger.log(`Successfully installed OptiFine ${optifineVersion} as mod for ${options.mcversion}`)
+      this.logger.log(
+        `Successfully installed OptiFine ${optifineVersion} as mod for ${options.mcversion}`,
+      )
     } catch (error) {
       task.fail(error)
       throw error
@@ -584,7 +667,16 @@ export class InstallCoordinator {
   async install(request: VersionInstallRequest) {
     await recoverRestore(this.app)
     if (request.type === 'java') {
-      return this.ensureJava(request.target, request.forceZulu)
+      const { target, vendor, version, majorVersion, metadataSha256, runtimeUrl } = request
+      if (target) {
+        return this.app.mutex
+          .of(`java/${target.component}`)
+          .runExclusive(() => this.installPreferredJava(target))
+      }
+      if (!vendor || !version || majorVersion === undefined) {
+        throw new Error('Java installation requires either a target or a vendor/version')
+      }
+      return this.applyJavaInstall(vendor, version, majorVersion, metadataSha256, runtimeUrl)
     }
     this.invalidateDiagnosis()
     try {
@@ -767,8 +859,7 @@ export class InstallCoordinator {
         const matched = this.javaService.state.all.find(
           (java) => java.valid && java.majorVersion === resolved!.javaVersion.majorVersion,
         )
-        const java =
-          matched?.path ?? (await this.ensureJava(resolved.javaVersion).then((value) => value.path))
+        const java = matched?.path ?? (await this.installPreferredJava(resolved.javaVersion)).path
         if (!java) {
           throw new AnyError('InvalidJava', `Cannot resolve Java for ${minecraft}`)
         }
@@ -853,8 +944,7 @@ export class InstallCoordinator {
         const matched = this.javaService.state.all.find(
           (java) => java.valid && java.majorVersion === resolved.javaVersion.majorVersion,
         )
-        const java =
-          matched?.path ?? (await this.ensureJava(resolved.javaVersion).then((value) => value.path))
+        const java = matched?.path ?? (await this.installPreferredJava(resolved.javaVersion)).path
         if (!java)
           throw new AnyError('InvalidJava', `Cannot resolve Java for ${server.minecraftVersion}`)
         await this.applyProfileWorkflow(issue.profile, java, 'server')
@@ -1135,14 +1225,13 @@ export class InstallCoordinator {
               { version: options.version, path: installer.path },
             ),
           )
-      : async () =>
-          {
-            const installerTracker = onDownloadMultiple(
-              installOptions.tracker as Tracker<ForgeTrackerEvents>,
-              'forge.installer',
-              { version: options.version, path: installer.path },
-            )
-            return (
+      : async () => {
+          const installerTracker = onDownloadMultiple(
+            installOptions.tracker as Tracker<ForgeTrackerEvents>,
+            'forge.installer',
+            { version: options.version, path: installer.path },
+          )
+          return (
             await this.runWorkflow(
               createModernForgeInstallWorkflow({
                 id: `${options.type}:${options.version}`,
@@ -1169,14 +1258,15 @@ export class InstallCoordinator {
                 resolveProcessor: (processor) => this.resolveForgeProcessor(processor),
               }),
               installOptions,
-              (_plan, stage) => stage === 0
-                ? installerTracker
-                : stage === 2 || stage === 4
-                  ? options.libraryTracker ?? installerTracker
-                  : undefined,
+              (_plan, stage) =>
+                stage === 0
+                  ? installerTracker
+                  : stage === 2 || stage === 4
+                    ? (options.libraryTracker ?? installerTracker)
+                    : undefined,
             )
-            ).version
-          }
+          ).version
+        }
     try {
       const result = await this.app.mutex
         .of(LockKey.libraries)
@@ -1251,7 +1341,9 @@ export class InstallCoordinator {
       const result = await this.app.mutex
         .of(LockKey.libraries)
         .runExclusive(() =>
-          this.runForgeInstall(profile.minecraft, () => this.runWorkflow(workflow, options, tracker)),
+          this.runForgeInstall(profile.minecraft, () =>
+            this.runWorkflow(workflow, options, tracker),
+          ),
         )
       task.complete()
       return result
@@ -1310,7 +1402,7 @@ export class InstallCoordinator {
         if (preferred) return preferred.path
       }
       if (recipe.java.fallback) {
-        return this.ensureJava(recipe.java.fallback).then((java) => java.path)
+        return this.installPreferredJava(recipe.java.fallback).then((java) => java.path)
       }
       const resolved = await this.versionService.resolveLocalVersion(version)
       return this.ensureSelectedInstanceJava(
@@ -1343,8 +1435,14 @@ export class InstallCoordinator {
         version: minecraft,
       })
       const options = this.getInstallOptions({ side: 'client' }, task)
-      const libraryOptions = this.getInstallOptions({ side: 'client', timestamp: baseTimestamp }, librariesTask)
-      const assetOptions = this.getInstallOptions({ side: 'client', timestamp: baseTimestamp }, assetsTask)
+      const libraryOptions = this.getInstallOptions(
+        { side: 'client', timestamp: baseTimestamp },
+        librariesTask,
+      )
+      const assetOptions = this.getInstallOptions(
+        { side: 'client', timestamp: baseTimestamp },
+        assetsTask,
+      )
       let resolved = await this.versionService.resolveLocalVersion(minecraft).catch(() => undefined)
       if (!resolved) {
         const json = resolveMinecraftVersionJsonInstallFile(recipe.minecraft, folder, options)
@@ -1510,7 +1608,9 @@ export class InstallCoordinator {
       const repairTracker = onDownloadMultiple(
         options.tracker as Tracker<LibrariesTrackerEvents>,
         'libraries',
-        { count: (issue.libraries?.length ?? 0) + (issue.assets?.length ?? 0) + (issue.jar ? 1 : 0) },
+        {
+          count: (issue.libraries?.length ?? 0) + (issue.assets?.length ?? 0) + (issue.jar ? 1 : 0),
+        },
       )
       const resolved = await this.versionService.resolveLocalVersion(recipe.version)
       // Standalone Prism versions contain their own Java requirements and may
@@ -1528,7 +1628,8 @@ export class InstallCoordinator {
           )
         : Promise.resolve()
       const independent: Promise<unknown>[] = []
-      const repairLoaderProfile = !!issue.profile && !!(recipe.runtime.forge || recipe.runtime.neoForged)
+      const repairLoaderProfile =
+        !!issue.profile && !!(recipe.runtime.forge || recipe.runtime.neoForged)
       const libraries = issue.libraries?.filter((library) => {
         if (issue.optifine && library.groupId === 'optifine') return false
         if (
@@ -1739,7 +1840,9 @@ export class InstallCoordinator {
 
   private checksumForDiagnosis(file: string, algorithm: string) {
     const key = `${algorithm}\0${file}`
-    return this.diagnosisChecksums.getOrCreate(key, () => this.resourceWorker.checksum(file, algorithm))
+    return this.diagnosisChecksums.getOrCreate(key, () =>
+      this.resourceWorker.checksum(file, algorithm),
+    )
   }
 
   private invalidateDiagnosis() {

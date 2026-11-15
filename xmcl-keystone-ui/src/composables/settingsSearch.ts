@@ -70,7 +70,10 @@ export function useSettingsSearchItems() {
   // streamerMode is provided at the App root via `provide('streamerMode', …)`.
   // Fall back to a fresh local-storage ref so the composable still works in
   // isolated tests / storybook contexts.
-  const streamerMode = inject('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false })) as { value: boolean }
+  const streamerMode = inject(
+    'streamerMode',
+    useLocalStorage('streamerMode', false, { writeDefaults: false }),
+  ) as { value: boolean }
 
   const groupGeneral = computed(() => t('setting.general'))
   const groupGlobalInstance = computed(() => t('setting.globalSetting'))
@@ -81,18 +84,12 @@ export function useSettingsSearchItems() {
   }))
 
   const {
-    globalAssignMemory,
-    globalMinMemory,
-    globalMaxMemory,
-    globalJava,
-    globalVmOptions,
     globalMcOptions,
     globalFastLaunch,
     globalHideLauncher,
     globalShowLog,
     globalDisableAuthlibInjector,
     globalDisableElyByAuthlib,
-    globalPrependCommand,
     globalPreExecuteCommand,
     globalEnv,
     globalResolution,
@@ -104,26 +101,22 @@ export function useSettingsSearchItems() {
    * boolean we snapshot every other current value and override only the
    * one being changed. Uses the live computed refs from {@link useGlobalSettings}.
    */
-  const patchGlobal = (patch: Partial<{
-    globalFastLaunch: boolean
-    globalHideLauncher: boolean
-    globalShowLog: boolean
-    globalDisableAuthlibInjector: boolean
-    globalDisableElyByAuthlib: boolean
-  }>) => {
+  const patchGlobal = (
+    patch: Partial<{
+      globalFastLaunch: boolean
+      globalHideLauncher: boolean
+      globalShowLog: boolean
+      globalDisableAuthlibInjector: boolean
+      globalDisableElyByAuthlib: boolean
+    }>,
+  ) => {
     setGlobalSettings({
-      globalAssignMemory: globalAssignMemory.value,
-      globalMinMemory: globalMinMemory.value,
-      globalMaxMemory: globalMaxMemory.value,
-      globalJava: globalJava.value,
-      globalVmOptions: [...globalVmOptions.value],
       globalMcOptions: [...globalMcOptions.value],
       globalFastLaunch: globalFastLaunch.value,
       globalHideLauncher: globalHideLauncher.value,
       globalShowLog: globalShowLog.value,
       globalDisableAuthlibInjector: globalDisableAuthlibInjector.value,
       globalDisableElyByAuthlib: globalDisableElyByAuthlib.value,
-      globalPrependCommand: globalPrependCommand.value,
       globalPreExecuteCommand: globalPreExecuteCommand.value,
       globalEnv: { ...globalEnv.value },
       globalResolution: { ...globalResolution.value },
@@ -145,12 +138,12 @@ export function useSettingsSearchItems() {
       group: groupGeneral.value,
       keywords: 'language locale i18n translation',
       get value() {
-        return s.locales.find(l => l.locale === s.locale)?.locale || 'en'
+        return s.locales.find((l) => l.locale === s.locale)?.locale || 'en'
       },
       set value(v: string) {
         s.localeSet(v)
       },
-      items: s.locales.map(l => ({ text: l.name, value: l.locale })),
+      items: s.locales.map((l) => ({ text: l.name, value: l.locale })),
     })
 
     list.push({

@@ -989,16 +989,24 @@ describe('management virtual shell commands', () => {
     await command.execute(['loader', 'neoforge', '--game-version', '26.1.2'])
     await command.execute(['loader', 'fabric', '1.21.1', '--limit', '20', '--refresh'])
 
-    expect(operations.listMinecraftMetadata).toHaveBeenNthCalledWith(1, {
-      type: undefined,
-      limit: 25,
-      refresh: false,
-    }, undefined)
-    expect(operations.listMinecraftMetadata).toHaveBeenNthCalledWith(2, {
-      type: 'snapshot',
-      limit: 12,
-      refresh: true,
-    }, undefined)
+    expect(operations.listMinecraftMetadata).toHaveBeenNthCalledWith(
+      1,
+      {
+        type: undefined,
+        limit: 25,
+        refresh: false,
+      },
+      undefined,
+    )
+    expect(operations.listMinecraftMetadata).toHaveBeenNthCalledWith(
+      2,
+      {
+        type: 'snapshot',
+        limit: 12,
+        refresh: true,
+      },
+      undefined,
+    )
     expect(operations.listLoaderMetadata).toHaveBeenNthCalledWith(
       1,
       {
@@ -1020,7 +1028,9 @@ describe('management virtual shell commands', () => {
       undefined,
     )
     await expect(command.execute(['loader'])).rejects.toThrow('requires a loader')
-    await expect(command.execute(['minecraft', '--type', 'beta'])).rejects.toThrow('Unknown Minecraft version type: beta')
+    await expect(command.execute(['minecraft', '--type', 'beta'])).rejects.toThrow(
+      'Unknown Minecraft version type: beta',
+    )
   })
 
   test('uses version for locally installed client and server versions', async () => {
@@ -1034,10 +1044,24 @@ describe('management virtual shell commands', () => {
     await command.execute(['delete', 'old-version'])
     await command.execute(['open'])
 
-    expect(operations.listLocalVersions).toHaveBeenNthCalledWith(1, { server: false, refresh: true }, undefined)
-    expect(operations.listLocalVersions).toHaveBeenNthCalledWith(2, { server: true, refresh: false }, undefined)
-    expect(operations.getLocalVersion).toHaveBeenCalledWith({ id: '1.21.1-neoforge', server: true }, undefined)
-    expect(operations.refreshLocalVersions).toHaveBeenCalledWith({ id: '1.21.1', server: false }, undefined)
+    expect(operations.listLocalVersions).toHaveBeenNthCalledWith(
+      1,
+      { server: false, refresh: true },
+      undefined,
+    )
+    expect(operations.listLocalVersions).toHaveBeenNthCalledWith(
+      2,
+      { server: true, refresh: false },
+      undefined,
+    )
+    expect(operations.getLocalVersion).toHaveBeenCalledWith(
+      { id: '1.21.1-neoforge', server: true },
+      undefined,
+    )
+    expect(operations.refreshLocalVersions).toHaveBeenCalledWith(
+      { id: '1.21.1', server: false },
+      undefined,
+    )
     expect(operations.deleteLocalVersion).toHaveBeenCalledWith({ id: 'old-version' }, undefined)
     expect(operations.openLocalVersion).toHaveBeenCalledWith({ id: undefined }, undefined)
   })
@@ -1060,25 +1084,41 @@ describe('management virtual shell commands', () => {
     await command.execute(['runtime', 'set', '--minecraft', '1.21.1', '--no-loader'])
 
     expect(operations.getInstanceRuntime).toHaveBeenCalledWith(undefined)
-    expect(operations.setInstanceRuntime).toHaveBeenNthCalledWith(1, {
-      minecraft: '1.21.1',
-      loader: 'neoforge',
-      loaderVersion: '21.1.200',
-      noLoader: false,
-    }, undefined)
-    expect(operations.setInstanceRuntime).toHaveBeenNthCalledWith(2, {
-      minecraft: '1.21.1',
-      loader: undefined,
-      loaderVersion: undefined,
-      noLoader: true,
-    }, undefined)
+    expect(operations.setInstanceRuntime).toHaveBeenNthCalledWith(
+      1,
+      {
+        minecraft: '1.21.1',
+        loader: 'neoforge',
+        loaderVersion: '21.1.200',
+        noLoader: false,
+      },
+      undefined,
+    )
+    expect(operations.setInstanceRuntime).toHaveBeenNthCalledWith(
+      2,
+      {
+        minecraft: '1.21.1',
+        loader: undefined,
+        loaderVersion: undefined,
+        noLoader: true,
+      },
+      undefined,
+    )
 
     await expect(command.execute(['runtime', 'set', '--loader', 'fabric'])).rejects.toThrow(
       '--loader and --loader-version must be specified together',
     )
-    await expect(command.execute(['runtime', 'set', '--no-loader', '--loader', 'fabric', '--loader-version', '0.16.10'])).rejects.toThrow(
-      '--no-loader cannot be combined',
-    )
+    await expect(
+      command.execute([
+        'runtime',
+        'set',
+        '--no-loader',
+        '--loader',
+        'fabric',
+        '--loader-version',
+        '0.16.10',
+      ]),
+    ).rejects.toThrow('--no-loader cannot be combined')
   })
 
   test('dispatches user and java commands', async () => {
@@ -1089,7 +1129,7 @@ describe('management virtual shell commands', () => {
     await getCommand('java', operations).execute(['list', '--refresh'])
     await getCommand('java', operations).execute(['select', 'C:/Java/bin/java.exe'])
     await getCommand('java', operations).execute(['select', 'auto'])
-    await getCommand('java', operations).execute(['install', '--zulu'])
+    await getCommand('java', operations).execute(['install'])
     expect(operations.listAccounts).toHaveBeenCalledOnce()
     expect(operations.selectAccount).toHaveBeenCalledWith({ ref: 'Alex' }, undefined)
     expect(operations.diagnoseJava).toHaveBeenCalledOnce()
@@ -1100,7 +1140,7 @@ describe('management virtual shell commands', () => {
       undefined,
     )
     expect(operations.selectJava).toHaveBeenNthCalledWith(2, { path: undefined }, undefined)
-    expect(operations.installJava).toHaveBeenCalledWith({ forceZulu: true }, undefined)
+    expect(operations.installJava).toHaveBeenCalledWith(undefined)
   })
 
   test('dispatches mod commands and options', async () => {

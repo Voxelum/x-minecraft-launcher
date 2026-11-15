@@ -16,9 +16,10 @@ export class Settings implements SettingSchema {
   globalMaxMemory = 0
   globalAssignMemory: 'auto' | boolean = false
   globalJava: string = ''
-  globalVmOptions: string[] = []
+  globalPreferredJavaVendor: string = 'default'
+  /** Default Java vendor used when no user preference has been configured. */
+  defaultPreferredJavaVendor = 'net.adoptium.java'
   globalMcOptions: string[] = []
-  globalPrependCommand: string = ''
   globalPreExecuteCommand: string = ''
   globalFastLaunch = false
   globalHideLauncher = false
@@ -94,7 +95,8 @@ export class Settings implements SettingSchema {
 
   config(config: SettingSchema) {
     this.locale = config.locale
-    this.appImageUpdateMode = config.appImageUpdateMode === 'self-managed' ? 'self-managed' : 'external'
+    this.appImageUpdateMode =
+      config.appImageUpdateMode === 'self-managed' ? 'self-managed' : 'external'
     this.autoDownload = config.autoDownload || false
     this.autoInstallOnAppQuit = config.autoInstallOnAppQuit || false
     this.allowPrerelease = config.allowPrerelease || false
@@ -108,10 +110,9 @@ export class Settings implements SettingSchema {
     this.globalMaxMemory = config.globalMaxMemory
     this.globalAssignMemory = config.globalAssignMemory
     this.globalJava = config.globalJava
-    this.globalVmOptions = config.globalVmOptions
+    this.globalPreferredJavaVendor = config.globalPreferredJavaVendor
     this.globalMcOptions = config.globalMcOptions
     this.globalFastLaunch = config.globalFastLaunch
-    this.globalPrependCommand = config.globalPrependCommand
     this.globalHideLauncher = config.globalHideLauncher
     this.globalShowLog = config.globalShowLog
     this.globalDisableElyByAuthlib = config.globalDisableElyByAuthlib
@@ -157,16 +158,18 @@ export class Settings implements SettingSchema {
     this.enableDedicatedGPUOptimization = enabled
   }
 
-  localesSet(languages: {
-    /**
-     * The i18n locale key
-     */
-    locale: string
-    /**
-     * The human readable name of the locale
-     */
-    name: string
-  }[]) {
+  localesSet(
+    languages: {
+      /**
+       * The i18n locale key
+       */
+      locale: string
+      /**
+       * The human readable name of the locale
+       */
+      name: string
+    }[],
+  ) {
     this.locales = languages
   }
 
@@ -179,7 +182,9 @@ export class Settings implements SettingSchema {
   }
 
   allowPrereleaseSet(allowPrerelease: boolean) {
-    if (typeof allowPrerelease === 'boolean') { this.allowPrerelease = allowPrerelease }
+    if (typeof allowPrerelease === 'boolean') {
+      this.allowPrerelease = allowPrerelease
+    }
   }
 
   autoInstallOnAppQuitSet(autoInstallOnAppQuit: boolean) {
@@ -251,7 +256,12 @@ export class Settings implements SettingSchema {
     this.replaceNatives = replace
   }
 
-  globalResolutionSet(resolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }) {
+  globalResolutionSet(resolution: {
+    width?: number
+    height?: number
+    fullscreen?: boolean
+    monitor?: string
+  }) {
     this.globalResolution = resolution
   }
 
@@ -272,11 +282,6 @@ export class Settings implements SettingSchema {
   }
 
   globalInstanceSetting(settings: {
-    globalMinMemory: number
-    globalMaxMemory: number
-    globalAssignMemory: boolean | 'auto'
-    globalJava: string
-    globalVmOptions: string[]
     globalMcOptions: string[]
     globalFastLaunch: boolean
     globalHideLauncher: boolean
@@ -284,16 +289,10 @@ export class Settings implements SettingSchema {
     globalDisableAuthlibInjector: boolean
     globalDisableElyByAuthlib: boolean
     globalSyncGameLanguage?: boolean
-    globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
     globalResolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
   }) {
-    this.globalMinMemory = settings.globalMinMemory
-    this.globalMaxMemory = settings.globalMaxMemory
-    this.globalAssignMemory = settings.globalAssignMemory
-    this.globalJava = settings.globalJava
-    this.globalVmOptions = settings.globalVmOptions
     this.globalMcOptions = settings.globalMcOptions
     this.globalFastLaunch = settings.globalFastLaunch
     this.globalHideLauncher = settings.globalHideLauncher
@@ -303,9 +302,22 @@ export class Settings implements SettingSchema {
     if (typeof settings.globalSyncGameLanguage === 'boolean') {
       this.globalSyncGameLanguage = settings.globalSyncGameLanguage
     }
-    this.globalPrependCommand = settings.globalPrependCommand
     this.globalPreExecuteCommand = settings.globalPreExecuteCommand
     this.globalEnv = settings.globalEnv
     this.globalResolution = settings.globalResolution
+  }
+
+  globalJavaSetting(settings: {
+    globalMinMemory: number
+    globalMaxMemory: number
+    globalAssignMemory: boolean | 'auto'
+    globalJava: string
+    globalPreferredJavaVendor: string
+  }) {
+    this.globalMinMemory = settings.globalMinMemory
+    this.globalMaxMemory = settings.globalMaxMemory
+    this.globalAssignMemory = settings.globalAssignMemory
+    this.globalJava = settings.globalJava
+    this.globalPreferredJavaVendor = settings.globalPreferredJavaVendor
   }
 }

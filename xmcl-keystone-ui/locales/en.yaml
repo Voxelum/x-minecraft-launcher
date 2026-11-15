@@ -750,7 +750,11 @@ java:
   allocation: Allocated
   autoHint: Min grows with installed mod count; max uses available system memory.
   change: Change
-  importFromFile: Import Java From File
+  importedJava: External
+  importedJavaHint: Manually imported from file
+  importFromFile: Import Java from file
+  internalJava: Internal
+  internalJavaHint: Installed by XMCL
   invalid: Invalid Java Location
   location: Java Location
   locationHint: No Java selected — using system default
@@ -2154,10 +2158,17 @@ setting:
   globalSettingHint: Instance will use these settings by default.
   importSettings: Import Settings
   importSettingsHint: Load settings from a previously exported file
+  installJava: Install Java
   instanceTheme:
     activeDescription: This instance is using a custom theme. You can delete it to use the global theme.
     description: Enable a custom theme for this instance. This will create a copy of the current global theme.
     name: Instance Theme
+  java: Java Settings
+  javaInstaller:
+    preferredVendor: Preferred Java Vendor
+    preferredVendorDescription: Preferred vendor used for automatic Java installations.
+    showAllVersions: All versions
+  javaProfiles: Java Profiles
   language: Language
   languageDescription: The display language
   latestVersion: Latest Version
@@ -2339,6 +2350,7 @@ shared:
   close: Close
   copyFailed: Copy failed
   copyFailedHint: Could not copy to clipboard
+  defaultOption: Default
   description: Description
   disable: Disable
   download: Download
@@ -2473,8 +2485,9 @@ tutorial:
   settings:
     appearanceDescription: Customize theme, background wallpapers, accent colors, and layout style.
     generalDescription: Configure launcher language, data directory, update channels, and startup options.
-    globalDescription: Set default Java runtime, memory allocation, and JVM launch arguments.
-    navDescription: Switch between General, Appearance, Global Game Settings, and Network.
+    globalDescription: Set default game resolution, environment variables and launch arguments.
+    javaDescription: Set default Java runtime, preferred Java vendor, memory allocation and JVM launch arguments. Here you can also install Java from different vendors.
+    navDescription: Switch between different tabs.
     networkDescription: Configure download mirrors, proxy settings, and concurrent task limits.
   shaderpack:
     detailDescription: Shader author details, resolution requirements, profile presets, and shader options.

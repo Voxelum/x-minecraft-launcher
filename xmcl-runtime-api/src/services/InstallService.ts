@@ -1,4 +1,4 @@
-import type { JavaVersion, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
+import type { JavaVersion, ResolvedLibrary, Version } from '@xmcl/core'
 import type { Java } from '../entities/java.schema'
 import type {
   InstanceVersionInstallResult,
@@ -14,7 +14,6 @@ import {
   ForgeTrackerEvents,
   JavaRuntimeTrackerEvents,
   LibrariesTrackerEvents,
-  ZuluTrackerEvents,
 } from '@xmcl/installer'
 import { OptifineVersion } from '../entities/version'
 import { SubState, Task, Tasks } from '../task'
@@ -24,8 +23,6 @@ export interface InstallJavaTask extends Task {
   type: 'installJre'
   version: number
   substate:
-    | SubState<ZuluTrackerEvents, 'zulu-java.download'>
-    | SubState<ZuluTrackerEvents, 'zulu-java.extract'>
     | SubState<JavaRuntimeTrackerEvents, 'java-runtime.file'>
     | SubState<JavaRuntimeTrackerEvents, 'java-runtime.json'>
 }
@@ -340,7 +337,15 @@ export type VersionInstallRequest =
   | { type: 'server'; runtime: import('@xmcl/instance').RuntimeVersions; path: string }
   | { type: 'repair'; version: string; side: 'client' | 'server' }
   | { type: 'reinstall'; version: string; side?: 'client' | 'server' }
-  | { type: 'java'; target: JavaVersion; forceZulu?: boolean }
+  | {
+      type: 'java'
+      target?: JavaVersion
+      vendor?: string
+      version?: string
+      majorVersion?: number
+      metadataSha256?: string
+      runtimeUrl?: string
+    }
   | { type: 'optifine-mod'; options: InstallOptifineAsModOptions }
 
 export interface VersionInstallService {
@@ -349,11 +354,64 @@ export interface VersionInstallService {
    * them in one main-process operation. Diagnosis results are never accepted as
    * input because they may be stale by the time installation starts.
    */
-  install(request: Extract<VersionInstallRequest, { type: 'instance' }>): Promise<InstanceVersionInstallResult>
-  installInstance(request: Extract<VersionInstallRequest, { type: 'instance' }>): Promise<InstanceVersionInstallResult>
+  install(
+    request: Extract<VersionInstallRequest, { type: 'instance' }>,
+  ): Promise<InstanceVersionInstallResult>
+  installInstance(
+    request: Extract<VersionInstallRequest, { type: 'instance' }>,
+  ): Promise<InstanceVersionInstallResult>
   install(request: Extract<VersionInstallRequest, { type: 'server' }>): Promise<string>
   install(request: Extract<VersionInstallRequest, { type: 'java' }>): Promise<Java>
-  install(request: Extract<VersionInstallRequest, { type: 'repair' | 'reinstall' | 'optifine-mod' }>): Promise<void>
+  install(
+    request: Extract<VersionInstallRequest, { type: 'repair' | 'reinstall' | 'optifine-mod' }>,
+  ): Promise<void>
+
+  /** Return all supported Java major versons. */
+  getSupportedMajorJavaVersions(): Promise<number[]>
+
+  /** Return all Java vendors. */
+  getJavaVendors(force?: boolean): Promise<
+    Array<{
+      name: string
+      sha256?: string
+      uid?: string
+    }>
+  >
+  /** Return all major Java versions from vendor. */
+  getMajorJavaVersionsFromVendor(
+    vendor: string,
+    force?: boolean,
+  ): Promise<
+    Array<{
+      recommended?: boolean
+      releaseTime?: string
+      sha256?: string
+      version: string
+    }>
+  >
+  /** Return all runtime builds compatible with the current machine. */
+  getJavaRuntimes(
+    vendor: string,
+    version: string,
+    metadataSha256?: string,
+    force?: boolean,
+  ): Promise<
+    Array<{
+      /** e.g. java21 */
+      version: string
+      runtimeUrl: string
+      /** e.g. 21.0.5 */
+      displayVersion: string
+      /** e.g. java-runtime-delta */
+      name: string
+      vendor: string
+      packageType?: string
+      releaseTime?: string
+      /** e.g. ~/.minecraftx/jre/java-runtime-delta */
+      path: string
+    }>
+  >
+
   /** Inspect current state for display. `install` always diagnoses again. */
   diagnose(options: DiagnoseOptions): Promise<InstallIssue | undefined>
 }

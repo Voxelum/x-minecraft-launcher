@@ -21,7 +21,9 @@ import {
 } from '@/rendererAction'
 
 class LaunchStageCancelled extends Error {
-  constructor() { super('Aborted') }
+  constructor() {
+    super('Aborted')
+  }
 }
 
 export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> =
@@ -53,9 +55,7 @@ export function useInstanceLaunch(
     globalMaxMemory,
     globalMinMemory,
     globalPreExecuteCommand,
-    globalPrependCommand,
     globalMcOptions,
-    globalVmOptions,
     globalFastLaunch,
     globalEnv,
     globalHideLauncher,
@@ -86,7 +86,12 @@ export function useInstanceLaunch(
     Object.values(allLaunchingStatus.value).some((v) => v.status.length > 0),
   )
 
-  function assignStatus(token: string, status: LaunchStatus, controller?: AbortController, state = allLaunchingStatus.value[token]) {
+  function assignStatus(
+    token: string,
+    status: LaunchStatus,
+    controller?: AbortController,
+    state = allLaunchingStatus.value[token],
+  ) {
     if (!state || allLaunchingStatus.value[token] !== state) return
     if (controller) state.controllers[status] = controller
     state.status = status
@@ -180,10 +185,10 @@ export function useInstanceLaunch(
         overrides,
         dry,
         javaPath: java.value?.path,
+        globalJavaVmOptions: java.value?.vmOptions,
+        globalJavaPrependCommand: java.value?.prependCommand,
         globalEnv: globalEnv.value,
-        globalVmOptions: globalVmOptions.value,
         globalMcOptions: globalMcOptions.value,
-        globalPrependCommand: globalPrependCommand.value,
         globalAssignMemory: globalAssignMemory.value,
         globalMinMemory: globalMinMemory.value,
         globalMaxMemory: globalMaxMemory.value,
@@ -235,7 +240,8 @@ export function useInstanceLaunch(
         await action.run(() => launchBedrock())
       } catch (e) {
         if (state.aborted) return
-        if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e)) console.error(e)
+        if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e))
+          console.error(e)
         if (allLaunchingStatus.value[token] === state) error.value = e as any
         throw e
       } finally {
@@ -276,7 +282,8 @@ export function useInstanceLaunch(
             state,
           )
         } catch (e) {
-          if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e)) console.error(e)
+          if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e))
+            console.error(e)
         }
       }
 
@@ -290,7 +297,8 @@ export function useInstanceLaunch(
             state,
           )
         } catch (e) {
-          if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e)) console.error(e)
+          if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e))
+            console.error(e)
         }
       }
 
@@ -334,7 +342,8 @@ export function useInstanceLaunch(
       return { operationId }
     } catch (e) {
       if (state.aborted) return
-      if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e)) console.error(e)
+      if (!(e instanceof LaunchStageCancelled) && !state.aborted && !isRuntimeServiceError(e))
+        console.error(e)
       if (allLaunchingStatus.value[token] === state) error.value = e as any
       throw e
     } finally {
