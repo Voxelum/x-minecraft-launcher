@@ -236,9 +236,10 @@
 import { kXmclAccount } from '@/composables/xmclAccount'
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import { injection } from '@/util/inject'
+import { getLocalDateString } from '@/util/date'
 import type { XmclAccountStatus, XmclOAuthProvider } from '@xmcl/runtime-api'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const {
   account,
   identities,
@@ -288,10 +289,10 @@ function formatDate(value: string) {
   const date = new Date(value)
   return Number.isNaN(date.valueOf())
     ? '—'
-    : new Intl.DateTimeFormat(locale.value, {
+    : getLocalDateString(date.getTime(), {
         dateStyle: 'medium',
         timeStyle: 'short',
-      }).format(date)
+      })
 }
 
 function openMicrosoftLogin() {

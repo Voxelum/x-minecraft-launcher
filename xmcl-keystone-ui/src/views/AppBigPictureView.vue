@@ -21,7 +21,7 @@
           :key="tab.id"
           type="button"
           class="bp-nav-item"
-          :class="{ 'active': currentTab === tab.id }"
+          :class="{ active: currentTab === tab.id }"
           role="tab"
           :aria-selected="currentTab === tab.id"
           tabindex="0"
@@ -333,6 +333,7 @@ import { kNetworkStatus } from '@/composables/useNetworkStatus'
 import { useLocalizedTaskFunc } from '@/composables/task'
 import { kLaunchButton } from '@/composables/launchButton'
 import { getExpectedSize } from '@/util/size'
+import { getLocalDateString } from '@/util/date'
 import { injection } from '@/util/inject'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import BigPictureLibrary from './BigPictureLibrary.vue'
@@ -527,8 +528,7 @@ function prevTab() {
 // Clock
 const currentTime = ref('')
 function updateTime() {
-  const now = new Date()
-  currentTime.value = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  currentTime.value = getLocalDateString(Date.now(), { timeStyle: 'short' })
 }
 let timeInterval: any = null
 
