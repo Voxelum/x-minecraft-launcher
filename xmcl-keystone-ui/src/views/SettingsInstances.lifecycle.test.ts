@@ -36,7 +36,8 @@ function view(name: string) {
     if (id.endsWith('/backup')) return { useBackup: () => ({ loadAutoBackupState: vi.fn(), backupProgress: vue.ref(null), isCreating: vue.ref(false), autoBackupConfig: vue.ref(null), autoBackupFiles: vue.ref([]) }) }
     if (id.endsWith('/dialog')) return { useDialog: () => ({ isShown: vue.ref(false), hide: vi.fn(), show: vi.fn() }) }
     if (id.endsWith('/notifier')) return { useNotifier: () => ({ notify: vi.fn() }) }
-    if (id === '@/constant') return { BuiltinImages: {} }
+		if (id === '@/constant') return { BuiltinImages: {} }
+		if (id === '@/util/date') return { getLocalDateString: () => '' }
     if (id === '@xmcl/runtime-api') return { BaseServiceKey: 'base' }
     if (id.endsWith('.vue')) return { default: {} }
     throw new Error(`Unexpected dependency ${id}`)
