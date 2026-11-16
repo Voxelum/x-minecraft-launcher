@@ -1,8 +1,12 @@
 import { AvatarItemProps } from '@/components/AvatarItem.vue'
 import { BuiltinImages } from '@/constant'
-import { TimeUnit, getHumanizeDuration } from '@/util/date'
 import { Instance } from '@xmcl/instance'
-import { VersionHeader, VersionServiceKey, getExpectVersion, BedrockServiceKey } from '@xmcl/runtime-api'
+import {
+  VersionHeader,
+  VersionServiceKey,
+  getExpectVersion,
+  BedrockServiceKey,
+} from '@xmcl/runtime-api'
 import { useDateString } from './date'
 import { useService } from './service'
 
@@ -20,44 +24,60 @@ export function useExtensionItemsGamePlay(instance: Ref<Instance>) {
   })
 
   const playTimeText = computed(() => {
-    if (!instance.value.playtime) {
+    const playtime = instance.value.playtime
+
+    if (!playtime) {
       return t('instance.neverPlayed')
     }
-    const [text, value, unit] = getHumanizeDuration(instance.value.playtime)
 
-    switch (unit) {
-      case TimeUnit.Hour:
-        return t('duration.hour', { duration: text }, { plural: value })
-      case TimeUnit.Minute:
-        return t('duration.minute', { duration: text }, { plural: value })
-      case TimeUnit.Second:
-        return t('duration.second', { duration: text }, { plural: value })
-      case TimeUnit.Day:
-      default:
-        return t('duration.day', { duration: text }, { plural: value })
+    const totalSeconds = Math.floor(playtime / 1000)
+    const totalMinutes = Math.floor(totalSeconds / 60)
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+
+    const parts: string[] = []
+
+    if (hours > 0) {
+      parts.push(t('duration.hour', { duration: hours }, { plural: hours }))
     }
+
+    if (minutes > 0) {
+      parts.push(t('duration.minute', { duration: minutes }, { plural: minutes }))
+    }
+
+    if (parts.length === 0) {
+      parts.push(t('duration.second', { duration: totalSeconds }, { plural: totalSeconds }))
+    }
+
+    return parts.join(' ')
   })
 
   const items = computed(() => {
     const items: AvatarItemProps[] = []
-    items.push({
-      icon: 'schedule',
-      title: t('instance.playtime'),
-      responsive: true,
-      text: playTimeText.value,
-    }, {
-      icon: 'update',
-      title: t('instance.lastPlayed'),
-      responsive: true,
-      text: lastPlayedText.value,
-    })
+    items.push(
+      {
+        icon: 'schedule',
+        title: t('instance.playtime'),
+        responsive: true,
+        text: playTimeText.value,
+      },
+      {
+        icon: 'update',
+        title: t('instance.lastPlayed'),
+        responsive: true,
+        text: lastPlayedText.value,
+      },
+    )
     return items as AvatarItemProps[]
   })
 
   return items
 }
 
-export function useExtensionItemsVersion(instance: Ref<Instance>, versionHeader: Ref<VersionHeader | undefined>) {
+export function useExtensionItemsVersion(
+  instance: Ref<Instance>,
+  versionHeader: Ref<VersionHeader | undefined>,
+) {
   const { t } = useI18n()
   const { showVersionDirectory } = useService(VersionServiceKey)
   const { getInstallation } = useService(BedrockServiceKey)
@@ -76,11 +96,15 @@ export function useExtensionItemsVersion(instance: Ref<Instance>, versionHeader:
     }
   }
 
-  watch(instance, () => {
-    if (instance.value.edition === 'bedrock') {
-      updateBedrockStatus()
-    }
-  }, { immediate: true })
+  watch(
+    instance,
+    () => {
+      if (instance.value.edition === 'bedrock') {
+        updateBedrockStatus()
+      }
+    },
+    { immediate: true },
+  )
 
   const onShowLocalVersion = () => {
     if (versionHeader.value?.id) {
@@ -100,14 +124,25 @@ export function useExtensionItemsVersion(instance: Ref<Instance>, versionHeader:
       return items
     }
 
-    const icon = runtime.forge ? BuiltinImages.forge : runtime.fabricLoader ? BuiltinImages.fabric : runtime.quiltLoader
-      ? BuiltinImages.quilt : runtime.neoForged ? BuiltinImages.neoForged : runtime.optifine ? BuiltinImages.optifine : runtime.labyMod ? BuiltinImages.labyMod : BuiltinImages.minecraft
+    const icon = runtime.forge
+      ? BuiltinImages.forge
+      : runtime.fabricLoader
+        ? BuiltinImages.fabric
+        : runtime.quiltLoader
+          ? BuiltinImages.quilt
+          : runtime.neoForged
+            ? BuiltinImages.neoForged
+            : runtime.optifine
+              ? BuiltinImages.optifine
+              : runtime.labyMod
+                ? BuiltinImages.labyMod
+                : BuiltinImages.minecraft
     if (versionHeader.value) {
       items.push({
         avatar: icon,
         title: t('version.name') as string,
         text: versionHeader.value.id,
-        onclick: () => onShowLocalVersion()
+        onclick: () => onShowLocalVersion(),
       })
     } else {
       items.push({
