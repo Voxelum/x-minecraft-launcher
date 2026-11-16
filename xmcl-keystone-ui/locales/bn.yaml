@@ -510,7 +510,7 @@ installAssets:
   assetIndex: অ্যাসেট ইনডেক্স ফাইল পরীক্ষা করুন
   name: অ্যাসেট ফাইল ইনস্টল করুন
 installAuthlibInjector: authlib-injector ইনস্টল করুন
-installCurseforgeFile: Curseforge ফাইল ইনস্টল করুন
+installCurseforgeFile: CurseForge ফাইল ইনস্টল করুন
 installFabric:
   name: Fabric ইনস্টল করুন
 installForge:
@@ -969,11 +969,11 @@ modified:
   unsaved: আপনার পরিবর্তন সংরক্ষিত হয়নি!
 modpack:
   author: লেখকের নাম
-  authorHint: এটি এক্সপোর্ট করা মডপ্যাক (Curseforge) সাইন করতে ব্যবহৃত হতে পারে
+  authorHint: এটি এক্সপোর্ট করা মডপ্যাক (CurseForge) সাইন করতে ব্যবহৃত হতে পারে
   description: বিবরণ
-  descriptionHint: আপনার মডপ্যাকের সাধারণ বিবরণ। এটি Curseforge মডপ্যাক হিসেবে এক্সপোর্ট করার জন্য ব্যবহৃত হতে পারে।
+  descriptionHint: আপনার মডপ্যাকের সাধারণ বিবরণ। এটি CurseForge মডপ্যাক হিসেবে এক্সপোর্ট করার জন্য ব্যবহৃত হতে পারে।
   dropHint: ইম্পোর্ট করতে এখানে মডপ্যাক জিপ (zip) ফাইলটি ড্রপ করুন
-  emitCurseforge: Curseforge মডপ্যাক এক্সপোর্ট করুন
+  emitCurseforge: CurseForge মডপ্যাক এক্সপোর্ট করুন
   emitModrinth: Modrinth মডপ্যাক এক্সপোর্ট করুন
   emitModrinthStrict: কঠোর Modrinth ফরম্যাট
   emitModrinthStrictDescription: শুধুমাত্র Modrinth নথিতে তালিকাভুক্ত ৪টি ডোমেইনের ইউআরএল অনুমোদিত
@@ -2046,16 +2046,16 @@ tutorial:
   instanceSelectDescription: এই বোতামটিতে ক্লিক করলে গেম নির্বাচন এবং খবর পড়ার পৃষ্ঠায় নিয়ে যাওয়া হবে।
   launchDescription: গেমটি ইনস্টল বা চালু করতে এই বোতামটিতে ক্লিক করুন।
   mod:
-    defaultSourceDescription: আপনি এখানে মডের বিস্তারিত তথ্যের উৎস চয়ন করতে পারেন। এখানে Modrinth এবং Curseforge উভয় জায়গায় প্রকাশিত মডগুলো রয়েছে। আপনি যদি এই দুটি কন্টেন্ট প্রোভাইডারের মধ্যে পরিবর্তন করতে চান, তবে আপনি এখানকার মানটি পরিবর্তন করতে পারেন।
+    defaultSourceDescription: আপনি এখানে মডের বিস্তারিত তথ্যের উৎস চয়ন করতে পারেন। এখানে Modrinth এবং CurseForge উভয় জায়গায় প্রকাশিত মডগুলো রয়েছে। আপনি যদি এই দুটি কন্টেন্ট প্রোভাইডারের মধ্যে পরিবর্তন করতে চান, তবে আপনি এখানকার মানটি পরিবর্তন করতে পারেন।
     defaultSourceTitle: মড কন্টেন্টের উৎস নির্বাচন করুন
-    detailDescription: যখন আপনি বাম দিকে কোনো আইটেম নির্বাচন করবেন, তখন আপনি মডের বিবরণ দেখতে পাবেন। কন্টেন্টটি Modrinth, Curseforge অথবা পার্স করা মডের বিষয়বস্তু থেকে আসতে পারে।
+    detailDescription: যখন আপনি বাম দিকে কোনো আইটেম নির্বাচন করবেন, তখন আপনি মডের বিবরণ দেখতে পাবেন। কন্টেন্টটি Modrinth, CurseForge অথবা পার্স করা মডের বিষয়বস্তু থেকে আসতে পারে।
     detailTitle: মডের বিবরণ
     listDescription: আপনার কোনো ইনপুট না থাকলে আমরা ইনস্টল করা মডগুলো প্রদর্শন করব। আপনার ইনপুটে কোনো কিওয়ার্ড বা বিভাগ নির্বাচিত হলে আপনি অনুসন্ধান করা মডগুলো দেখতে পাবেন।
     listTitle: ইনস্টলকৃত বা অনুসন্ধান করা মড
-    searchDescription: আপনি এই অনুসন্ধান বক্সটির সাহায্যে Modrinth, Curseforge বা আপনার স্থানীয় ক্যাশ থেকে মড অনুসন্ধান করতে পারেন।
+    searchDescription: আপনি এই অনুসন্ধান বক্সটির সাহায্যে Modrinth, CurseForge বা আপনার স্থানীয় ক্যাশ থেকে মড অনুসন্ধান করতে পারেন।
     searchTitle: মড অনুসন্ধান করুন
   recentPlayDescription: তৈরি করা গেমগুলি এখানে তালিকাভুক্ত করা হবে। ইনস্টল করা সংস্করণ এবং ডাউনলোড করা মডপ্যাকগুলি দেখতে আপনি এখানে ভিউ পরিবর্তন করতে পারেন।
-  storePoupularModpackDescription: আপনি এই বিভাগে Curseforge এবং Modrinth-এর সবচেয়ে জনপ্রিয় মডপ্যাকগুলি দেখতে পাবেন।
+  storePoupularModpackDescription: আপনি এই বিভাগে CurseForge এবং Modrinth-এর সবচেয়ে জনপ্রিয় মডপ্যাকগুলি দেখতে পাবেন।
   storeSearchCategoryDescription: আপনি এখানে বিভাগ বা ফিল্টারগুলিও পরিবর্তন করতে পারেন।
   storeSearchDescription: আপনি এই টেক্সট বক্সে লিখে মডপ্যাকগুলি অনুসন্ধান করতে পারেন। অনুসন্ধান করতে এন্টার চাপুন।
   storeSearchResultDescription: আপনি এখানে সমস্ত অনুসন্ধান ফলাফল তালিকাভুক্ত দেখতে পাবেন।
