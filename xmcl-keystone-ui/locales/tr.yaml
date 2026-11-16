@@ -483,7 +483,7 @@ installAssets:
   assetIndex: Varlık Dizin Dosyasını Kontrol Et
   name: Varlık Dosyalarını Yükle
 installAuthlibInjector: authlib-injector yükle
-installCurseforgeFile: Curseforge Dosyası Yükle
+installCurseforgeFile: CurseForge Dosyası Yükle
 installFabric:
   name: Fabric Yükle
 installForge:
@@ -627,7 +627,7 @@ instanceUpdate:
   noFiles: Dosya değişikliği yok
 instances:
   add: Oyun Oluştur
-  addCurseForgeDescription: Curseforge veri klasöründen içe aktar. Curseforge'un kök veri klasörünü seçmeniz gerekir
+  addCurseForgeDescription: CurseForge veri klasöründen içe aktar. CurseForge'un kök veri klasörünü seçmeniz gerekir
   addDescription: Sıfırdan yeni bir instance oluştur
   addMMCDescription: Mevcut MultiMC instance'ını içe aktar. MultiMC'den veri klasörünü seçmeniz gerekir.
   addModrinthDescription: Mevcut Modrinth instance'ını içe aktar. Modrinth kök veri klasörünü seçmeniz gerekir.
@@ -865,7 +865,7 @@ mod:
   selectOrCreateGroup: Grup Seç veya Oluştur
   showDirectory: Modlar dizinini göster
   showFile: Mod yolunu göster {file}
-  showInModrinth: '{name} Modrinth''te göster'
+  showInModrinth: "{name} Modrinth'te göster"
   switchDefaultSource: Varsayılan Mod Kaynağı
   syncGroupRules: Gruplama kurallarını kaydet
   toUpdate: '{count} güncelleme'
@@ -915,11 +915,11 @@ modified:
   unsaved: Değişikliğiniz kaydedilmedi!
 modpack:
   author: Yazar Adı
-  authorHint: Bu, dışa aktarılan bir mod paketini imzalamak için kullanılabilir (Curseforge)
+  authorHint: Bu, dışa aktarılan bir mod paketini imzalamak için kullanılabilir (CurseForge)
   description: Açıklama
-  descriptionHint: Mod paketiniz için genel açıklama. Curseforge mod paketi olarak dışa aktarmak için kullanılabilir.
+  descriptionHint: Mod paketiniz için genel açıklama. CurseForge mod paketi olarak dışa aktarmak için kullanılabilir.
   dropHint: İçe aktarmak için mod paketi zip dosyasını buraya bırakın
-  emitCurseforge: Curseforge Mod Paketini Dışa Aktar
+  emitCurseforge: CurseForge Mod Paketini Dışa Aktar
   emitModrinth: Modrinth Mod Paketini Dışa Aktar
   emitModrinthStrict: Katı Modrinth Formatı
   emitModrinthStrictDescription: Sadece modrinth belgesinde listelenen 4 alandan URL'lere izin verilir
@@ -1228,7 +1228,7 @@ peerIceGatheringState:
 peerSignalingState:
   have-local-offer: Eş açıklaması bekleniyor
 presence:
-  instance: '{instance} Instance''ında Boşta'
+  instance: "{instance} Instance'ında Boşta"
   instanceSetting: '{instance} Instance Ayarı Düzenleniyor'
   mod: '{instance} içindeki Modlar Görüntüleniyor'
   modrinthProject: Modrinth'te {name} Görüntüleniyor
@@ -1928,16 +1928,16 @@ tutorial:
   instanceSelectDescription: Bu düğmeye tıklamak oyun seçme ve haber okuma sayfasına gidecektir.
   launchDescription: Oyunu yüklemek veya başlatmak için bu düğmeye tıklayın.
   mod:
-    defaultSourceDescription: Mod detaylarının kaynağını buradan seçebilirsiniz. Hem Modrinth hem de Curseforge'da yayınlanan modlar vardır. Bu iki içerik sağlayıcı arasında geçiş yapmak isterseniz, değeri buradan değiştirebilirsiniz.
+    defaultSourceDescription: Mod detaylarının kaynağını buradan seçebilirsiniz. Hem Modrinth hem de CurseForge'da yayınlanan modlar vardır. Bu iki içerik sağlayıcı arasında geçiş yapmak isterseniz, değeri buradan değiştirebilirsiniz.
     defaultSourceTitle: Mod İçerik Kaynağını Seç
-    detailDescription: Soldan bir öğe seçtiğinizde. Modun detaylarını göreceksiniz. İçerik Modrinth, Curseforge veya ayrıştırılmış mod içeriğinden gelebilir.
+    detailDescription: Soldan bir öğe seçtiğinizde. Modun detaylarını göreceksiniz. İçerik Modrinth, CurseForge veya ayrıştırılmış mod içeriğinden gelebilir.
     detailTitle: Mod Detayı
     listDescription: Herhangi bir girdiniz olmadığında yüklü modları göstereceğiz. Girdinizde bir anahtar kelime veya kategori seçildiğinde aranan modları göreceksiniz.
     listTitle: Yüklü veya Aranan Mod
-    searchDescription: Bu arama kutusuyla Modrinth, Curseforge veya yerel önbelleğinizden mod arayabilirsiniz.
+    searchDescription: Bu arama kutusuyla Modrinth, CurseForge veya yerel önbelleğinizden mod arayabilirsiniz.
     searchTitle: Mod Ara
   recentPlayDescription: Oluşturulan oyunlar burada listelenecektir. Yüklü sürümleri ve indirilen mod paketlerini de görmek için görünümleri buradan değiştirebilirsiniz.
-  storePoupularModpackDescription: Bu bölümde Curseforge ve Modrinth'teki en popüler mod paketlerini göreceksiniz.
+  storePoupularModpackDescription: Bu bölümde CurseForge ve Modrinth'teki en popüler mod paketlerini göreceksiniz.
   storeSearchCategoryDescription: Kategorileri veya filtreleri buradan da değiştirebilirsiniz.
   storeSearchDescription: Bu metin kutusuna giriş yaparak Mod Paketlerini arayabilirsiniz. Aramak için Enter tuşuna basın.
   storeSearchResultDescription: Tüm arama sonuçlarını burada listelenmiş olarak göreceksiniz.

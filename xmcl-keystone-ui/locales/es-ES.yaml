@@ -500,7 +500,7 @@ installAssets:
   assetIndex: Verificar Archivos de Índice de Recursos
   name: Instalar Archivos de Recursos
 installAuthlibInjector: Instalar authlib-injector
-installCurseforgeFile: Instalar Archivo de Curseforge
+installCurseforgeFile: Instalar Archivo de CurseForge
 installFabric:
   name: Instalar Fabric
 installForge:
@@ -956,11 +956,11 @@ modified:
   unsaved: ¡Tus modificaciones no se han guardado!
 modpack:
   author: Nombre del Autor
-  authorHint: Esto podría usarse para firmar en la exportación de modpack (Curseforge)
+  authorHint: Esto podría usarse para firmar en la exportación de modpack (CurseForge)
   description: Descripción
-  descriptionHint: Descripción general para tu modpack. Puede usarse para exportarlo como un modpack de Curseforge.
+  descriptionHint: Descripción general para tu modpack. Puede usarse para exportarlo como un modpack de CurseForge.
   dropHint: Arrastra el archivo zip del modpack aquí para importarlo
-  emitCurseforge: Emitir Modpack de Curseforge
+  emitCurseforge: Emitir Modpack de CurseForge
   emitModrinth: Emitir Modpack de Modrinth
   emitModrinthStrict: Formato Estricto de Modrinth
   emitModrinthStrictDescription: Solo se permiten las URL de los 4 dominios listados en el documento de Modrinth

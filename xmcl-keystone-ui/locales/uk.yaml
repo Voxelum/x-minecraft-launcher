@@ -22,7 +22,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Несумісна Java
   incompatibleJavaHint: Поточна Java може бути несумісною з обраним Minecraft!
   missingJava: Java відсутня
-  missingJavaHint: 'Лаунчер не може виявити жодної Java на вашому комп''ютері. Ви можете:'
+  missingJavaHint: "Лаунчер не може виявити жодної Java на вашому комп'ютері. Ви можете:"
   optionSwitch:
     name: Перемкнутися на {version}
 HomeLaunchMultiInstanceDialog:
@@ -441,7 +441,7 @@ feedback:
   kookDescription: Kook — це альтернативний додаток для Discord для користувачів з материкового Китаю
   name: Зворотний зв'язок
   qq: Група QQ
-  qqDescription: 'Увійдіть до групи QQ для зворотного зв''язку та спілкуйтеся безпосередньо з авторами. Номер групи: {number}'
+  qqDescription: "Увійдіть до групи QQ для зворотного зв'язку та спілкуйтеся безпосередньо з авторами. Номер групи: {number}"
   qqEnterGroup: Приєднатися
   reddit: Reddit
   redditDescription: Приєднатися до спільноти r/XMCL у Reddit
@@ -482,7 +482,7 @@ installAssets:
   assetIndex: Перевірити індексний файл ресурсів
   name: Встановити файли ресурсів
 installAuthlibInjector: Встановити інжектор authlib
-installCurseforgeFile: Встановити файл Curseforge
+installCurseforgeFile: Встановити файл CurseForge
 installFabric:
   name: Встановити Fabric
 installForge:
@@ -617,7 +617,7 @@ instanceUpdate:
   update: Почати оновлення
 instances:
   add: Створити гру
-  addCurseForgeDescription: Імпортувати з папки даних Curseforge. Вам потрібно вибрати кореневу папку даних Curseforge
+  addCurseForgeDescription: Імпортувати з папки даних CurseForge. Вам потрібно вибрати кореневу папку даних CurseForge
   addDescription: Створити новий екземпляр з нуля
   addMMCDescription: Імпортувати наявний екземпляр MultiMC. Вам потрібно вибрати папку даних з MultiMC.
   addModrinthDescription: Імпортувати наявний екземпляр Modrinth. Вам потрібно вибрати кореневу папку даних Modrinth.
@@ -654,7 +654,7 @@ java:
   name: Java
   noMemory: Не обмежувати використання пам'яті
   refresh: Оновити локальні Java
-  systemMemory: 'Вільна системна пам''ять: {free} / {total}'
+  systemMemory: "Вільна системна пам'ять: {free} / {total}"
   allocation: Виділено
   autoHint: Мінімум зростає з кількістю встановлених модів; максимум використовує доступну системну пам'ять.
   change: Змінити
@@ -909,8 +909,8 @@ modSearch:
   noModsInstalled: У вас не встановлено жодного мода.
   searchInMarket: Шукати {keyword} на ринку
 modUpgradePolicy:
-  curseforge: Спочатку Curseforge
-  curseforgeOnly: Лише Curseforge
+  curseforge: Спочатку CurseForge
+  curseforgeOnly: Лише CurseForge
   modrinth: Спочатку Modrinth
   modrinthOnly: Лише Modrinth
   name: Політика оновлення
@@ -935,7 +935,7 @@ modpack:
   export: Експортувати як модпак
   exportSuccess: Модпак успішно експортовано!
   exportSuccessWithWarnings: Модпак експортовано з попередженнями
-  exportSkippedFiles: "{count} недоступних або заблокованих файлів було пропущено"
+  exportSkippedFiles: '{count} недоступних або заблокованих файлів було пропущено'
   exportFailed: Не вдалося експортувати модпак
   skippedFilesDialogTitle: Деякі файли не вдалося експортувати
   skippedFilesDialogDescription: Модпак створено, але {count} файлів було пропущено
@@ -1371,10 +1371,10 @@ screenshots:
   deleteConfirmTitle: Видалити скріншоти?
   deleteConfirmMessage: Ви дійсно бажаєте видалити {count} скріншотів? Цю дію неможливо скасувати.
   deleteSuccess: Скріншоти успішно видалено
-  selectedCount: "Обрано: {count}"
+  selectedCount: 'Обрано: {count}'
   selectAll: Обрати всі
   clearSelection: Зняти вибір
-  countLabel: "{count} скріншотів"
+  countLabel: '{count} скріншотів'
   searchPlaceholder: Пошук за назвою або датою...
   noSearchResults: Нічого не знайдено
   noSearchResultsHint: Спробуйте змінити пошуковий запит
@@ -1416,7 +1416,7 @@ screenshots:
   toolLine: Лінія
   toolText: Текст
   toolHighlighter: Маркер
-  toolBlur: "Пікселізація / Розмиття"
+  toolBlur: 'Пікселізація / Розмиття'
   toolCrop: Обрізати
   applyCrop: Застосувати обрізку
   cancelCrop: Скасувати обрізку
@@ -2001,16 +2001,16 @@ tutorial:
   instanceSelectDescription: Натискання цієї кнопки перенаправить на сторінку вибору гри та читання новин.
   launchDescription: Натисніть цю кнопку, щоб встановити або запустити гру.
   mod:
-    defaultSourceDescription: Тут ви можете вибрати джерело деталей модів. Є моди, опубліковані як на Modrinth, так і на Curseforge. Якщо ви хочете перемикатися між цими двома постачальниками контенту, ви можете змінити значення тут.
+    defaultSourceDescription: Тут ви можете вибрати джерело деталей модів. Є моди, опубліковані як на Modrinth, так і на CurseForge. Якщо ви хочете перемикатися між цими двома постачальниками контенту, ви можете змінити значення тут.
     defaultSourceTitle: Вибрати джерело контенту модів
-    detailDescription: Коли ви вибираєте елемент зліва, ви побачите деталі мода. Контент може надходити з Modrinth, Curseforge або бути розібраним з вмісту мода.
+    detailDescription: Коли ви вибираєте елемент зліва, ви побачите деталі мода. Контент може надходити з Modrinth, CurseForge або бути розібраним з вмісту мода.
     detailTitle: Деталі мода
     listDescription: Ми відображатимемо встановлені моди, коли у вас немає жодного введення. Ви побачите знайдені моди, як тільки ваше введення міститиме ключове слово або вибрану категорію.
     listTitle: Встановлений або пошуковий мод
-    searchDescription: За допомогою цього поля пошуку ви можете шукати моди на Modrinth, Curseforge або у вашому локальному кеші.
+    searchDescription: За допомогою цього поля пошуку ви можете шукати моди на Modrinth, CurseForge або у вашому локальному кеші.
     searchTitle: Шукати моди
   recentPlayDescription: Створені ігри будуть перераховані тут. Ви можете перемикати види тут, щоб також бачити встановлені версії та завантажені модпаки.
-  storePoupularModpackDescription: У цьому розділі ви побачите найпопулярніші модпаки на Curseforge та Modrinth.
+  storePoupularModpackDescription: У цьому розділі ви побачите найпопулярніші модпаки на CurseForge та Modrinth.
   storeSearchCategoryDescription: Тут ви також можете перемикати категорії або фільтри.
   storeSearchDescription: Ви можете шукати модпаки, вводячи текст у це поле. Натисніть Enter для пошуку.
   storeSearchResultDescription: Тут ви побачите всі результати пошуку.
@@ -2484,4 +2484,3 @@ localCollection:
   alreadyInCollection: Вже додано
   noMatchingMods: Не знайдено модів за запитом
   addSelectedMods: Додати {count} модів
-

@@ -51,7 +51,7 @@
           </div>
         </div>
         <div class="text-caption opacity-70 mb-6">
-          NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
+          {{ t('setting.aboutLauncherNotice') }}
         </div>
 
         <!-- Debug Info Box -->
