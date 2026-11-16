@@ -446,7 +446,7 @@ installAssets:
   assetIndex: Ресурстар индекс файлын тексеру
   name: Ресурс файлдарын орнату
 installAuthlibInjector: authlib-injector орнату
-installCurseforgeFile: Curseforge файлын орнату
+installCurseforgeFile: CurseForge файлын орнату
 installFabric:
   name: Fabric орнату
 installForge:
@@ -583,7 +583,7 @@ instanceUpdate:
   update: Жаңартуды бастау
 instances:
   add: Ойын жасау
-  addCurseForgeDescription: Curseforge деректер қалтасынан импорттау. Сіз curseforge-тің түбірлік деректер қалтасын таңдауыңыз керек
+  addCurseForgeDescription: CurseForge деректер қалтасынан импорттау. Сіз curseforge-тің түбірлік деректер қалтасын таңдауыңыз керек
   addDescription: Нөлден жаңа жеке жағдай жасау
   addMMCDescription: Бар болып тұрған MultiMC жеке жағдайын импорттау. Сіз MultiMC-ден деректер қалтасын таңдауыңыз керек.
   addModrinthDescription: Бар болып тұрған Modrinth жеке жағдайын импорттау. Сіз Modrinth түбірлік деректер қалтасын таңдауыңыз керек.
@@ -844,8 +844,8 @@ modSearch:
   noModsInstalled: Сізде ешқандай мод орнатылмаған.
   searchInMarket: '{keyword} сөзін нарықта іздеу'
 modUpgradePolicy:
-  curseforge: Curseforge алдымен
-  curseforgeOnly: Тек Curseforge
+  curseforge: CurseForge алдымен
+  curseforgeOnly: Тек CurseForge
   modrinth: Modrinth алдымен
   modrinthOnly: Тек Modrinth
   name: Жаңарту саясаты
@@ -855,11 +855,11 @@ modified:
   unsaved: Өзгертуіңіз сақталмаған!
 modpack:
   author: Автор аты
-  authorHint: Бұл экспортталған мод-пакты қолтаңбалау үшін қолданылуы мүмкін (Curseforge)
+  authorHint: Бұл экспортталған мод-пакты қолтаңбалау үшін қолданылуы мүмкін (CurseForge)
   description: Сипаттама
-  descriptionHint: Мод-пагыңыз үшін жалпы сипаттама. Curseforge мод-пагы ретінде экспорттау үшін қолданылуы мүмкін.
+  descriptionHint: Мод-пагыңыз үшін жалпы сипаттама. CurseForge мод-пагы ретінде экспорттау үшін қолданылуы мүмкін.
   dropHint: Импорттау үшін мод-пак zip файлын осы жерге апарыңыз
-  emitCurseforge: Curseforge мод-пагын экспорттау
+  emitCurseforge: CurseForge мод-пагын экспорттау
   emitModrinth: Modrinth мод-пагын экспорттау
   emitModrinthStrict: Қатаң Modrinth пішімі
   emitModrinthStrictDescription: Modrinth құжатында тізілген 4 доменнен URL-дарға рұқсат етілген
@@ -1808,16 +1808,16 @@ tutorial:
   instanceSelectDescription: Бұл батырманы басу ойынды таңдау және жаңалықтарды оқу бетіне өтеді.
   launchDescription: Ойынды орнату немесе іске қосу үшін бұл батырманы басыңыз.
   mod:
-    defaultSourceDescription: Модтардың егжей-тегжейлі көзін осы жерден таңдай аласыз. Модтар Modrinth және Curseforge-ке жарияланған. Егер сіз осы екі контент провайдері арасында ауысуғы келсеңіз, мәнін осы жерден өзгерте аласыз.
+    defaultSourceDescription: Модтардың егжей-тегжейлі көзін осы жерден таңдай аласыз. Модтар Modrinth және CurseForge-ке жарияланған. Егер сіз осы екі контент провайдері арасында ауысуғы келсеңіз, мәнін осы жерден өзгерте аласыз.
     defaultSourceTitle: Мод контент көзін таңдау
-    detailDescription: Сіз сол жақта элементті таңдағанда, модтың егжей-тегжейлерін көресіз. Контент Modrinth, Curseforge немесе талданған модтың мазмұнынан келуі мүмкін.
+    detailDescription: Сіз сол жақта элементті таңдағанда, модтың егжей-тегжейлерін көресіз. Контент Modrinth, CurseForge немесе талданған модтың мазмұнынан келуі мүмкін.
     detailTitle: Мод егжей-тегжейлі
     listDescription: Сізде ешқандай енгізу болмағанда орнатылған модтарды көрсетеміз. Сіздің енгізуіңізде кілт сөз немесе санат таңдалғанда ізделген модтарды көресіз.
     listTitle: Орнатылған немесе ізделген мод
-    searchDescription: Сіз осы іздеу жолы арқылы Modrinth, Curseforge немесе жергілікті кэштен модтарды іздеуіңізге болады.
+    searchDescription: Сіз осы іздеу жолы арқылы Modrinth, CurseForge немесе жергілікті кэштен модтарды іздеуіңізге болады.
     searchTitle: Модтарды іздеу
   recentPlayDescription: Жасалған ойындар осы жерде тізіледі. Сіз орнатылған нұсқаларды және жүктелген мод-пактарды көру үшін көріністерді ауыстыра аласыз.
-  storePoupularModpackDescription: Сіз бұл бөлімде Curseforge және Modrinth-тегі ең танымал мод-пактарды көресіз.
+  storePoupularModpackDescription: Сіз бұл бөлімде CurseForge және Modrinth-тегі ең танымал мод-пактарды көресіз.
   storeSearchCategoryDescription: Сіз осы жерден санаттарды немесе сүзгілерді ауыстыра аласыз.
   storeSearchDescription: Мод-пактарды іздеу үшін осы мәтін жолына енгізіңіз. Іздеу үшін Enter басыңыз.
   storeSearchResultDescription: Сіз барлық іздеу нәтижелерінің тізімі осы жерде көрсетілетінін көресіз.

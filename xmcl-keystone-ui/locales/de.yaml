@@ -462,7 +462,7 @@ installAssets:
   assetIndex: Prüfen Sie die Asset-Indexdatei
   name: Asset-Dateien installieren
 installAuthlibInjector: Installieren Sie  authlib-injector
-installCurseforgeFile: Installieren Sie  файл Curseforge
+installCurseforgeFile: Installieren Sie  файл CurseForge
 installFabric:
   name: Installieren Sie  Fabric
 installForge:
@@ -609,8 +609,8 @@ instanceUpdate:
 instances:
   add: Ein Spiel erstellen
   addCurseForgeDescription: |-
-    Aus dem Curseforge-Datenordner importieren.
-    Sie müssen den Stammdatenordner von Curseforge auswählen
+    Aus dem CurseForge-Datenordner importieren.
+    Sie müssen den Stammdatenordner von CurseForge auswählen
   addDescription: Erstellen Sie eine neue Instanz von Grund auf
   addMMCDescription: |-
     Vorhandene MultiMC-Instanz importieren.
@@ -892,8 +892,8 @@ modSearch:
   noModsInstalled: Sie haben keine Mods installiert.
   searchInMarket: Suche {keyword} im Markt
 modUpgradePolicy:
-  curseforge: Zuerst Curseforge
-  curseforgeOnly: Nur Curseforge
+  curseforge: Zuerst CurseForge
+  curseforgeOnly: Nur CurseForge
   modrinth: Modrinth zuerst
   modrinthOnly: Nur Modrinth
   name: Upgrade -Richtlinie
@@ -903,11 +903,11 @@ modified:
   unsaved: Ihre Änderung wurde nicht gespeichert!
 modpack:
   author: Name des Autors
-  authorHint: Dies kann verwendet werden, um das exportierte Modpack zu signieren. (Curseforge)
+  authorHint: Dies kann verwendet werden, um das exportierte Modpack zu signieren. (CurseForge)
   description: Beschreibung.
   descriptionHint: Eine allgemeine Beschreibung für Ihr Modpack. Kann verwendet werden um als curseforge modpack.
   dropHint: Ziehen Sie das Zip-Archiv des Modpacks zum Importieren hierher
-  emitCurseforge: Freigabe des Curseforge Mod Packs
+  emitCurseforge: Freigabe des CurseForge Mod Packs
   emitModrinth: Modrinth Modpack freigeben
   emitModrinthStrict: Strenges Modrinth-Format
   emitModrinthStrictDescription: Nur Links von den 4 im modrinth-Dokument aufgeführten Domains sind erlaubt
@@ -1921,25 +1921,25 @@ tutorial:
   mod:
     defaultSourceDescription: |-
       Sie können die Quelle der Mod-Teile hier auswählen.
-      Es gibt sowohl für Modrinth als auch für Curseforge veröffentlichte Mods.
+      Es gibt sowohl für Modrinth als auch für CurseForge veröffentlichte Mods.
       Wenn du zwischen diesen beiden Anbietern wechseln möchtest.
       Sie können den Wert hier ändern.
     defaultSourceTitle: Wählen Sie die Quelle des geänderten Inhalts
     detailDescription: |-
       Wenn Sie ein Element auf der linken Seite auswählen.
       Sie sehen die Details des Mods.
-      Der Inhalt kann von Modrinth, Curseforge oder dem Inhalt der analysierten Mods.
+      Der Inhalt kann von Modrinth, CurseForge oder dem Inhalt der analysierten Mods.
     detailTitle: Details zur Mode
     listDescription: |-
       Wenn Sie keine Daten eingeben, werden die von Ihnen installierten Mods angezeigt.
       Sie sehen die Mods, nach denen Sie suchen, wenn Sie ein Stichwort eingeben oder eine eine Kategorie auswählst.
     listTitle: Встановлений або шуканий мод
-    searchDescription: Ви можете шукати моди з Modrinth, Curseforge або локального кешу за допомогою цього поля пошуку.
+    searchDescription: Ви можете шукати моди з Modrinth, CurseForge або локального кешу за допомогою цього поля пошуку.
     searchTitle: Suchmodi
   recentPlayDescription: |-
     Die erstellten Spiele werden hier aufgelistet.
     Sie können hier die Ansichten wechseln, um auch die installierten Versionen und heruntergeladenen Modpacks anzuzeigen.
-  storePoupularModpackDescription: In diesem Abschnitt sehen Sie die beliebtesten Modpacks in Curseforge und Modrinth.
+  storePoupularModpackDescription: In diesem Abschnitt sehen Sie die beliebtesten Modpacks in CurseForge und Modrinth.
   storeSearchCategoryDescription: Sie können hier auch die Kategorien oder Filter umschalten.
   storeSearchDescription: |-
     Sie können nach Modpack suchen, indem Sie in dieses Textfeld etwas eingeben.

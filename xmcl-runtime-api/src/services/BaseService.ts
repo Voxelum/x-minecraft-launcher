@@ -33,6 +33,7 @@ export interface Environment extends Platform {
   build: number
 
   region: string
+  dateLocale?: string
 
   gfw: boolean
 

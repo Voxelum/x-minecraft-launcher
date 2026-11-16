@@ -132,6 +132,7 @@ import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { useGamepad } from '@/composables/gamepad'
 import { useNotifier } from '@/composables/notifier'
 import { injection } from '@/util/inject'
+import { getLocalDateString } from '@/util/date'
 
 const props = withDefaults(defineProps<{
   modelValue?: boolean
@@ -171,6 +172,6 @@ function onBrowseMore() {
 
 function formatDate(timestamp: number) {
   if (!timestamp) return ''
-  return new Date(timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })
+  return getLocalDateString(timestamp, { dateStyle: 'short' })
 }
 </script>

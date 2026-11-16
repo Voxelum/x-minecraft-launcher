@@ -471,7 +471,7 @@
                   {{ entry.fileName }}
                 </v-list-item-title>
                 <v-list-item-subtitle class="text-caption">
-                  {{ formatDate(entry.createdAt) }} · {{ formatSize(entry.sizeBytes) }}
+                  {{ getLocalDateString(entry.createdAt) }} · {{ formatSize(entry.sizeBytes) }}
                 </v-list-item-subtitle>
                 <template #append>
                   <div class="d-flex align-center gap-1">
@@ -528,6 +528,7 @@ import { injection } from '@/util/inject'
 import { useService } from '@/composables/service'
 import { BuiltinImages } from '@/constant'
 import { BaseServiceKey, type AutoBackupConfig } from '@xmcl/runtime-api'
+import { getLocalDateString } from '@/util/date'
 
 const { t } = useI18n()
 const { show: showCreate } = useDialog('backup-create')
@@ -580,7 +581,7 @@ const canRunAutoBackupNow = computed(() => {
 const lastBackupFormatted = computed(() => {
   const ts = autoBackupConfig.value?.lastBackupAt
   if (!ts) return t('backup.autoBackupNeverRun')
-  return new Date(ts).toLocaleString()
+  return getLocalDateString(ts)
 })
 
 const intervalOptions = computed(() => [
@@ -697,10 +698,6 @@ function openAutoBackupFolder() {
 
 async function onRunNow() {
   await triggerAutoBackupNow()
-}
-
-function formatDate(ts: number): string {
-  return new Date(ts).toLocaleString()
 }
 
 function formatSize(bytes: number): string {

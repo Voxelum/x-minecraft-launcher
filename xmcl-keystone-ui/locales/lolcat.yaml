@@ -480,7 +480,7 @@ installVersion:
 instance:
   changeIcon: CHANGE ICON
   contents: CONTENT
-  current: CURREN INSTANCE
+  current: CURREN INSTANCEZ
   delete: DELET GAME
   deleteFailed: FAIL TO DELET INSTANCE
   deleteFailedPermission: OTHR PROGRAM OCCUPIED DA FILE
@@ -607,7 +607,7 @@ items:
   count: '{count} ITEMZ'
   total: '{total} TOTAL'
 java:
-  allocatedLong: USE SYSTEM DEFAULT JAVA
+  allocatedLong: USE DEFAULT SYSTEM JAVA
   allocatedShort: AUTO ALLOCATED
   importFromFile: IMPORT JAVA FROM FILE
   invalid: BAD JAVA LOCASHUN
@@ -1526,7 +1526,7 @@ setting:
   githubRelease: GITHUB RELEASE
   globalJava: Favrit Java
   globalJavaHint: In auto moad dis Java getz tride furst, an only fallz bak to auto-detekshun when it no can play nice wif teh gaem verzhun.
-  globalSetting: GLOBAL INSTANCE SETTING
+  globalSetting: GLOBAL INSTANCE SETTINGZ
   globalSettingHint: INSTANCE WILL USE THESE SETTINGZ BY DEFAULT.
   importSettings: IMPORT SETTINGZ
   importSettingsHint: LOAD SETTINGZ FROM A PREVIOUSLY EXPORTED FILE

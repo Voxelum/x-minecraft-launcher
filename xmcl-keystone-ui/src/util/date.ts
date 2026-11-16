@@ -1,15 +1,27 @@
+import { ref } from 'vue'
+
 export type TimeStyle = 'full' | 'long' | 'medium' | 'short' | undefined
 export interface TimeFormatOptions {
   dateStyle?: TimeStyle
   timeStyle?: TimeStyle
 }
+const systemDateLocale = ref<string>()
+
+export function setSystemDateLocale(locale?: string) {
+  systemDateLocale.value = locale
+}
+
 export function getLocalDateString(s: string | number, options?: TimeFormatOptions) {
-  const format = Intl.DateTimeFormat(navigator.language, { dateStyle: options?.dateStyle, timeStyle: options?.timeStyle })
+  const locale = systemDateLocale.value
+  const format = Intl.DateTimeFormat(locale, {
+    dateStyle: options?.dateStyle,
+    timeStyle: options?.timeStyle,
+  })
   const d = new Date(s)
   try {
     return format.format(d)
   } catch (e) {
-    return d.toLocaleString()
+    return d.toLocaleString(locale)
   }
 }
 
@@ -40,7 +52,7 @@ export function getHumanizeDuration(millisecond: number): [string, number, TimeU
 export function getAgoOrDate(d: number | string, format?: TimeFormatOptions) {
   const date = new Date(d).getTime()
   const now = Date.now()
-  if (now - date < (TimeUnit.Day * 7)) {
+  if (now - date < TimeUnit.Day * 7) {
     const [, duration, unit] = getHumanizeDuration(now - date)
     return [Math.floor(duration), unit]
   } else {
