@@ -42,7 +42,7 @@ pnpm install
 
 ### How to Dev
 
-The code are split into separated projects, which layed in under `packages` folder. Most of them are really simple (only one `index.ts` file or few files).
+The code are split into separated projects, which laid in under `packages` folder. Most of them are really simple (only one `index.ts` file or few files).
 
 For pure library developer, we recommend you to have TDD (Test Driven Development) style to develop. You can add some test first, and then add the code to pass the test.
 
