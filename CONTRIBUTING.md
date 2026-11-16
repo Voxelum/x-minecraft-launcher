@@ -55,7 +55,7 @@ The launcher is composed by "server/client" or "main/renderer". They communicate
 
 The main is the "backend" of the launcher. It manages the windows, and all the persistent data/state of the app. It manages the state by [Vuex](https://vuex.vuejs.org/). Once the state/data has been modified by a [Vuex commit](https://vuex.vuejs.org/guide/mutations.html), it will broadcast a ipc message containing the [mutation info]((https://vuex.vuejs.org/guide/mutations.html)) the all the renderer. At the same time, it will trigger the save action of the modified module to write the change on disk.
 
-The renderer is/are just (a) browsers which communicate with main. It maintains a copy of the store. (I can be a full copy, or a partial copy) User's input will trigger an [action](https://vuex.vuejs.org/guide/actions.html) or [commit](https://vuex.vuejs.org/guide/mutations.html), and it will be sync to the main. Though, it does't require any extra action for developer. The local commit and action will automatically send to main. The developer can treat the renderer as a normal vue application.
+The renderer is/are just (a) browsers which communicate with main. It maintains a copy of the store. (I can be a full copy, or a partial copy) User's input will trigger an [action](https://vuex.vuejs.org/guide/actions.html) or [commit](https://vuex.vuejs.org/guide/mutations.html), and it will be sync to the main. Though, it doesn't require any extra action for developer. The local commit and action will automatically send to main. The developer can treat the renderer as a normal vue application.
 
 ### Recommended Read Code Instruction
 
@@ -393,7 +393,7 @@ This project follow the [conventional commits](https://www.conventionalcommits.o
 commit type: commit description
 ```
 
-There are several avaiable commit type: `feat`, `fix`, `refactor`, `style`, `docs`, `chore`, `test`.
+There are several available commit type: `feat`, `fix`, `refactor`, `style`, `docs`, `chore`, `test`.
 
 Refer from [this gist](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716):
 
