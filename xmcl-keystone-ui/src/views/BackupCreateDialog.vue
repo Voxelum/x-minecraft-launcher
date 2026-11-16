@@ -67,7 +67,7 @@
             </div>
             <v-switch
               v-model="includeSettings"
-                data-testid="backup-create-settings-switch"
+              data-testid="backup-create-settings-switch"
               color="primary"
               density="compact"
               hide-details
@@ -94,7 +94,7 @@
             </div>
             <v-switch
               v-model="includeCollections"
-                data-testid="backup-create-collections-switch"
+              data-testid="backup-create-collections-switch"
               color="primary"
               density="compact"
               hide-details
@@ -121,7 +121,7 @@
             </div>
             <v-switch
               v-model="includeThemes"
-                data-testid="backup-create-themes-switch"
+              data-testid="backup-create-themes-switch"
               color="primary"
               density="compact"
               hide-details
@@ -237,8 +237,8 @@
           <v-list-item
             v-for="inst in filteredInstances"
             :key="inst.path"
-                data-testid="backup-create-instance-row"
-                :data-instance-name="inst.name"
+            data-testid="backup-create-instance-row"
+            :data-instance-name="inst.name"
             density="comfortable"
             class="rounded-lg mb-1 px-3 cursor-pointer"
             :class="{ 'selected-instance-row': selectedInstancePaths.includes(inst.path) }"
@@ -246,7 +246,7 @@
           >
             <template #prepend>
               <v-checkbox-btn
-                    data-testid="backup-create-instance-checkbox"
+                data-testid="backup-create-instance-checkbox"
                 :model-value="selectedInstancePaths.includes(inst.path)"
                 color="primary"
                 class="mr-2"
@@ -657,6 +657,7 @@ import { useService } from '@/composables/service'
 import { BuiltinImages } from '@/constant'
 import { useNotifier } from '@/composables/notifier'
 import { BaseServiceKey, type BackupInstanceOptions, type BackupOptions } from '@xmcl/runtime-api'
+import { getLocalDateString } from '@/util/date'
 
 interface LogEntry {
   id: number
@@ -709,7 +710,7 @@ let logSeq = 0
 const logContainerRef = ref<any>(null)
 
 function addLog(message: string, level: 'info' | 'success' | 'warn' = 'info') {
-  const time = new Date().toLocaleTimeString()
+  const time = getLocalDateString(Date.now(), { timeStyle: 'medium' })
   logEntries.value.push({
     id: ++logSeq,
     time,

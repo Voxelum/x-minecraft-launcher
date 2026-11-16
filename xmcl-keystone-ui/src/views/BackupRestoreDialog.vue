@@ -43,7 +43,7 @@
           <div class="text-h6 font-weight-bold mb-1 text-center">
             {{ t('backup.selectBackupFilePrompt') }}
           </div>
-          <div class="text-body-2 text-medium-emphasis mb-6 text-center" style="max-width: 480px;">
+          <div class="text-body-2 text-medium-emphasis mb-6 text-center" style="max-width: 480px">
             {{ t('backup.selectBackupFileDescription') }}
           </div>
           <v-btn
@@ -200,7 +200,7 @@
                   color="primary"
                   class="text-none font-weight-medium"
                   data-testid="backup-restore-select-all"
-              @click="selectAllInstances"
+                  @click="selectAllInstances"
                 >
                   {{ t('backup.selectAll') }}
                 </v-btn>
@@ -209,7 +209,7 @@
                   size="x-small"
                   class="text-none"
                   data-testid="backup-restore-deselect-all"
-              @click="deselectAllInstances"
+                  @click="deselectAllInstances"
                 >
                   {{ t('backup.deselectAll') }}
                 </v-btn>
@@ -402,7 +402,7 @@
           <div class="text-h6 font-weight-bold text-center mb-1">
             {{ isRestoreSuccessful ? t('backup.restoreDone') : isRestorePartial ? t('backup.restorePartialTitle') : t('backup.restoreError') }}
           </div>
-          <div class="text-body-2 text-medium-emphasis text-center" style="max-width: 480px;">
+          <div class="text-body-2 text-medium-emphasis text-center" style="max-width: 480px">
             {{ isRestoreSuccessful ? t('backup.restoreDoneHint') : t('backup.restorePartialHint') }}
           </div>
         </div>
@@ -528,6 +528,7 @@ import { useDialog } from '@/composables/dialog'
 import { BuiltinImages } from '@/constant'
 import { useNotifier } from '@/composables/notifier'
 import type { RestoreBackupOptions, RestoreBackupResult } from '@xmcl/runtime-api'
+import { getLocalDateString } from '@/util/date'
 
 interface LogEntry {
   id: number
@@ -568,7 +569,7 @@ let logSeq = 0
 const logContainerRef = ref<any>(null)
 
 function addLog(message: string, level: 'info' | 'success' | 'warn' = 'info') {
-  const time = new Date().toLocaleTimeString()
+  const time = getLocalDateString(Date.now(), { timeStyle: 'short' })
   logEntries.value.push({
     id: ++logSeq,
     time,
@@ -637,7 +638,7 @@ const backupFileName = computed(() => {
 
 const formattedDate = computed(() => {
   if (!manifest.value?.createdAt) return ''
-  return new Date(manifest.value.createdAt).toLocaleString()
+  return getLocalDateString(manifest.value.createdAt)
 })
 
 async function loadFileFromPath(path: string) {

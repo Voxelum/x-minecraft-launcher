@@ -39,6 +39,7 @@ import { HAS_DEV_SERVER } from '../constant'
 import { ZipFile } from 'yazl'
 import { getTracker } from '~/util/taskHelper'
 import { addSteamShortcutToVdf } from './steamShortcut'
+import { getSystemDateLocale } from './dateLocale'
 import { writeFile as writeAtomically } from 'atomically'
 
 @ExposeServiceKey(BaseServiceKey)
@@ -96,6 +97,7 @@ export class BaseService extends AbstractService implements IBaseService {
       version: this.app.version,
       build: this.app.build,
       region: this.app.systemLocale,
+      dateLocale: getSystemDateLocale() ?? this.app.systemLocale,
       gfw: gfw.inside,
       gpu: await this.app.host
         .getGPUInfo('basic')

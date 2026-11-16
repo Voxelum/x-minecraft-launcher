@@ -477,6 +477,7 @@ import { useGlobalDrop } from '@/composables/dropHandler'
 import { injection } from '@/util/inject'
 import { useTutorial } from '@/composables/tutorial'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { getLocalDateString } from '@/util/date'
 import {
   BlueprintMarketItem,
   BlueprintMarketProvider,
@@ -603,7 +604,7 @@ function formatDate(value?: string) {
   if (!value) return ''
   const d = new Date(value)
   if (Number.isNaN(d.getTime())) return ''
-  return d.toLocaleDateString()
+  return getLocalDateString(d.getTime(), { dateStyle: 'short' })
 }
 
 function providerLabel(provider: BlueprintMarketProvider) {

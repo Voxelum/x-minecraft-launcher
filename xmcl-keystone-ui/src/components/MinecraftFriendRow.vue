@@ -54,11 +54,9 @@
 </template>
 
 <script lang="ts" setup>
-import type { MinecraftFriend, XboxPresenceInfo } from '@xmcl/runtime-api'
-import {
-  formatRelativeTime,
-  useReactiveNow,
-} from '@/composables/minecraftFriends'
+import type { MinecraftFriend } from '@xmcl/runtime-api'
+import { formatRelativeTime, useReactiveNow } from '@/composables/minecraftFriends'
+import { getLocalDateString } from '@/util/date'
 import { computed, ref } from 'vue'
 
 const props = defineProps<{
@@ -142,7 +140,6 @@ const absoluteDate = computed(() => {
   const raw = props.friend.expiresAt ?? props.friend.addedAt
   if (!raw) return ''
   const d = new Date(raw)
-  return isNaN(d.getTime()) ? raw : d.toLocaleString()
+  return isNaN(d.getTime()) ? raw : getLocalDateString(d.getTime())
 })
 </script>
-

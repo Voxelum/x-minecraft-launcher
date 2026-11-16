@@ -8,6 +8,7 @@ import { errors } from 'undici'
 import { format } from 'util'
 import { ZipFile } from 'yazl'
 import { LauncherAppPlugin } from '~/app'
+import { getSystemDateLocale } from '~/app/dateLocale'
 import { IS_DEV } from '~/constant'
 import { writeZipFile } from '~/util/zip'
 import { kLogRoot } from '../log_consumer'
@@ -51,7 +52,14 @@ function filterSensitiveData(object: any) {
   return object
 }
 
-function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
+function baseTransform(tag: string) {
+  const locale = getSystemDateLocale()
+  return new Transform({
+    transform(c, e, cb) {
+      cb(undefined, `[${tag}] [${new Date().toLocaleString(locale)}] ${c}`)
+    },
+  })
+}
 
 class LogSink {
   readonly entries = { log: baseTransform('INFO'), warn: baseTransform('WARN'), error: baseTransform('ERROR') }
@@ -151,7 +159,7 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
     // remove the zips older than a week
     const root = logRoot!
     const files = await readdir(root)
-    const zips = files.filter(f => f.endsWith('.zip'))
+    const zips = files.filter((f) => f.endsWith('.zip'))
     const check = async (path: string) => {
       const fstat = await stat(path)
       if (Date.now() - fstat.mtime.getTime() > 7 * 24 * 60 * 60 * 1000) {
