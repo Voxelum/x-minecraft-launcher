@@ -22,3 +22,6 @@ urlFailed: Unknown url {url}. Please check your url or contact developer!
 urlSuccess: Success! You can return to the launcher.
 multiplayer: P2P Multiplayer
 makeDesktopShortcut: Make Desktop Shortcut
+pinnedInstances: Pinned Instances
+allInstances: All Instances
+noInstances: No Instances
