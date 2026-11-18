@@ -1095,7 +1095,7 @@ modpack:
   emitPackwizDescription: صيغة خفيفة مناسبة لـ git (ملفات pack.toml و index.toml و .pw.toml)
   exportSuccess: تم تصدير المودباك بنجاح!
   exportSuccessWithWarnings: تم تصدير المودباك مع بعض التحذيرات
-  exportSkippedFiles: تم تخطي {count} ملف للقراءة فقط أو مقفول أثناء التصدير
+  exportSkippedFiles: تم تخطي {count} ملف تعذرت قراءته أو مقفول أثناء التصدير
   exportFailed: فشل تصدير المودباك
   skippedFilesDialogTitle: في ملفات مقدرناش نصدرها
   skippedFilesDialogDescription: تم إنشاء المودباك، بس في {count} ملف تم تخطيهم
