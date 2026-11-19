@@ -55,3 +55,10 @@ export function getJavaRuntimeDestination(root: string, name: string) {
   }
   return resolve(root, name)
 }
+
+export function getJavaRuntimeVersionFromName(name: string) {
+  const match = /(?:^|[^\d])(\d+\.\d+\.\d+)(?:[.+](\d+))?(?=$|[^\d])/.exec(name)
+  if (!match) return undefined
+  const build = match[2]
+  return `${match[1]}${build && build !== '0' ? `.${build}` : ''}`
+}

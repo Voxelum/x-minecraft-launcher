@@ -604,6 +604,13 @@ java:
   locationHint: Nie wybrano Javy — używana jest domyślna systemowa
   openFolder: Otwórz folder Javy
   presets: Presety
+javaUpdate:
+  title: Dostępna jest aktualizacja Javy
+  description: Dostępna jest nowsza wersja Javy. Zaktualizować przed uruchomieniem?
+  currentVersion: Obecna wersja
+  newVersion: Dostępna wersja
+  ok: Ok
+  later: Później
 labyMod:
   disable: Wyłącz LabyMod
   empty: LabyMod nie obsługuje aktualnej wersji Minecrafta
@@ -665,6 +672,9 @@ launchStatus:
   injectingAuthLib: Konfiguracja Thirdparty AuthLib
   launching: Uruchomienie...
   launchingSlow: Wciąż się uruchamia... Uruchamianie silnika graficznego może być powolne...
+  checkingJavaUpdate: Sprawdzanie aktualizacji Javy...
+  confirmingJavaUpdate: Czekanie na wybór dotyczący aktualizacji Javy...
+  updatingJava: Aktualizowanie Javy...
   refreshingUser: Odświeżanie tokena użytkownika
   spawningProcess: Proces odradzania się
 launcherUpdate:

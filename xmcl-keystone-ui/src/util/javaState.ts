@@ -41,6 +41,10 @@ export function mergeJavaUpdate(
         existed.version !== j.version ||
         existed.valid !== j.valid ||
         (j.arch && existed.arch !== j.arch) ||
+        (j.isInternal !== undefined && existed.isInternal !== j.isInternal) ||
+        (j.installVendor !== undefined && existed.installVendor !== j.installVendor) ||
+        (j.replacesJava !== undefined && existed.replacesJava !== j.replacesJava) ||
+        (j.replacementRuntime !== undefined && existed.replacementRuntime !== j.replacementRuntime) ||
         existed.prependCommand !== prependCommand ||
         vmOptionsChanged
       ) {
@@ -50,6 +54,10 @@ export function mergeJavaUpdate(
           version: j.version,
           valid: j.valid,
           arch: j.arch || existed.arch,
+          isInternal: j.isInternal ?? existed.isInternal,
+          installVendor: j.installVendor ?? existed.installVendor,
+          replacesJava: j.replacesJava ?? existed.replacesJava,
+          replacementRuntime: j.replacementRuntime ?? existed.replacementRuntime,
           prependCommand,
           vmOptions,
         }
@@ -71,18 +79,46 @@ export function sortJavaRecords(javas: readonly JavaRecord[]) {
   )
 }
 
-export function isJavaExecutableWithinRuntime(executablePath: string, runtimePath: string) {
-  if (!runtimePath) return false
-  const runtime = runtimePath.replace(/[\\/]+$/, '')
-  const executable = runtimePath.includes('\\') ? executablePath.toLowerCase() : executablePath
-  const normalizedRuntime = runtimePath.includes('\\') ? runtime.toLowerCase() : runtime
-  return (
-    executable === normalizedRuntime ||
-    executable.startsWith(`${normalizedRuntime}/`) ||
-    executable.startsWith(`${normalizedRuntime}\\`)
-  )
+/** Format a metadata build suffix for display alongside Java's version. */
+export function formatJavaRuntimeVersion(value: string) {
+  return value.replace(/\+(\d+)$/, (_match, build: string) => (build === '0' ? '' : `.${build}`))
 }
 
+/** Check path containment using Windows case and separator rules when applicable. */
+export function isJavaExecutableWithinRuntime(executablePath: string, runtimePath: string) {
+  if (!runtimePath) return false
+  const windowsPath = runtimePath.includes('\\') || /^[a-z]:/i.test(runtimePath)
+  const normalize = (path: string) => {
+    const normalized = windowsPath ? path.replace(/\\/g, '/').toLowerCase() : path
+    return normalized.replace(/\/+$/, '')
+  }
+  const executable = normalize(executablePath)
+  const runtime = normalize(runtimePath)
+  return executable === runtime || executable.startsWith(`${runtime}/`)
+}
+
+/** Find the installed runtime component under the new runtime's shared Java root. */
+export function getInstalledJavaRuntimePath(executablePath: string, newRuntimePath: string) {
+  const root = newRuntimePath.replace(/[\\/]+$/, '').replace(/[\\/][^\\/]+$/, '')
+  if (!root || !isJavaExecutableWithinRuntime(executablePath, root)) return undefined
+
+  const relativePath = executablePath.slice(root.length).replace(/^[\\/]+/, '')
+  const parts = relativePath.split(/[\\/]/)
+  if (parts.length < 2 || parts.some((part) => !part || part === '.' || part === '..'))
+    return undefined
+  const separator = root.includes('\\') ? '\\' : '/'
+  return `${root}${separator}${parts[0]}`
+}
+
+/** Match valid installations, including internal runtimes with collision suffixes. */
 export function isJavaRuntimeInstalled(javas: readonly JavaRecord[], runtimePath: string) {
-  return javas.some((java) => java.valid && isJavaExecutableWithinRuntime(java.path, runtimePath))
+  return javas.some((java) => {
+    if (!java.valid) return false
+    if (isJavaExecutableWithinRuntime(java.path, runtimePath)) return true
+    if (!java.isInternal || !java.installVendor) return false
+    const component = getInstalledJavaRuntimePath(java.path, runtimePath)
+    if (!component) return false
+    const base = component.replace(/-xmcl-[0-9a-f]{32}$/i, '')
+    return base !== component && isJavaExecutableWithinRuntime(base, runtimePath)
+  })
 }

@@ -268,9 +268,7 @@ export function createJavaArchiveInstallWorkflow(
                     type: 'extract-archive',
                     archive,
                     path: options.destination,
-                    // Keep the archive's directory structure. The runtime installer
-                    // searches recursively for bin/java, so both wrapped and flat
-                    // vendor archives are supported.
+                    // Extract unchanged; the runtime installer handles optional wrappers.
                     format,
                   },
                   { type: 'remove', path: archive },

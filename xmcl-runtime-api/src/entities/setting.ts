@@ -320,4 +320,8 @@ export class Settings implements SettingSchema {
     this.globalJava = settings.globalJava
     this.globalPreferredJavaVendor = settings.globalPreferredJavaVendor
   }
+
+  globalJavaSet(java: string) {
+    this.globalJava = java
+  }
 }

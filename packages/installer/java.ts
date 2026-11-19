@@ -25,40 +25,57 @@ export interface JavaResolveDiagnostic {
   signal?: string
   stdout: string
   stderr: string
+  timedOut?: boolean
 }
 
 /**
  * Try to resolve a java info at this path. This will call `java -version`
  * @param path The java exectuable path.
+ * @param options Optional timeout in milliseconds for the version probe.
  */
-export async function resolveJava(path: string): Promise<JavaInfo | undefined> {
-  return (await resolveJavaWithDiagnostic(path)).java
+export async function resolveJava(path: string, options?: { timeout?: number }): Promise<JavaInfo | undefined> {
+  return (await resolveJavaWithDiagnostic(path, options)).java
 }
 
 /**
  * Resolve Java while retaining the process output for callers that need to
  * diagnose why an existing, executable runtime could not be recognized.
+ * An optional timeout terminates a stalled version probe.
  */
-export async function resolveJavaWithDiagnostic(path: string): Promise<JavaResolveDiagnostic> {
+export async function resolveJavaWithDiagnostic(path: string, options?: { timeout?: number }): Promise<JavaResolveDiagnostic> {
   if (await missing(path)) {
     return { stdout: '', stderr: '' }
   }
 
   return new Promise((resolve) => {
     try {
-      execFile(path, ['-version'], { windowsHide: true }, (error, stdout, stderr) => {
+      let timer: ReturnType<typeof setTimeout> | undefined
+      let timedOut = false
+      const child = execFile(path, ['-version'], { windowsHide: true }, (error, stdout, stderr) => {
+        clearTimeout(timer)
+        if (timedOut) return
         // Most JVMs write version output to stderr, but some wrappers and
         // distributions use stdout. Accept either so a functional JRE is not
         // misclassified as invalid solely because of its output stream.
         const ver = parseJavaVersionOutput(stdout, stderr)
         resolve({
-          java: ver ? { path, ...ver } : undefined,
+          java: !error && ver ? { path, ...ver } : undefined,
           exitCode: typeof error?.code === 'number' ? error.code : undefined,
           signal: error?.signal ?? undefined,
           stdout,
           stderr,
         })
       })
+      if (options?.timeout !== undefined) {
+        timer = setTimeout(() => {
+          timedOut = true
+          child.kill('SIGKILL')
+          child.stdout?.destroy()
+          child.stderr?.destroy()
+          resolve({ stdout: '', stderr: '', timedOut: true })
+        }, options.timeout)
+        timer.unref()
+      }
     } catch (error) {
       resolve({
         stdout: '',
@@ -238,9 +255,10 @@ async function dedupJreExecutables(files: Iterable<string>) {
  * This will call `getPotentialJavaLocations` and then `resolveJava`
  *
  * @param locations The location (like java_home) want to check.
+ * @param options Optional timeout in milliseconds for each Java version probe.
  * @returns All validate java info
  */
-export async function scanLocalJava(locations: string[]): Promise<JavaInfo[]> {
+export async function scanLocalJava(locations: string[], options?: { timeout?: number }): Promise<JavaInfo[]> {
   const unchecked = new Set(locations)
   const potential = await getPotentialJavaLocations()
   potential.forEach((p) => unchecked.add(p))
@@ -249,6 +267,6 @@ export async function scanLocalJava(locations: string[]): Promise<JavaInfo[]> {
     [...unchecked].filter((jPath) => typeof jPath === 'string').filter((p) => p !== ''),
   )
 
-  const javas = await Promise.all(checkingList.map((jPath) => resolveJava(jPath)))
+  const javas = await Promise.all(checkingList.map((jPath) => resolveJava(jPath, options)))
   return javas.filter(((j) => j !== undefined) as (j?: JavaInfo) => j is JavaInfo)
 }

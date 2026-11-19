@@ -3,17 +3,36 @@ import {
   createJavaArchiveInstallWorkflow,
   runInstallWorkflow,
   onDownloadMultiple,
+  resolveJava as inspectJava,
   type InstallWorkflow,
   type JavaRuntimeTrackerEvents,
   type JavaRuntimeManifest,
 } from '@xmcl/installer'
 import type { InstallJavaTask, Java } from '@xmcl/runtime-api'
 import { AnyError } from '@xmcl/utils'
-import { ensureDir, readJson, readdir, writeJson } from 'fs-extra'
-import { createHash } from 'crypto'
-import { dirname, join } from 'path'
+import {
+  ensureDir,
+  mkdtemp,
+  pathExists,
+  readJson,
+  readdir,
+  remove,
+  rename,
+  writeJson,
+} from 'fs-extra'
+import { createHash, randomUUID } from 'crypto'
+import { rmdir } from 'fs/promises'
+import { dirname, join, relative, resolve, sep } from 'path'
 import { type LauncherApp, type PathResolver } from '~/app'
 import { type TaskInstance } from '~/infra'
+import {
+  getOrCreateJavaRuntimeIdentity,
+  writeJavaReplacementJournal,
+} from './javaReplacementJournal'
+import { getManagedJavaComponent } from './java'
+import { javaRuntimeLockKey, withJavaRuntimeLock } from './javaRuntimeLock'
+import { getJavaRuntimeVersionFromName } from './javaInstallUtils'
+import { javaStagingPrefix } from './javaStaging'
 import type { InstallManifestService } from '~/install/InstallManifestService'
 import { getTracker } from '~/util/taskHelper'
 import {
@@ -124,6 +143,7 @@ function getExpiresAt(headers: Headers, fallback = 600): number {
   return Date.now() + Math.max(0, maxAge - age) * 1000
 }
 
+/** Fetch Prism metadata, using the cache unless a fresh update check is requested. */
 async function fetchPrismMetadata(
   app: LauncherApp,
   getPath: PathResolver,
@@ -153,7 +173,10 @@ async function fetchPrismMetadata(
       headers['If-None-Match'] = cached.etag
     }
 
-    const response = await app.fetch(url, { headers })
+    const response = await app.fetch(url, {
+      headers,
+      signal: force ? AbortSignal.timeout(10_000) : undefined,
+    })
 
     // not modified
     if (response.status === 304 && cached) {
@@ -334,7 +357,63 @@ async function findJavaExecutable(
     .find(Boolean)
 }
 
-/** Install a vendor runtime published in metadata repository. */
+/** Remove a single archive wrapper without discarding sibling files or macOS bundle contents. */
+async function flattenJavaArchive(staging: string, executable: string): Promise<string> {
+  const parts = relative(staging, executable).split(sep)
+  const wrappedHome = parts.length === 3 && parts[1] === 'bin'
+  const wrappedBundle = parts.length === 5 &&
+    parts[1] === 'Contents' && parts[2] === 'Home' && parts[3] === 'bin'
+  if (!wrappedHome && !wrappedBundle) return executable
+
+  const entries = await readdir(staging, { withFileTypes: true })
+  if (entries.length !== 1 || !entries[0].isDirectory() || entries[0].name !== parts[0]) {
+    return executable
+  }
+  const extracted = join(dirname(staging), 'archive-root')
+  await rename(join(staging, parts[0]), extracted)
+  await rmdir(staging)
+  await rename(extracted, staging)
+  return join(staging, ...parts.slice(1))
+}
+
+/** Prepare and activate a new runtime, removing it if activation fails. */
+export async function withStagedJavaRuntime<T>(
+  destination: string,
+  prepare: (staging: string) => Promise<void>,
+  activate: () => Promise<T>,
+): Promise<T> {
+  const root = dirname(destination)
+  await ensureDir(root)
+  const temporary = await mkdtemp(javaStagingPrefix(root))
+  const staging = join(temporary, 'runtime')
+  let installed = false
+  try {
+    // Prepare and validate away from existing runtimes before publishing the directory.
+    await prepare(staging)
+    if (await pathExists(destination)) {
+      throw new Error(`Java installation destination already exists: ${destination}`)
+    }
+    await rename(staging, destination)
+    installed = true
+    return await activate()
+  } catch (error) {
+    if (installed) {
+      try {
+        await remove(destination)
+      } catch (rollbackError) {
+        throw new AggregateError(
+          [error, rollbackError],
+          `Java installation cleanup failed at ${destination}`,
+        )
+      }
+    }
+    throw error
+  } finally {
+    await remove(temporary)
+  }
+}
+
+/** Install and verify a vendor runtime, journaling replacement details when requested. */
 export async function installJavaRuntime(
   app: LauncherApp,
   getPath: PathResolver,
@@ -342,10 +421,12 @@ export async function installJavaRuntime(
   task: TaskInstance<InstallJavaTask>,
   vendor: string,
   version: string,
+  majorVersion: number,
   resolveJava: (path: string) => Promise<Java | undefined>,
   metadataSha256?: string,
   runtimeUrl?: string,
-): Promise<Java> {
+  replacement?: { javaPath: string; runtimePath: string },
+): Promise<Java & { replacementIdentity?: string }> {
   if (!/^[a-z0-9.-]+$/.test(vendor) || !/^[a-zA-Z0-9.+_-]+$/.test(version)) {
     throw new Error('Invalid Java vendor or version')
   }
@@ -392,14 +473,21 @@ export async function installJavaRuntime(
   }
 
   const checksumAlgorithm = runtime.checksum.type.toLowerCase().replace('-', '')
+  const checksumHash = runtime.checksum.hash
 
   if (!['sha1', 'sha256'].includes(checksumAlgorithm)) {
     throw new Error(`Unsupported runtime checksum: ${runtime.checksum.type}`)
   }
 
-  const destination = getJavaRuntimeDestination(getPath('jre'), runtime.name)
-  let workflow: InstallWorkflow<void>
-
+  const canonicalDestination = getJavaRuntimeDestination(getPath('jre'), runtime.name)
+  // Never overwrite an existing runtime, including when metadata reuses its name.
+  const component =
+    (await pathExists(canonicalDestination))
+      ? `${runtime.name}-xmcl-${randomUUID().replace(/-/g, '')}`
+      : runtime.name
+  const destination = getJavaRuntimeDestination(getPath('jre'), component)
+  let replacementIdentity: string | undefined
+  let manifest: JavaRuntimeManifest | undefined
   if (runtime.downloadType === 'manifest') {
     const manifestResponse = await app.fetch(runtime.url, {})
 
@@ -413,45 +501,103 @@ export async function installJavaRuntime(
       throw new Error(`Runtime manifest checksum mismatch for ${vendor} ${version}`)
     }
 
-    const manifest = JSON.parse(bytes.toString('utf8')) as JavaRuntimeManifest
+    manifest = JSON.parse(bytes.toString('utf8')) as JavaRuntimeManifest
 
     if (!manifest.files || typeof manifest.files !== 'object' || Array.isArray(manifest.files)) {
       throw new Error(`Unsupported runtime manifest format for ${vendor} ${version}`)
     }
-
-    workflow = createJavaRuntimeManifestInstallWorkflow(manifest, destination)
   } else if (runtime.downloadType === 'archive') {
     if (!runtime.url.startsWith('https://'))
       throw new Error('Java runtime archive URL must use HTTPS')
-
-    workflow = createJavaArchiveInstallWorkflow({
-      url: runtime.url,
-      checksum: { algorithm: checksumAlgorithm, value: runtime.checksum.hash },
-      destination,
-    })
   } else {
     throw new Error(`Unsupported Java download type: ${runtime.downloadType}`)
   }
 
-  const tracker = getTracker<JavaInstallTrackerEvents>(task)
-  await runInstallWorkflow(
-    workflow,
-    async (plan) => {
-      const progress = onDownloadMultiple(tracker, 'java-runtime.file', { path: destination })
-      await installer.install(plan, { signal: task.controller.signal, tracker: progress })
-    },
-    { maxStages: 16 },
+  return withJavaRuntimeLock(app, javaRuntimeLockKey(app, destination, getPath('jre')), () =>
+    withStagedJavaRuntime(
+      destination,
+      async (staging) => {
+        const workflow: InstallWorkflow<void> = manifest
+          ? createJavaRuntimeManifestInstallWorkflow(manifest, staging)
+          : createJavaArchiveInstallWorkflow({
+              url: runtime.url,
+              checksum: { algorithm: checksumAlgorithm, value: checksumHash },
+              destination: staging,
+            })
+        const tracker = getTracker<JavaInstallTrackerEvents>(task)
+        await runInstallWorkflow(
+          workflow,
+          async (plan) => {
+            const progress = onDownloadMultiple(tracker, 'java-runtime.file', { path: destination })
+            await installer.install(plan, { signal: task.controller.signal, tracker: progress })
+          },
+          { maxStages: 16 },
+        )
+        let executable = await findJavaExecutable(staging, app.platform)
+        if (executable && runtime.downloadType === 'archive') {
+          executable = await flattenJavaArchive(staging, executable)
+        }
+        const inspected = executable && (await inspectJava(executable, { timeout: 5000 }))
+        if (!executable || !inspected) {
+          throw new AnyError(
+            'InstallJavaError',
+            `Installed ${vendor} Java ${version}, but its executable could not be validated`,
+          )
+        }
+        if (inspected.majorVersion !== majorVersion) {
+          throw new AnyError(
+            'InstallJavaError',
+            `Expected Java ${majorVersion}, but the downloaded runtime is Java ${inspected.majorVersion}`,
+          )
+        }
+        if (replacement) {
+          const old = getManagedJavaComponent(replacement.javaPath, getPath('jre'))
+          const same = (a: string, b: string) =>
+            app.platform.os === 'windows'
+              ? resolve(a).toLowerCase() === resolve(b).toLowerCase()
+              : resolve(a) === resolve(b)
+          if (
+            !old ||
+            !same(join(getPath('jre'), old.component), replacement.runtimePath) ||
+            same(destination, replacement.runtimePath)
+          ) {
+            throw new Error('Cannot safely identify the previous Java runtime')
+          }
+          const key = javaRuntimeLockKey(app, replacement.javaPath, getPath('jre'))
+          replacementIdentity = await withJavaRuntimeLock(app, key, () =>
+            getOrCreateJavaRuntimeIdentity(replacement.runtimePath),
+          )
+          // Publish the recovery journal with the staged runtime in the same rename.
+          await writeJavaReplacementJournal(staging, {
+            ...inspected,
+            path: join(destination, relative(staging, executable)),
+            version: getJavaRuntimeVersionFromName(component) ?? inspected.version,
+            valid: true,
+            isInternal: true,
+            installVendor: vendor,
+            replacesJava: replacement.javaPath,
+            replacementRuntime: replacement.runtimePath,
+            replacementIdentity,
+          })
+        }
+      },
+      async () => {
+        const executable = await findJavaExecutable(destination, app.platform)
+        const result = executable ? await resolveJava(executable) : undefined
+        if (!result) {
+          throw new AnyError(
+            'InstallJavaError',
+            `Installed ${vendor} Java ${version}, but its executable could not be validated`,
+          )
+        }
+        if (result.majorVersion !== majorVersion) {
+          throw new AnyError(
+            'InstallJavaError',
+            `Expected Java ${majorVersion}, but the activated runtime is Java ${result.majorVersion}`,
+          )
+        }
+        return { ...result, replacementIdentity }
+      },
+    ),
   )
-
-  const executable = await findJavaExecutable(destination, app.platform)
-  const result = executable ? await resolveJava(executable) : undefined
-
-  if (!result) {
-    throw new AnyError(
-      'InstallJavaError',
-      `Installed ${vendor} Java ${version}, but its executable could not be validated`,
-    )
-  }
-
-  return result
 }

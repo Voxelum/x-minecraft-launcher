@@ -6,6 +6,7 @@ import {
   resolveFabricLoaderVersion,
   resolveForgeVersion,
   resolveQuiltVersion,
+  type Java,
 } from '@xmcl/runtime-api'
 import { isSystemError } from '@xmcl/utils'
 import { ensureDir, move, stat, unlink, readFile, writeFile, ensureFile } from 'fs-extra'
@@ -26,6 +27,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const getPath = await app.registry.get(kGameDataPath)
 
   const logger = app.getLogger('LaunchPrecheck')
+  const javaRepairs = new Map<number, Promise<Java>>()
 
   // `libraries/` and `versions/` are read-mostly launcher-managed caches
   // (the game only consumes them, the installer writes the source-of-truth
@@ -112,13 +114,30 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
             (managed && cached?.majorVersion
               ? { component: managed.component, majorVersion: cached.majorVersion }
               : undefined)
-          if (managed && target) {
-            await javaService.removeJava(javaPath, true)
-            const installer = await app.registry.getOrCreate(VersionInstallService)
-            resolved = await installer.install({
-              type: 'java',
-              target,
-            })
+          if (managed && target && await javaService.validateJavaPath(javaPath) === JavaValidation.NotExisted) {
+            // Share repair work by major version and preserve the missing runtime directory.
+            let repair = javaRepairs.get(target.majorVersion)
+            if (!repair) {
+              repair = (async () => {
+                const candidates = javaService.state.all.filter((java) =>
+                  java.path !== javaPath && java.isInternal && java.valid &&
+                  !java.replacesJava && java.majorVersion === target.majorVersion)
+                for (const candidate of candidates) {
+                  const existing = await javaService.resolveJava(candidate.path)
+                  if (existing?.majorVersion === target.majorVersion) return existing
+                }
+                const installer = await app.registry.getOrCreate(VersionInstallService)
+                return installer.install({ type: 'java', target })
+              })()
+              javaRepairs.set(target.majorVersion, repair)
+            }
+            try {
+              resolved = await repair
+            } finally {
+              if (javaRepairs.get(target.majorVersion) === repair) {
+                javaRepairs.delete(target.majorVersion)
+              }
+            }
           }
           if (resolved) {
             input.java = resolved.path

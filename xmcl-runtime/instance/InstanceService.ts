@@ -37,7 +37,7 @@ import { ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, linkOrCopyFile, 
 import { getMediaIconPath, resolveInstanceIcon, serializeInstanceIcon, toMediaIconUrl } from './instanceIcon'
 import { requireObject, requireString } from '../util/object'
 import { getTracker } from '~/util/taskHelper'
-import { setTimeout } from 'timers/promises'
+import { getJavaReferenceGate } from '~/java/javaReferenceGate'
 
 const INSTANCES_FOLDER = 'instances'
 
@@ -190,7 +190,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
               const persisted = { ...inst, icon: serializeInstanceIcon(inst.icon, path) }
               await writeFile(join(path, 'instance.json'), JSON.stringify(persisted, null, 2))
               this.log(`Saved instance ${path}`)
-            })
+            }, 0, 'java-update')
             instanceWriters.set(path, writer)
           }
           writer.schedule()
@@ -204,6 +204,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     const gate = getRestoreGate(app)
     gate.guardState(this.state)
     gate.guardMethods(this, ['loadInstance', 'createInstance', 'duplicateInstance', 'deleteInstance', 'editInstance', 'setInstanceModpackMetadata', 'acquireInstanceById'])
+    const javaGate = getJavaReferenceGate(app)
+    javaGate.guardReferenceMutation<InstanceDataWithTime>(this.state, 'instanceAdd', instance => [instance.java])
+    javaGate.guardReferenceMutation<Partial<InstanceDataWithTime>>(this.state, 'instanceEdit', changes => [changes.java])
+    javaGate.guardReferenceMutation<InstanceDataWithTime[]>(this.state, 'instanceRestore', instances => instances.map(instance => instance.java))
+    javaGate.guardMethods(this, ['loadInstance', 'createInstance', 'duplicateInstance', 'editInstance'])
   }
 
   /** Pure prospective launcher metadata; never loads, renames, or writes. */

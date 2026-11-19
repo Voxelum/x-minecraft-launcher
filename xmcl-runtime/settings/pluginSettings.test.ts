@@ -98,6 +98,17 @@ describe('pluginSettings', () => {
     expect(() => mockState.localeSet('de')).toThrow('maintenance')
   })
 
+  test('Java update flush persists global settings and propagates save errors', async () => {
+    vi.mocked(fsExtra.readJson).mockResolvedValue({})
+    vi.mocked(fsExtra.writeJson).mockRejectedValue(new Error('settings save failed'))
+    const { pluginSettings } = await import('./pluginSettings')
+    const { getRestoreGate } = await import('~/infra/restoreGate')
+    await pluginSettings(mockApp, mockManifest)
+    subscribeCallback!()
+    await expect(getRestoreGate(mockApp).flushWriters('java-update')).rejects.toThrow('settings save failed')
+    expect(fsExtra.writeJson).toHaveBeenCalledOnce()
+  })
+
   test('loads and persists explicit AppImage ownership through the settings saver', async () => {
     vi.useFakeTimers()
     vi.mocked(fsExtra.readJson).mockResolvedValue({ appImageUpdateMode: 'self-managed' })

@@ -7,6 +7,50 @@ const signal = () => {
 }
 afterEach(() => vi.useRealTimers())
 describe('restore persistence barrier', () => {
+  test('explicit flush waits for all pending writers even when one fails', async () => {
+    const gate = new RestoreGate()
+    const io = signal()
+    const instanceWriter = gate.writer(() => io.promise, 1000)
+    const settingsWriter = gate.writer(async () => { throw new Error('settings write failed') }, 1000)
+    instanceWriter.schedule()
+    settingsWriter.schedule()
+    let settled = false
+    const flush = gate.flushWriters().finally(() => { settled = true })
+    const rejection = expect(flush).rejects.toThrow('settings write failed')
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(settled).toBe(false)
+    io.resolve()
+    await rejection
+  })
+  test('Java update flush waits for related writers and ignores unrelated failures', async () => {
+    const gate = new RestoreGate()
+    const io = signal()
+    const instanceWriter = gate.writer(() => io.promise, 1000, 'java-update')
+    const settingsWriter = gate.writer(async () => { throw new Error('settings write failed') }, 1000, 'java-update')
+    const unrelatedWriter = gate.writer(async () => { throw new Error('unrelated write failed') }, 1000)
+    instanceWriter.schedule()
+    unrelatedWriter.schedule()
+    await expect(unrelatedWriter.flush()).rejects.toThrow('unrelated write failed')
+    let settled = false
+    const flush = gate.flushWriters('java-update').finally(() => { settled = true })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(settled).toBe(false)
+    io.resolve()
+    await flush
+    settingsWriter.schedule()
+    await expect(gate.flushWriters('java-update')).rejects.toThrow('settings write failed')
+  })
+  test('a later Java update flush retries a failed write', async () => {
+    const gate = new RestoreGate()
+    const write = vi.fn().mockRejectedValueOnce(new Error('disk locked')).mockResolvedValue(undefined)
+    const writer = gate.writer(write, 1000, 'java-update')
+    writer.schedule()
+    await expect(gate.flushWriters('java-update')).rejects.toThrow('disk locked')
+    await expect(gate.flushWriters('java-update')).resolves.toBeUndefined()
+    expect(write).toHaveBeenCalledTimes(2)
+  })
   test('drains delayed and in-flight writes, blocks direct state/config and service calls', async () => {
     const gate = new RestoreGate()
     const io = signal()

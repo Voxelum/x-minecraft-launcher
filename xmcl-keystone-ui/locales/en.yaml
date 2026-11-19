@@ -770,6 +770,13 @@ java:
   presets: Presets
   refresh: Refresh Local Java
   systemMemory: 'System Free Memory: {free} / {total}'
+javaUpdate:
+  title: Java update available
+  description: A newer version of Java is available. Update before launching?
+  currentVersion: Current version
+  newVersion: Available version
+  ok: Ok
+  later: Later
 labyMod:
   disable: Disable LabyMod
   empty: LabyMod does not support current Minecraft
@@ -833,6 +840,9 @@ launchStatus:
   injectingAuthLib: Setting up Third-party AuthLib
   launching: Launching...
   launchingSlow: Still launching... Starting graphics engine can be slow...
+  checkingJavaUpdate: Checking for Java updates...
+  confirmingJavaUpdate: Waiting for Java update choice...
+  updatingJava: Updating Java...
   refreshingUser: Refreshing User Token
   spawningProcess: Spawning Process
 launcherUpdate:

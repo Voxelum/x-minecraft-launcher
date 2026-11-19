@@ -61,25 +61,14 @@
           </v-chip>
           <v-chip
             v-shared-tooltip="
-              () =>
-                t(
-                  item.path.startsWith(javaInstallDirectory)
-                    ? 'java.internalJavaHint'
-                    : 'java.importedJavaHint',
-                )
+              () => t(item.isInternal ? 'java.internalJavaHint' : 'java.importedJavaHint')
             "
             class="installed-java-type h-[20px]"
-            :color="item.path.startsWith(javaInstallDirectory) ? 'green' : 'blue'"
+            :color="item.isInternal ? 'green' : 'blue'"
             size="small"
             label
           >
-            {{
-              t(
-                item.path.startsWith(javaInstallDirectory)
-                  ? 'java.internalJava'
-                  : 'java.importedJava',
-              )
-            }}
+            {{ t(item.isInternal ? 'java.internalJava' : 'java.importedJava') }}
           </v-chip>
         </v-list-item-title>
         <v-list-item-title v-else>
@@ -131,10 +120,8 @@ defineProps<{
 
 const emit = defineEmits(['input'])
 const { t } = useI18n()
-const { getGameDataDirectory, showItemInDirectory } = useService(BaseServiceKey)
+const { showItemInDirectory } = useService(BaseServiceKey)
 const { java, status: javaStatus } = injection(kInstanceJava)
-
-const javaInstallDirectory = ref('')
 
 // Mirror the BaseSettingJava hero: when auto-resolution finds no compatible
 // Java, tell the user instead of leaving the subtitle blank.
@@ -144,19 +131,6 @@ const autoIssue = computed<'none' | 'no-java' | 'no-match'>(() => {
   if (stat.noJava) return 'no-java'
   if (!stat.java) return 'no-match'
   return 'none'
-})
-
-async function resolveJavaInstallDirectory() {
-  try {
-    const root = await getGameDataDirectory()
-    javaInstallDirectory.value = `${root.replace(/[\\/]+$/, '')}/jre`
-  } catch {
-    javaInstallDirectory.value = ''
-  }
-}
-
-onMounted(async () => {
-  await resolveJavaInstallDirectory()
 })
 </script>
 

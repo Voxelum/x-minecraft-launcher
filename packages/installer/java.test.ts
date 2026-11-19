@@ -1,5 +1,8 @@
 import { parseJavaVersion, parseJavaVersionOutput, resolveJavaWithDiagnostic } from './java'
 import { describe, test, expect } from 'vitest'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
 describe('JavaInstaller', () => {
   describe('#parseJavaVersion', () => {
@@ -92,6 +95,33 @@ OpenJDK Runtime Environment Temurin-25.0.5+0 (build 25.0.5+0-LTS)`),
       const diagnostic = await resolveJavaWithDiagnostic(process.execPath)
       expect(diagnostic.java).toBeUndefined()
       expect(diagnostic.stderr).toContain('-version')
+    })
+    test.skipIf(process.platform === 'win32')('terminates a Java probe that exceeds its timeout', async () => {
+      const directory = await mkdtemp(join(tmpdir(), 'xmcl-hung-java-'))
+      const path = join(directory, 'java')
+      try {
+        await writeFile(path, '#!/usr/bin/env node\nwhile (true) {}\n', { mode: 0o755 })
+        const start = Date.now()
+        const result = await resolveJavaWithDiagnostic(path, { timeout: 100 })
+        expect(result.timedOut).toBe(true)
+        expect(result.java).toBeUndefined()
+        expect(Date.now() - start).toBeLessThan(2000)
+      } finally {
+        await rm(directory, { recursive: true, force: true })
+      }
+    })
+    test.skipIf(process.platform === 'win32')('rejects version output from a failed Java process', async () => {
+      const directory = await mkdtemp(join(tmpdir(), 'xmcl-failed-java-'))
+      const path = join(directory, 'java')
+      try {
+        await writeFile(path, '#!/bin/sh\necho \'openjdk version "17.0.2"\' >&2\nexit 1\n', { mode: 0o755 })
+        const result = await resolveJavaWithDiagnostic(path, { timeout: 1000 })
+        expect(result.java).toBeUndefined()
+        expect(result.exitCode).toBe(1)
+        expect(result.stderr).toContain('17.0.2')
+      } finally {
+        await rm(directory, { recursive: true, force: true })
+      }
     })
   })
 })

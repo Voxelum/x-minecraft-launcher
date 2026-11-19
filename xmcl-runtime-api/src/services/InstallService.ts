@@ -345,6 +345,8 @@ export type VersionInstallRequest =
       majorVersion?: number
       metadataSha256?: string
       runtimeUrl?: string
+      replaceJava?: string
+      replaceRuntime?: string
     }
   | { type: 'optifine-mod'; options: InstallOptifineAsModOptions }
 

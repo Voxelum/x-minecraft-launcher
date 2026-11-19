@@ -3,6 +3,8 @@ import type { JavaRecord } from '@xmcl/runtime-api'
 import {
   isJavaExecutableWithinRuntime,
   isJavaRuntimeInstalled,
+  formatJavaRuntimeVersion,
+  getInstalledJavaRuntimePath,
   mergeJavaUpdate,
   sortJavaRecords,
 } from './javaState'
@@ -78,6 +80,21 @@ describe('mergeJavaUpdate', () => {
     expect(after[0].arch).toBe('x64')
   })
 
+  test('internal installation metadata change produces a new record', () => {
+    const before = [rec({ path: '/jre/runtime/bin/java' })]
+    const after = mergeJavaUpdate(
+      before,
+      rec({
+        path: '/jre/runtime/bin/java',
+        isInternal: true,
+        installVendor: 'net.adoptium.java',
+      }),
+    )
+
+    expect(after).not.toBe(before)
+    expect(after[0]).toMatchObject({ isInternal: true, installVendor: 'net.adoptium.java' })
+  })
+
   test('empty update yields the same reference', () => {
     const before = [rec({ path: '/jdk21' })]
     const after = mergeJavaUpdate(before, [])
@@ -91,6 +108,13 @@ describe('sortJavaRecords', () => {
 
     expect(sortJavaRecords(records).map((java) => java.path)).toEqual(['/jdk21', '/jdk17'])
     expect(records.map((java) => java.path)).toEqual(['/jdk17', '/jdk21'])
+  })
+})
+
+describe('formatJavaRuntimeVersion', () => {
+  test('normalizes Prism build suffixes for display', () => {
+    expect(formatJavaRuntimeVersion('21.0.5+0')).toBe('21.0.5')
+    expect(formatJavaRuntimeVersion('21.0.5+9')).toBe('21.0.5.9')
   })
 })
 
@@ -108,6 +132,30 @@ describe('isJavaExecutableWithinRuntime', () => {
         'c:\\users\\me\\jre\\runtime',
       ),
     ).toBe(true)
+    expect(
+      isJavaExecutableWithinRuntime(
+        'c:/users/me/jre/runtime/bin/javaw.exe',
+        'C:\\Users\\Me\\jre\\Runtime',
+      ),
+    ).toBe(true)
+  })
+})
+
+describe('getInstalledJavaRuntimePath', () => {
+  test('identifies the old component without relying on a jre ancestor name', () => {
+    expect(getInstalledJavaRuntimePath('/jre/data/jre/old/bin/java', '/jre/data/jre/new')).toBe(
+      '/jre/data/jre/old',
+    )
+    expect(getInstalledJavaRuntimePath('c:/data/jre/OLD/bin/javaw.exe', 'C:\\Data\\jre\\new')).toBe(
+      'C:\\Data\\jre\\OLD',
+    )
+  })
+
+  test('rejects paths outside the managed root or containing traversal', () => {
+    expect(getInstalledJavaRuntimePath('/jre-other/old/bin/java', '/jre/new')).toBeUndefined()
+    expect(
+      getInstalledJavaRuntimePath('/jre/old/../../system/bin/java', '/jre/new'),
+    ).toBeUndefined()
   })
 })
 
@@ -125,5 +173,12 @@ describe('isJavaRuntimeInstalled', () => {
     expect(
       isJavaRuntimeInstalled([rec({ path: '/jre/runtime/bin/java', valid: true })], '/jre/runtime'),
     ).toBe(true)
+  })
+  test('recognizes a separately installed managed runtime without matching other names', () => {
+    const path = '/jre/runtime-xmcl-0123456789abcdef0123456789abcdef/bin/java'
+    const installed = rec({ path, isInternal: true, installVendor: 'vendor' })
+    expect(isJavaRuntimeInstalled([installed], '/jre/runtime')).toBe(true)
+    expect(isJavaRuntimeInstalled([installed], '/jre/runtime-other')).toBe(false)
+    expect(isJavaRuntimeInstalled([rec({ path })], '/jre/runtime')).toBe(false)
   })
 })

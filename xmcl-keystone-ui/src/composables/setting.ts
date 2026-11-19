@@ -93,14 +93,15 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
   }) => {
     state.value?.globalInstanceSetting(setting)
   }
-  const setGlobalJavaSettings = (setting: {
+  const setGlobalJavaSettings = async (setting: {
     globalMinMemory: number
     globalMaxMemory: number
     globalAssignMemory: boolean | 'auto'
     globalJava: string
     globalPreferredJavaVendor: string
   }) => {
-    state.value?.globalJavaSetting(setting)
+    if (!state.value) throw new Error('Global settings are not available')
+    await state.value.globalJavaSetting(setting)
   }
 
   return {

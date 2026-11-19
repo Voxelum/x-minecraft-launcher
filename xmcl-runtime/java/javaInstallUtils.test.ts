@@ -2,6 +2,7 @@ import { resolve } from 'path'
 import { describe, expect, test } from 'vitest'
 import {
   getJavaRuntimeDestination,
+  getJavaRuntimeVersionFromName,
   getSupportedJavaRuntimes,
   type JavaRuntime,
 } from './javaInstallUtils'
@@ -45,6 +46,15 @@ describe('Java install metadata helpers', () => {
     expect(getJavaRuntimeDestination('/data/jre', 'temurin-jre21')).toBe(
       resolve('/data/jre', 'temurin-jre21'),
     )
+  })
+
+  test.each([
+    ['eclipse_temurin_jre17.0.21+2', '17.0.21.2'],
+    ['eclipse_temurin_jre17.0.21+9', '17.0.21.9'],
+    ['eclipse_temurin_jre8.0.512+0', '8.0.512'],
+    ['java-runtime-delta', undefined],
+  ])('reads the Java version from runtime directory %s', (name, expected) => {
+    expect(getJavaRuntimeVersionFromName(name)).toBe(expected)
   })
 
   test.each(['../outside', 'vendor/runtime', 'vendor\\runtime', '.', '..', 'C:outside'])(

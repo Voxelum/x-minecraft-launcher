@@ -52,7 +52,8 @@ class ReactiveJavaState extends JavaState {
 export function useJavaContext() {
   const { getJavaState, setJavaSettings, removeJava } = useService(JavaServiceKey)
   const { state, isValidating, error } = useState(getJavaState, ReactiveJavaState)
-  const all = computed(() => sortJavaRecords(state.value?.all ?? []))
+  const records = computed(() => state.value?.all)
+  const all = computed(() => sortJavaRecords(records.value ?? []))
   const missing = computed(() => state.value?.all.length === 0)
 
   const { refreshLocalJava } = useService(JavaServiceKey)

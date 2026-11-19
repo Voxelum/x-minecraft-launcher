@@ -1,5 +1,6 @@
 import { recoverRestore } from '~/infra/recoverRestore'
 import { getRestoreGate } from '~/infra/restoreGate'
+import { getJavaReferenceGate } from '~/java/javaReferenceGate'
 import {
   isMissingVersionJsonError,
   MinecraftFolder,
@@ -215,30 +216,40 @@ export class InstallCoordinator {
     return listMajorJavaVersionsFromVendor(this.app, this.getPath, vendor, force)
   }
 
+  /** List compatible Java runtimes, optionally bypassing cached metadata. */
   async getJavaRuntimes(vendor: string, version: string, metadataSha256?: string, force = false) {
     return listJavaRuntimeOptions(this.app, this.getPath, vendor, version, metadataSha256, force)
   }
 
+  /** Serialize installs for a vendor and version, validating replacement arguments. */
   private applyJavaInstall(
     vendor: string,
     version: string,
     majorVersion: number,
     metadataSha256?: string,
     runtimeUrl?: string,
+    replaceJava?: string,
+    replaceRuntime?: string,
   ) {
+    if (!!replaceJava !== !!replaceRuntime) {
+      throw new Error('Java replacement requires both the executable and runtime paths')
+    }
     return this.app.mutex
       .of(`java/${vendor}/${version}`)
       .runExclusive(() =>
-        this.runJavaInstall(vendor, version, majorVersion, metadataSha256, runtimeUrl),
+        this.runJavaInstall(vendor, version, majorVersion, metadataSha256, runtimeUrl, replaceJava, replaceRuntime),
       )
   }
 
+  /** Install a runtime and record its internal and replacement metadata. */
   private async runJavaInstall(
     vendor: string,
     version: string,
     majorVersion: number,
     metadataSha256?: string,
     runtimeUrl?: string,
+    replaceJava?: string,
+    replaceRuntime?: string,
   ) {
     const task = this.tasks.create<InstallJavaTask>({
       type: 'installJre',
@@ -260,12 +271,24 @@ export class InstallCoordinator {
         task,
         vendor,
         version,
-        (path) => this.javaService.resolveJava(path),
+        majorVersion,
+        (path) => this.javaService.resolveJava(path, majorVersion),
         metadataSha256,
         runtimeUrl,
+        replaceJava && replaceRuntime ? { javaPath: replaceJava, runtimePath: replaceRuntime } : undefined,
       )
+      getJavaReferenceGate(this.app).installed(result.path)
+      this.javaService.state.javaUpdate({
+        ...result,
+        valid: true,
+        isInternal: true,
+        installVendor: vendor,
+        replacesJava: replaceJava,
+        replacementRuntime: replaceRuntime,
+      })
+      if (replaceJava) await this.javaService.flushJavaUpdate()
       task.complete()
-      return result
+      return { ...result, isInternal: true, installVendor: vendor }
     } catch (error) {
       task.fail(error)
       this.logger.error(error as any)
@@ -667,7 +690,7 @@ export class InstallCoordinator {
   async install(request: VersionInstallRequest) {
     await recoverRestore(this.app)
     if (request.type === 'java') {
-      const { target, vendor, version, majorVersion, metadataSha256, runtimeUrl } = request
+      const { target, vendor, version, majorVersion, metadataSha256, runtimeUrl, replaceJava, replaceRuntime } = request
       if (target) {
         return this.app.mutex
           .of(`java/${target.component}`)
@@ -676,7 +699,7 @@ export class InstallCoordinator {
       if (!vendor || !version || majorVersion === undefined) {
         throw new Error('Java installation requires either a target or a vendor/version')
       }
-      return this.applyJavaInstall(vendor, version, majorVersion, metadataSha256, runtimeUrl)
+      return this.applyJavaInstall(vendor, version, majorVersion, metadataSha256, runtimeUrl, replaceJava, replaceRuntime)
     }
     this.invalidateDiagnosis()
     try {

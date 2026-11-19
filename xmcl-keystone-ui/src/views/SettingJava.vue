@@ -116,25 +116,14 @@
               </v-chip>
               <v-chip
                 v-shared-tooltip="
-                  () =>
-                    t(
-                      item.path.startsWith(javaInstallDirectory)
-                        ? 'java.internalJavaHint'
-                        : 'java.importedJavaHint',
-                    )
+                  () => t(item.isInternal ? 'java.internalJavaHint' : 'java.importedJavaHint')
                 "
                 class="installed-java-type h-[20px]"
-                :color="item.path.startsWith(javaInstallDirectory) ? 'green' : 'blue'"
+                :color="item.isInternal ? 'green' : 'blue'"
                 size="small"
                 label
               >
-                {{
-                  t(
-                    item.path.startsWith(javaInstallDirectory)
-                      ? 'java.internalJava'
-                      : 'java.importedJava',
-                  )
-                }}
+                {{ t(item.isInternal ? 'java.internalJava' : 'java.importedJava') }}
               </v-chip>
             </v-list-item-title>
             <v-list-item-title v-else>
@@ -220,7 +209,7 @@ import JavaActions from '@/components/JavaActions.vue'
 import { useDialog } from '@/composables/dialog.js'
 
 const { t } = useI18n()
-const { getGameDataDirectory, showItemInDirectory } = useService(BaseServiceKey)
+const { showItemInDirectory } = useService(BaseServiceKey)
 const {
   globalAssignMemory,
   globalMaxMemory,
@@ -245,7 +234,6 @@ const preferredJava = computed(() => javas.value.find((j) => j.path === preferre
 const assignMemory = ref(globalAssignMemory.value)
 const minMem = ref(globalMinMemory.value)
 const maxMem = ref(globalMaxMemory.value)
-const javaInstallDirectory = ref('')
 const preferredVendor = ref(globalPreferredJavaVendor.value)
 const vendors = computed(() =>
   javaVendors.map((vendor) => ({
@@ -255,19 +243,10 @@ const vendors = computed(() =>
   })),
 )
 
-async function resolveJavaInstallDirectory() {
-  try {
-    const root = await getGameDataDirectory()
-    javaInstallDirectory.value = `${root.replace(/[\\/]+$/, '')}/jre`
-  } catch {
-    javaInstallDirectory.value = ''
-  }
-}
-
 function onPickJava(value: JavaRecord) {
   preferredJavaPath.value = value.path
   javaPickerOpen.value = false
-  save()
+  saveOnLeave()
 }
 
 function onPrependCommandChange(item: JavaRecord, value: string) {
@@ -283,24 +262,22 @@ function onVmOptionsChange(item: JavaRecord, value: string) {
 async function onRemoveJava(value: JavaRecord) {
   if (shouldClearPinOnRemove(value.path, preferredJavaPath.value)) {
     preferredJavaPath.value = ''
-    save()
+    await save()
   }
 
   await removeJava(value, true)
 }
 
-onMounted(async () => {
+onMounted(() => {
   assignMemory.value = globalAssignMemory.value
   minMem.value = globalMinMemory.value
   maxMem.value = globalMaxMemory.value
   preferredJavaPath.value = globalJava.value
   preferredVendor.value = globalPreferredJavaVendor.value
-
-  await resolveJavaInstallDirectory()
 })
 
 function save() {
-  setGlobalJavaSettings({
+  return setGlobalJavaSettings({
     globalAssignMemory: assignMemory.value,
     globalMaxMemory: maxMem.value,
     globalMinMemory: minMem.value,
@@ -310,8 +287,12 @@ function save() {
 }
 
 // Save settings when the component is unmounted or the user leaves the page
-onUnmounted(save)
-useEventListener('beforeunload', save)
+function saveOnLeave() {
+  save().catch((error) => console.error('Failed to save Java settings', error))
+}
+
+onUnmounted(saveOnLeave)
+useEventListener('beforeunload', saveOnLeave)
 </script>
 
 <style scoped>

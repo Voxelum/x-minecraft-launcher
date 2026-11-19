@@ -172,7 +172,7 @@
                       <div class="d-flex align-center justify-space-between pa-3">
                         <div>
                           <div class="text-subtitle-2">
-                            {{ formatRuntimeVersion(subItem.displayVersion) }}
+                            {{ formatJavaRuntimeVersion(subItem.displayVersion) }}
                           </div>
                           <div class="text-caption text-medium-emphasis">
                             {{
@@ -221,7 +221,7 @@ import { javaVendors, kJavaContext } from '@/composables/java'
 import { VersionInstallServiceKey, JavaServiceKey, BaseServiceKey } from '@xmcl/runtime-api'
 import { injection } from '@/util/inject'
 import { useDateString } from '@/composables/date'
-import { isJavaRuntimeInstalled } from '@/util/javaState'
+import { formatJavaRuntimeVersion, isJavaRuntimeInstalled } from '@/util/javaState'
 import SettingIcon from '@/components/SettingIcon.vue'
 
 const { t } = useI18n()
@@ -283,12 +283,6 @@ function getMajor(version: RuntimeVersion) {
 
 function getVendorVersions(vendor: JavaVendor, major: number) {
   return vendor.versions.filter((version) => getMajor(version) === major)
-}
-
-function formatRuntimeVersion(value: string) {
-  // Prism build identifiers use + for the build metadata separator.
-  // Show it as a dotted suffix, except for the conventional +0 build.
-  return value.replace(/\+(\d+)$/, (_match, build: string) => (build === '0' ? '' : `.${build}`))
 }
 
 async function openJavaInstallDirectory() {

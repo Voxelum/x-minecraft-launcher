@@ -6,6 +6,7 @@ import { ServiceStateManager } from '~/service'
 import { kSettings } from './settings'
 import { getRestoreGate } from '~/infra/restoreGate'
 import { recoverRestore } from '~/infra/recoverRestore'
+import { getJavaReferenceGate } from '~/java/javaReferenceGate'
 
 export const pluginSettings: LauncherAppPlugin = async (app) => {
   const stateManager = await app.registry.get(ServiceStateManager)
@@ -22,12 +23,16 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
       logger.warn(e as Error)
       throw e
     }
-  }, 1000)
+  }, 1000, 'java-update')
   app.registryDisposer(() => saver.flush())
   // Runtime status updates are not configuration and must remain usable by
   // network/update/background callbacks while persistent config is frozen.
   const runtimeMutations = ['localesSet', 'updateCapabilitySet', 'updateStatusSet', 'updateInfoSet', 'onlineSet', 'diskFullErrorSet', 'databaseReadySet', 'corruptedResourceCountSet', 'invalidGameDataPathSet']
   gate.guardState(state, runtimeMutations)
+  const javaGate = getJavaReferenceGate(app)
+  javaGate.guardReferenceMutation<{ globalJava: string }>(state, 'config', settings => [settings.globalJava])
+  javaGate.guardReferenceMutation<{ globalJava: string }>(state, 'globalJavaSetting', settings => [settings.globalJava])
+  javaGate.guardReferenceMutation<string>(state, 'globalJavaSet', java => [java])
 
   const normalizeLocale = (locale: string) => {
     locale = locale || app.host.getLocale()
