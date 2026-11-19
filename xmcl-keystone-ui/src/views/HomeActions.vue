@@ -8,10 +8,22 @@
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
       'grid-template-columns': `repeat(${
-        isBedrock ? 2 : 4
+        isBedrock ? 2 : 5
       }, minmax(0, 1fr))`,
     }"
   >
+    <v-btn
+      v-if="!isBedrock"
+      data-testid="home-repair-action"
+      v-shared-tooltip="() => t('instanceRepair.title')"
+      icon
+      variant="text"
+      density="comfortable"
+      :aria-label="t('instanceRepair.title')"
+      @click="showRepairDialog(path)"
+    >
+      <v-icon> build_circle </v-icon>
+    </v-btn>
     <v-btn
       v-if="!isBedrock"
       data-testid="home-screenshots-action"
@@ -77,6 +89,7 @@ import { isBedrockInstance } from "@xmcl/instance";
 import { useDialog } from "../composables/dialog";
 
 const { show: showScreenshots } = useDialog('screenshots')
+const { show: showRepairDialog } = useDialog<string | undefined>('instance-repair')
 const { path, instance } = injection(kInstance);
 const { isValidating } = injection(kInstances);
 const isBedrock = computed(() => isBedrockInstance(instance.value));

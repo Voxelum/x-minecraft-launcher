@@ -2826,3 +2826,56 @@ bigPicture:
   qaHelpDesc: Controller controls and guide
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
+instanceRepair:
+  title: Automatic Build Repair
+  statusScanning: Scanning...
+  statusRepairing: Repairing...
+  statusIssues: '{count} Issues'
+  statusHealthy: Healthy
+  checking: Checking files and configuration...
+  repairingStep: Repairing and restoring files...
+  checkCore: Minecraft Core & Modloader
+  checkLibraries: Libraries & Game Assets
+  checkJava: Java Runtime Environment
+  checkFiles: Modpack Files & Manifest
+  checkMods: Mods, Dependencies & Conflicts
+  checkCrash: Latest Crash Report Analysis
+  coreHealthy: 'Version profile verified ({version})'
+  coreIssuesFound: '{count} core or modloader component(s) need repair'
+  issueUnresolvedVersion: 'Unresolved version: {version}'
+  issueCorruptedVersionJar: 'Corrupted version JAR: {version}'
+  librariesHealthy: All libraries and game assets verified
+  librariesIssuesFound: '{libs} library and {assets} asset issue(s) found'
+  issueLibrariesCount: '{count} missing or corrupted libraries'
+  issueAssetsCount: '{count} missing or corrupted assets'
+  javaHealthy: 'Compatible Java active ({version})'
+  javaIssuesFound: 'Java {major} is required or misconfigured'
+  issueJavaRequired: 'Requires Java {major} runtime'
+  issueMemoryConfig: Invalid or low RAM allocation
+  filesHealthy: All modpack manifest files are intact
+  filesIssuesFound: '{count} unfinished or corrupted modpack file(s)'
+  modsHealthy: '{count} enabled mod(s) verified without conflicts'
+  modsIssuesFound: '{deps} missing dependencies, {conflicts} mod conflict(s)'
+  missingDepLabel: Missing dependency
+  duplicateModLabel: Duplicate mod
+  incompatibleModLabel: Incompatible loader
+  versionConflictLabel: Version conflict
+  crashHealthy: No recent crash issues detected
+  crashIssuesFound: '{count} crash cause(s) identified in latest report'
+  deepReinstallTitle: Deep Reinstall Core & Modloader
+  deepReinstallDesc: Force reinstall version profile, modloader, and verify all core game files
+  rescan: Re-scan
+  fixSingle: Fix
+  copyReport: Copy Report
+  activityLog: Repair Log
+  logScanStarted: Started comprehensive build diagnostics
+  logScanFinished: 'Diagnostics complete ({count} issue(s) found)'
+  logStepDone: 'Repaired {step} ({count} item(s))'
+  logStepFailed: 'Failed while repairing {step}'
+  logMemoryBoosted: 'Increased instance RAM limit to {memory} MB'
+  repairNow: 'Repair Selected ({count})'
+  forceRepair: Force Repair Build
+  bannerSuccess: 'Automatic repair finished ({count} item(s) restored). Your build is ready to launch!'
+  bannerPartial: 'Repair completed, but {remaining} issue(s) still require attention.'
+  repairSuccessNotify: 'Build "{name}" was successfully repaired and verified.'
+  repairPartialNotify: 'Repair finished with {remaining} remaining issue(s).'
