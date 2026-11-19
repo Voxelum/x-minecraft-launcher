@@ -2523,3 +2523,56 @@ localCollection:
   alreadyInCollection: Вже додано
   noMatchingMods: Не знайдено модів за запитом
   addSelectedMods: Додати {count} модів
+instanceRepair:
+  title: Авто-ремонт збірки
+  statusScanning: Перевірка...
+  statusRepairing: Відновлення...
+  statusIssues: 'Проблем: {count}'
+  statusHealthy: Справна
+  checking: Перевірка файлів та конфігурації...
+  repairingStep: Відновлення та дозавантаження файлів...
+  checkCore: Ядро Minecraft та Modloader
+  checkLibraries: Бібліотеки та ігрові асети
+  checkJava: Середовище виконання Java
+  checkFiles: Файли та маніфест модпаку
+  checkMods: Моди, залежності та конфлікти
+  checkCrash: Аналіз останнього краш-репорту
+  coreHealthy: 'Профіль версії перевірено ({version})'
+  coreIssuesFound: 'Потребують відновлення компонентів ядра/модлоадера: {count}'
+  issueUnresolvedVersion: 'Не встановлено версію: {version}'
+  issueCorruptedVersionJar: 'Пошкоджено JAR версії: {version}'
+  librariesHealthy: Усі бібліотеки та асети гри цілісні
+  librariesIssuesFound: 'Проблем із бібліотеками: {libs}, з асетами: {assets}'
+  issueLibrariesCount: 'Відсутні або пошкоджені бібліотеки: {count}'
+  issueAssetsCount: 'Відсутні або пошкоджені асети: {count}'
+  javaHealthy: 'Сумісна Java активна ({version})'
+  javaIssuesFound: 'Потрібна або некоректно налаштована Java {major}'
+  issueJavaRequired: 'Потрібне середовище Java {major}'
+  issueMemoryConfig: Некоректне або замале виділення RAM
+  filesHealthy: Усі файли маніфесту модпаку на місці
+  filesIssuesFound: 'Незавершених або пошкоджених файлів модпаку: {count}'
+  modsHealthy: 'Перевірено увімкнених модів без конфліктів: {count}'
+  modsIssuesFound: 'Відсутніх залежностей: {deps}, конфліктів модів: {conflicts}'
+  missingDepLabel: Відсутня залежність
+  duplicateModLabel: Дублікат мода
+  incompatibleModLabel: Несумісний завантажувач
+  versionConflictLabel: Конфлікт версій
+  crashHealthy: Свіжих критичних крашів не виявлено
+  crashIssuesFound: 'Знайдено причин збою в останньому репорті: {count}'
+  deepReinstallTitle: Глибоке перевстановлення ядра та Modloader
+  deepReinstallDesc: Примусово перевстановити профіль версії, модлоадер та перевірити всі базові файли гри
+  rescan: Перевірити знову
+  fixSingle: Виправити
+  copyReport: Копіювати звіт
+  activityLog: Журнал ремонту
+  logScanStarted: Розпочато комплексну діагностику збірки
+  logScanFinished: 'Діагностику завершено (знайдено проблем: {count})'
+  logStepDone: 'Відновлено {step} (елементів: {count})'
+  logStepFailed: 'Помилка під час відновлення {step}'
+  logMemoryBoosted: 'Збільшено ліміт RAM для інстансу до {memory} МБ'
+  repairNow: 'Виправити обране ({count})'
+  forceRepair: Примусовий ремонт збірки
+  bannerSuccess: 'Авто-ремонт завершено (відновлено елементів: {count}). Збірка готова до запуску!'
+  bannerPartial: 'Ремонт завершено, але ще залишилося проблем: {remaining}.'
+  repairSuccessNotify: 'Збірку "{name}" успішно відновлено та перевірено.'
+  repairPartialNotify: 'Ремонт завершено, залишилося проблем: {remaining}.'

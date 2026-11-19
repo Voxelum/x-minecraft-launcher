@@ -71,6 +71,19 @@
         <v-list-item
           v-if="!isBedrock"
           role="menuitem"
+          data-testid="instance-auto-repair"
+          :title="t('instanceRepair.title')"
+          @click="showRepairDialog(path)"
+        >
+          <template #prepend>
+            <v-icon size="20">
+              handyman
+            </v-icon>
+          </template>
+        </v-list-item>
+        <v-list-item
+          v-if="!isBedrock"
+          role="menuitem"
           :title="t('modpack.export')"
           to="/base-setting?target=modpack"
         >
@@ -445,6 +458,7 @@ const onCreateShortcut = async () => {
 
 // Instance actions (settings / logs / folder / export / install)
 const { show: showLogDialog } = useDialog('log')
+const { show: showRepairDialog } = useDialog<string | undefined>('instance-repair')
 const { show: showInstanceInstallDialog } = useDialog(InstanceInstallDialog)
 const { openModpack } = useService(ModpackServiceKey)
 

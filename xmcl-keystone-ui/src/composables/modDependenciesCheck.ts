@@ -161,7 +161,7 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     // Modrinth / CurseForge checks run in parallel). Keep one file per
     // dependency project so an install plan can never contain two versions
     // of the same mod.
-    installation.value = deduplicateModDependencyInstallations(result)
+    installation.value = deduplicateModDependencyInstallations(result, mods)
     checked.value = true
     operation.begin(_path)
   })

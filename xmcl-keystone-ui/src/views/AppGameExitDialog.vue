@@ -12,6 +12,13 @@
         <v-spacer />
         <v-toolbar-items v-if="!data.launcherError">
           <v-btn
+            prepend-icon="handyman"
+            variant="text"
+            @click="openBuildRepair"
+          >
+            {{ t('instanceRepair.title') }}
+          </v-btn>
+          <v-btn
             @click="openFolder"
            variant="text">
             {{ data.isCrash ? t('instance.openCrashReportFolder') : t('instance.openLogFolder') }}
@@ -74,6 +81,7 @@
 <script lang=ts setup>
 import AppCrashAIHint from '@/components/AppCrashAIHint.vue'
 import { useService } from '@/composables'
+import { useDialog } from '@/composables/dialog'
 import { kEnvironment } from '@/composables/environment'
 import { kInstance } from '@/composables/instance'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
@@ -109,7 +117,13 @@ watch(() => data.isShown, (isShown) => {
 })
 const { t } = useI18n()
 const { path } = injection(kInstance)
+const { show: showRepairDialog } = useDialog<string | undefined>('instance-repair')
 const { getLogContent, getCrashReportContent, getServerLogContent, showLog, showServerLog } = useService(InstanceLogServiceKey)
+
+function openBuildRepair() {
+  data.isShown = false
+  showRepairDialog(path.value)
+}
 const { on } = useService(LaunchServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { error } = injection(kInstanceLaunch)

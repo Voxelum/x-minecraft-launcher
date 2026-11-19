@@ -13,6 +13,7 @@ export function useInstanceContextMenuFunc() {
   const { show: showDeleteDialog } = useDialog('delete-instance')
   const { show: showGroupSelectDialog } = useDialog('mod-group-select')
   const { show: showAutoGroup } = useDialog('auto-group-instances')
+  const { show: showRepairDialog } = useDialog<string | undefined>('instance-repair')
   const { duplicateInstance } = useService(InstanceServiceKey)
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { t } = useI18n()
@@ -91,6 +92,16 @@ export function useInstanceContextMenuFunc() {
         },
         icon: 'folder',
       },
+      ...(inst.edition !== 'bedrock'
+        ? [{
+            text: t('instanceRepair.title'),
+            icon: 'handyman',
+            section: 'action',
+            onClick() {
+              showRepairDialog(inst.path)
+            },
+          }]
+        : []),
       {
         text: t('instance.duplicate'),
         icon: 'file_copy',
