@@ -1,8 +1,19 @@
 import { open, openEntryReadStream, readAllEntries, walkEntriesGenerator } from '@xmcl/unzip'
 import { spawn } from 'child_process'
 import { createReadStream, createWriteStream } from 'fs'
-import { chmod, copyFile, link, mkdir, readFile, rm, stat, symlink, unlink, writeFile } from 'fs/promises'
-import { dirname, join, sep } from 'path'
+import {
+  chmod,
+  copyFile,
+  link,
+  mkdir,
+  readFile,
+  rm,
+  stat,
+  symlink,
+  unlink,
+  writeFile,
+} from 'fs/promises'
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'path'
 import { pipeline } from 'stream/promises'
 import { setTimeout as wait } from 'timers/promises'
 import { extract } from 'tar-stream'
@@ -21,7 +32,7 @@ export interface InstallFile {
   urls: string[]
   size?: number
   checksum?: InstallFileChecksum
-  validator?: 'file' | 'zip' | 'json'
+  validator?: 'file' | 'zip' | 'json' | 'exists'
   /** Trust an existing file with the expected size, but still checksum newly downloaded content. */
   trustExistingSize?: boolean
   /** Replace the existing file before trusting any cached validation state. */
@@ -34,7 +45,7 @@ export interface InstallOutput {
   path: string
   checksum?: InstallFileChecksum
   size?: number
-  validator?: 'file' | 'zip' | 'json'
+  validator?: 'file' | 'zip' | 'json' | 'exists'
 }
 
 export interface JavaCommand {
@@ -69,6 +80,7 @@ export type InstallMaterializeOperation =
   | { type: 'chmod'; path: string; mode: number }
   | { type: 'copy'; source: string; path: string }
   | { type: 'link'; source: string; path: string }
+  | { type: 'symlink'; target: string; path: string }
   | { type: 'remove'; path: string }
   | { type: 'extract'; archive: string; entry: string; path: string }
   | { type: 'merge-zip'; archives: string[]; path: string; excludePrefixes?: string[] }
@@ -119,7 +131,14 @@ export interface InstallRuntime {
 export type InstallEvent =
   | { type: 'task-start'; task: InstallTask; at: number }
   | { type: 'task-end'; task: InstallTask; at: number; duration: number; error?: unknown }
-  | { type: 'file-retry'; task: InstallFilesTask; attempt: number; delay: number; pending: number; error?: unknown }
+  | {
+      type: 'file-retry'
+      task: InstallFilesTask
+      attempt: number
+      delay: number
+      pending: number
+      error?: unknown
+    }
   | { type: 'java-strategy-start'; task: InstallJavaTask; strategy: number }
   | { type: 'java-strategy-failed'; task: InstallJavaTask; strategy: number; error: unknown }
 
@@ -140,9 +159,7 @@ export interface InstallResult {
   timings: Array<{ task: string; type: InstallTask['type']; startedAt: number; duration: number }>
 }
 
-export type InstallPlanStep<T> =
-  | { done: false; plan: InstallManifest }
-  | { done: true; result: T }
+export type InstallPlanStep<T> = { done: false; plan: InstallManifest } | { done: true; result: T }
 
 export interface InstallWorkflow<T> {
   /**
@@ -161,26 +178,42 @@ export interface RunInstallWorkflowOptions {
 }
 
 async function isFileValid(
-  file: Pick<InstallFile, 'path' | 'size' | 'checksum' | 'validatedAt' | 'validator' | 'trustExistingSize' | 'replace'>,
+  file: Pick<
+    InstallFile,
+    'path' | 'size' | 'checksum' | 'validatedAt' | 'validator' | 'trustExistingSize' | 'replace'
+  >,
   runtime: InstallRuntime,
   trustCachedValidation: boolean,
 ) {
+  if (file.validator === 'exists') return runtime.validate(file.path, 'exists')
   if (trustCachedValidation && file.replace) return false
   const fileStat = await runtime.stat(file.path)
   if (!fileStat) return false
-  if (trustCachedValidation && file.validatedAt !== undefined && fileStat.mtimeMs <= file.validatedAt) {
+  if (
+    trustCachedValidation &&
+    file.validatedAt !== undefined &&
+    fileStat.mtimeMs <= file.validatedAt
+  ) {
     return true
   }
-  if (trustCachedValidation && file.trustExistingSize && file.size !== undefined && fileStat.size === file.size) return true
+  if (
+    trustCachedValidation &&
+    file.trustExistingSize &&
+    file.size !== undefined &&
+    fileStat.size === file.size
+  )
+    return true
   let valid: boolean
   if (file.checksum?.value) {
-    valid = await runtime.checksum(file.path, file.checksum.algorithm).catch(() => '') === file.checksum.value
+    valid =
+      (await runtime.checksum(file.path, file.checksum.algorithm).catch(() => '')) ===
+      file.checksum.value
   } else if (file.size !== undefined && file.size >= 0) {
     valid = fileStat.size === file.size
   } else {
     valid = fileStat.size > 0
   }
-  return valid && (!file.validator || await runtime.validate(file.path, file.validator))
+  return valid && (!file.validator || (await runtime.validate(file.path, file.validator)))
 }
 
 async function isOutputValid(output: InstallOutput, runtime: InstallRuntime) {
@@ -210,10 +243,16 @@ async function executeFiles(
   },
 ) {
   const unique = [...new Map(task.files.map((file) => [file.path, file])).values()]
-  let pending = (await Promise.all(unique.map(async (file) => ({
-    file,
-    valid: await isFileValid(file, runtime, true),
-  })))).filter(({ valid }) => !valid).map(({ file }) => file)
+  let pending = (
+    await Promise.all(
+      unique.map(async (file) => ({
+        file,
+        valid: await isFileValid(file, runtime, true),
+      })),
+    )
+  )
+    .filter(({ valid }) => !valid)
+    .map(({ file }) => file)
   let lastError: unknown
 
   for (let attempt = 0; attempt < options.attempts && pending.length > 0; attempt++) {
@@ -224,14 +263,20 @@ async function executeFiles(
     } catch (error) {
       lastError = error
     }
-    const invalid = (await Promise.all(pending.map(async (file) => ({
-      file,
-      valid: await isFileValid({ ...file, validatedAt: undefined }, runtime, false),
-    })))).filter(({ valid }) => !valid).map(({ file }) => file)
+    const invalid = (
+      await Promise.all(
+        pending.map(async (file) => ({
+          file,
+          valid: await isFileValid({ ...file, validatedAt: undefined }, runtime, false),
+        })),
+      )
+    )
+      .filter(({ valid }) => !valid)
+      .map(({ file }) => file)
     await runtime.remove(invalid.map((file) => file.path))
-    pending = invalid.map((file) => file.urls.length > 1
-      ? { ...file, urls: [...file.urls.slice(1), file.urls[0]] }
-      : file)
+    pending = invalid.map((file) =>
+      file.urls.length > 1 ? { ...file, urls: [...file.urls.slice(1), file.urls[0]] } : file,
+    )
     if (pending.length > 0 && lastError && isTerminalInstallError(lastError)) throw lastError
     if (pending.length > 0 && attempt + 1 < options.attempts) {
       const ceiling = Math.min(options.retryMaxDelay, options.retryBaseDelay * 2 ** attempt)
@@ -242,7 +287,12 @@ async function executeFiles(
   }
 
   if (pending.length > 0) {
-    throw lastError ?? new Error(`Cannot recover ${pending.length} install file(s): ${pending.map((file) => file.path).join(', ')}`)
+    throw (
+      lastError ??
+      new Error(
+        `Cannot recover ${pending.length} install file(s): ${pending.map((file) => file.path).join(', ')}`,
+      )
+    )
   }
 }
 
@@ -251,7 +301,8 @@ function isTerminalInstallError(error: unknown): boolean {
   if (error instanceof AggregateError) return error.errors.some(isTerminalInstallError)
   const value = error as { name?: string; code?: string; cause?: unknown }
   if (value.name === 'AbortError') return true
-  if (value.code && ['ABORT_ERR', 'EPERM', 'EACCES', 'ENOSPC', 'EROFS'].includes(value.code)) return true
+  if (value.code && ['ABORT_ERR', 'EPERM', 'EACCES', 'ENOSPC', 'EROFS'].includes(value.code))
+    return true
   return value.cause ? isTerminalInstallError(value.cause) : false
 }
 
@@ -261,7 +312,12 @@ async function executeJava(
   onStrategyStart?: (strategy: number) => void,
   onStrategyFailed?: (strategy: number, error: unknown) => void,
 ) {
-  if (task.skipIfOutputsValid !== false && task.outputs.length > 0 && (await invalidOutputs(task.outputs, runtime)).length === 0) return
+  if (
+    task.skipIfOutputsValid !== false &&
+    task.outputs.length > 0 &&
+    (await invalidOutputs(task.outputs, runtime)).length === 0
+  )
+    return
   let lastError: unknown
   for (let strategyIndex = 0; strategyIndex < task.strategies.length; strategyIndex++) {
     const strategy = task.strategies[strategyIndex]
@@ -271,7 +327,9 @@ async function executeJava(
       const invalid = await invalidOutputs(task.outputs, runtime)
       if (task.outputs.length === 0 || invalid.length === 0) return
       await removeOutputs(task.outputs, runtime)
-      lastError = new Error(`Java strategy produced ${invalid.length} invalid output(s): ${invalid.map((output) => output.path).join(', ')}`)
+      lastError = new Error(
+        `Java strategy produced ${invalid.length} invalid output(s): ${invalid.map((output) => output.path).join(', ')}`,
+      )
       onStrategyFailed?.(strategyIndex, lastError)
     } catch (error) {
       lastError = error
@@ -287,14 +345,18 @@ async function executeMaterialize(task: InstallMaterializeTask, runtime: Install
   try {
     const invalid = await invalidOutputs(task.outputs, runtime)
     if (invalid.length > 0) {
-      throw new Error(`Materialize task produced ${invalid.length} invalid output(s): ${invalid.map((output) => output.path).join(', ')}`)
+      throw new Error(
+        `Materialize task produced ${invalid.length} invalid output(s): ${invalid.map((output) => output.path).join(', ')}`,
+      )
     }
     await transaction.commit()
   } catch (error) {
     try {
       await transaction.rollback()
     } catch (rollbackError) {
-      throw new AggregateError([error, rollbackError], 'Failed to roll back materialization', { cause: error })
+      throw new AggregateError([error, rollbackError], 'Failed to roll back materialization', {
+        cause: error,
+      })
     }
     throw error
   }
@@ -305,7 +367,8 @@ export async function executeInstallManifest(
   runtime: InstallRuntime,
   options: ExecuteInstallManifestOptions = {},
 ): Promise<InstallResult> {
-  if (plan.schemaVersion !== 1) throw new Error(`Unsupported install manifest schema: ${plan.schemaVersion}`)
+  if (plan.schemaVersion !== 1)
+    throw new Error(`Unsupported install manifest schema: ${plan.schemaVersion}`)
   const now = options.now ?? Date.now
   const startedAt = now()
   const attempts = Math.max(1, options.attempts ?? 5)
@@ -314,7 +377,8 @@ export async function executeInstallManifest(
   const random = options.random ?? Math.random
   const waitForRetry = options.wait ?? ((delay, signal) => wait(delay, undefined, { signal }))
   const tasks = new Map(plan.tasks.map((task) => [task.id, task]))
-  if (tasks.size !== plan.tasks.length) throw new Error('Install manifest contains duplicate task ids')
+  if (tasks.size !== plan.tasks.length)
+    throw new Error('Install manifest contains duplicate task ids')
   const running = new Map<string, Promise<void>>()
   const visiting = new Set<string>()
   const timings: InstallResult['timings'] = []
@@ -324,7 +388,8 @@ export async function executeInstallManifest(
     if (existed) return existed
     const task = tasks.get(id)
     if (!task) return Promise.reject(new Error(`Unknown install task ${id}`))
-    if (visiting.has(id)) return Promise.reject(new Error(`Install manifest dependency cycle at ${id}`))
+    if (visiting.has(id))
+      return Promise.reject(new Error(`Install manifest dependency cycle at ${id}`))
     visiting.add(id)
     const dependencies = (task.dependsOn ?? []).map(execute)
     visiting.delete(id)
@@ -332,35 +397,55 @@ export async function executeInstallManifest(
       const taskStartedAt = now()
       options.onEvent?.({ type: 'task-start', task, at: taskStartedAt })
       try {
-        if (task.type === 'files') await executeFiles(task, runtime, {
-          attempts,
-          retryBaseDelay,
-          retryMaxDelay,
-          random,
-          wait: waitForRetry,
-          signal: options.signal,
-          onRetry: (attempt, delay, pending, error) => options.onEvent?.({
-            type: 'file-retry',
+        if (task.type === 'files')
+          await executeFiles(task, runtime, {
+            attempts,
+            retryBaseDelay,
+            retryMaxDelay,
+            random,
+            wait: waitForRetry,
+            signal: options.signal,
+            onRetry: (attempt, delay, pending, error) =>
+              options.onEvent?.({
+                type: 'file-retry',
+                task,
+                attempt,
+                delay,
+                pending,
+                error,
+              }),
+          })
+        else if (task.type === 'java')
+          await executeJava(
             task,
-            attempt,
-            delay,
-            pending,
-            error,
-          }),
-        })
-        else if (task.type === 'java') await executeJava(
-          task,
-          runtime,
-          (strategy) => options.onEvent?.({ type: 'java-strategy-start', task, strategy }),
-          (strategy, error) => options.onEvent?.({ type: 'java-strategy-failed', task, strategy, error }),
-        )
+            runtime,
+            (strategy) => options.onEvent?.({ type: 'java-strategy-start', task, strategy }),
+            (strategy, error) =>
+              options.onEvent?.({ type: 'java-strategy-failed', task, strategy, error }),
+          )
         else await executeMaterialize(task, runtime)
         const endedAt = now()
-        timings.push({ task: task.id, type: task.type, startedAt: taskStartedAt, duration: endedAt - taskStartedAt })
-        options.onEvent?.({ type: 'task-end', task, at: endedAt, duration: endedAt - taskStartedAt })
+        timings.push({
+          task: task.id,
+          type: task.type,
+          startedAt: taskStartedAt,
+          duration: endedAt - taskStartedAt,
+        })
+        options.onEvent?.({
+          type: 'task-end',
+          task,
+          at: endedAt,
+          duration: endedAt - taskStartedAt,
+        })
       } catch (error) {
         const endedAt = now()
-        options.onEvent?.({ type: 'task-end', task, at: endedAt, duration: endedAt - taskStartedAt, error })
+        options.onEvent?.({
+          type: 'task-end',
+          task,
+          at: endedAt,
+          duration: endedAt - taskStartedAt,
+          error,
+        })
         throw error
       }
     })
@@ -411,9 +496,13 @@ export interface NodeInstallRuntimeOptions {
 }
 
 function resolveArchivePath(name: string, stripComponents: number) {
-  if (name.startsWith('/') || /^[A-Za-z]:/.test(name)) return undefined
-  const parts = name.replaceAll('\\', '/').split('/').filter(Boolean).slice(stripComponents)
-  if (parts.length === 0 || parts.some((part) => part === '..')) return undefined
+  if (name.startsWith('/') || /^[A-Za-z]:/.test(name) || name.includes('\0')) return undefined
+  const allParts = name.replaceAll('\\', '/').split('/').filter(Boolean)
+  // Validate before stripping: otherwise an entry such as ../root/file could
+  // hide its traversal component when stripComponents is 1.
+  if (allParts.some((part) => part === '..')) return undefined
+  const parts = allParts.slice(stripComponents)
+  if (parts.length === 0) return undefined
   return parts.join(sep)
 }
 
@@ -427,9 +516,9 @@ async function extractZipArchive(
   try {
     for await (const entry of walkEntriesGenerator(archive)) {
       signal?.throwIfAborted()
-      const relative = resolveArchivePath(entry.fileName, stripComponents)
-      if (!relative) continue
-      const path = join(destination, relative)
+      const relativePath = resolveArchivePath(entry.fileName, stripComponents)
+      if (!relativePath) continue
+      const path = join(destination, relativePath)
       if (entry.fileName.endsWith('/')) {
         await mkdir(path, { recursive: true })
       } else {
@@ -455,18 +544,31 @@ async function extractTarGzArchive(
   try {
     for await (const entry of entries) {
       signal?.throwIfAborted()
-      const relative = resolveArchivePath(entry.header.name, stripComponents)
-      if (!relative) {
+      const relativePath = resolveArchivePath(entry.header.name, stripComponents)
+      if (!relativePath) {
         entry.resume()
         continue
       }
-      const path = join(destination, relative)
+      const path = join(destination, relativePath)
       if (entry.header.type === 'directory') {
         await mkdir(path, { recursive: true })
         entry.resume()
       } else if (entry.header.type === 'symlink' && entry.header.linkname) {
+        const target = entry.header.linkname
+        const resolvedTarget = resolve(dirname(path), target)
+        const targetRelative = relative(resolve(destination), resolvedTarget)
+        if (
+          target.includes('\0') ||
+          isAbsolute(target) ||
+          targetRelative === '..' ||
+          targetRelative.startsWith(`..${sep}`) ||
+          isAbsolute(targetRelative)
+        ) {
+          entry.resume()
+          continue
+        }
         await mkdir(dirname(path), { recursive: true })
-        await symlink(entry.header.linkname, path).catch(() => undefined)
+        await symlink(target, path)
         entry.resume()
       } else if (entry.header.type === 'file') {
         await mkdir(dirname(path), { recursive: true })
@@ -492,13 +594,23 @@ async function mergeZipArchives(
 ) {
   const archives = [] as Array<Awaited<ReturnType<typeof open>>>
   try {
-    const entries = new Map<string, { archive: Awaited<ReturnType<typeof open>>; entry: Awaited<ReturnType<typeof readAllEntries>>[number] }>()
+    const entries = new Map<
+      string,
+      {
+        archive: Awaited<ReturnType<typeof open>>
+        entry: Awaited<ReturnType<typeof readAllEntries>>[number]
+      }
+    >()
     for (const archivePath of archivePaths) {
       signal?.throwIfAborted()
       const archive = await open(archivePath, { lazyEntries: true, autoClose: false })
       archives.push(archive)
       for (const entry of await readAllEntries(archive)) {
-        if (entry.fileName.endsWith('/') || excludePrefixes.some((prefix) => entry.fileName.startsWith(prefix))) continue
+        if (
+          entry.fileName.endsWith('/') ||
+          excludePrefixes.some((prefix) => entry.fileName.startsWith(prefix))
+        )
+          continue
         entries.set(entry.fileName, { archive, entry })
       }
     }
@@ -517,23 +629,32 @@ async function mergeZipArchives(
 
 export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}): InstallRuntime {
   return {
-    stat: (path) => stat(path).then((entry) => entry.isFile() ? { size: entry.size, mtimeMs: entry.mtimeMs } : undefined, () => undefined),
+    stat: (path) =>
+      stat(path).then(
+        (entry) => (entry.isFile() ? { size: entry.size, mtimeMs: entry.mtimeMs } : undefined),
+        () => undefined,
+      ),
     checksum: options.checksum ?? checksumFile,
-    download: options.download ?? (async (files) => {
-      throw new Error(`No install download adapter for ${files.length} file(s)`)
-    }),
-    java: options.runJava ?? (async (command) => {
-      const process = spawn(command.executable, command.args, {
-        cwd: command.cwd,
-        env: command.env ? { ...globalThis.process.env, ...command.env } : undefined,
-        signal: options.signal,
-      })
-      await waitProcess(process)
-    }),
+    download:
+      options.download ??
+      (async (files) => {
+        throw new Error(`No install download adapter for ${files.length} file(s)`)
+      }),
+    java:
+      options.runJava ??
+      (async (command) => {
+        const process = spawn(command.executable, command.args, {
+          cwd: command.cwd,
+          env: command.env ? { ...globalThis.process.env, ...command.env } : undefined,
+          signal: options.signal,
+        })
+        await waitProcess(process)
+      }),
     materialize: async (operations) => {
       const targets = new Set<string>()
       for (const operation of operations) {
-        if (targets.has(operation.path)) throw new Error(`Duplicate materialize target ${operation.path}`)
+        if (targets.has(operation.path))
+          throw new Error(`Duplicate materialize target ${operation.path}`)
         targets.add(operation.path)
       }
       const prepared: Array<{
@@ -568,12 +689,16 @@ export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}
             }
           }
         }
-        if (errors.length > 0) throw new AggregateError(errors, 'Failed to restore materialized paths')
+        if (errors.length > 0)
+          throw new AggregateError(errors, 'Failed to restore materialized paths')
       }
       try {
         for (const operation of operations) {
           if (operation.type === 'ensure-directory') {
-            const existed = await stat(operation.path).then(() => true, () => false)
+            const existed = await stat(operation.path).then(
+              () => true,
+              () => false,
+            )
             await mkdir(operation.path, { recursive: true })
             prepared.push({ operation, replaced: false, created: !existed })
             continue
@@ -599,13 +724,18 @@ export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}
             await copyFile(operation.source, temporary)
           } else if (operation.type === 'link') {
             await link(operation.source, temporary)
+          } else if (operation.type === 'symlink') {
+            await symlink(operation.target, temporary)
           } else if (operation.type === 'extract') {
             const archive = await open(operation.archive, { lazyEntries: true, autoClose: false })
             try {
               let extracted = false
               for await (const entry of walkEntriesGenerator(archive)) {
                 if (entry.fileName !== operation.entry) continue
-                await pipeline(await openEntryReadStream(archive, entry), createWriteStream(temporary))
+                await pipeline(
+                  await openEntryReadStream(archive, entry),
+                  createWriteStream(temporary),
+                )
                 extracted = true
                 break
               }
@@ -643,8 +773,15 @@ export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}
         for (const entry of prepared) {
           if (entry.operation.type === 'ensure-directory') continue
           const backup = `${entry.operation.path}.backup-${process.pid}-${Math.random().toString(36).slice(2)}`
-          if (await stat(entry.operation.path).then(() => true, () => false)) {
-            await move(entry.operation.path, backup, () => { entry.backup = backup })
+          if (
+            await stat(entry.operation.path).then(
+              () => true,
+              () => false,
+            )
+          ) {
+            await move(entry.operation.path, backup, () => {
+              entry.backup = backup
+            })
           }
           entry.replaced = true
           if (entry.operation.type !== 'remove' && entry.temporary) {
@@ -656,16 +793,22 @@ export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}
         try {
           await rollback()
         } catch (rollbackError) {
-          throw new AggregateError([error, rollbackError], 'Failed to roll back materialization', { cause: error })
+          throw new AggregateError([error, rollbackError], 'Failed to roll back materialization', {
+            cause: error,
+          })
         }
         throw error
       }
 
       return {
         commit: async () => {
-          await Promise.all(prepared.map((entry) =>
-            entry.backup ? rm(entry.backup, { recursive: true, force: true }).catch(() => undefined) : Promise.resolve(),
-          ))
+          await Promise.all(
+            prepared.map((entry) =>
+              entry.backup
+                ? rm(entry.backup, { recursive: true, force: true }).catch(() => undefined)
+                : Promise.resolve(),
+            ),
+          )
         },
         rollback,
       }
@@ -674,12 +817,26 @@ export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}
       await Promise.all(paths.map((path) => unlink(path).catch(() => undefined)))
     },
     validate: async (path, validator) => {
-      if (validator === 'file') return stat(path).then((entry) => entry.isFile(), () => false)
+      if (validator === 'exists')
+        return stat(path).then(
+          () => true,
+          () => false,
+        )
+      if (validator === 'file')
+        return stat(path).then(
+          (entry) => entry.isFile(),
+          () => false,
+        )
       if (validator === 'json') {
-        return readFile(path, 'utf8').then((content) => {
-          JSON.parse(content)
-          return true
-        }, () => false).catch(() => false)
+        return readFile(path, 'utf8')
+          .then(
+            (content) => {
+              JSON.parse(content)
+              return true
+            },
+            () => false,
+          )
+          .catch(() => false)
       }
       let zip: Awaited<ReturnType<typeof open>> | undefined
       try {

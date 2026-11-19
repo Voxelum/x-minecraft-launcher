@@ -23,10 +23,13 @@ import {
 const minecraft = MinecraftFolder.from('C:/Minecraft')
 const files = resolveLibraryInstallFiles(version.libraries, minecraft, options)
 
-await executeInstallManifest({
-  schemaVersion: 1,
-  tasks: [{ id: 'libraries', type: 'files', files }],
-}, createDefaultNodeInstallRuntime())
+await executeInstallManifest(
+  {
+    schemaVersion: 1,
+    tasks: [{ id: 'libraries', type: 'files', files }],
+  },
+  createDefaultNodeInstallRuntime(),
+)
 ```
 
 Common file resolvers include:
@@ -63,7 +66,6 @@ Available workflows include:
 - `createProfileInstallWorkflow`
 - `createModernForgeInstallWorkflow`
 - `createJavaRuntimeInstallWorkflow`
-- `createZuluRuntimeInstallWorkflow`
 
 `runInstallWorkflow` is the lower-level stage runner for applications that execute each generated manifest through their own service boundary.
 
@@ -81,15 +83,14 @@ Materialize outputs are postconditions, not cache keys. Materialize operations r
 
 The `ensure-directory` operation preserves an existing directory and creates it only when absent. Operations that write files already ensure their own parent directories, so workflows emit `ensure-directory` only when the directory itself is part of the required layout.
 
+Use `link` for hard links and `symlink` for symbolic links. The `exists` output validator accepts either a file or directory, including a symlink target.
+
 ## Runtime Adapters
 
 `createDefaultNodeInstallRuntime` uses `@xmcl/file-transfer` for downloads. Applications can replace downloading, checksums, or Java execution while retaining the standard filesystem implementation:
 
 ```ts
-import {
-  createNodeInstallRuntime,
-  executeInstallManifest,
-} from '@xmcl/installer'
+import { createNodeInstallRuntime, executeInstallManifest } from '@xmcl/installer'
 
 const runtime = createNodeInstallRuntime({
   signal: controller.signal,

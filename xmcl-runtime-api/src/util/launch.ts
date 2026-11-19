@@ -18,10 +18,10 @@ export interface GenerateLaunchOptions {
   overrides?: Partial<LaunchOptions>
   dry?: boolean
   javaPath?: string
+  globalJavaPrependCommand?: string
+  globalJavaVmOptions?: string[]
   globalEnv: Record<string, string>
-  globalVmOptions: string[]
   globalMcOptions: string[]
-  globalPrependCommand: string
   globalAssignMemory: boolean | 'auto'
   globalMinMemory: number
   globalMaxMemory: number
@@ -54,10 +54,10 @@ export async function generateLaunchOptionsWithGlobal(
     overrides,
     dry,
     javaPath: _javaPath,
+    globalJavaPrependCommand,
+    globalJavaVmOptions,
     globalEnv,
-    globalVmOptions,
     globalMcOptions,
-    globalPrependCommand,
     globalAssignMemory,
     globalMinMemory,
     globalMaxMemory,
@@ -72,7 +72,7 @@ export async function generateLaunchOptionsWithGlobal(
     modCount,
     getOrInstallAuthlibInjector,
     track,
-  }: GenerateLaunchOptions
+  }: GenerateLaunchOptions,
 ) {
   const ver = version
 
@@ -91,10 +91,12 @@ export async function generateLaunchOptionsWithGlobal(
 
   const disableAuthlibInjector = inst.disableAuthlibInjector ?? globalDisableAuthlibInjector
   if (
-    !disableAuthlibInjector
-    && authority
-    && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.authority === AUTHORITY_DEV)
-    && !dry
+    !disableAuthlibInjector &&
+    authority &&
+    (authority.protocol === 'http:' ||
+      authority?.protocol === 'https:' ||
+      userProfile.authority === AUTHORITY_DEV) &&
+    !dry
   ) {
     try {
       yggdrasilAgent = {
@@ -135,9 +137,10 @@ export async function generateLaunchOptionsWithGlobal(
   }
   maxMemory = assignMemory === true && maxMemory > 0 ? maxMemory : undefined
 
-  const vmOptions = inst.vmOptions ?? globalVmOptions.filter(v => !!v)
-  const mcOptions = inst.mcOptions ?? globalMcOptions.filter(v => !!v)
-  const prependCommand = inst.prependCommand ?? globalPrependCommand
+  const prependCommand = inst.prependCommand ?? globalJavaPrependCommand ?? ''
+  const vmOptions = inst.vmOptions ?? globalJavaVmOptions?.filter((v) => !!v) ?? []
+
+  const mcOptions = inst.mcOptions ?? globalMcOptions.filter((v) => !!v)
 
   const options: LaunchOptions = {
     operationId,

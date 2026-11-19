@@ -6,6 +6,7 @@ import {
   resolveFabricLoaderVersion,
   resolveForgeVersion,
   resolveQuiltVersion,
+  type Java,
 } from '@xmcl/runtime-api'
 import { isSystemError } from '@xmcl/utils'
 import { ensureDir, move, stat, unlink, readFile, writeFile, ensureFile } from 'fs-extra'
@@ -26,6 +27,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const getPath = await app.registry.get(kGameDataPath)
 
   const logger = app.getLogger('LaunchPrecheck')
+  const javaRepairs = new Map<number, Promise<Java>>()
 
   // `libraries/` and `versions/` are read-mostly launcher-managed caches
   // (the game only consumes them, the installer writes the source-of-truth
@@ -82,7 +84,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       // (a concurrent setup won the race, or a stale entry we couldn't remove
       // is in fact correct). Treat EEXIST as success instead of raising the
       // `LaunchLinkError` storm that 87/91 of 0.61.0's link failures came from.
-      if (isSystemError(e) && e.code === 'EEXIST' && await isLinkTo(toPath, fromPath)) {
+      if (isSystemError(e) && e.code === 'EEXIST' && (await isLinkTo(toPath, fromPath))) {
         return
       }
       e.name = 'LaunchLinkError'
@@ -107,19 +109,35 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
         if (!resolved) {
           const managed = getManagedJavaComponent(javaPath, getPath('jre'))
           const cached = javaService.state.all.find((java) => java.path === javaPath)
-          const target = ('javaVersion' in payload.version
-            ? payload.version.javaVersion
-            : undefined) ?? (managed && cached?.majorVersion
+          const target =
+            ('javaVersion' in payload.version ? payload.version.javaVersion : undefined) ??
+            (managed && cached?.majorVersion
               ? { component: managed.component, majorVersion: cached.majorVersion }
               : undefined)
-          if (managed && target) {
-            await javaService.removeJava(javaPath)
-            const installer = await app.registry.getOrCreate(VersionInstallService)
-            resolved = await installer.install({
-              type: 'java',
-              target,
-              forceZulu: managed.forceZulu,
-            })
+          if (managed && target && await javaService.validateJavaPath(javaPath) === JavaValidation.NotExisted) {
+            // Share repair work by major version and preserve the missing runtime directory.
+            let repair = javaRepairs.get(target.majorVersion)
+            if (!repair) {
+              repair = (async () => {
+                const candidates = javaService.state.all.filter((java) =>
+                  java.path !== javaPath && java.isInternal && java.valid &&
+                  !java.replacesJava && java.majorVersion === target.majorVersion)
+                for (const candidate of candidates) {
+                  const existing = await javaService.resolveJava(candidate.path)
+                  if (existing?.majorVersion === target.majorVersion) return existing
+                }
+                const installer = await app.registry.getOrCreate(VersionInstallService)
+                return installer.install({ type: 'java', target })
+              })()
+              javaRepairs.set(target.majorVersion, repair)
+            }
+            try {
+              resolved = await repair
+            } finally {
+              if (javaRepairs.get(target.majorVersion) === repair) {
+                javaRepairs.delete(target.majorVersion)
+              }
+            }
           }
           if (resolved) {
             input.java = resolved.path
@@ -224,10 +242,14 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   app.registry.get(InstanceService).then((serv) => {
     serv.state.subscribe('instanceAdd', (instance) => {
       if (instance.edition === 'bedrock') return
-      void getRestoreGate(app).run(() => Promise.all([
-        ensureLinkFolderFromRoot(instance.path, 'libraries'),
-        ensureLinkFolderFromRoot(instance.path, 'versions'),
-      ])).catch(e => logger.error(e))
+      void getRestoreGate(app)
+        .run(() =>
+          Promise.all([
+            ensureLinkFolderFromRoot(instance.path, 'libraries'),
+            ensureLinkFolderFromRoot(instance.path, 'versions'),
+          ]),
+        )
+        .catch((e) => logger.error(e))
     })
   })
   launchService.registerMiddleware({
@@ -295,7 +317,8 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       if (!enabled) return
 
       const locale = settings.locale || app.host.getLocale() || 'en'
-      const minecraftVersion = 'version' in payload ? payload.version.minecraftVersion : inst?.runtime.minecraft
+      const minecraftVersion =
+        'version' in payload ? payload.version.minecraftVersion : inst?.runtime.minecraft
       const mcLang = toMinecraftLanguage(locale, minecraftVersion)
 
       const optionsTxtPath = join(gameDirectory, 'options.txt')

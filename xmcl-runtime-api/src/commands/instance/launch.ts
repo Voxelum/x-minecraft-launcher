@@ -94,11 +94,9 @@ export const launchInstanceCommand = defineCommand({
     let versionId: string
     if (input.dry) {
       const localVersions = await ctx.call(VersionServiceKey, 'getLocalVersions')
-      const versionHeader = findMatchedVersion(
-        localVersions.local,
-        instance.version,
-        { ...instance.runtime },
-      )
+      const versionHeader = findMatchedVersion(localVersions.local, instance.version, {
+        ...instance.runtime,
+      })
       if (!versionHeader) {
         throw new Error(`No local version matches instance '${instance.path}'`)
       }
@@ -171,9 +169,9 @@ export const launchInstanceCommand = defineCommand({
         dry: input.dry,
         javaPath: java?.path,
         globalEnv: settings.globalEnv,
-        globalVmOptions: settings.globalVmOptions,
+        globalJavaPrependCommand: java?.prependCommand,
+        globalJavaVmOptions: java?.vmOptions,
         globalMcOptions: settings.globalMcOptions,
-        globalPrependCommand: settings.globalPrependCommand,
         globalAssignMemory: settings.globalAssignMemory,
         globalMinMemory: settings.globalMinMemory,
         globalMaxMemory: settings.globalMaxMemory,
@@ -192,7 +190,11 @@ export const launchInstanceCommand = defineCommand({
     )
 
     if (input.dry) {
-      ctx.out.json({ ok: true, command: 'instance.launch', data: { dry: true, options: launchOptions } })
+      ctx.out.json({
+        ok: true,
+        command: 'instance.launch',
+        data: { dry: true, options: launchOptions },
+      })
       return undefined
     }
 

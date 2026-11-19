@@ -7,7 +7,8 @@ import { kEnvironment } from './environment'
 import { useState } from './syncableState'
 import { useUpdateCapability } from './updateCapability'
 
-export const kUpdateSettings: InjectionKey<ReturnType<typeof useUpdateSettings>> = Symbol('UpdateSettings')
+export const kUpdateSettings: InjectionKey<ReturnType<typeof useUpdateSettings>> =
+  Symbol('UpdateSettings')
 
 export function useUpdateSettings() {
   const { checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
@@ -49,6 +50,7 @@ export function useUpdateSettings() {
     updateInfo,
   }
 }
+
 export const kSettingsState: InjectionKey<ReturnType<typeof useSettingsState>> = Symbol('Settings')
 
 export function useSettingsState() {
@@ -61,24 +63,23 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
   const globalMinMemory = computed(() => state.value?.globalMinMemory ?? 0)
   const globalMaxMemory = computed(() => state.value?.globalMaxMemory ?? 0)
   const globalJava = computed(() => state.value?.globalJava ?? '')
-  const globalVmOptions = computed(() => state.value?.globalVmOptions ?? [])
+  const defaultPreferredJavaVendor = computed(() => state.value?.defaultPreferredJavaVendor ?? '')
+  const globalPreferredJavaVendor = computed(
+    () => state.value?.globalPreferredJavaVendor ?? 'default',
+  )
   const globalMcOptions = computed(() => state.value?.globalMcOptions ?? [])
   const globalFastLaunch = computed(() => state.value?.globalFastLaunch ?? false)
   const globalHideLauncher = computed(() => state.value?.globalHideLauncher ?? false)
   const globalShowLog = computed(() => state.value?.globalShowLog ?? false)
-  const globalDisableAuthlibInjector = computed(() => state.value?.globalDisableAuthlibInjector ?? true)
+  const globalDisableAuthlibInjector = computed(
+    () => state.value?.globalDisableAuthlibInjector ?? true,
+  )
   const globalDisableElyByAuthlib = computed(() => state.value?.globalDisableElyByAuthlib ?? false)
   const globalSyncGameLanguage = computed(() => state.value?.globalSyncGameLanguage ?? false)
-  const globalPrependCommand = computed(() => state.value?.globalPrependCommand ?? '')
   const globalPreExecuteCommand = computed(() => state.value?.globalPreExecuteCommand ?? '')
   const globalEnv = computed(() => state.value?.globalEnv ?? {})
   const globalResolution = computed(() => state.value?.globalResolution)
   const setGlobalSettings = (setting: {
-    globalMinMemory: number
-    globalMaxMemory: number
-    globalAssignMemory: boolean | 'auto'
-    globalJava: string
-    globalVmOptions: string[]
     globalMcOptions: string[]
     globalFastLaunch: boolean
     globalHideLauncher: boolean
@@ -86,12 +87,21 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalDisableAuthlibInjector: boolean
     globalDisableElyByAuthlib: boolean
     globalSyncGameLanguage?: boolean
-    globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
     globalResolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
   }) => {
     state.value?.globalInstanceSetting(setting)
+  }
+  const setGlobalJavaSettings = async (setting: {
+    globalMinMemory: number
+    globalMaxMemory: number
+    globalAssignMemory: boolean | 'auto'
+    globalJava: string
+    globalPreferredJavaVendor: string
+  }) => {
+    if (!state.value) throw new Error('Global settings are not available')
+    await state.value.globalJavaSetting(setting)
   }
 
   return {
@@ -99,7 +109,8 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalMinMemory,
     globalMaxMemory,
     globalJava,
-    globalVmOptions,
+    globalPreferredJavaVendor,
+    defaultPreferredJavaVendor,
     globalMcOptions,
     globalFastLaunch,
     globalHideLauncher,
@@ -107,11 +118,11 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalDisableAuthlibInjector,
     globalDisableElyByAuthlib,
     globalSyncGameLanguage,
-    globalPrependCommand,
     globalPreExecuteCommand,
     globalEnv,
     globalResolution,
     setGlobalSettings,
+    setGlobalJavaSettings,
   }
 }
 export function useGameDirectory() {
@@ -174,7 +185,10 @@ export function formatProxy(host: string, port: string) {
 }
 
 export function useSettings() {
-  const streamerMode = inject('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false }))
+  const streamerMode = inject(
+    'streamerMode',
+    useLocalStorage('streamerMode', false, { writeDefaults: false }),
+  )
   const { state, error, isValidating } = injection(kSettingsState)
 
   const getProxy = () => {
@@ -183,39 +197,39 @@ export function useSettings() {
 
   const locales = computed(() => state.value?.locales || [])
   const selectedLocale = computed({
-    get: () => locales.value.find(l => l.locale === state.value?.locale)?.locale || 'en',
-    set: v => state.value?.localeSet(v),
+    get: () => locales.value.find((l) => l.locale === state.value?.locale)?.locale || 'en',
+    set: (v) => state.value?.localeSet(v),
   })
   const enableDedicatedGPUOptimization = computed({
     get: () => state.value?.enableDedicatedGPUOptimization ?? false,
-    set: v => state.value?.enableDedicatedGPUOptimizationSet(v),
+    set: (v) => state.value?.enableDedicatedGPUOptimizationSet(v),
   })
   const apiSetsPreference = computed({
     get: () => state.value?.apiSetsPreference ?? '',
-    set: v => state.value?.apiSetsPreferenceSet(v),
+    set: (v) => state.value?.apiSetsPreferenceSet(v),
   })
   const replaceNative = computed({
-    get: () => state.value?.replaceNatives ?? 'legacy-only' as string | false,
-    set: v => state.value?.replaceNativesSet(v as any),
+    get: () => state.value?.replaceNatives ?? ('legacy-only' as string | false),
+    set: (v) => state.value?.replaceNativesSet(v as any),
   })
   const maxSockets = ref(state.value?.maxSockets)
   const maxAPISockets = ref(state.value?.maxAPISockets)
   const proxy = ref(getProxy())
   const httpProxyEnabled = computed({
     get: () => state.value?.httpProxyEnabled ?? false,
-    set: v => state.value?.httpProxyEnabledSet(v),
+    set: (v) => state.value?.httpProxyEnabledSet(v),
   })
   const developerMode = computed({
     get: () => state.value?.developerMode ?? false,
-    set: v => state.value?.developerModeSet(v),
+    set: (v) => state.value?.developerModeSet(v),
   })
   const disableTelemetry = computed({
     get: () => state.value?.disableTelemetry ?? false,
-    set: v => state.value?.disableTelemetrySet(v),
+    set: (v) => state.value?.disableTelemetrySet(v),
   })
   const multiplayerTransport = computed({
     get: () => state.value?.multiplayerTransport ?? 'webrtc',
-    set: v => state.value?.multiplayerTransportSet(v),
+    set: (v) => state.value?.multiplayerTransportSet(v),
   })
   const enableDiscord = computed({
     get: () => state.value?.discordPresence ?? false,
@@ -229,11 +243,14 @@ export function useSettings() {
     proxy.value.port = p.port
   })
 
-  watch(computed(() => state.value?.httpProxy), () => {
-    const p = getProxy()
-    proxy.value.host = p.host
-    proxy.value.port = p.port
-  })
+  watch(
+    computed(() => state.value?.httpProxy),
+    () => {
+      const p = getProxy()
+      proxy.value.host = p.host
+      proxy.value.port = p.port
+    },
+  )
 
   onUnmounted(() => {
     const p = proxy.value
