@@ -5,6 +5,7 @@ import { join } from 'path'
 import { Readable } from 'stream'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { HAS_DEV_SERVER, HOST } from './constant'
+import { forwardReferrerHeader } from './protocolRequestHeaders'
 
 export class ElectronSession {
   private cached: Record<string, Session> = {}
@@ -87,7 +88,9 @@ export class ElectronSession {
       const headers = {} as Record<string, string>
       request.headers.forEach((value, key) => {
         headers[key] = value
-      })
+			})
+
+      forwardReferrerHeader(headers, request.referrer)
 
       const adaptRequestBody = () => {
         if (!request.body) return undefined
