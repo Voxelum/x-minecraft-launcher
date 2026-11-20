@@ -89,6 +89,13 @@ export class ElectronSession {
         headers[key] = value
       })
 
+      if (!headers.referer && request.referrer && URL.canParse(request.referrer)) {
+        const url = new URL(request.referrer)
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+          headers.referer = url.href
+        }
+      }
+
       const adaptRequestBody = () => {
         if (!request.body) return undefined
         const readable = Readable.fromWeb(request.body as any)
