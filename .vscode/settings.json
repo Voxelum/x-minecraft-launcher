@@ -16,6 +16,7 @@
         "**/xmcl-electron-app/build/output/**": true
     },
     "typescript.preferences.quoteStyle": "single",
+    "editor.detectIndentation": true,
     "editor.tabSize": 2,
     "i18n-ally.enabledFrameworks": [
         "vue-sfc",
