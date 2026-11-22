@@ -8,6 +8,7 @@ import { useService } from '@/composables/service'
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
+import { getCurseforgeCardImages } from '@/util/storeCardImages'
 import { getStoreSources, mergeStoreResults, StoreSortMetrics } from '@/util/storeSort'
 import { getSWRV } from '@/util/swrvGet'
 import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
@@ -188,13 +189,12 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
         id: p.id.toString(),
         type: 'curseforge',
         title: p.name,
-        iconUrl: p.logo?.thumbnailUrl ?? '',
+        ...getCurseforgeCardImages(p),
         description: p.summary,
         author: p.authors[0]?.name ?? '',
         downloadCount: getExpectedSize(p.downloadCount, ''),
         updatedAt: getDateString(p.dateModified),
         version: p.latestFilesIndexes[0]?.gameVersion,
-        gallery: p.screenshots.map(s => s?.thumbnailUrl || ''),
         localizedTitle: mapping?.name,
         localizedDescription: mapping?.description,
       }
