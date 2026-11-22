@@ -1,11 +1,11 @@
 <template>
-  <v-dialog v-model="isShown" class="java-update-dialog" max-width="480">
+  <v-dialog v-model="isShown" aria-labelledby="java-update-title" class="java-update-dialog" max-width="480">
     <v-card>
       <div class="java-update-header">
         <div class="flex h-10 w-10 items-center justify-center">
           <v-icon color="primary" size="22">coffee</v-icon>
         </div>
-        <v-card-title class="java-update-title text-base font-bold">
+        <v-card-title id="java-update-title" class="java-update-title text-base font-bold">
           {{ t('javaUpdate.title') }}
         </v-card-title>
       </div>

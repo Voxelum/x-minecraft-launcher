@@ -1,5 +1,11 @@
 <template>
-  <v-dialog v-model="isShown" class="setting-page" max-width="950" transition="dialog-transition">
+  <v-dialog
+    v-model="isShown"
+    aria-labelledby="java-installer-title"
+    class="setting-page"
+    max-width="950"
+    transition="dialog-transition"
+  >
     <v-card class="rounded-xl overflow-hidden java-installer-card">
       <!-- Toolbar Header -->
       <v-toolbar color="surface" density="comfortable" class="px-5 border-b">
@@ -7,7 +13,7 @@
           <v-icon size="20">coffee</v-icon>
         </v-avatar>
 
-        <v-toolbar-title class="text-subtitle-1 font-weight-bold">
+        <v-toolbar-title id="java-installer-title" class="text-subtitle-1 font-weight-bold">
           {{ t('setting.installJava') }}
         </v-toolbar-title>
 
@@ -30,13 +36,14 @@
             variant="text"
             density="comfortable"
             size="small"
-            @click="loadVendors(true)"
+            @click="refreshCatalog(true)"
           >
             <v-icon>refresh</v-icon>
           </v-btn>
 
           <v-btn
             v-shared-tooltip="() => t('shared.openFolder')"
+            :aria-label="t('shared.openFolder')"
             icon
             variant="text"
             size="small"
@@ -45,7 +52,15 @@
           >
             <v-icon>folder_open</v-icon>
           </v-btn>
-          <v-btn icon variant="text" size="small" data-testid="java-installer-close" @click="hide">
+          <v-btn
+            v-shared-tooltip="() => t('shared.close')"
+            :aria-label="t('shared.close')"
+            icon
+            variant="text"
+            size="small"
+            data-testid="java-installer-close"
+            @click="hide"
+          >
             <v-icon>close</v-icon>
           </v-btn>
         </div>
@@ -64,7 +79,7 @@
                 class="vendor-nav-item"
                 color="primary"
                 rounded="lg"
-                :title="t(vendor.title)"
+                :title="vendor.title"
                 @click="scrollTo(vendor.id)"
               >
                 <template #prepend>
@@ -111,16 +126,22 @@
           @scroll="onScroll"
           @scrollend="onScrollEnd"
         >
-          <div v-if="error">
-            <v-alert type="error" variant="tonal" closable @click:close="error = ''">
-              {{ error }}
-              <template #append>
-                <v-btn size="small" variant="text" @click="loadVendors(true)">Retry</v-btn>
-              </template>
-            </v-alert>
-          </div>
-          <div v-if="loading && vendors.length === 0" class="d-flex justify-center pa-10">
+          <v-alert v-if="installError" type="error" variant="tonal" closable @click:close="installError = ''">
+            {{ installError }}
+          </v-alert>
+          <v-alert v-if="catalogError" type="error" variant="tonal">
+            {{ catalogError }}
+            <template #append>
+              <v-btn size="small" variant="text" @click="refreshCatalog(true)">
+                {{ t('setting.javaInstaller.retry') }}
+              </v-btn>
+            </template>
+          </v-alert>
+          <div v-else-if="loading && vendors.length === 0" class="d-flex justify-center pa-10">
             <v-progress-circular indeterminate color="primary" />
+          </div>
+          <div v-else-if="!loading && vendors.length === 0" class="text-medium-emphasis pa-3">
+            {{ t('setting.javaInstaller.noCompatibleBuilds') }}
           </div>
           <!-- Vendors -->
           <div v-for="vendor in vendors" :key="vendor.id">
@@ -133,16 +154,16 @@
               <v-alert v-if="vendor.error" type="error" variant="tonal" class="mb-3">
                 {{ vendor.error }}
                 <template #append>
-                  <v-btn size="small" variant="text" @click="loadVendorVersions(vendor, true)"
-                    >Retry</v-btn
-                  >
+                  <v-btn size="small" variant="text" @click="retryVendor(vendor)">
+                    {{ t('setting.javaInstaller.retry') }}
+                  </v-btn>
                 </template>
               </v-alert>
               <div
-                v-else-if="!vendor.loading && vendor.versions.length === 0"
+                v-else-if="!vendor.loading && getVendorVersionGroups(vendor).length === 0"
                 class="text-medium-emphasis pa-3"
               >
-                No compatible Java builds are available for this system.
+                {{ t('setting.javaInstaller.noCompatibleBuilds') }}
               </div>
               <!-- Java Versions -->
               <div
@@ -218,6 +239,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { useDialog } from '@/composables/dialog'
 import { useService } from '@/composables'
 import { javaVendors, kJavaContext } from '@/composables/java'
+import { useJavaInstallerCatalog, type JavaInstallerRuntime as RuntimeVersion, type JavaInstallerVendor as JavaVendor } from '@/composables/javaInstallerCatalog'
 import { VersionInstallServiceKey, JavaServiceKey, BaseServiceKey } from '@xmcl/runtime-api'
 import { injection } from '@/util/inject'
 import { useDateString } from '@/composables/date'
@@ -226,54 +248,22 @@ import SettingIcon from '@/components/SettingIcon.vue'
 
 const { t } = useI18n()
 const { isShown, hide } = useDialog('java-installer')
-const {
-  install,
-  getSupportedMajorJavaVersions,
-  getJavaRuntimes,
-  getJavaVendors,
-  getMajorJavaVersionsFromVendor,
-} = useService(VersionInstallServiceKey)
+const installService = useService(VersionInstallServiceKey)
+const { install } = installService
+const { vendors, loading, error: catalogError, supportedMajors, reload, loadVendor, reset } = useJavaInstallerCatalog(installService, javaVendors)
 const { refreshLocalJava } = useService(JavaServiceKey)
 const { getGameDataDirectory, openDirectory } = useService(BaseServiceKey)
 const { getDateString } = useDateString()
 const { all: javas } = injection(kJavaContext)
 
-const vendors = ref<JavaVendor[]>([])
 const activeVendorIndex = ref(0)
 const activeVersionId = ref<string | null>(null)
 const scrollContainer = ref<HTMLElement | null>(null)
 const sidebarContainer = ref<any>(null)
-const loading = ref(false)
-const error = ref('')
+const installError = ref('')
 const installing = ref('')
 const showAllVersions = ref(false)
 const javaInstallDirectory = ref('')
-const supportedMajorVersions = ref<number[]>([])
-
-interface RuntimeVersion {
-  /** e.g. java21 */
-  version: string
-  runtimeUrl: string
-  /** e.g. 21.0.5 */
-  displayVersion: string
-  /** e.g. java-runtime-delta */
-  name: string
-  vendor: string
-  packageType?: string
-  releaseTime?: string
-  /** e.g. ~/.minecraftx/jre/java-runtime-delta */
-  path: string
-  sha256?: string
-}
-
-interface JavaVendor {
-  id: string
-  title: string
-  icon: string
-  versions: RuntimeVersion[]
-  loading: boolean
-  error: string
-}
 
 function getMajor(version: RuntimeVersion) {
   const normalized = version.displayVersion.replace(/^1\./, '')
@@ -298,105 +288,25 @@ async function resolveJavaInstallDirectory() {
   }
 }
 
-async function loadVendorVersions(vendor: JavaVendor, force = false) {
-  vendor.error = ''
-  vendor.loading = true
-
-  try {
-    const majorVersions = await getMajorJavaVersionsFromVendor(vendor.id, force)
-
-    const versionsToLoad = showAllVersions.value
-      ? majorVersions
-      : majorVersions.filter((entry) => {
-          const major = Number(entry.version.match(/\d+/)?.[0] ?? 0)
-          return supportedMajorVersions.value.includes(major)
-        })
-
-    const expanded = await Promise.all(
-      versionsToLoad.map(async (entry) => {
-        const runtimes = await getJavaRuntimes(vendor.id, entry.version, entry.sha256, force)
-        return runtimes.map((runtime) => ({ ...runtime, sha256: entry.sha256 }))
-      }),
-    )
-
-    vendor.versions = expanded
-      .flat()
-      .sort(
-        (a, b) =>
-          b.displayVersion.localeCompare(a.displayVersion, undefined, { numeric: true }) ||
-          (b.releaseTime ?? '').localeCompare(a.releaseTime ?? ''),
-      )
-  } catch (e) {
-    vendor.error = e instanceof Error ? e.message : String(e)
-  } finally {
-    vendor.loading = false
-  }
-}
-
-async function loadSupportedMajorJavaVersions() {
-  try {
-    supportedMajorVersions.value = await getSupportedMajorJavaVersions()
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
-  }
-}
-
 function getVendorVersionGroups(vendor: JavaVendor) {
-  const majorVersions = new Set<number>()
-
-  for (const version of vendor.versions) {
-    majorVersions.add(getMajor(version))
-  }
-
+  const majorVersions = new Set(vendor.versions.map(getMajor))
   return [...majorVersions]
-    .filter(
-      (majorVersion) =>
-        showAllVersions.value ||
-        supportedMajorVersions.value.find(
-          (supportedMajorVersion) => supportedMajorVersion === majorVersion,
-        ),
-    )
+    .filter(major => supportedMajors.value?.includes(major) ?? true)
     .sort((a, b) => b - a)
-    .map((major) => ({
-      id: `java${major}`,
-      major,
-      title: `Java ${major}`,
-    }))
+    .map(major => ({ id: `java${major}`, major, title: `Java ${major}` }))
 }
 
-async function loadVendors(force = false) {
-  if (loading.value) return
+async function refreshCatalog(force = false) {
+  if (!isShown.value) return
+  await reload(showAllVersions.value, force)
+  await nextTick()
+  if (isShown.value) updateActiveSections()
+}
 
-  loading.value = true
-  error.value = ''
-
-  try {
-    const vendorOrder = new Map(javaVendors.map((vendor, index) => [vendor.uid, index]))
-    const index = { packages: await getJavaVendors(force) }
-
-    vendors.value = index.packages
-      .filter(
-        (item): item is typeof item & { uid: string } => !!item.uid && vendorOrder.has(item.uid),
-      )
-      .sort((a, b) => vendorOrder.get(a.uid)! - vendorOrder.get(b.uid)!)
-      .map((item) => {
-        const vendor = javaVendors.find((v) => v.uid === item.uid)!
-
-        return {
-          id: item.uid,
-          title: vendor.title,
-          icon: vendor.icon,
-          versions: [],
-          loading: false,
-          error: '',
-        }
-      })
-    await Promise.all(vendors.value.map((vendor) => loadVendorVersions(vendor, force)))
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
-  } finally {
-    loading.value = false
-  }
+async function retryVendor(vendor: JavaVendor) {
+  await loadVendor(vendor, true)
+  await nextTick()
+  if (isShown.value) updateActiveSections()
 }
 
 function isInstalled(version: RuntimeVersion) {
@@ -406,9 +316,10 @@ function isInstalled(version: RuntimeVersion) {
 async function installVersion(vendor: JavaVendor, version: RuntimeVersion) {
   const majorVersion = getMajor(version)
 
-  if (!majorVersion) return
+  if (!majorVersion || installing.value) return
 
   const key = `${vendor.id}/${version.version}/${version.runtimeUrl}`
+  installError.value = ''
   installing.value = key
 
   try {
@@ -423,7 +334,7 @@ async function installVersion(vendor: JavaVendor, version: RuntimeVersion) {
 
     await refreshLocalJava(true)
   } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
+    installError.value = e instanceof Error ? e.message : String(e)
   } finally {
     installing.value = ''
   }
@@ -520,21 +431,14 @@ function onScrollEnd() {
   updateActiveSections()
 }
 
-watch(showAllVersions, async () => {
-  if (vendors.value.length > 0) {
-    await Promise.all(vendors.value.map((vendor) => loadVendorVersions(vendor)))
-    await nextTick()
-    updateActiveSections()
+watch([isShown, showAllVersions], ([shown], [wasShown]) => {
+  if (!shown) {
+    reset()
+    installError.value = ''
+    return
   }
-})
-
-watch(isShown, async (shown) => {
-  if (!shown) return
-  await Promise.all([loadSupportedMajorJavaVersions(), resolveJavaInstallDirectory()])
-  await loadVendors()
-
-  await nextTick()
-  requestAnimationFrame(updateActiveSections)
+  if (!wasShown) void resolveJavaInstallDirectory()
+  void refreshCatalog()
 })
 </script>
 

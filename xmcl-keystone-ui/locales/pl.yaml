@@ -609,7 +609,7 @@ javaUpdate:
   description: Dostępna jest nowsza wersja Javy. Zaktualizować przed uruchomieniem?
   currentVersion: Obecna wersja
   newVersion: Dostępna wersja
-  ok: Ok
+  ok: Zaktualizuj
   later: Później
 labyMod:
   disable: Wyłącz LabyMod
@@ -1669,6 +1669,8 @@ setting:
     name: Motyw instancji
   java: Ustawienia Javy
   javaInstaller:
+    noCompatibleBuilds: Nie znaleziono zgodnych kompilacji Javy.
+    retry: Spróbuj ponownie
     preferredVendor: Preferowany dostawca Javy
     preferredVendorDescription: Preferowany dostawca używany do automatycznych instalacji Javy.
     showAllVersions: Wszystkie wersje

@@ -775,7 +775,7 @@ javaUpdate:
   description: A newer version of Java is available. Update before launching?
   currentVersion: Current version
   newVersion: Available version
-  ok: Ok
+  ok: Update
   later: Later
 labyMod:
   disable: Disable LabyMod
@@ -2176,6 +2176,8 @@ setting:
     name: Instance Theme
   java: Java Settings
   javaInstaller:
+    noCompatibleBuilds: No compatible Java builds found.
+    retry: Retry
     preferredVendor: Preferred Java Vendor
     preferredVendorDescription: Preferred vendor used for automatic Java installations.
     showAllVersions: All versions
