@@ -459,6 +459,22 @@ instanceAge:
   older: Старые
   threeDay: В течение трёх дней
   today: Сегодня
+instanceAutoGroup:
+  title: Автоматическая группировка по папкам
+  subtitle: Выберите, как группировать экземпляры в боковой панели и в разделе «Моё».
+  autoRouteTitle: Автоматически группировать новые экземпляры при создании или загрузке
+  autoRouteDescription: Импортированные или загруженные сборки автоматически попадут в подходящую папку.
+  strategySection: Способ группировки
+  byModloader: По загрузчику модов
+  byModloaderDescription: Группировать экземпляры по загрузчику модов или типу игры (Forge, Fabric, NeoForge, Quilt, Vanilla и Bedrock).
+  byVersion: По версии Minecraft
+  byVersionDescription: Группировать экземпляры по семействам версий, от новых к старым.
+  bySource: По платформе и источнику
+  bySourceDescription: 'Группировать экземпляры по источнику: Modrinth, CurseForge, FTB, серверы или вручную созданные экземпляры.'
+  active: Выбрано
+  ungroupAll: Разгруппировать все
+  sortAllNow: Сгруппировать сейчас
+
 instanceDiscover:
   gameFolder: Откройте {count} папок с играми
   instanceFolder: 'Найдено экземпляров: {count}'
