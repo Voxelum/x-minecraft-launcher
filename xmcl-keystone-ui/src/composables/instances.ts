@@ -179,8 +179,9 @@ export function useInstances() {
   })
 
   const ready = computed(() => state.value !== undefined)
+  const persistedGroups = computed(() => state.value?.groups ?? [])
   const groups = computed(() => {
-    const rawGroups = state.value?.groups ?? []
+    const rawGroups = persistedGroups.value
     const isOffline = userProfile?.value?.authority && userProfile?.value?.authority !== AUTHORITY_MICROSOFT
     if (isOffline && state.value) {
       const all = state.value.all
@@ -209,6 +210,7 @@ export function useInstances() {
   return {
     selectedInstance: path,
     groups,
+    persistedGroups,
     groupsSet,
     ready,
     instances,

@@ -5,7 +5,7 @@ import type { MaybeRef } from 'vue'
 import { onMounted, ref } from 'vue'
 import { kInstances } from './instances'
 import { kTheme } from './theme'
-import { autoGroupConfig, classifyInstance, compareMinecraftVersions } from './instanceAutoGroup'
+import { autoGroupConfig, reconcileInstanceGroups } from './instanceAutoGroup'
 
 export enum OverState {
   TopQuad, // top 1/4
@@ -298,7 +298,7 @@ export function useInstanceGroupOps() {
 }
 
 export function useInstanceGroup() {
-  const { instances, allInstances, ready, groups: groupsData, groupsSet } = injection(kInstances)
+  const { instances, allInstances, ready, persistedGroups, groupsSet } = injection(kInstances)
   const ops = useInstanceGroupOps()
 
   onMounted(() => {
@@ -315,91 +315,8 @@ export function useInstanceGroup() {
 
   watch(allInstances ?? instances, (instances) => {
     if (!ready.value) { return }
-    const groups = groupsData.value
-    const newGroupData = [] as InstanceOrGroupData[]
-    const existed = new Set<string>(instances.map(v => v.path))
-    for (const item of groups) {
-      if (typeof item === 'string') {
-        if (existed.has(item)) {
-          newGroupData.push(item)
-          existed.delete(item)
-        }
-      } else {
-        const newInstances = [] as string[]
-        for (const inst of item.instances) {
-          if (existed.has(inst)) {
-            newInstances.push(inst)
-            existed.delete(inst)
-          }
-        }
-        if (newInstances.length > 0) {
-          newGroupData.push({ ...item, instances: newInstances })
-        }
-      }
-    }
-    const instanceMap = new Map(instances.map(v => [v.path, v]))
-    const touchedVersionGroups = new Set<InstanceGroupData>()
-
-    for (const i of existed) {
-      if (autoGroupConfig.value.enabled) {
-        const instObj = instanceMap.get(i)
-        if (instObj) {
-          const strategy = autoGroupConfig.value.strategy
-          const target = classifyInstance(instObj, strategy)
-          const existingGroup = newGroupData.find(g => typeof g !== 'string' && g.name === target.name) as InstanceGroupData | undefined
-          if (existingGroup) {
-            existingGroup.instances.push(i)
-            if (strategy === 'version') {
-              touchedVersionGroups.add(existingGroup)
-            }
-            continue
-          } else {
-            const createdGroup: InstanceGroupData = {
-              id: crypto.getRandomValues(new Uint32Array(2))[0].toString(16),
-              name: target.name,
-              color: target.color || '',
-              icon: target.icon || '',
-              instances: [i],
-            }
-            if (strategy === 'version') {
-              touchedVersionGroups.add(createdGroup)
-              const insertIdx = newGroupData.findIndex(
-                g => typeof g !== 'string' && compareMinecraftVersions(createdGroup.name, g.name) < 0,
-              )
-              if (insertIdx !== -1) {
-                newGroupData.splice(insertIdx, 0, createdGroup)
-              } else {
-                let lastGroupIdx = -1
-                for (let idx = 0; idx < newGroupData.length; idx++) {
-                  if (typeof newGroupData[idx] !== 'string') {
-                    lastGroupIdx = idx
-                  }
-                }
-                if (lastGroupIdx !== -1) {
-                  newGroupData.splice(lastGroupIdx + 1, 0, createdGroup)
-                } else {
-                  newGroupData.push(createdGroup)
-                }
-              }
-            } else {
-              newGroupData.push(createdGroup)
-            }
-            continue
-          }
-        }
-      }
-      newGroupData.push(i)
-    }
-
-    for (const grp of touchedVersionGroups) {
-      grp.instances.sort((a, b) => {
-        const instA = instanceMap.get(a)
-        const instB = instanceMap.get(b)
-        return compareMinecraftVersions(instA?.runtime.minecraft || '', instB?.runtime.minecraft || '')
-      })
-    }
-
-    groupsSet(newGroupData)
+    // Reconcile the saved layout, not the sidebar view that can hide Bedrock paths.
+    groupsSet(reconcileInstanceGroups(persistedGroups.value, instances, autoGroupConfig.value))
   }, { immediate: true })
 
   return ops

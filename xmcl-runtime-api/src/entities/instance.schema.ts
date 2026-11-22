@@ -6,6 +6,11 @@ export const InstanceGroupData = z.object({
   id: z.string(),
   instances: z.array(z.string()),
   icon: z.string().optional(),
+  /** Automatic ownership; never inferred from an existing folder's display name. */
+  autoGroup: z.object({
+    strategy: z.enum(['modloader', 'version', 'source']),
+    bucket: z.string(),
+  }).optional(),
 }).passthrough()
 export type InstanceGroupData = z.infer<typeof InstanceGroupData>
 

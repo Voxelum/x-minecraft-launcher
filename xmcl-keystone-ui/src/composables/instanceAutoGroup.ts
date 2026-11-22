@@ -315,6 +315,92 @@ export function compareMinecraftVersions(v1: string, v2: string): number {
   return v2.localeCompare(v1)
 }
 
+function createAutoGroup(target: GroupTarget, strategy: AutoGroupStrategy): InstanceGroupData {
+  return {
+    id: crypto.getRandomValues(new Uint32Array(2))[0].toString(16),
+    name: target.name,
+    color: target.color || '',
+    icon: target.icon || '',
+    instances: [],
+    autoGroup: { strategy, bucket: target.name },
+  }
+}
+
+/** Keep existing placements; only assign paths not already in the saved layout. */
+export function reconcileInstanceGroups(
+  groups: InstanceOrGroupData[],
+  instances: Instance[],
+  config: AutoGroupConfig,
+): InstanceOrGroupData[] {
+  const newGroupData = [] as InstanceOrGroupData[]
+  const instanceMap = new Map(instances.map(v => [v.path, v]))
+  const existed = new Set(instanceMap.keys())
+  for (const item of groups) {
+    if (typeof item === 'string') {
+      if (existed.has(item)) {
+        newGroupData.push(item)
+        existed.delete(item)
+      }
+    } else {
+      const newInstances = [] as string[]
+      for (const inst of item.instances) {
+        if (existed.has(inst)) {
+          newInstances.push(inst)
+          existed.delete(inst)
+        }
+      }
+      if (newInstances.length > 0) {
+        newGroupData.push({ ...item, instances: newInstances })
+      }
+    }
+  }
+  const touchedVersionGroups = new Set<InstanceGroupData>()
+
+  const { enabled, strategy } = config
+  for (const path of existed) {
+    if (!enabled) {
+      newGroupData.push(path)
+      continue
+    }
+
+    const target = classifyInstance(instanceMap.get(path)!, strategy)
+    const existingGroup = newGroupData.find((group): group is InstanceGroupData =>
+      typeof group !== 'string' && group.autoGroup?.strategy === strategy && group.autoGroup.bucket === target.name,
+    )
+    const group = existingGroup ?? createAutoGroup(target, strategy)
+    group.instances.push(path)
+    if (strategy === 'version') {
+      touchedVersionGroups.add(group)
+    }
+    if (!existingGroup) {
+      const insertIdx = strategy === 'version'
+        ? newGroupData.findIndex(g => typeof g !== 'string' && g.autoGroup?.strategy === strategy &&
+          compareMinecraftVersions(target.name, g.autoGroup.bucket) < 0)
+        : -1
+      if (insertIdx !== -1) {
+        newGroupData.splice(insertIdx, 0, group)
+      } else {
+        const lastGroupIdx = strategy === 'version' ? newGroupData.findLastIndex(g => typeof g !== 'string') : -1
+        if (lastGroupIdx !== -1) {
+          newGroupData.splice(lastGroupIdx + 1, 0, group)
+        } else {
+          newGroupData.push(group)
+        }
+      }
+    }
+  }
+
+  for (const grp of touchedVersionGroups) {
+    grp.instances.sort((a, b) => {
+      const instA = instanceMap.get(a)
+      const instB = instanceMap.get(b)
+      return compareMinecraftVersions(instA?.runtime.minecraft || '', instB?.runtime.minecraft || '')
+    })
+  }
+
+  return newGroupData
+}
+
 export function performAutoGroup(
   allInstancesList: Instance[],
   strategy: AutoGroupStrategy,
@@ -330,13 +416,7 @@ export function performAutoGroup(
     const target = classifyInstance(inst, strategy)
     let group = groupsMap.get(target.name)
     if (!group) {
-      group = {
-        id: crypto.getRandomValues(new Uint32Array(2))[0].toString(16),
-        name: target.name,
-        color: target.color || '',
-        icon: target.icon || '',
-        instances: [],
-      }
+      group = createAutoGroup(target, strategy)
       groupsMap.set(target.name, group)
     }
     group.instances.push(inst.path)
