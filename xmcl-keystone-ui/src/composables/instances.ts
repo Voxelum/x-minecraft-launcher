@@ -5,7 +5,9 @@ import { InjectionKey, inject } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
 import { InstanceOrGroupData } from './instanceGroup'
+import { autoGroupConfig } from './instanceAutoGroup'
 import { kUserContext } from './user'
+import { useMinecraftReleaseTimes } from './version'
 
 export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol('Instances')
 
@@ -179,6 +181,7 @@ export function useInstances() {
   })
 
   const ready = computed(() => state.value !== undefined)
+  const minecraftReleaseTimes = useMinecraftReleaseTimes(() => autoGroupConfig.value.strategy === 'version')
   const persistedGroups = computed(() => state.value?.groups ?? [])
   const groups = computed(() => {
     const rawGroups = persistedGroups.value
@@ -211,6 +214,7 @@ export function useInstances() {
     selectedInstance: path,
     groups,
     persistedGroups,
+    minecraftReleaseTimes,
     groupsSet,
     ready,
     instances,

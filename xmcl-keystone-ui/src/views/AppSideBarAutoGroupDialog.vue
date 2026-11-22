@@ -11,7 +11,7 @@ import { injection } from '@/util/inject'
 import { computed, ref, watch } from 'vue'
 
 const { isShown } = useDialog('auto-group-instances')
-const { instances, allInstances, groupsSet } = injection(kInstances)
+const { instances, allInstances, minecraftReleaseTimes, groupsSet } = injection(kInstances)
 const { t } = useI18n()
 
 const strategies = computed(() => [
@@ -74,7 +74,7 @@ function onGroupNow(strategy?: AutoGroupStrategy | unknown) {
 
   const list = getTargetList()
   if (list && list.length > 0) {
-    performAutoGroup(list, validStrategy, groupsSet)
+    performAutoGroup(list, validStrategy, groupsSet, minecraftReleaseTimes.value)
   }
   isShown.value = false
 }

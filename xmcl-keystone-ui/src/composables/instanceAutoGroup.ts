@@ -289,10 +289,18 @@ export function classifyInstance(instance: Instance, strategy: AutoGroupStrategy
   }
 }
 
-export function compareMinecraftVersions(v1: string, v2: string): number {
+export function compareMinecraftVersions(v1: string, v2: string, releaseTimes?: ReadonlyMap<string, number>): number {
   if (v1 === v2) return 0
   if (v1.toLowerCase() === 'bedrock') return 1
   if (v2.toLowerCase() === 'bedrock') return -1
+
+  // Weekly snapshot names do not identify their target patch. Use Mojang's
+  // releaseTime when present, not the inferred version or the update time.
+  const time1 = releaseTimes?.get(v1.trim().toLowerCase())
+  const time2 = releaseTimes?.get(v2.trim().toLowerCase())
+  if (time1 !== undefined && time2 !== undefined && time1 !== time2) return time2 - time1
+  // Keep dated and undated entries in distinct ranks for a transitive ordering.
+  if ((time1 === undefined) !== (time2 === undefined)) return time1 === undefined ? 1 : -1
 
   const p1 = parseMinecraftVersion(v1)
   const p2 = parseMinecraftVersion(v2)
@@ -331,6 +339,8 @@ export function reconcileInstanceGroups(
   groups: InstanceOrGroupData[],
   instances: Instance[],
   config: AutoGroupConfig,
+  releaseTimes?: ReadonlyMap<string, number>,
+  refreshVersionOrder = false,
 ): InstanceOrGroupData[] {
   const newGroupData = [] as InstanceOrGroupData[]
   const instanceMap = new Map(instances.map(v => [v.path, v]))
@@ -390,11 +400,20 @@ export function reconcileInstanceGroups(
     }
   }
 
+  if (refreshVersionOrder) {
+    // Correct groups made before the cached or fresh manifest arrived. Do not
+    // reorder manual folders or folders from a different strategy.
+    for (const group of newGroupData) {
+      if (typeof group !== 'string' && group.autoGroup?.strategy === 'version') {
+        touchedVersionGroups.add(group)
+      }
+    }
+  }
   for (const grp of touchedVersionGroups) {
     grp.instances.sort((a, b) => {
       const instA = instanceMap.get(a)
       const instB = instanceMap.get(b)
-      return compareMinecraftVersions(instA?.runtime.minecraft || '', instB?.runtime.minecraft || '')
+      return compareMinecraftVersions(instA?.runtime.minecraft || '', instB?.runtime.minecraft || '', releaseTimes)
     })
   }
 
@@ -405,6 +424,7 @@ export function performAutoGroup(
   allInstancesList: Instance[],
   strategy: AutoGroupStrategy,
   groupsSet: (newGroups: InstanceOrGroupData[]) => void,
+  releaseTimes?: ReadonlyMap<string, number>,
 ) {
   const groupsMap = new Map<string, InstanceGroupData>()
   const instanceMap = new Map<string, Instance>()
@@ -429,7 +449,7 @@ export function performAutoGroup(
       group.instances.sort((a, b) => {
         const instA = instanceMap.get(a)
         const instB = instanceMap.get(b)
-        return compareMinecraftVersions(instA?.runtime.minecraft || '', instB?.runtime.minecraft || '')
+        return compareMinecraftVersions(instA?.runtime.minecraft || '', instB?.runtime.minecraft || '', releaseTimes)
       })
     }
   }

@@ -298,7 +298,7 @@ export function useInstanceGroupOps() {
 }
 
 export function useInstanceGroup() {
-  const { instances, allInstances, ready, persistedGroups, groupsSet } = injection(kInstances)
+  const { instances, allInstances, ready, persistedGroups, minecraftReleaseTimes, groupsSet } = injection(kInstances)
   const ops = useInstanceGroupOps()
 
   onMounted(() => {
@@ -313,10 +313,11 @@ export function useInstanceGroup() {
     }
   })
 
-  watch(allInstances ?? instances, (instances) => {
-    if (!ready.value) { return }
+  watch([allInstances ?? instances, minecraftReleaseTimes, ready], ([instances, times, isReady], [, previousTimes, wasReady]) => {
+    if (!isReady) { return }
     // Reconcile the saved layout, not the sidebar view that can hide Bedrock paths.
-    groupsSet(reconcileInstanceGroups(persistedGroups.value, instances, autoGroupConfig.value))
+    const refreshVersionOrder = !!times && (!wasReady || times !== previousTimes)
+    groupsSet(reconcileInstanceGroups(persistedGroups.value, instances, autoGroupConfig.value, times, refreshVersionOrder))
   }, { immediate: true })
 
   return ops

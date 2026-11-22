@@ -1,7 +1,27 @@
 import type { Instance } from '@xmcl/instance'
 import { InstancesSchema } from '../../../xmcl-runtime-api/src/entities/instance.schema'
 import { describe, expect, it } from 'vitest'
-import { performAutoGroup, reconcileInstanceGroups } from './instanceAutoGroup'
+import { compareMinecraftVersions, performAutoGroup, reconcileInstanceGroups } from './instanceAutoGroup'
+
+const releaseTimes = new Map([
+  ['1.21.4', Date.parse('2024-12-03T10:12:57Z')],
+  ['25w02a', Date.parse('2025-01-08T13:42:18Z')],
+  ['1.21.5-pre1', Date.parse('2025-03-11T12:49:44Z')],
+  ['1.21.5', Date.parse('2025-03-25T12:14:58Z')],
+])
+
+describe('Minecraft version ordering', () => {
+  it('sorts official releases and snapshots by release time rather than inferred patch number', () => {
+    const versions = ['1.21.4', '25w02a', '1.21.5', '1.21.5-pre1', '99.0-custom']
+    expect(versions.sort((a, b) => compareMinecraftVersions(a, b, releaseTimes)))
+      .toEqual(['1.21.5', '1.21.5-pre1', '25w02a', '1.21.4', '99.0-custom'])
+  })
+
+  it('keeps deterministic offline ordering when release metadata is unavailable', () => {
+    expect(['13w01a', '1.21.1-pre1', '1.21.1', '1.21.1-rc1'].sort(compareMinecraftVersions))
+      .toEqual(['1.21.1', '1.21.1-rc1', '1.21.1-pre1', '13w01a'])
+  })
+})
 
 function instance(path: string, forge = true, minecraft = '1.20.1'): Instance {
   return { path, runtime: { minecraft, forge: forge ? '47.0.0' : '' } } as Instance
@@ -76,6 +96,27 @@ describe('background instance grouping', () => {
       name: '1.20.x',
       instances: ['newer-forge', 'new-forge'],
     })])
+  })
+
+  it('uses the same release metadata for explicit regrouping and newly imported instances', () => {
+    const release = instance('release', true, '1.21.4')
+    const snapshot = instance('snapshot', true, '25w02a')
+    const initial = reconcileInstanceGroups([], [release], version)
+    const routed = reconcileInstanceGroups(initial, [release, snapshot], version, releaseTimes)
+    const expected = expect.objectContaining({ name: '1.21.x', instances: ['snapshot', 'release'] })
+    expect(routed).toEqual([expected])
+    expect.assertions(2)
+    performAutoGroup([release, snapshot], 'version', (groups) => expect(groups).toEqual([expected]), releaseTimes)
+  })
+
+  it('corrects version folders created before metadata arrives without sorting manual folders', () => {
+    const managedInstances = [instance('release', true, '1.21.4'), instance('snapshot', true, '25w02a')]
+    const manual = { ...manualGroup('1.21.x'), instances: ['manual-release', 'manual-snapshot'] }
+    const allInstances = [...managedInstances, instance('manual-release', true, '1.21.4'), instance('manual-snapshot', true, '25w02a')]
+    const initial = reconcileInstanceGroups([manual], allInstances, version)
+    expect(initial[1]).toEqual(expect.objectContaining({ instances: ['release', 'snapshot'] }))
+    const corrected = reconcileInstanceGroups(initial, allInstances, version, releaseTimes, true)
+    expect(corrected).toEqual([manual, expect.objectContaining({ instances: ['snapshot', 'release'] })])
   })
 
   it('reuses folders created by the explicit regroup action', () => {
