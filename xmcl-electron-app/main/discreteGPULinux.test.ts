@@ -78,9 +78,31 @@ describe('getDiscreteGPUEnvironment', () => {
     ])).toEqual({})
   })
 
-  it('recognizes an Intel Arc GPU by name', () => {
+  it.each(['Intel Arc 140V Graphics', 'Intel Arc Graphics'])('does not offload to an iGPU branded %s', (deviceString) => {
     expect(getDiscreteGPUEnvironment([
-      { vendorId: 0x8086, deviceId: 0x56a0, deviceString: 'Intel(R) Arc(TM) A770' },
+      { vendorId: 0x8086, deviceId: 0x64a0, deviceString },
+    ], undefined, [
+      { vendorId: 0x8086, deviceId: 0x64a0, bootVga: true, dedicatedMemoryBytes: 8 * 1024 ** 3, dedicatedMemorySource: 'local' },
+    ])).toEqual({})
+  })
+
+  it('does not rank ambiguous Arc branding above an AMD GPU with dedicated VRAM', () => {
+    expect(getDiscreteGPUEnvironment([
+      { vendorId: 0x8086, deviceId: 0x64a0, deviceString: 'Intel Arc 140V Graphics' },
+      { vendorId: 0x1002, deviceId: 0x7550 },
+    ], undefined, [
+      { vendorId: 0x1002, deviceId: 0x7550, dedicatedMemoryBytes: 16 * 1024 ** 3, dedicatedMemorySource: 'vram' },
+    ])).toEqual({ DRI_PRIME: '1002:7550' })
+  })
+
+  it.each([
+    'Intel(R) Arc(TM) A770',
+    'Intel Arc A370M Graphics',
+    'Intel Arc B580 Graphics',
+    'Intel Arc Pro B50 Graphics',
+  ])('recognizes a discrete Intel Arc model token in %s', (deviceString) => {
+    expect(getDiscreteGPUEnvironment([
+      { vendorId: 0x8086, deviceId: 0x56a0, deviceString },
     ])).toEqual({ DRI_PRIME: '8086:56a0' })
   })
 

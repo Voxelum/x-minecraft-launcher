@@ -19,7 +19,6 @@ export interface LinuxGPUProperties {
 
 const DISCRETE_NAME_HINTS = [
   'geforce', 'nvidia', 'rtx', 'gtx', 'radeon rx', 'radeon pro', 'radeon instinct',
-  'arc a', 'arc b', 'intel arc',
 ]
 const INTEGRATED_NAME_HINTS = [
   'uhd graphics', 'hd graphics', 'iris', 'radeon graphics', 'radeon 610m',
@@ -32,8 +31,12 @@ function normalizeGPUName(value: string | undefined) {
 }
 
 function hasDiscreteGPUName(vendorId: number, name: string) {
-  if (DISCRETE_NAME_HINTS.some(keyword => name.includes(keyword))) return true
-  return vendorId === 0x8086 && /\barc\b.*\b(?:a|b)\d+/i.test(name)
+  if (vendorId === 0x8086) {
+    // Arc branding also covers integrated GPUs (e.g. Arc 140V). Require a
+    // discrete model token such as Arc A770, Arc A370M or Arc Pro B50.
+    return /\barc(?: (?:r|tm|pro))* [ab]\d{2,3}m?\b/.test(name)
+  }
+  return DISCRETE_NAME_HINTS.some(keyword => name.includes(keyword))
 }
 
 function parseHexFile(value: string | undefined) {
