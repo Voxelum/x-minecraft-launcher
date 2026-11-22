@@ -5,6 +5,7 @@ import type { MaybeRef } from 'vue'
 import { onMounted, ref } from 'vue'
 import { kInstances } from './instances'
 import { kTheme } from './theme'
+import { autoGroupConfig, reconcileInstanceGroups } from './instanceAutoGroup'
 
 export enum OverState {
   TopQuad, // top 1/4
@@ -297,7 +298,7 @@ export function useInstanceGroupOps() {
 }
 
 export function useInstanceGroup() {
-  const { instances, allInstances, ready, groups: groupsData, groupsSet } = injection(kInstances)
+  const { instances, allInstances, ready, persistedGroups, minecraftReleaseTimes, groupsSet } = injection(kInstances)
   const ops = useInstanceGroupOps()
 
   onMounted(() => {
@@ -312,35 +313,11 @@ export function useInstanceGroup() {
     }
   })
 
-  watch(allInstances ?? instances, (instances) => {
-    if (!ready.value) { return }
-    const groups = groupsData.value
-    const newGroupData = [] as InstanceOrGroupData[]
-    const existed = new Set<string>(instances.map(v => v.path))
-    for (const item of groups) {
-      if (typeof item === 'string') {
-        if (existed.has(item)) {
-          newGroupData.push(item)
-          existed.delete(item)
-        }
-      } else {
-        const newInstances = [] as string[]
-        for (const inst of item.instances) {
-          if (existed.has(inst)) {
-            newInstances.push(inst)
-            existed.delete(inst)
-          }
-        }
-        if (newInstances.length > 0) {
-          newGroupData.push({ ...item, instances: newInstances })
-        }
-      }
-    }
-    for (const i of existed) {
-      newGroupData.push(i)
-    }
-
-    groupsSet(newGroupData)
+  watch([allInstances ?? instances, minecraftReleaseTimes, ready], ([instances, times, isReady], [, previousTimes, wasReady]) => {
+    if (!isReady) { return }
+    // Reconcile the saved layout, not the sidebar view that can hide Bedrock paths.
+    const refreshVersionOrder = !!times && (!wasReady || times !== previousTimes)
+    groupsSet(reconcileInstanceGroups(persistedGroups.value, instances, autoGroupConfig.value, times, refreshVersionOrder))
   }, { immediate: true })
 
   return ops

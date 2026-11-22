@@ -12,6 +12,7 @@ import { useInstanceGroupOps } from './instanceGroup'
 export function useInstanceContextMenuFunc() {
   const { show: showDeleteDialog } = useDialog('delete-instance')
   const { show: showGroupSelectDialog } = useDialog('mod-group-select')
+  const { show: showAutoGroup } = useDialog('auto-group-instances')
   const { duplicateInstance } = useService(InstanceServiceKey)
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { t } = useI18n()
@@ -72,6 +73,14 @@ export function useInstanceContextMenuFunc() {
               }
             },
           })
+        },
+      },
+      {
+        text: t('instanceAutoGroup.title'),
+        icon: 'sort',
+        section: 'group',
+        onClick() {
+          showAutoGroup()
         },
       },
       {

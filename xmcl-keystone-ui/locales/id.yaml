@@ -614,6 +614,22 @@ instanceAge:
   older: Lebih Lama
   threeDay: Dalam Tiga Hari
   today: Hari Ini
+instanceAutoGroup:
+  title: "Urutkan otomatis ke dalam folder"
+  subtitle: "Pilih cara mengatur instans Anda di bilah sisi & «Milik Saya»"
+  autoRouteTitle: "Urutkan otomatis instans baru saat dibuat / diunduh"
+  autoRouteDescription: "Modpack yang baru diimpor atau diunduh akan otomatis dimasukkan ke folder yang sesuai."
+  strategySection: "Strategi Pengelompokan"
+  byModloader: "Berdasarkan Modloader"
+  byModloaderDescription: "Kelompokkan instans berdasarkan Forge, Fabric, NeoForge, Quilt, Vanilla, dan Bedrock."
+  byVersion: "Berdasarkan Versi Minecraft"
+  byVersionDescription: "Kelompokkan instans berdasarkan generasi rilis, terbaru terlebih dahulu."
+  bySource: "Berdasarkan Platform & Sumber"
+  bySourceDescription: "Kelompokkan instans berdasarkan Modrinth, CurseForge, FTB, Server, atau Kustom."
+  active: "Aktif"
+  ungroupAll: "Batalkan Semua Grup"
+  sortAllNow: "Urutkan Semua Sekarang"
+
 instanceDiscover:
   gameFolder: Temukan {count} folder game
   instanceFolder: Menemukan {count} instansi

@@ -77,9 +77,9 @@
             <span
               v-if="currentInstanceFolder"
               class="bp-chip"
-              :style="currentInstanceFolder.color ? { borderColor: currentInstanceFolder.color } : {}"
+              :style="currentInstanceFolder.color ? { borderColor: getBaseColor(currentInstanceFolder.color) } : {}"
             >
-              <v-icon size="16" :style="currentInstanceFolder.color ? { color: currentInstanceFolder.color } : {}">
+              <v-icon size="16" :style="currentInstanceFolder.color ? { color: getBaseColor(currentInstanceFolder.color) } : {}">
                 folder
               </v-icon>
               {{ currentInstanceFolder.name }}
@@ -981,7 +981,7 @@ const folderTabs = computed<FolderTab[]>(() => {
         id: g.id,
         name: folderName,
         icon: 'folder',
-        color: g.color || undefined,
+        color: getBaseColor(g.color),
         count: paths.length,
         instancePaths: paths,
       })
@@ -1049,6 +1049,13 @@ const displayInstances = computed(() => {
   return base.filter((i) => allowed.has(i.path))
 })
 
+function getBaseColor(val?: string): string | undefined {
+  if (!val) return undefined
+  if (!val.includes('gradient')) return val
+  const match = val.match(/#(?:[0-9a-fA-F]{3,8})|rgba?\([^)]+\)/)
+  return match ? match[0] : undefined
+}
+
 function getInstanceFolder(path: string) {
   const groupsList = groups.value || []
   let folderIdx = 1
@@ -1058,7 +1065,7 @@ function getInstanceFolder(path: string) {
       if (g.instances.includes(path)) {
         return {
           name: folderName,
-          color: g.color || undefined,
+          color: getBaseColor(g.color),
         }
       }
     }

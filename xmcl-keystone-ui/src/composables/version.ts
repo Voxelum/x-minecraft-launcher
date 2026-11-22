@@ -1,7 +1,7 @@
 import { injection } from '@/util/inject'
 import { get } from '@vueuse/core'
 import type { JavaRuntimeManifest, JavaRuntimeTarget, JavaRuntimes } from '@xmcl/installer'
-import { ForgeVersion, VersionMetadataService, VersionMetadataServiceEventMap, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import { ForgeVersion, MinecraftVersions, VersionMetadataService, VersionMetadataServiceEventMap, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, MaybeRef, Ref, computed, onMounted, onUnmounted, shallowRef, watch } from 'vue'
 import { sortNeoForgeVersions } from './neoForgeVersion'
 import { useService } from './service'
@@ -87,6 +87,32 @@ export function useMinecraftLatestRelease() {
     snapshot,
     setLatestMinecraft,
   }
+}
+
+/** Reuse the version service's cached manifest without blocking instance grouping. */
+export function useMinecraftReleaseTimes(enabled: () => boolean) {
+  const service = useService(VersionMetadataServiceKey)
+  const releaseTimes = shallowRef<ReadonlyMap<string, number>>()
+  watch(enabled, (active, _, onCleanup) => {
+    if (!active) return
+    let cancelled = false
+    const update = ({ versions }: MinecraftVersions) => {
+      if (cancelled) return
+      const dates = new Map<string, number>()
+      for (const version of versions) {
+        const time = Date.parse(version.releaseTime)
+        if (Number.isFinite(time)) dates.set(version.id.toLowerCase(), time)
+      }
+      if (dates.size) releaseTimes.value = dates
+    }
+    service.on('minecraftVersions', update)
+    onCleanup(() => {
+      cancelled = true
+      service.removeListener('minecraftVersions', update)
+    })
+    void service.getMinecraftVersions().then(update, () => { /* Keep the offline sort fallback. */ })
+  }, { immediate: true })
+  return releaseTimes
 }
 
 export function useMinecraftVersions() {
