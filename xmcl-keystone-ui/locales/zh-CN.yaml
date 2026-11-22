@@ -743,6 +743,10 @@ java:
   autoHint: 最小内存随已安装 Mod 数量增长；最大内存使用系统可用内存。
   change: 更换
   importFromFile: 从文件导入 Java
+  importedJava: 外部 Java
+  importedJavaHint: 从文件手动导入
+  internalJava: 内部 Java
+  internalJavaHint: 由 XMCL 安装
   invalid: 无效的 Java 路径
   location: Java 路径
   locationHint: 未选择 Java — 使用系统默认
@@ -758,6 +762,13 @@ java:
   presets: 预设
   refresh: 刷新本地 Java
   systemMemory: '系统空闲内存: {free} / {total}'
+javaUpdate:
+  title: 有可用的 Java 更新
+  description: 有更新版本的 Java 可用。是否在启动游戏前更新？
+  currentVersion: 当前版本
+  newVersion: 可用版本
+  ok: 更新
+  later: 稍后
 labyMod:
   disable: 不使用 LabyMod
   empty: 当前 Minecraft 不支持 LabyMod
@@ -824,6 +835,8 @@ launchPreExecuteCommandFailed:
   title: 预执行命令失败
 launchStatus:
   assigningMemory: 正在分配内存
+  checkingJavaUpdate: 正在检查 Java 更新
+  confirmingJavaUpdate: 等待确认 Java 更新
   elyByWarning: 已启用 Ely.by authlib 替换。某些 Minecraft 版本可能不兼容并可能导致崩溃。如果出现问题，你可以在实例设置中禁用它。
   exit: 关闭游戏？
   injectingAuthLib: 配置第三方验证中
@@ -831,6 +844,7 @@ launchStatus:
   launchingSlow: 还在启动…Minecraft的启动会比较慢呢~
   refreshingUser: 刷新用户令牌
   spawningProcess: 正在启动游戏
+  updatingJava: 正在更新 Java
 launcherUpdate:
   automaticUnavailable: 自动更新不可用
   automaticNotImplemented: 此启动器宿主尚未实现自动更新。
@@ -2072,6 +2086,7 @@ setting:
   globalSettingHint: 实例默认情况下会使用这些全局设置
   importSettings: 导入设置
   importSettingsHint: 从之前导出的文件中加载设置
+  installJava: 安装 Java
   instanceTheme:
     activeDescription: |-
       此实例使用自定义主题。
@@ -2080,6 +2095,14 @@ setting:
       为此实例启用自定义主题。
       这将创建当前全局主题的副本。
     name: 实例主题
+  java: Java 设置
+  javaInstaller:
+    noCompatibleBuilds: 未找到兼容的 Java 构建版本。
+    retry: 重试
+    preferredVendor: 首选 Java 发行商
+    preferredVendorDescription: 自动安装 Java 时优先选择此发行商。
+    showAllVersions: 所有版本
+  javaProfiles: Java 配置
   language: 语言
   languageDescription: 当前显示的语言
   latestVersion: 最新版本
@@ -2270,6 +2293,7 @@ shared:
   next: 下一步
   'no': 否
   ok: 好的
+  openFolder: 打开文件夹
   previous: 上一步
   refresh: 刷新
   remove: 移除

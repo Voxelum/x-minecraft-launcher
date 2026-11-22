@@ -684,7 +684,11 @@ java:
   allocation: Được phân bổ
   autoHint: Bộ nhớ tối thiểu tăng theo số lượng mod đã cài đặt; tối đa sử dụng bộ nhớ hệ thống khả dụng.
   change: Thay đổi
+  importedJava: Java bên ngoài
+  importedJavaHint: Được nhập thủ công từ tệp
   importFromFile: Nhập Java từ tệp
+  internalJava: Java nội bộ
+  internalJavaHint: Do XMCL cài đặt
   invalid: Vị trí Java không hợp lệ
   location: Vị trí Java
   locationHint: Chưa chọn Java — sử dụng mặc định hệ thống
@@ -700,6 +704,13 @@ java:
   presets: Thiết lập sẵn
   refresh: Làm mới Java cục bộ
   systemMemory: 'Bộ nhớ hệ thống còn trống: {free} / {total}'
+javaUpdate:
+  title: Có bản cập nhật Java
+  description: Đã có phiên bản Java mới hơn. Bạn có muốn cập nhật trước khi khởi chạy trò chơi không?
+  currentVersion: Phiên bản hiện tại
+  newVersion: Phiên bản có sẵn
+  ok: Cập nhật
+  later: Để sau
 labyMod:
   disable: Vô hiệu hóa LabyMod
   empty: LabyMod không hỗ trợ phiên bản Minecraft hiện tại
@@ -751,6 +762,8 @@ launchPreExecuteCommandFailed:
   title: Lệnh thực thi trước thất bại
 launchStatus:
   assigningMemory: Đang phân bổ bộ nhớ
+  checkingJavaUpdate: Đang kiểm tra bản cập nhật Java
+  confirmingJavaUpdate: Đang chờ xác nhận cập nhật Java
   elyByWarning: Bản thay thế authlib của Ely.by đang được bật. Một số phiên bản Minecraft có thể không tương thích và bị crash. Bạn có thể tắt nó trong cài đặt phiên bản nếu xảy ra sự cố.
   exit: Thoát trò chơi?
   injectingAuthLib: Đang thiết lập AuthLib bên thứ ba
@@ -758,6 +771,7 @@ launchStatus:
   launchingSlow: Vẫn đang khởi chạy... Khởi động công cụ đồ họa có thể tốn thời gian...
   refreshingUser: Đang làm mới token người dùng
   spawningProcess: Đang tạo tiến trình
+  updatingJava: Đang cập nhật Java
 launcherUpdate:
   alreadyLatest: Đã là phiên bản mới nhất
   installAndQuit: Khởi động lại để cài đặt
@@ -1744,10 +1758,19 @@ setting:
   globalSettingHint: Các phiên bản game sẽ sử dụng các cài đặt này theo mặc định.
   importSettings: Nhập cài đặt
   importSettingsHint: Tải các cài đặt từ một tệp đã xuất trước đó
+  installJava: Cài đặt Java
   instanceTheme:
     activeDescription: Phiên bản này đang sử dụng chủ đề tùy chỉnh. Bạn có thể xóa nó để sử dụng chủ đề toàn cục.
     description: Bật chủ đề tùy chỉnh cho phiên bản này. Điều này sẽ tạo một bản sao từ chủ đề toàn cục hiện tại.
     name: Chủ đề phiên bản
+  java: Thiết lập Java
+  javaInstaller:
+    noCompatibleBuilds: Không tìm thấy bản dựng Java tương thích.
+    retry: Thử lại
+    preferredVendor: Nhà cung cấp Java ưu tiên
+    preferredVendorDescription: Ưu tiên nhà cung cấp này khi tự động cài đặt Java.
+    showAllVersions: Tất cả phiên bản
+  javaProfiles: Hồ sơ Java
   language: Ngôn ngữ
   languageDescription: Ngôn ngữ hiển thị
   latestVersion: Phiên bản mới nhất
@@ -1938,6 +1961,7 @@ shared:
   next: Tiếp theo
   'no': Không
   ok: OK
+  openFolder: Mở thư mục
   previous: Trước đó
   refresh: Làm mới
   remove: Xóa

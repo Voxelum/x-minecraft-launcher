@@ -29,6 +29,7 @@ import type { LaunchMiddleware } from './LaunchMiddleware'
 import { ensureDir } from '@xmcl/installer/utils'
 import { LaunchHistoryStore } from './LaunchHistoryStore'
 import { runWithInternalSpan } from '../infra/telemetry_context'
+import { javaRuntimeLockKey, withJavaRuntimeLock } from '../java/javaRuntimeLock'
 
 type TrackedGameProcess = GameProcess & {
   process: ChildProcess
@@ -444,7 +445,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         )
       }
 
-      let process: ChildProcess
+      let spawnProcess: () => Promise<ChildProcess>
       const context: Record<string, any> = {}
       let launchOptions: (ResolvedLaunchOptions | ServerOptions)
       if ('inheritances' in version) {
@@ -476,13 +477,15 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
         this.log('Launching client with these option...')
         this.log(JSON.stringify(op, (k, v) => (k === 'accessToken' ? '***' : v), 2))
-        try {
-          process = await this.#track(() => launch(op), 'spawn_process')
-        } catch (e) {
-          if (isSystemError(e) && e.code === 'EPERM') {
-            throw new LaunchException({ type: 'launchJavaNoPermission', javaPath: op.javaPath }, 'Fail to spawn process')
+        spawnProcess = async () => {
+          try {
+            return await this.#track(() => launch(op), 'spawn_process')
+          } catch (e) {
+            if (isSystemError(e) && e.code === 'EPERM') {
+              throw new LaunchException({ type: 'launchJavaNoPermission', javaPath: op.javaPath }, 'Fail to spawn process')
+            }
+            throw e
           }
-          throw e
         }
       } else {
         launchOptions = await this.generateServerOptions(options, version)
@@ -502,190 +505,195 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
         this.log('Launching server with these option...')
         this.log(JSON.stringify(launchOptions, (k, v) => (k === 'accessToken' ? '***' : v), 2))
-        process = await this.#track(() => launchServer(launchOptions), 'spawn_process')
+        const serverOptions = launchOptions
+        spawnProcess = () => this.#track(() => launchServer(serverOptions), 'spawn_process')
       }
 
-      if (typeof process.pid !== 'number') {
-        const err = await Promise.race([
-          setTimeout(1000),
-          new Promise<Error>((resolve) => {
-            process.once('error', (e) => {
-              if (isSystemError(e) && e.code === 'ENOENT' && e.syscall?.startsWith('spawn')) {
-                resolve(new LaunchException({ type: 'launchInvalidJavaPath', javaPath }, javaPath + '; ' + e.path))
-              } else {
-                if (e.name === 'Error') {
-                  Object.assign(e, {
-                    name: 'LaunchSpawnProcessError',
-                  })
+      const javaLockKey = javaRuntimeLockKey(this.app, launchOptions.javaPath, this.getPath('jre'))
+      return await withJavaRuntimeLock(this.app, javaLockKey, async () => {
+        const process = await spawnProcess()
+        if (typeof process.pid !== 'number') {
+          const err = await Promise.race([
+            setTimeout(1000),
+            new Promise<Error>((resolve) => {
+              process.once('error', (e) => {
+                if (isSystemError(e) && e.code === 'ENOENT' && e.syscall?.startsWith('spawn')) {
+                  resolve(new LaunchException({ type: 'launchInvalidJavaPath', javaPath }, javaPath + '; ' + e.path))
+                } else {
+                  if (e.name === 'Error') {
+                    Object.assign(e, {
+                      name: 'LaunchSpawnProcessError',
+                    })
+                  }
+                  resolve(e)
                 }
-                resolve(e)
-              }
-            })
-          }),
-        ])
-        if (err) {
-          this.error(err)
-          throw err
-        }
-        throw new LaunchException({ type: 'launchSpawnProcessFailed' })
-      }
-      const processData = {
-        pid: process.pid,
-        options,
-        process,
-        side,
-        ready: false,
-        launchId,
-        gameLogAmbiguous: false,
-      }
-      this.processes[process.pid] = processData
-
-      for (const tracked of Object.values(this.processes)) {
-        if (tracked.pid !== process.pid && tracked.options.gameDirectory === options.gameDirectory) {
-          tracked.gameLogAmbiguous = true
-          processData.gameLogAmbiguous = true
-        }
-      }
-
-      const watcher = createMinecraftProcessWatcher(process)
-      const errorLogs = [] as string[]
-      const stdLogs = [] as string[]
-      const startTime = Date.now()
-      let launchOutput = ''
-      const appendLaunchOutput = (stream: 'stdout' | 'stderr', content: string) => {
-        launchOutput += `[${stream}] ${content}`
-        if (launchOutput.length > MAX_LAUNCH_OUTPUT_LENGTH) {
-          launchOutput = `[earlier output truncated]\n${launchOutput.slice(-MAX_LAUNCH_OUTPUT_LENGTH)}`
-        }
-      }
-      await this.launchHistory.begin(options.gameDirectory, {
-        launchId,
-        operationId,
-        pid: process.pid,
-        side,
-        version: version.id,
-        minecraft: version.minecraftVersion,
-        startedAt: startTime,
-      }).catch(e => this.warn(e))
-      this.emit('minecraft-start', {
-        pid: process.pid,
-        launchId,
-        operationId,
-        minecraft: version.minecraftVersion,
-        ...options,
-        startTime,
-      })
-
-      let encoding = undefined as string | undefined
-      const processError = async (buf: Buffer) => {
-        if (!encoding) {
-          encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => UTF8) || UTF8
-        }
-        const result = await this.encoder.decode(buf, encoding)
-        appendLaunchOutput('stderr', result)
-        this.emit('minecraft-stderr', { pid: process.pid, stderr: result })
-        const lines = result.split(EOL)
-        errorLogs.push(...lines)
-        this.warn(result)
-      }
-      const processLog = async (buf: any) => {
-        if (!encoding) {
-          encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => UTF8) || UTF8
-        }
-        const result = await this.encoder.decode(buf, encoding)
-        appendLaunchOutput('stdout', result)
-        this.emit('minecraft-stdout', { pid: process.pid, stdout: result })
-        if (!processData.ready) {
-          stdLogs.push(...result.split(EOL))
-        }
-      }
-
-      const errPromises = [] as Promise<any>[]
-      process.stderr?.on('data', async (buf: any) => {
-        errPromises.push(processError(buf))
-      })
-      process.stdout?.on('data', (s) => {
-        const p = processLog(s).catch(this.error)
-        errPromises.push(p)
-      })
-
-      watcher.on('error', (err) => {
-        this.emit('error', err)
-      }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
-        const endTime = Date.now()
-        const playTime = endTime - startTime
-
-        if (crashReport && code === 0) {
-          code = 1
-        }
-
-        this.log(`Minecraft exit: ${code}, signal: ${signal}`)
-        if (crashReportLocation) {
-          crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
-        }
-        void Promise.all(errPromises).catch((e) => { this.error(e) }).then(async () => {
-          const errorLog = errorLogs.join('\n');
-          const stdLog = stdLogs.join('\n')
-          for (const plugin of this.middlewares) {
-            try {
-              plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation, errorLog }, options, { version, options: launchOptions, side } as any, context)
-            } catch (e) {
-              this.warn('Fail to run plugin')
-              this.error(e as any)
-            }
-          }
-
-          const logsDirectory = side === 'server'
-            ? join(options.gameDirectory, 'server', 'logs')
-            : join(options.gameDirectory, 'logs')
-          const resolveLaunchLog = async (name: string) => {
-            if (processData.gameLogAmbiguous) return undefined
-            const path = join(logsDirectory, name)
-            return stat(path).then(value => value.mtimeMs >= startTime && value.mtimeMs <= endTime + 2_000 ? path : undefined).catch(() => undefined)
-          }
-          const [gameLogPath, debugLogPath] = await Promise.all([
-            resolveLaunchLog('latest.log'),
-            resolveLaunchLog('debug.log'),
+              })
+            }),
           ])
-          await this.launchHistory.complete(options.gameDirectory, launchId, {
-            endedAt: endTime,
-            exitCode: code,
-            signal,
-            crashed: code !== 0 || !!crashReport || !!crashReportLocation,
-            crashReportPath: crashReportLocation,
-            crashReport,
-            launcherOutput: launchOutput,
-            gameLogPath,
-            debugLogPath,
-            gameLogAmbiguous: processData.gameLogAmbiguous,
-          }).catch(e => this.warn(e))
+          if (err) {
+            this.error(err)
+            throw err
+          }
+          throw new LaunchException({ type: 'launchSpawnProcessFailed' })
+        }
+        const processData = {
+          pid: process.pid,
+          options: { ...options, java: launchOptions.javaPath },
+          process,
+          side,
+          ready: false,
+          launchId,
+          gameLogAmbiguous: false,
+        }
+        this.processes[process.pid] = processData
 
-          this.emit('minecraft-exit', {
-            pid: process.pid,
-            launchId,
-            ...options,
-            code,
-            operationId,
-            signal,
-            crashReport,
-            duration: playTime,
-            crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
-            errorLog,
-            stdLog,
-            elyByAuthlibReplaced: context.elyByAuthlibReplaced,
-            elyByMinecraftVersion: context.elyByMinecraftVersion,
-          })
+        for (const tracked of Object.values(this.processes)) {
+          if (tracked.pid !== process.pid && tracked.options.gameDirectory === options.gameDirectory) {
+            tracked.gameLogAmbiguous = true
+            processData.gameLogAmbiguous = true
+          }
+        }
+
+        const watcher = createMinecraftProcessWatcher(process)
+        const errorLogs = [] as string[]
+        const stdLogs = [] as string[]
+        const startTime = Date.now()
+        let launchOutput = ''
+        const appendLaunchOutput = (stream: 'stdout' | 'stderr', content: string) => {
+          launchOutput += `[${stream}] ${content}`
+          if (launchOutput.length > MAX_LAUNCH_OUTPUT_LENGTH) {
+            launchOutput = `[earlier output truncated]\n${launchOutput.slice(-MAX_LAUNCH_OUTPUT_LENGTH)}`
+          }
+        }
+        void this.launchHistory.begin(options.gameDirectory, {
+          launchId,
+          operationId,
+          pid: process.pid,
+          side,
+          version: version.id,
+          minecraft: version.minecraftVersion,
+          startedAt: startTime,
+        }).catch(e => this.warn(e))
+        this.emit('minecraft-start', {
+          pid: process.pid,
+          launchId,
+          operationId,
+          minecraft: version.minecraftVersion,
+          ...options,
+          startTime,
         })
-        delete this.processes[processData.pid]
-      }).on('minecraft-window-ready', () => {
-        processData.ready = true
-        stdLogs.splice(0, stdLogs.length)
-        void this.launchHistory.markReady(options.gameDirectory, launchId, Date.now()).catch(e => this.warn(e))
-        this.emit('minecraft-window-ready', { pid: processData.pid, launchId, ...options })
-      })
-      process.unref()
 
-      return process.pid
+        let encoding = undefined as string | undefined
+        const processError = async (buf: Buffer) => {
+          if (!encoding) {
+            encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => UTF8) || UTF8
+          }
+          const result = await this.encoder.decode(buf, encoding)
+          appendLaunchOutput('stderr', result)
+          this.emit('minecraft-stderr', { pid: process.pid, stderr: result })
+          const lines = result.split(EOL)
+          errorLogs.push(...lines)
+          this.warn(result)
+        }
+        const processLog = async (buf: any) => {
+          if (!encoding) {
+            encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => UTF8) || UTF8
+          }
+          const result = await this.encoder.decode(buf, encoding)
+          appendLaunchOutput('stdout', result)
+          this.emit('minecraft-stdout', { pid: process.pid, stdout: result })
+          if (!processData.ready) {
+            stdLogs.push(...result.split(EOL))
+          }
+        }
+
+        const errPromises = [] as Promise<any>[]
+        process.stderr?.on('data', async (buf: any) => {
+          errPromises.push(processError(buf))
+        })
+        process.stdout?.on('data', (s) => {
+          const p = processLog(s).catch(this.error)
+          errPromises.push(p)
+        })
+
+        watcher.on('error', (err) => {
+          this.emit('error', err)
+        }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
+          const endTime = Date.now()
+          const playTime = endTime - startTime
+
+          if (crashReport && code === 0) {
+            code = 1
+          }
+
+          this.log(`Minecraft exit: ${code}, signal: ${signal}`)
+          if (crashReportLocation) {
+            crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
+          }
+          void Promise.all(errPromises).catch((e) => { this.error(e) }).then(async () => {
+            const errorLog = errorLogs.join('\n');
+            const stdLog = stdLogs.join('\n')
+            for (const plugin of this.middlewares) {
+              try {
+                plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation, errorLog }, options, { version, options: launchOptions, side } as any, context)
+              } catch (e) {
+                this.warn('Fail to run plugin')
+                this.error(e as any)
+              }
+            }
+
+            const logsDirectory = side === 'server'
+              ? join(options.gameDirectory, 'server', 'logs')
+              : join(options.gameDirectory, 'logs')
+            const resolveLaunchLog = async (name: string) => {
+              if (processData.gameLogAmbiguous) return undefined
+              const path = join(logsDirectory, name)
+              return stat(path).then(value => value.mtimeMs >= startTime && value.mtimeMs <= endTime + 2_000 ? path : undefined).catch(() => undefined)
+            }
+            const [gameLogPath, debugLogPath] = await Promise.all([
+              resolveLaunchLog('latest.log'),
+              resolveLaunchLog('debug.log'),
+            ])
+            await this.launchHistory.complete(options.gameDirectory, launchId, {
+              endedAt: endTime,
+              exitCode: code,
+              signal,
+              crashed: code !== 0 || !!crashReport || !!crashReportLocation,
+              crashReportPath: crashReportLocation,
+              crashReport,
+              launcherOutput: launchOutput,
+              gameLogPath,
+              debugLogPath,
+              gameLogAmbiguous: processData.gameLogAmbiguous,
+            }).catch(e => this.warn(e))
+
+            this.emit('minecraft-exit', {
+              pid: process.pid,
+              launchId,
+              ...options,
+              code,
+              operationId,
+              signal,
+              crashReport,
+              duration: playTime,
+              crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
+              errorLog,
+              stdLog,
+              elyByAuthlibReplaced: context.elyByAuthlibReplaced,
+              elyByMinecraftVersion: context.elyByMinecraftVersion,
+            })
+          })
+          delete this.processes[processData.pid]
+        }).on('minecraft-window-ready', () => {
+          processData.ready = true
+          stdLogs.splice(0, stdLogs.length)
+          void this.launchHistory.markReady(options.gameDirectory, launchId, Date.now()).catch(e => this.warn(e))
+          this.emit('minecraft-window-ready', { pid: processData.pid, launchId, ...options })
+        })
+        process.unref()
+
+        return process.pid
+      })
     } catch (e) {
       this.error(e as Error)
       if (e instanceof LaunchException) {
@@ -707,7 +715,6 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
   async kill(pid: number, force?: boolean) {
     const process = this.processes[pid]
-    delete this.processes[pid]
     if (process) {
       if (process.side === 'client') {
         if (force) {

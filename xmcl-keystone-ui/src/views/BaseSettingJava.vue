@@ -2,12 +2,7 @@
   <SettingCard id="java-card" title="Java" icon="coffee">
     <!-- Hero Java row -->
     <div class="java-hero flex flex-wrap items-center gap-3 px-2">
-      <v-avatar
-        size="48"
-        rounded="lg"
-        :color="heroAvatar.color"
-        :variant="heroAvatar.variant"
-      >
+      <v-avatar size="48" rounded="lg" :color="heroAvatar.color" :variant="heroAvatar.variant">
         <span
           v-if="displayJava.path && displayJava.valid && displayJava.majorVersion"
           class="text-h6 font-weight-bold"
@@ -24,13 +19,7 @@
         <div class="flex items-center gap-2 text-subtitle-1 font-weight-medium">
           <template v-if="displayJava.path && displayJava.valid">
             Java {{ displayJava.version }}
-            <v-chip
-              v-if="displayJava.arch"
-              size="x-small"
-              color="orange"
-              label
-              variant="outlined"
-            >
+            <v-chip v-if="displayJava.arch" size="x-small" color="orange" label variant="outlined">
               {{ displayJava.arch }}
             </v-chip>
             <v-chip
@@ -92,28 +81,15 @@
 
       <JavaActions @added="pickerOpen = true" />
 
-      <v-menu
-        v-model="pickerOpen"
-        :close-on-content-click="false"
-        location="bottom end"
-      >
+      <v-menu v-model="pickerOpen" :close-on-content-click="false" location="bottom end">
         <template #activator="{ props: menuProps }">
-          <v-btn
-            v-bind="menuProps"
-            variant="tonal"
-            size="small"
-          >
+          <v-btn v-bind="menuProps" variant="tonal" size="small">
             <v-icon start size="small">tune</v-icon>
             {{ t('java.change') }}
           </v-btn>
         </template>
         <v-card width="540" max-width="90vw" max-height="60vh" class="overflow-auto">
-          <JavaList
-            :value="java"
-            :items="javas"
-            :remove="onRemoveJava"
-            @input="onPickJava"
-          />
+          <JavaList :value="java" :items="javas" :remove="onRemoveJava" @input="onPickJava" />
         </v-card>
       </v-menu>
     </div>
@@ -130,17 +106,10 @@
         @clear="resetAssignMemory"
       />
       <v-spacer />
-      <SettingJavaMemoryAssign
-        :value="assignMemory"
-        @input="assignMemory = $event"
-      />
+      <SettingJavaMemoryAssign :value="assignMemory" @input="assignMemory = $event" />
     </div>
     <div class="px-2">
-      <SettingJavaMemory
-        :assign-memory="assignMemory"
-        v-model:min="minMem"
-        v-model:max="maxMem"
-      />
+      <SettingJavaMemory :assign-memory="assignMemory" v-model:min="minMem" v-model:max="maxMem" />
     </div>
 
     <!-- Advanced subsection -->
@@ -154,7 +123,7 @@
       <div>
         <div class="font-weight-medium mb-2 flex items-center text-body-2">
           <v-icon start size="small">terminal</v-icon>
-          {{ t("instance.prependCommand") }}
+          {{ t('instance.prependCommand') }}
           <BaseSettingGlobalLabel
             :global="isGlobalPrependCommand"
             @clear="resetPrependCommand"
@@ -173,7 +142,7 @@
       <div>
         <div class="font-weight-medium mb-2 flex items-center text-body-2">
           <v-icon start size="small">settings_applications</v-icon>
-          {{ t("instance.vmOptions") }}
+          {{ t('instance.vmOptions') }}
           <BaseSettingGlobalLabel
             :global="isGlobalVmOptions"
             @clear="resetVmOptions"
@@ -201,13 +170,7 @@
           {{ t('instance.vmVarHint') }}
         </div>
       </div>
-      <v-btn
-        color="primary"
-        variant="text"
-        size="small"
-        border
-        @click="onAddEnvVar"
-      >
+      <v-btn color="primary" variant="text" size="small" border @click="onAddEnvVar">
         <v-icon start size="small">add</v-icon>
         {{ t('shared.add') }}
       </v-btn>
@@ -257,11 +220,12 @@ function onPickJava(value: JavaRecord) {
   pickerOpen.value = false
 }
 
-function onRemoveJava(value: JavaRecord) {
+async function onRemoveJava(value: JavaRecord) {
   if (shouldClearPinOnRemove(value.path, javaPath.value)) {
     java.value = undefined
   }
-  removeJava(value)
+
+  await removeJava(value, true)
 }
 
 const {
@@ -313,7 +277,14 @@ const java = computed({
 // resolved by the same logic used at launch time, so the user can see what
 // will be picked instead of a generic "system default" placeholder.
 const isAuto = computed(() => !javaPath.value)
-const displayJava = computed<JavaRecord & { path: string; valid: boolean; majorVersion: number; version: string }>(() => {
+const displayJava = computed<
+  JavaRecord & {
+    path: string
+    valid: boolean
+    majorVersion: number
+    version: string
+  }
+>(() => {
   if (!isAuto.value) return java.value as any
   const auto = selectedJava.value
   if (auto && auto.path) {

@@ -225,13 +225,19 @@ watch(launchingStatus, (newStat) => {
 
 const hint = computed(() => launchingStatus.value === 'preparing-authlib'
   ? t('launchStatus.injectingAuthLib')
-  : launchingStatus.value === 'assigning-memory'
-    ? t('launchStatus.assigningMemory')
-    : launchingStatus.value === 'refreshing-user'
-      ? t('launchStatus.refreshingUser')
-      : launchingStatus.value === 'spawning-process'
-        ? t('launchStatus.spawningProcess')
-        : '')
+  : launchingStatus.value === 'checking-java-update'
+    ? t('launchStatus.checkingJavaUpdate')
+    : launchingStatus.value === 'confirming-java-update'
+      ? t('launchStatus.confirmingJavaUpdate')
+      : launchingStatus.value === 'updating-java'
+        ? t('launchStatus.updatingJava')
+        : launchingStatus.value === 'assigning-memory'
+          ? t('launchStatus.assigningMemory')
+          : launchingStatus.value === 'refreshing-user'
+            ? t('launchStatus.refreshingUser')
+            : launchingStatus.value === 'spawning-process'
+              ? t('launchStatus.spawningProcess')
+              : '')
 
 const { status } = injection(kInstanceJava)
 const javaHints = computed(() => {

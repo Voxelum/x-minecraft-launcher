@@ -644,7 +644,11 @@ items:
 java:
   allocatedLong: 시스템 기본 자바 사용
   allocatedShort: 자동 할당
+  importedJava: 외부 Java
+  importedJavaHint: 파일에서 수동으로 가져옴
   importFromFile: 파일에서 자바 가져오기
+  internalJava: 내부 Java
+  internalJavaHint: XMCL에서 설치함
   invalid: 잘못된 자바 버전
   location: 자바 버전
   maxMemory: 최대 메모리
@@ -663,6 +667,13 @@ java:
   locationHint: Java가 선택되지 않음 — 시스템 기본값 사용
   openFolder: Java 폴더 열기
   presets: 프리셋
+javaUpdate:
+  title: Java 업데이트 사용 가능
+  description: 더 최신 버전의 Java가 있습니다. 게임을 시작하기 전에 업데이트하시겠습니까?
+  currentVersion: 현재 버전
+  newVersion: 사용 가능한 버전
+  ok: 업데이트
+  later: 나중에
 labyMod:
   disable: LabyMod 비활성화
   empty: 현재 마인크래프트 버전을 LabyMod가 지원하지 않습니다
@@ -720,6 +731,8 @@ launchPreExecuteCommandFailed:
   title: 사전 실행 명령 실패
 launchStatus:
   assigningMemory: 메모리 할당 중
+  checkingJavaUpdate: Java 업데이트 확인 중
+  confirmingJavaUpdate: Java 업데이트 승인 대기 중
   elyByWarning: Ely.by Authlib 대체가 활성화되어 있습니다. 일부 Minecraft 버전은 호환되지 않아 크래시가 발생할 수 있습니다. 문제가 발생하면 인스턴스 설정에서 비활성화하세요.
   exit: 게임을 종료할까요?
   injectingAuthLib: 서드파티 AuthLib 설정 중
@@ -727,6 +740,7 @@ launchStatus:
   launchingSlow: 아직 실행 중... 그래픽 엔진 초기화가 느릴 수 있어요...
   refreshingUser: 사용자 토큰 새로고침 중
   spawningProcess: 프로세스 시작 중
+  updatingJava: Java 업데이트 중
 launcherUpdate:
   alreadyLatest: 최신 상태
   installAndQuit: 재시작하여 설치
@@ -1606,6 +1620,7 @@ setting:
   globalSettingHint: 인스턴스는 기본적으로 이 설정을 사용합니다.
   importSettings: 설정 가져오기
   importSettingsHint: 이전에 내보낸 파일에서 설정 로드
+  installJava: Java 설치
   instanceTheme:
     activeDescription: |-
       이 인스턴스는 맞춤 테마를 사용하고 있습니다.
@@ -1614,6 +1629,14 @@ setting:
       이 인스턴스에 대한 맞춤 테마를 활성화합니다.
       그러면 현재 전역 테마의 복사본이 생성됩니다.
     name: 인스턴스 테마
+  java: Java 설정
+  javaInstaller:
+    noCompatibleBuilds: 호환되는 Java 빌드를 찾을 수 없습니다.
+    retry: 다시 시도
+    preferredVendor: 선호하는 Java 공급업체
+    preferredVendorDescription: Java를 자동으로 설치할 때 이 공급업체를 우선합니다.
+    showAllVersions: 모든 버전
+  javaProfiles: Java 프로필
   language: 언어
   languageDescription: 표시 언어
   latestVersion: 최신 버전
@@ -1809,6 +1832,7 @@ shared:
   next: 다음
   'no': 아니오
   ok: 확인
+  openFolder: 폴더 열기
   previous: 이전
   refresh: 새로고침
   remove: 제거

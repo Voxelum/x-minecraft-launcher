@@ -98,6 +98,17 @@ describe('pluginSettings', () => {
     expect(() => mockState.localeSet('de')).toThrow('maintenance')
   })
 
+  test('Java update flush persists global settings and propagates save errors', async () => {
+    vi.mocked(fsExtra.readJson).mockResolvedValue({})
+    vi.mocked(fsExtra.writeJson).mockRejectedValue(new Error('settings save failed'))
+    const { pluginSettings } = await import('./pluginSettings')
+    const { getRestoreGate } = await import('~/infra/restoreGate')
+    await pluginSettings(mockApp, mockManifest)
+    subscribeCallback!()
+    await expect(getRestoreGate(mockApp).flushWriters('java-update')).rejects.toThrow('settings save failed')
+    expect(fsExtra.writeJson).toHaveBeenCalledOnce()
+  })
+
   test('loads and persists explicit AppImage ownership through the settings saver', async () => {
     vi.useFakeTimers()
     vi.mocked(fsExtra.readJson).mockResolvedValue({ appImageUpdateMode: 'self-managed' })
@@ -172,7 +183,7 @@ describe('pluginSettings', () => {
     await vi.waitFor(() => {
       expect(mockApp.registry.register).toHaveBeenCalled()
     })
-    
+
     // Verify settings are initialized with defaults (locale normalized to 'en' from 'en-US')
     expect(mockState.locale).toBe('en')
     expect(mockState.theme).toBe('dark')
@@ -249,7 +260,9 @@ describe('pluginSettings', () => {
     try {
       const { pluginSettings } = await import('./pluginSettings')
       await pluginSettings(mockApp, mockManifest)
-      await vi.waitFor(() => { expect(subscribeCallback).not.toBeNull() })
+      await vi.waitFor(() => {
+        expect(subscribeCallback).not.toBeNull()
+      })
 
       subscribeCallback!()
       await vi.advanceTimersByTimeAsync(1100)
@@ -261,8 +274,6 @@ describe('pluginSettings', () => {
       process.off('unhandledRejection', unhandled)
     }
   })
-
-
 
   test('should log error when settings parsing fails', async () => {
     vi.mocked(fsExtra.readJson).mockResolvedValue({ invalidField: 'invalid' })
@@ -286,7 +297,6 @@ describe('pluginSettings', () => {
       theme: 'dark',
       maxSockets: 32,
       unknownField: 'should be ignored', // extra fields are stripped
-      globalVmOptions: [], // valid array
     })
 
     const { pluginSettings } = await import('./pluginSettings')
@@ -301,7 +311,6 @@ describe('pluginSettings', () => {
     expect(mockState.theme).toBe('dark')
     expect(mockState.autoDownload).toBe(false)
     expect(mockState.maxSockets).toBe(32) // value from file
-    expect(mockState.globalVmOptions).toEqual([])
     expect(mockState.developerMode).toBe(false) // default value
     expect(mockState.discordPresence).toBe(true) // default from Settings class
   })
@@ -395,7 +404,7 @@ describe('pluginSettings', () => {
         globalMaxMemory: 0,
         globalAssignMemory: false,
         globalJava: '',
-        globalVmOptions: [],
+        globalPreferredJavaVendor: 'default',
         globalMcOptions: [],
         globalFastLaunch: false,
         globalHideLauncher: true,
@@ -403,7 +412,6 @@ describe('pluginSettings', () => {
         globalSyncGameLanguage: false,
         globalDisableAuthlibInjector: false,
         globalDisableElyByAuthlib: false,
-        globalPrependCommand: '',
         globalPreExecuteCommand: '',
         globalEnv: {},
         discordPresence: true,
@@ -438,7 +446,6 @@ describe('pluginSettings', () => {
     // These would be invalid according to the schema
     ;(mockState as any).theme = 'invalid-theme' // should be 'dark' | 'light' | 'system'
     ;(mockState as any).maxSockets = 'not-a-number' // should be number
-    ;(mockState as any).globalVmOptions = 'not-an-array' // should be array
 
     // Trigger the subscription callback
     subscribeCallback!()
@@ -468,7 +475,7 @@ describe('pluginSettings', () => {
         globalMaxMemory: 0,
         globalAssignMemory: false,
         globalJava: '',
-        globalVmOptions: [], // default value, not 'not-an-array'
+        globalPreferredJavaVendor: 'default',
         globalMcOptions: [],
         globalFastLaunch: false,
         globalHideLauncher: true,
@@ -476,7 +483,6 @@ describe('pluginSettings', () => {
         globalSyncGameLanguage: false,
         globalDisableAuthlibInjector: false,
         globalDisableElyByAuthlib: false,
-        globalPrependCommand: '',
         globalPreExecuteCommand: '',
         globalEnv: {},
         discordPresence: true,

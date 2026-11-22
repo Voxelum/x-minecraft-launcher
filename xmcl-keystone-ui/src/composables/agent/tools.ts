@@ -33,15 +33,41 @@ import {
 } from '@xmcl/runtime-api'
 import { useService } from '../service'
 import { confirmAgentAction, requestAgentConfirmation } from './confirm'
-import { type AgentCommandOperations, type AgentLoader, assertAgentCommandSyntax, createAgentRuntimeCommandIndex, createAgentRuntimeCommands, executeAgentRuntimeCommand, formatAgentRuntimeCommandHelp, withModrinthSearchInstallRef } from './commands'
+import {
+  type AgentCommandOperations,
+  type AgentLoader,
+  assertAgentCommandSyntax,
+  createAgentRuntimeCommandIndex,
+  createAgentRuntimeCommands,
+  executeAgentRuntimeCommand,
+  formatAgentRuntimeCommandHelp,
+  withModrinthSearchInstallRef,
+} from './commands'
 import type { AgentRunContext } from './local'
 import { createAgentUiHandler } from './ui'
 import { kInstances } from '../instances'
 import { kUserContext } from '../user'
 import { useAgentCapabilityContext } from './capabilityContext'
 import { actionObjectSchema, textResult } from './toolSupport'
-import { buildAgentInstanceEdit, createAgentStagedInstallPresenter, isAgentCommandAllowed } from './toolPolicy'
-import { applyVfsWriteChange, assertVfsRevision, createVfsLaunchEntries, createVfsRevision, createVfsRootEntries, filterAgentLogFiles, normalizeVfsListPath, normalizeVfsPath, normalizeVfsWriteContent, resolveExistingVfsWrite, summarizeVfsTextChange, validateVfsText } from './vfs'
+import {
+  buildAgentInstanceEdit,
+  createAgentStagedInstallPresenter,
+  isAgentCommandAllowed,
+} from './toolPolicy'
+import {
+  applyVfsWriteChange,
+  assertVfsRevision,
+  createVfsLaunchEntries,
+  createVfsRevision,
+  createVfsRootEntries,
+  filterAgentLogFiles,
+  normalizeVfsListPath,
+  normalizeVfsPath,
+  normalizeVfsWriteContent,
+  resolveExistingVfsWrite,
+  summarizeVfsTextChange,
+  validateVfsText,
+} from './vfs'
 import { CurseforgeBuiltinClassId } from '../curseforge'
 import { kModrinthAuthenticatedAPI } from '../modrinthAuthenticatedAPI'
 import { getAgentInstanceLoader, resolveAgentMarketFilters } from './marketFilters'
@@ -49,8 +75,16 @@ import { getModrinthDependenciesModel } from '../modrinthDependencies'
 import { getCurseforgeDependenciesModel } from '../curseforgeDependencies'
 import { kSWRVConfig } from '../swrvConfig'
 import { resolveArtifactModrinthDependencies } from '../modArtifactDependencies'
-import { getReplacedModFiles, getRequiredCurseforgeInstallFiles, getRequiredModrinthInstallVersions } from '../modInstall'
-import { createAgentManifestApplyResult, getAgentModCompatibilityGuidance, isAgentRuntimeCompatibilityChanged } from './modDiagnosis'
+import {
+  getReplacedModFiles,
+  getRequiredCurseforgeInstallFiles,
+  getRequiredModrinthInstallVersions,
+} from '../modInstall'
+import {
+  createAgentManifestApplyResult,
+  getAgentModCompatibilityGuidance,
+  isAgentRuntimeCompatibilityChanged,
+} from './modDiagnosis'
 
 interface AgentRuntimeChangeTracker {
   pending: boolean
@@ -115,23 +149,40 @@ function compatibilityLabel(compatible: number | undefined) {
 function decorateModrinthVersions(value: any): any {
   if (Array.isArray(value)) return value.map(decorateModrinthVersions)
   if (!value || typeof value !== 'object') return value
-  if (typeof value.id === 'string' && typeof value.project_id === 'string' && Array.isArray(value.files)) {
+  if (
+    typeof value.id === 'string' &&
+    typeof value.project_id === 'string' &&
+    Array.isArray(value.files)
+  ) {
     return { ...value, installRef: `modrinth:${value.project_id}@${value.id}` }
   }
-  return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, decorateModrinthVersions(entry)]))
+  return Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => [key, decorateModrinthVersions(entry)]),
+  )
 }
 
 function decorateCurseforgeFiles(value: any): any {
   if (Array.isArray(value)) return value.map(decorateCurseforgeFiles)
   if (!value || typeof value !== 'object') return value
-  if (Number.isSafeInteger(value.id) && Number.isSafeInteger(value.modId) && typeof value.fileName === 'string') {
+  if (
+    Number.isSafeInteger(value.id) &&
+    Number.isSafeInteger(value.modId) &&
+    typeof value.fileName === 'string'
+  ) {
     return { ...value, installRef: `curseforge:${value.modId}/${value.id}` }
   }
-  return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, decorateCurseforgeFiles(entry)]))
+  return Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => [key, decorateCurseforgeFiles(entry)]),
+  )
 }
 
-function summarizeInstallInstruction(instruction: ReturnType<typeof useAgentCapabilityContext>['context']['installInstruction']['value']) {
-  if (!instruction) return { available: false, note: 'Installation diagnosis is not available yet.' }
+function summarizeInstallInstruction(
+  instruction: ReturnType<
+    typeof useAgentCapabilityContext
+  >['context']['installInstruction']['value'],
+) {
+  if (!instruction)
+    return { available: false, note: 'Installation diagnosis is not available yet.' }
   const missingLibraries = instruction.libraries?.length ?? 0
   const missingAssets = instruction.assets?.length ?? 0
   const issues: string[] = []
@@ -143,7 +194,8 @@ function summarizeInstallInstruction(instruction: ReturnType<typeof useAgentCapa
   if (instruction.assetsIndex) issues.push('assets index missing or corrupted')
   if (missingLibraries) issues.push(`${missingLibraries} libraries missing or corrupted`)
   if (missingAssets) issues.push(`${missingAssets} assets missing`)
-  if (instruction.java) issues.push(`required Java ${instruction.java.majorVersion} is not installed`)
+  if (instruction.java)
+    issues.push(`required Java ${instruction.java.majorVersion} is not installed`)
   return {
     available: true,
     instance: instruction.instance,
@@ -156,18 +208,32 @@ function summarizeInstallInstruction(instruction: ReturnType<typeof useAgentCapa
   }
 }
 
-function confirmAgentActionForRun(context: AgentRunContext, input: Parameters<typeof confirmAgentAction>[0], signal?: AbortSignal) {
+function confirmAgentActionForRun(
+  context: AgentRunContext,
+  input: Parameters<typeof confirmAgentAction>[0],
+  signal?: AbortSignal,
+) {
   return confirmAgentAction(input, signal, context.permissionScope)
 }
 
-function confirmInstall(context: AgentRunContext, title: string, message: string, detail: string, destructive = false) {
-  return confirmAgentAction({
-    title,
-    message,
-    details: [detail],
-    confirmLabel: destructive ? 'Delete' : 'Install',
-    destructive,
-  }, undefined, context.permissionScope)
+function confirmInstall(
+  context: AgentRunContext,
+  title: string,
+  message: string,
+  detail: string,
+  destructive = false,
+) {
+  return confirmAgentAction(
+    {
+      title,
+      message,
+      details: [detail],
+      confirmLabel: destructive ? 'Delete' : 'Install',
+      destructive,
+    },
+    undefined,
+    context.permissionScope,
+  )
 }
 
 export function useAgentToolFactory() {
@@ -202,12 +268,15 @@ export function useAgentToolFactory() {
   })
 
   function currentInstance(context: AgentRunContext) {
-    const instance = instances.allInstances.value.find(value => value.path === context.scope)
+    const instance = instances.allInstances.value.find((value) => value.path === context.scope)
     if (!instance) throw new Error(`Current instance is unavailable: ${context.scope}`)
     return instance
   }
 
-  async function createVfsTools(context: AgentRunContext, runtimeChange: AgentRuntimeChangeTracker): Promise<{
+  async function createVfsTools(
+    context: AgentRunContext,
+    runtimeChange: AgentRuntimeChangeTracker,
+  ): Promise<{
     tools: AgentTool[]
     list: (path: string, offset?: number) => Promise<unknown>
     read: (path: string, tailLines?: number, offset?: number, limit?: number) => Promise<unknown>
@@ -216,7 +285,12 @@ export function useAgentToolFactory() {
     const instancePath = context.scope
     const artifactKey = { agentId: context.agentId, scope: context.scope }
     const resources = async (kind: 'mods' | 'resourcepacks' | 'shaderpacks') => {
-      const service = kind === 'mods' ? modsService : kind === 'resourcepacks' ? resourcePackService : shaderPackService
+      const service =
+        kind === 'mods'
+          ? modsService
+          : kind === 'resourcepacks'
+            ? resourcePackService
+            : shaderPackService
       return (await service.watch(instancePath)).files
     }
     const list = async (path: string, listOffset?: number) => {
@@ -253,11 +327,15 @@ export function useAgentToolFactory() {
           inspect(async () => filterAgentLogFiles(await logService.listCrashReports(instancePath))),
           inspect(() => logService.listLaunches(instancePath)),
           inspect(() => optionsService.getInstanceConfigFiles(instancePath)),
-          inspect(async () => (await launchService.getGameProcesses()).filter(process => process.options.gameDirectory === instancePath)),
+          inspect(async () =>
+            (await launchService.getGameProcesses()).filter(
+              (process) => process.options.gameDirectory === instancePath,
+            ),
+          ),
           inspect(() => agentService.listArtifacts(artifactKey)),
         ])
         const enabledResourcePacks = gameOptions?.resourcePacks
-          ? new Set(gameOptions.resourcePacks.map(name => name.replace(/^file\//, '')))
+          ? new Set(gameOptions.resourcePacks.map((name) => name.replace(/^file\//, '')))
           : undefined
         const selectedShaderPack = shaderOptions?.shaderPack
         const remoteServer = currentInstance(context).remoteServer
@@ -266,19 +344,27 @@ export function useAgentToolFactory() {
           entries: createVfsRootEntries({
             mods: mods && {
               total: mods.length,
-              enabled: mods.filter(resource => !resource.fileName.endsWith('.disabled')).length,
-              disabled: mods.filter(resource => resource.fileName.endsWith('.disabled')).length,
+              enabled: mods.filter((resource) => !resource.fileName.endsWith('.disabled')).length,
+              disabled: mods.filter((resource) => resource.fileName.endsWith('.disabled')).length,
             },
-            resourcePacks: resourcePacks && enabledResourcePacks && {
-              total: resourcePacks.length,
-              enabled: resourcePacks.filter(resource => enabledResourcePacks.has(resource.fileName)).length,
-              disabled: resourcePacks.filter(resource => !enabledResourcePacks.has(resource.fileName)).length,
-            },
-            shaderPacks: shaderPacks && shaderOptions && {
-              total: shaderPacks.length,
-              enabled: shaderPacks.filter(resource => resource.fileName === selectedShaderPack).length,
-              disabled: shaderPacks.filter(resource => resource.fileName !== selectedShaderPack).length,
-            },
+            resourcePacks: resourcePacks &&
+              enabledResourcePacks && {
+                total: resourcePacks.length,
+                enabled: resourcePacks.filter((resource) =>
+                  enabledResourcePacks.has(resource.fileName),
+                ).length,
+                disabled: resourcePacks.filter(
+                  (resource) => !enabledResourcePacks.has(resource.fileName),
+                ).length,
+              },
+            shaderPacks: shaderPacks &&
+              shaderOptions && {
+                total: shaderPacks.length,
+                enabled: shaderPacks.filter((resource) => resource.fileName === selectedShaderPack)
+                  .length,
+                disabled: shaderPacks.filter((resource) => resource.fileName !== selectedShaderPack)
+                  .length,
+              },
             saves: saves?.length,
             logs: logs?.length,
             crashReports: crashReports?.length,
@@ -286,7 +372,9 @@ export function useAgentToolFactory() {
             config: configFiles?.length,
             artifacts: artifacts?.length,
             gameProcesses: gameProcesses?.length,
-            remoteServer: remoteServer ? `${remoteServer.username}@${remoteServer.host}` : undefined,
+            remoteServer: remoteServer
+              ? `${remoteServer.username}@${remoteServer.host}`
+              : undefined,
           }),
         }
       }
@@ -294,7 +382,9 @@ export function useAgentToolFactory() {
         // Instances can hold hundreds of mods; sending them all would blow the
         // context window, so only a page is returned and the rest is summarized.
         const all = await resources(clean)
-        const offset = Number.isFinite(listOffset) ? Math.max(0, Math.trunc(listOffset as number)) : 0
+        const offset = Number.isFinite(listOffset)
+          ? Math.max(0, Math.trunc(listOffset as number))
+          : 0
         const page = all.slice(offset, offset + RESOURCE_LIST_LIMIT)
         return {
           path: clean,
@@ -307,9 +397,10 @@ export function useAgentToolFactory() {
       }
       if (clean === 'saves') return (await savesService.watch(instancePath)).saves
       if (clean === 'logs') return filterAgentLogFiles(await logService.listLogs(instancePath))
-      if (clean === 'crash-reports') return filterAgentLogFiles(await logService.listCrashReports(instancePath))
+      if (clean === 'crash-reports')
+        return filterAgentLogFiles(await logService.listCrashReports(instancePath))
       if (clean === 'launches') {
-        return (await logService.listLaunches(instancePath)).map(record => ({
+        return (await logService.listLaunches(instancePath)).map((record) => ({
           name: record.launchId,
           path: `launches/${record.launchId}`,
           type: 'folder',
@@ -320,13 +411,16 @@ export function useAgentToolFactory() {
         const launchId = clean.slice('launches/'.length)
         if (launchId.includes('/')) throw new Error(`Not a virtual directory: ${path}`)
         const launches = await logService.listLaunches(instancePath)
-        const record = launchId === 'latest' ? launches[0] : launches.find(value => value.launchId === launchId)
+        const record =
+          launchId === 'latest'
+            ? launches[0]
+            : launches.find((value) => value.launchId === launchId)
         if (!record) throw new Error(`Launch not found: ${launchId}`)
         return createVfsLaunchEntries(record)
       }
       if (clean === 'config') return optionsService.getInstanceConfigFiles(instancePath)
       if (clean === 'artifacts') {
-        return (await agentService.listArtifacts(artifactKey)).map(artifact => ({
+        return (await agentService.listArtifacts(artifactKey)).map((artifact) => ({
           name: artifact.path.slice('artifacts/'.length),
           path: artifact.path,
           type: 'file',
@@ -334,18 +428,42 @@ export function useAgentToolFactory() {
         }))
       }
       if (clean === 'server') {
-        return ['server.properties', 'eula.txt', 'ops.json', 'whitelist.json', 'banned-players.json', 'banned-ips.json', 'usercache.json', 'logs']
+        return [
+          'server.properties',
+          'eula.txt',
+          'ops.json',
+          'whitelist.json',
+          'banned-players.json',
+          'banned-ips.json',
+          'usercache.json',
+          'logs',
+        ]
       }
-      if (clean === 'server/logs') return filterAgentLogFiles(await logService.listServerLogs(instancePath))
+      if (clean === 'server/logs')
+        return filterAgentLogFiles(await logService.listServerLogs(instancePath))
       if (clean === 'remote') return ['server']
-      if (clean === 'remote/server') return ['server.properties', 'eula.txt', 'ops.json', 'whitelist.json', 'banned-players.json', 'banned-ips.json', 'usercache.json', 'logs']
+      if (clean === 'remote/server')
+        return [
+          'server.properties',
+          'eula.txt',
+          'ops.json',
+          'whitelist.json',
+          'banned-players.json',
+          'banned-ips.json',
+          'usercache.json',
+          'logs',
+        ]
       if (clean === 'remote/server/logs') return ['latest.log']
-      if (clean === 'game-processes') return (await launchService.getGameProcesses()).filter(process => process.options.gameDirectory === instancePath)
+      if (clean === 'game-processes')
+        return (await launchService.getGameProcesses()).filter(
+          (process) => process.options.gameDirectory === instancePath,
+        )
       throw new Error(`Not a virtual directory: ${path}`)
     }
     const read = async (path: string, tailLines?: number, offset?: number, limit?: number) => {
       const clean = normalizeVfsPath(path, instancePath)
-      if (clean.startsWith('artifacts/')) return agentService.readArtifact(artifactKey, { path: clean, offset, limit })
+      if (clean.startsWith('artifacts/'))
+        return agentService.readArtifact(artifactKey, { path: clean, offset, limit })
       if (clean === 'instance.json') return currentInstance(context)
       if (clean === 'options.txt') return optionsService.getGameOptions(instancePath)
       if (clean === 'optionsshaders.txt') {
@@ -356,28 +474,54 @@ export function useAgentToolFactory() {
       const rest = parts.join('/')
       if (kind === 'launches') {
         const [launchName, evidenceName, ...extra] = parts
-        if (!launchName || !evidenceName || extra.length) return { error: `invalid launch evidence path: ${rest}` }
+        if (!launchName || !evidenceName || extra.length)
+          return { error: `invalid launch evidence path: ${rest}` }
         const launches = await logService.listLaunches(instancePath)
-        const record = launchName === 'latest' ? launches[0] : launches.find(value => value.launchId === launchName)
+        const record =
+          launchName === 'latest'
+            ? launches[0]
+            : launches.find((value) => value.launchId === launchName)
         if (!record) return { error: `launch not found: ${launchName}` }
         if (evidenceName === 'summary.json') return record
-        if (evidenceName !== 'game.log' && evidenceName !== 'debug.log' && evidenceName !== 'crash-report.txt' && evidenceName !== 'launcher-output.log') {
+        if (
+          evidenceName !== 'game.log' &&
+          evidenceName !== 'debug.log' &&
+          evidenceName !== 'crash-report.txt' &&
+          evidenceName !== 'launcher-output.log'
+        ) {
           return { error: `unknown launch evidence: ${evidenceName}` }
         }
-        const content = await logService.getLaunchEvidence(instancePath, record.launchId, evidenceName)
-        return content.split('\n').slice(-Math.min(Math.max(1, tailLines ?? 200), 2000)).join('\n')
+        const content = await logService.getLaunchEvidence(
+          instancePath,
+          record.launchId,
+          evidenceName,
+        )
+        return content
+          .split('\n')
+          .slice(-Math.min(Math.max(1, tailLines ?? 200), 2000))
+          .join('\n')
       }
       if (kind === 'mods' || kind === 'resourcepacks' || kind === 'shaderpacks') {
-        const resource = (await resources(kind)).find(value => value.fileName === rest || value.path === rest || value.name === rest)
-        return resource ? summarizeResource(resource) : { error: `${kind} entry not found: ${rest}` }
+        const resource = (await resources(kind)).find(
+          (value) => value.fileName === rest || value.path === rest || value.name === rest,
+        )
+        return resource
+          ? summarizeResource(resource)
+          : { error: `${kind} entry not found: ${rest}` }
       }
       if (kind === 'saves') {
-        return (await savesService.watch(instancePath)).saves.find(value => value.name === rest || value.path === rest)
-          ?? { error: `save not found: ${rest}` }
+        return (
+          (await savesService.watch(instancePath)).saves.find(
+            (value) => value.name === rest || value.path === rest,
+          ) ?? { error: `save not found: ${rest}` }
+        )
       }
       if (kind === 'logs') {
         const content = await logService.getLogContent(instancePath, rest)
-        return content.split('\n').slice(-Math.min(Math.max(1, tailLines ?? 200), 2000)).join('\n')
+        return content
+          .split('\n')
+          .slice(-Math.min(Math.max(1, tailLines ?? 200), 2000))
+          .join('\n')
       }
       if (kind === 'crash-reports') return logService.getCrashReportContent(instancePath, rest)
       if (kind === 'config') {
@@ -386,23 +530,38 @@ export function useAgentToolFactory() {
       }
       if (kind === 'server') {
         if (parts[0] === 'logs') {
-          const content = await logService.getServerLogContent(instancePath, parts.slice(1).join('/'))
-          return content.split('\n').slice(-Math.min(Math.max(1, tailLines ?? 200), 2000)).join('\n')
+          const content = await logService.getServerLogContent(
+            instancePath,
+            parts.slice(1).join('/'),
+          )
+          return content
+            .split('\n')
+            .slice(-Math.min(Math.max(1, tailLines ?? 200), 2000))
+            .join('\n')
         }
         const content = await optionsService.getServerFile(instancePath, rest)
         return { path: clean, content, revision: await createVfsRevision(content) }
       }
       if (kind === 'remote') {
-        if (!currentInstance(context).remoteServer) throw new Error('No remote server is configured for this instance')
+        if (!currentInstance(context).remoteServer)
+          throw new Error('No remote server is configured for this instance')
         if (parts[0] !== 'server') throw new Error(`Unknown remote virtual path: ${path}`)
         const remotePath = parts.slice(1).join('/')
         if (remotePath === 'logs/latest.log') {
-          return remoteServerService.tailLog(instancePath, Math.min(Math.max(1, tailLines ?? 200), 2000))
+          return remoteServerService.tailLog(
+            instancePath,
+            Math.min(Math.max(1, tailLines ?? 200), 2000),
+          )
         }
         const content = await remoteServerService.readRemoteFile(instancePath, remotePath)
         return { path: clean, content, revision: await createVfsRevision(content) }
       }
-      if (kind === 'game-processes') return await launchService.getGameProcess(Number(parts.at(-1))) ?? { error: `game process not found: ${rest}` }
+      if (kind === 'game-processes')
+        return (
+          (await launchService.getGameProcess(Number(parts.at(-1)))) ?? {
+            error: `game process not found: ${rest}`,
+          }
+        )
       return { error: `unknown virtual path: ${path}` }
     }
 
@@ -417,7 +576,9 @@ export function useAgentToolFactory() {
         const [kind, ...parts] = path.split('/')
         const rest = parts.join('/')
         if (kind === 'mods' || kind === 'resourcepacks' || kind === 'shaderpacks') {
-          const resource = (await resources(kind)).find(value => value.fileName === rest || value.path === rest || value.name === rest)
+          const resource = (await resources(kind)).find(
+            (value) => value.fileName === rest || value.path === rest || value.name === rest,
+          )
           if (!resource) throw new Error(`${kind} entry not found: ${rest}`)
           changes.push({
             path,
@@ -429,39 +590,59 @@ export function useAgentToolFactory() {
               ...(resource.metadata.curseforge ? { curseforge: resource.metadata.curseforge } : {}),
             },
           })
-        } else if (kind === 'saves') changes.push({ path, remove: () => savesService.deleteSave({ instancePath, saveName: rest }) })
-        else if (kind === 'logs') changes.push({ path, remove: () => logService.removeLog(instancePath, rest) })
-        else if (kind === 'crash-reports') changes.push({ path, remove: () => logService.removeCrashReport(instancePath, rest) })
-        else if (kind === 'config') changes.push({ path, remove: () => optionsService.removeInstanceConfig(instancePath, rest) })
+        } else if (kind === 'saves')
+          changes.push({
+            path,
+            remove: () => savesService.deleteSave({ instancePath, saveName: rest }),
+          })
+        else if (kind === 'logs')
+          changes.push({ path, remove: () => logService.removeLog(instancePath, rest) })
+        else if (kind === 'crash-reports')
+          changes.push({ path, remove: () => logService.removeCrashReport(instancePath, rest) })
+        else if (kind === 'config')
+          changes.push({
+            path,
+            remove: () => optionsService.removeInstanceConfig(instancePath, rest),
+          })
         else throw new Error(`Unsupported delete path: ${path}`)
       }
 
-      const immediate = changes.filter((change): change is typeof change & { remove: () => Promise<void> } => !!change.remove)
+      const immediate = changes.filter(
+        (change): change is typeof change & { remove: () => Promise<void> } => !!change.remove,
+      )
       if (immediate.length) {
         await confirmInstall(
           context,
           'Delete instance files',
           `Delete ${immediate.length} path${immediate.length === 1 ? '' : 's'} from the selected instance?`,
-          immediate.map(change => change.path).join('\n'),
+          immediate.map((change) => change.path).join('\n'),
           true,
         )
       }
 
-      const staged = changes.flatMap(change => change.staged ? [change.staged] : [])
-      if (staged.length) await instanceInstall.stageInstanceFiles({ path: instancePath, oldFiles: staged, files: [] })
+      const staged = changes.flatMap((change) => (change.staged ? [change.staged] : []))
+      if (staged.length)
+        await instanceInstall.stageInstanceFiles({
+          path: instancePath,
+          oldFiles: staged,
+          files: [],
+        })
       for (const change of immediate) await change.remove()
 
       return {
         ok: true,
         staged: staged.length,
         deleted: immediate.length,
-        results: changes.map(change => change.staged
-          ? { stagedForRemoval: change.path }
-          : { deleted: change.path }),
-        ...(staged.length ? {
-          message: `${staged.length} resource${staged.length === 1 ? '' : 's'} ${staged.length === 1 ? 'has' : 'have'} been staged for removal.`,
-          guidance: 'No files have been removed yet. Review with `instance manifest status`, then run `instance manifest apply` to apply all pending changes.',
-        } : {}),
+        results: changes.map((change) =>
+          change.staged ? { stagedForRemoval: change.path } : { deleted: change.path },
+        ),
+        ...(staged.length
+          ? {
+              message: `${staged.length} resource${staged.length === 1 ? '' : 's'} ${staged.length === 1 ? 'has' : 'have'} been staged for removal.`,
+              guidance:
+                'No files have been removed yet. Review with `instance manifest status`, then run `instance manifest apply` to apply all pending changes.',
+            }
+          : {}),
       }
     }
 
@@ -470,89 +651,141 @@ export function useAgentToolFactory() {
       read,
       remove,
       tools: [
-      {
-        name: 'vfs_list',
-        label: 'List instance files',
-        description: `List a virtual directory for the explicitly selected instance. Resource directories (mods, resourcepacks, shaderpacks) return at most ${RESOURCE_LIST_LIMIT} entries per call; use offset to page through the rest.`,
-        parameters: Type.Object({ path: Type.Optional(Type.String()), offset: Type.Optional(Type.Number()) }),
-        executionMode: 'sequential',
-        async execute(_id, args: any) {
-          return textResult(await list(String(args.path ?? ''), args.offset))
+        {
+          name: 'vfs_list',
+          label: 'List instance files',
+          description: `List a virtual directory for the explicitly selected instance. Resource directories (mods, resourcepacks, shaderpacks) return at most ${RESOURCE_LIST_LIMIT} entries per call; use offset to page through the rest.`,
+          parameters: Type.Object({
+            path: Type.Optional(Type.String()),
+            offset: Type.Optional(Type.Number()),
+          }),
+          executionMode: 'sequential',
+          async execute(_id, args: any) {
+            return textResult(await list(String(args.path ?? ''), args.offset))
+          },
         },
-      },
-      {
-        name: 'vfs_read',
-        label: 'Read instance data',
-        description: 'Read a virtual instance file, resource entry, or temporary Agent artifact. Artifact reads support character offset and limit pagination.',
-        parameters: Type.Object({ path: Type.String(), tailLines: Type.Optional(Type.Number()), offset: Type.Optional(Type.Number()), limit: Type.Optional(Type.Number()) }),
-        executionMode: 'sequential',
-        async execute(_id, args: any) {
-          return textResult(await read(args.path, args.tailLines, args.offset, args.limit))
+        {
+          name: 'vfs_read',
+          label: 'Read instance data',
+          description:
+            'Read a virtual instance file, resource entry, or temporary Agent artifact. Artifact reads support character offset and limit pagination.',
+          parameters: Type.Object({
+            path: Type.String(),
+            tailLines: Type.Optional(Type.Number()),
+            offset: Type.Optional(Type.Number()),
+            limit: Type.Optional(Type.Number()),
+          }),
+          executionMode: 'sequential',
+          async execute(_id, args: any) {
+            return textResult(await read(args.path, args.tailLines, args.offset, args.limit))
+          },
         },
-      },
-      {
-        name: 'vfs_write',
-        label: 'Write instance file',
-        description: 'Create or edit one allowlisted virtual config or server file. Read first and pass its revision. Provide content for a full rewrite, or replacements for sequential exact literal search/replace edits. Each replacement changes the first match by default; set all=true only to replace every match.',
-        parameters: Type.Object({
-          path: Type.String({ description: 'Relative instance VFS path.' }),
-          baseRevision: Type.Union([Type.String(), Type.Null()], { description: 'Revision returned by vfs_read, or null only when creating a new file.' }),
-          create: Type.Optional(Type.Boolean({ description: 'Set true only to create a missing config file.' })),
-          content: Type.Optional(Type.String({ description: 'Complete replacement content. Mutually exclusive with replacements.' })),
-          replacements: Type.Optional(Type.Array(Type.Object({
-            match: Type.String({ description: 'Exact literal text to find in the current file content.' }),
-            replace: Type.String({ description: 'Literal replacement text.' }),
-            all: Type.Optional(Type.Boolean({ description: 'Replace every occurrence. Defaults to false (first occurrence only).' })),
-          }), { description: 'Sequential exact literal edits. Mutually exclusive with content.' })),
-        }),
-        executionMode: 'sequential',
-        async execute(_id, args: any) {
-          const path = normalizeVfsPath(String(args.path), instancePath)
-          const serverFiles = new Set(['server.properties', 'eula.txt', 'ops.json', 'whitelist.json', 'banned-players.json', 'banned-ips.json'])
-          const isConfig = path.startsWith('config/')
-          const isShaderOptions = path === 'optionsshaders.txt'
-          const serverFile = path.startsWith('server/') ? path.slice('server/'.length) : ''
-          const isServerFile = serverFiles.has(serverFile)
-          const remoteServerFile = path.startsWith('remote/server/') ? path.slice('remote/server/'.length) : ''
-          const isRemoteServerFile = serverFiles.has(remoteServerFile)
-          if (!isConfig && !isServerFile && !isRemoteServerFile && !isShaderOptions) throw new Error(`Unsupported write path: ${path}`)
-          const instance = currentInstance(context)
-          if (isRemoteServerFile && !instance.remoteServer) throw new Error('No remote server is configured for this instance')
-          const relativePath = isConfig ? path.slice('config/'.length) : isServerFile ? serverFile : isRemoteServerFile ? remoteServerFile : path
-          const validationPath = isRemoteServerFile ? `server/${remoteServerFile}` : path
-          if (!relativePath) throw new Error('A file path is required')
+        {
+          name: 'vfs_write',
+          label: 'Write instance file',
+          description:
+            'Create or edit one allowlisted virtual config or server file. Read first and pass its revision. Provide content for a full rewrite, or replacements for sequential exact literal search/replace edits. Each replacement changes the first match by default; set all=true only to replace every match.',
+          parameters: Type.Object({
+            path: Type.String({ description: 'Relative instance VFS path.' }),
+            baseRevision: Type.Union([Type.String(), Type.Null()], {
+              description: 'Revision returned by vfs_read, or null only when creating a new file.',
+            }),
+            create: Type.Optional(
+              Type.Boolean({ description: 'Set true only to create a missing config file.' }),
+            ),
+            content: Type.Optional(
+              Type.String({
+                description: 'Complete replacement content. Mutually exclusive with replacements.',
+              }),
+            ),
+            replacements: Type.Optional(
+              Type.Array(
+                Type.Object({
+                  match: Type.String({
+                    description: 'Exact literal text to find in the current file content.',
+                  }),
+                  replace: Type.String({ description: 'Literal replacement text.' }),
+                  all: Type.Optional(
+                    Type.Boolean({
+                      description:
+                        'Replace every occurrence. Defaults to false (first occurrence only).',
+                    }),
+                  ),
+                }),
+                { description: 'Sequential exact literal edits. Mutually exclusive with content.' },
+              ),
+            ),
+          }),
+          executionMode: 'sequential',
+          async execute(_id, args: any) {
+            const path = normalizeVfsPath(String(args.path), instancePath)
+            const serverFiles = new Set([
+              'server.properties',
+              'eula.txt',
+              'ops.json',
+              'whitelist.json',
+              'banned-players.json',
+              'banned-ips.json',
+            ])
+            const isConfig = path.startsWith('config/')
+            const isShaderOptions = path === 'optionsshaders.txt'
+            const serverFile = path.startsWith('server/') ? path.slice('server/'.length) : ''
+            const isServerFile = serverFiles.has(serverFile)
+            const remoteServerFile = path.startsWith('remote/server/')
+              ? path.slice('remote/server/'.length)
+              : ''
+            const isRemoteServerFile = serverFiles.has(remoteServerFile)
+            if (!isConfig && !isServerFile && !isRemoteServerFile && !isShaderOptions)
+              throw new Error(`Unsupported write path: ${path}`)
+            const instance = currentInstance(context)
+            if (isRemoteServerFile && !instance.remoteServer)
+              throw new Error('No remote server is configured for this instance')
+            const relativePath = isConfig
+              ? path.slice('config/'.length)
+              : isServerFile
+                ? serverFile
+                : isRemoteServerFile
+                  ? remoteServerFile
+                  : path
+            const validationPath = isRemoteServerFile ? `server/${remoteServerFile}` : path
+            if (!relativePath) throw new Error('A file path is required')
 
-          const hasContent = typeof args.content === 'string'
-          const hasReplacements = Array.isArray(args.replacements)
-          if (hasContent === hasReplacements) throw new Error('Provide exactly one of content or replacements')
+            const hasContent = typeof args.content === 'string'
+            const hasReplacements = Array.isArray(args.replacements)
+            if (hasContent === hasReplacements)
+              throw new Error('Provide exactly one of content or replacements')
 
-          const files = isConfig ? await optionsService.getInstanceConfigFiles(instancePath) : []
-          const exists = isServerFile || isRemoteServerFile || isShaderOptions || files.includes(relativePath)
-          if (!exists && !args.create) throw new Error(`Config file not found: ${path}`)
-          if (exists && args.create) throw new Error(`File already exists: ${path}`)
-          if (!exists && args.baseRevision !== null) throw new Error('baseRevision must be null when creating a file')
-          if (exists && typeof args.baseRevision !== 'string') throw new Error('baseRevision is required when editing a file')
+            const files = isConfig ? await optionsService.getInstanceConfigFiles(instancePath) : []
+            const exists =
+              isServerFile || isRemoteServerFile || isShaderOptions || files.includes(relativePath)
+            if (!exists && !args.create) throw new Error(`Config file not found: ${path}`)
+            if (exists && args.create) throw new Error(`File already exists: ${path}`)
+            if (!exists && args.baseRevision !== null)
+              throw new Error('baseRevision must be null when creating a file')
+            if (exists && typeof args.baseRevision !== 'string')
+              throw new Error('baseRevision is required when editing a file')
 
-          const getContent = () => isServerFile
-            ? optionsService.getServerFile(instancePath, relativePath)
-            : isRemoteServerFile
-              ? remoteServerService.readRemoteFile(instancePath, relativePath)
-              : isShaderOptions
-                ? optionsService.getShaderOptions(instancePath).then(stringifyShaderOptions)
-                : optionsService.getInstanceConfig(instancePath, relativePath)
-          const current = exists ? await getContent() : ''
-          const change = hasContent
-            ? { content: args.content as string }
-            : { replacements: args.replacements }
-          const resolved = exists
-            ? await resolveExistingVfsWrite(path, current, args.baseRevision, change)
-            : {
-                oldRevision: await createVfsRevision(current),
-                content: normalizeVfsWriteContent(path, applyVfsWriteChange(current, change)),
-                alreadyApplied: false,
-              }
-          const { oldRevision, content: next } = resolved
-          if (resolved.alreadyApplied) {
+            const getContent = () =>
+              isServerFile
+                ? optionsService.getServerFile(instancePath, relativePath)
+                : isRemoteServerFile
+                  ? remoteServerService.readRemoteFile(instancePath, relativePath)
+                  : isShaderOptions
+                    ? optionsService.getShaderOptions(instancePath).then(stringifyShaderOptions)
+                    : optionsService.getInstanceConfig(instancePath, relativePath)
+            const current = exists ? await getContent() : ''
+            const change = hasContent
+              ? { content: args.content as string }
+              : { replacements: args.replacements }
+            const resolved = exists
+              ? await resolveExistingVfsWrite(path, current, args.baseRevision, change)
+              : {
+                  oldRevision: await createVfsRevision(current),
+                  content: normalizeVfsWriteContent(path, applyVfsWriteChange(current, change)),
+                  alreadyApplied: false,
+                }
+            const { oldRevision, content: next } = resolved
+            if (resolved.alreadyApplied) {
               return textResult({
                 ok: true,
                 path,
@@ -561,97 +794,113 @@ export function useAgentToolFactory() {
                 unchanged: true,
                 note: 'The requested content is already present.',
               })
-          }
-          if (next === current) throw new Error(`No changes to write for ${path}`)
-          const bytes = validateVfsText(validationPath, next)
-          const diff = summarizeVfsTextChange(current, next)
-          const remoteTarget = isRemoteServerFile
-            ? `${instance.remoteServer!.username}@${instance.remoteServer!.host}:${instance.remoteServer!.remotePath}`
-            : undefined
-          const acceptingEula = validationPath === 'server/eula.txt' && next.trim() === 'eula=true'
-          const confirmationDetails = [
-            ...(remoteTarget ? [remoteTarget] : []),
-            ...(acceptingEula ? ['https://aka.ms/MinecraftEULA'] : []),
-            ...diff.details,
-          ]
+            }
+            if (next === current) throw new Error(`No changes to write for ${path}`)
+            const bytes = validateVfsText(validationPath, next)
+            const diff = summarizeVfsTextChange(current, next)
+            const remoteTarget = isRemoteServerFile
+              ? `${instance.remoteServer!.username}@${instance.remoteServer!.host}:${instance.remoteServer!.remotePath}`
+              : undefined
+            const acceptingEula =
+              validationPath === 'server/eula.txt' && next.trim() === 'eula=true'
+            const confirmationDetails = [
+              ...(remoteTarget ? [remoteTarget] : []),
+              ...(acceptingEula ? ['https://aka.ms/MinecraftEULA'] : []),
+              ...diff.details,
+            ]
 
-          await confirmAgentActionForRun(context, {
-            title: acceptingEula
-              ? 'Accept Minecraft EULA'
-              : isRemoteServerFile ? 'Edit remote server file' : exists ? 'Edit instance file' : 'Create instance file',
-            message: `${exists ? 'Write changes to' : 'Create'} ${path}?`,
-            details: confirmationDetails.length ? confirmationDetails : [`${bytes} bytes`],
-            confirmLabel: exists ? 'Apply' : 'Create',
-            destructive: isRemoteServerFile || acceptingEula,
-          })
+            await confirmAgentActionForRun(context, {
+              title: acceptingEula
+                ? 'Accept Minecraft EULA'
+                : isRemoteServerFile
+                  ? 'Edit remote server file'
+                  : exists
+                    ? 'Edit instance file'
+                    : 'Create instance file',
+              message: `${exists ? 'Write changes to' : 'Create'} ${path}?`,
+              details: confirmationDetails.length ? confirmationDetails : [`${bytes} bytes`],
+              confirmLabel: exists ? 'Apply' : 'Create',
+              destructive: isRemoteServerFile || acceptingEula,
+            })
 
-          if (exists) {
-            const latest = await getContent()
-            await assertVfsRevision(latest, oldRevision, path)
-          } else if (isConfig && (await optionsService.getInstanceConfigFiles(instancePath)).includes(relativePath)) {
-            throw new Error(`Config file was created while awaiting confirmation: ${path}`)
-          }
+            if (exists) {
+              const latest = await getContent()
+              await assertVfsRevision(latest, oldRevision, path)
+            } else if (
+              isConfig &&
+              (await optionsService.getInstanceConfigFiles(instancePath)).includes(relativePath)
+            ) {
+              throw new Error(`Config file was created while awaiting confirmation: ${path}`)
+            }
 
-          if (isServerFile) await optionsService.setServerFile(instancePath, relativePath, next)
-          else if (isRemoteServerFile) await remoteServerService.writeRemoteFile(instancePath, relativePath, next)
-          else if (isShaderOptions) await optionsService.editShaderOptions({ ...parseShaderOptions(next), instancePath })
-          else await optionsService.setInstanceConfig(instancePath, relativePath, next)
-          const written = await getContent()
-          if (written !== next) throw new Error(`Write verification failed for ${path}`)
-          return textResult({
-            ok: true,
-            path,
-            oldRevision: exists ? oldRevision : null,
-            newRevision: await createVfsRevision(written),
-            bytes,
-            changedLines: diff.changedLines,
-            diffTruncated: diff.truncated,
-          })
+            if (isServerFile) await optionsService.setServerFile(instancePath, relativePath, next)
+            else if (isRemoteServerFile)
+              await remoteServerService.writeRemoteFile(instancePath, relativePath, next)
+            else if (isShaderOptions)
+              await optionsService.editShaderOptions({ ...parseShaderOptions(next), instancePath })
+            else await optionsService.setInstanceConfig(instancePath, relativePath, next)
+            const written = await getContent()
+            if (written !== next) throw new Error(`Write verification failed for ${path}`)
+            return textResult({
+              ok: true,
+              path,
+              oldRevision: exists ? oldRevision : null,
+              newRevision: await createVfsRevision(written),
+              bytes,
+              changedLines: diff.changedLines,
+              diffTruncated: diff.truncated,
+            })
+          },
         },
-      },
-      {
-        name: 'vfs_rm',
-        label: 'Delete instance files',
-        description: 'Stage removals under mods, resourcepacks, and shaderpacks in the instance manifest. Delete other supported virtual paths after explicit user confirmation.',
-        parameters: Type.Object({ paths: Type.Array(Type.String()) }),
-        executionMode: 'sequential',
-        async execute(_id, args: any) {
-          return textResult(await remove(args.paths))
+        {
+          name: 'vfs_rm',
+          label: 'Delete instance files',
+          description:
+            'Stage removals under mods, resourcepacks, and shaderpacks in the instance manifest. Delete other supported virtual paths after explicit user confirmation.',
+          parameters: Type.Object({ paths: Type.Array(Type.String()) }),
+          executionMode: 'sequential',
+          async execute(_id, args: any) {
+            return textResult(await remove(args.paths))
+          },
         },
-      },
-      {
-        name: 'edit_instance',
-        label: 'Edit instance',
-        description: 'Edit allowlisted non-runtime fields on the selected instance. Use `instance runtime set` for Minecraft and mod-loader changes.',
-        parameters: Type.Object({
-          name: Type.Optional(Type.String()),
-          description: Type.Optional(Type.String()),
-          java: Type.Optional(Type.String()),
-          minMemory: Type.Optional(Type.Number()),
-          maxMemory: Type.Optional(Type.Number()),
-          assignMemory: Type.Optional(Type.Union([Type.Boolean(), Type.Literal('auto')])),
-          vmOptions: Type.Optional(Type.Array(Type.String())),
-          mcOptions: Type.Optional(Type.Array(Type.String())),
-          env: Type.Optional(Type.Record(Type.String(), Type.String())),
-          resolution: Type.Optional(Type.Object({
-            width: Type.Optional(Type.Number()),
-            height: Type.Optional(Type.Number()),
-            fullscreen: Type.Optional(Type.Boolean()),
-          })),
-          fastLaunch: Type.Optional(Type.Boolean()),
-          showLog: Type.Optional(Type.Boolean()),
-          hideLauncher: Type.Optional(Type.Boolean()),
-          prependCommand: Type.Optional(Type.String()),
-          preExecuteCommand: Type.Optional(Type.String()),
-        }),
-        executionMode: 'sequential',
-        async execute(_id, args: any) {
-          const { payload, edited } = buildAgentInstanceEdit(instancePath, args)
-          if (!edited.length) throw new Error('No editable fields were provided')
-          await instanceService.editInstance(payload as EditInstanceOptions & { instancePath: string })
-          return textResult({ ok: true, edited })
+        {
+          name: 'edit_instance',
+          label: 'Edit instance',
+          description:
+            'Edit allowlisted non-runtime fields on the selected instance. Use `instance runtime set` for Minecraft and mod-loader changes.',
+          parameters: Type.Object({
+            name: Type.Optional(Type.String()),
+            description: Type.Optional(Type.String()),
+            java: Type.Optional(Type.String()),
+            minMemory: Type.Optional(Type.Number()),
+            maxMemory: Type.Optional(Type.Number()),
+            assignMemory: Type.Optional(Type.Union([Type.Boolean(), Type.Literal('auto')])),
+            vmOptions: Type.Optional(Type.Array(Type.String())),
+            mcOptions: Type.Optional(Type.Array(Type.String())),
+            env: Type.Optional(Type.Record(Type.String(), Type.String())),
+            resolution: Type.Optional(
+              Type.Object({
+                width: Type.Optional(Type.Number()),
+                height: Type.Optional(Type.Number()),
+                fullscreen: Type.Optional(Type.Boolean()),
+              }),
+            ),
+            fastLaunch: Type.Optional(Type.Boolean()),
+            showLog: Type.Optional(Type.Boolean()),
+            hideLauncher: Type.Optional(Type.Boolean()),
+            prependCommand: Type.Optional(Type.String()),
+            preExecuteCommand: Type.Optional(Type.String()),
+          }),
+          executionMode: 'sequential',
+          async execute(_id, args: any) {
+            const { payload, edited } = buildAgentInstanceEdit(instancePath, args)
+            if (!edited.length) throw new Error('No editable fields were provided')
+            await instanceService.editInstance(
+              payload as EditInstanceOptions & { instancePath: string },
+            )
+            return textResult({ ok: true, edited })
+          },
         },
-      },
       ],
     }
   }
@@ -659,7 +908,9 @@ export function useAgentToolFactory() {
   function loaderVersions(loader: AgentLoader, minecraft: string, refresh: boolean) {
     if (loader === 'forge') return metadata.getForgeVersions(minecraft, refresh)
     if (loader === 'neoforge') return metadata.getNeoForgedVersions(minecraft, refresh)
-    return loader === 'fabric' ? metadata.getFabricVersions(refresh) : metadata.getQuiltVersions(refresh)
+    return loader === 'fabric'
+      ? metadata.getFabricVersions(refresh)
+      : metadata.getQuiltVersions(refresh)
   }
 
   function currentLoader(context: AgentRunContext): AgentLoader | undefined {
@@ -705,73 +956,141 @@ export function useAgentToolFactory() {
       return commandHost.dispatch('mod.install', input)
     }
     const instance = currentInstance(context)
-    const installedModrinth = new Set(capabilities.context.mods.value.flatMap(mod => mod.modrinth?.projectId ? [mod.modrinth.projectId] : []))
-    const installedCurseforge = new Set(capabilities.context.mods.value.flatMap(mod => mod.curseforge?.projectId ? [mod.curseforge.projectId] : []))
+    const installedModrinth = new Set(
+      capabilities.context.mods.value.flatMap((mod) =>
+        mod.modrinth?.projectId ? [mod.modrinth.projectId] : [],
+      ),
+    )
+    const installedCurseforge = new Set(
+      capabilities.context.mods.value.flatMap((mod) =>
+        mod.curseforge?.projectId ? [mod.curseforge.projectId] : [],
+      ),
+    )
     let files: InstanceFile[]
     if (marketRef.source === 'modrinth') {
-      if (!marketRef.version) throw new Error(`Missing version for modrinth:${marketRef.project}. Use modrinth:${marketRef.project}@<versionId>.`)
+      if (!marketRef.version)
+        throw new Error(
+          `Missing version for modrinth:${marketRef.project}. Use modrinth:${marketRef.project}@<versionId>.`,
+        )
       const version = await clientModrinthV2.getProjectVersion(marketRef.version)
-      const dependencies = input.dependencies === false
-        ? []
-        : await getSWRV(getModrinthDependenciesModel(ref(version), currentLoader(context), swrvConfig), swrvConfig) ?? []
-      const selectedProjects = new Set([version.project_id, ...dependencies.map(dependency => dependency.project.id)])
-      const artifactDependencies = input.dependencies === false
-        ? []
-        : await resolveArtifactDependencies((version.files.find(file => file.primary) ?? version.files[0])?.url, context, selectedProjects)
-      const versions = [...getRequiredModrinthInstallVersions(version, dependencies, installedModrinth), ...artifactDependencies]
-      files = await modsService.resolveFromMarket({ market: MarketType.Modrinth, version: versions, instancePath: context.scope })
+      const dependencies =
+        input.dependencies === false
+          ? []
+          : ((await getSWRV(
+              getModrinthDependenciesModel(ref(version), currentLoader(context), swrvConfig),
+              swrvConfig,
+            )) ?? [])
+      const selectedProjects = new Set([
+        version.project_id,
+        ...dependencies.map((dependency) => dependency.project.id),
+      ])
+      const artifactDependencies =
+        input.dependencies === false
+          ? []
+          : await resolveArtifactDependencies(
+              (version.files.find((file) => file.primary) ?? version.files[0])?.url,
+              context,
+              selectedProjects,
+            )
+      const versions = [
+        ...getRequiredModrinthInstallVersions(version, dependencies, installedModrinth),
+        ...artifactDependencies,
+      ]
+      files = await modsService.resolveFromMarket({
+        market: MarketType.Modrinth,
+        version: versions,
+        instancePath: context.scope,
+      })
     } else {
-      if (!marketRef.file) throw new Error(`Missing fileId for curseforge:${marketRef.project}. Use curseforge:${marketRef.project}/<fileId>.`)
+      if (!marketRef.file)
+        throw new Error(
+          `Missing fileId for curseforge:${marketRef.project}. Use curseforge:${marketRef.project}/<fileId>.`,
+        )
       const file = await clientCurseforgeV1.getModFile(marketRef.project, marketRef.file)
-      const dependencies = input.dependencies === false
-        ? []
-        : await getSWRV(getCurseforgeDependenciesModel(
-            ref(file),
-            ref(instance.runtime.minecraft),
-            ref(curseforgeLoaderType(currentLoader(context)) ?? FileModLoaderType.Any),
-            swrvConfig,
-          ), swrvConfig) ?? []
-      const filesToResolve = getRequiredCurseforgeInstallFiles(file, dependencies, installedCurseforge)
-      files = await modsService.resolveFromMarket({ market: MarketType.CurseForge, file: filesToResolve, instancePath: context.scope })
-      const artifactDependencies = input.dependencies === false
-        ? []
-        : await resolveArtifactDependencies(file.downloadUrl, context, new Set())
+      const dependencies =
+        input.dependencies === false
+          ? []
+          : ((await getSWRV(
+              getCurseforgeDependenciesModel(
+                ref(file),
+                ref(instance.runtime.minecraft),
+                ref(curseforgeLoaderType(currentLoader(context)) ?? FileModLoaderType.Any),
+                swrvConfig,
+              ),
+              swrvConfig,
+            )) ?? [])
+      const filesToResolve = getRequiredCurseforgeInstallFiles(
+        file,
+        dependencies,
+        installedCurseforge,
+      )
+      files = await modsService.resolveFromMarket({
+        market: MarketType.CurseForge,
+        file: filesToResolve,
+        instancePath: context.scope,
+      })
+      const artifactDependencies =
+        input.dependencies === false
+          ? []
+          : await resolveArtifactDependencies(file.downloadUrl, context, new Set())
       if (artifactDependencies.length) {
-        files.push(...await modsService.resolveFromMarket({ market: MarketType.Modrinth, version: artifactDependencies, instancePath: context.scope }))
+        files.push(
+          ...(await modsService.resolveFromMarket({
+            market: MarketType.Modrinth,
+            version: artifactDependencies,
+            instancePath: context.scope,
+          })),
+        )
       }
     }
     const oldFiles = getReplacedModFiles(files, capabilities.context.mods.value)
-    const manifest = await instanceInstall.stageInstanceFiles({ path: context.scope, oldFiles, files })
+    const manifest = await instanceInstall.stageInstanceFiles({
+      path: context.scope,
+      oldFiles,
+      files,
+    })
     return {
-      files: files.map(file => file.path),
+      files: files.map((file) => file.path),
       manifest: {
-        files: manifest.files.map(file => file.path),
-        oldFiles: manifest.oldFiles.map(file => file.path),
+        files: manifest.files.map((file) => file.path),
+        oldFiles: manifest.oldFiles.map((file) => file.path),
       },
     }
   }
 
-  function createCommandOperations(context: AgentRunContext, vfs: Awaited<ReturnType<typeof createVfsTools>>, runtimeChange: AgentRuntimeChangeTracker): AgentCommandOperations {
+  function createCommandOperations(
+    context: AgentRunContext,
+    vfs: Awaited<ReturnType<typeof createVfsTools>>,
+    runtimeChange: AgentRuntimeChangeTracker,
+  ): AgentCommandOperations {
     const diagnoseRuntimeMods = async () => {
       try {
-        const modDiagnosis = await capabilities.context.diagnoseModCompatibility({ added: [], removed: [] }) as any
+        const modDiagnosis = (await capabilities.context.diagnoseModCompatibility({
+          added: [],
+          removed: [],
+        })) as any
         return { modDiagnosis, guidance: getAgentModCompatibilityGuidance(modDiagnosis) }
       } catch (error) {
         return {
-          modDiagnosis: { status: 'error', error: error instanceof Error ? error.message : String(error) },
-          guidance: ['Mod compatibility diagnosis failed. Run `mod update check` without `--skip-version` before launching.'],
+          modDiagnosis: {
+            status: 'error',
+            error: error instanceof Error ? error.message : String(error),
+          },
+          guidance: [
+            'Mod compatibility diagnosis failed. Run `mod update check` without `--skip-version` before launching.',
+          ],
         }
       }
     }
     const artifactKey = { agentId: context.agentId, scope: context.scope }
     return {
-      listVfs: path => vfs.list(path),
+      listVfs: (path) => vfs.list(path),
       readVfs: (input) => vfs.read(input.path, input.tailLines, input.offset, input.limit),
       removeVfs: vfs.remove,
       listDocuments: () => agentService.listDocuments(),
-      searchDocuments: input => agentService.searchDocuments(input),
-      readDocument: id => agentService.readDocument(id),
-      getSystemInfo: signal => baseService.getSystemInfo(context.scope),
+      searchDocuments: (input) => agentService.searchDocuments(input),
+      readDocument: (id) => agentService.readDocument(id),
+      getSystemInfo: (signal) => baseService.getSystemInfo(context.scope),
       async queryModrinth(input, signal) {
         if (input.kind === 'tags') {
           if (input.tag === 'loaders') return clientModrinthV2.getLoaderTags(signal)
@@ -784,22 +1103,33 @@ export function useAgentToolFactory() {
             : clientModrinthV2.getProjects(input.ids, signal)
         }
         if (input.kind === 'versions') {
-          const result = input.ids.length === 1
-            ? clientModrinthV2.getProjectVersion(input.ids[0], signal)
-            : clientModrinthV2.getProjectVersionsById(input.ids, signal)
+          const result =
+            input.ids.length === 1
+              ? clientModrinthV2.getProjectVersion(input.ids[0], signal)
+              : clientModrinthV2.getProjectVersionsById(input.ids, signal)
           return decorateModrinthVersions(await result)
         }
         if (input.kind === 'versions-by-hash') {
           if (input.latest) {
-            const options = { algorithm: input.algorithm, loaders: input.loaders, gameVersions: input.gameVersions }
-            const result = input.hashes.length === 1
-              ? clientModrinthV2.getLatestProjectVersion(input.hashes[0], options, signal)
-              : clientModrinthV2.getLatestVersionsFromHashes(input.hashes, options, signal)
+            const options = {
+              algorithm: input.algorithm,
+              loaders: input.loaders,
+              gameVersions: input.gameVersions,
+            }
+            const result =
+              input.hashes.length === 1
+                ? clientModrinthV2.getLatestProjectVersion(input.hashes[0], options, signal)
+                : clientModrinthV2.getLatestVersionsFromHashes(input.hashes, options, signal)
             return decorateModrinthVersions(await result)
           }
-          const result = input.hashes.length === 1
-            ? clientModrinthV2.getProjectVersionByHash(input.hashes[0], { algorithm: input.algorithm, multiple: input.multiple }, signal)
-            : clientModrinthV2.getProjectVersionsByHash(input.hashes, input.algorithm, signal)
+          const result =
+            input.hashes.length === 1
+              ? clientModrinthV2.getProjectVersionByHash(
+                  input.hashes[0],
+                  { algorithm: input.algorithm, multiple: input.multiple },
+                  signal,
+                )
+              : clientModrinthV2.getProjectVersionsByHash(input.hashes, input.algorithm, signal)
           return decorateModrinthVersions(await result)
         }
         if (input.kind === 'authenticated-user') {
@@ -808,28 +1138,48 @@ export function useAgentToolFactory() {
           if (!authenticatedUser) throw new Error('Modrinth login is required')
           return authenticatedUser
         }
-        if (input.kind === 'team') return clientModrinthV2.getProjectTeamMembers(input.project, signal)
+        if (input.kind === 'team')
+          return clientModrinthV2.getProjectTeamMembers(input.project, signal)
         if (input.related === 'projects') return clientModrinthV2.getUserProjects(input.id, signal)
-        if (input.related === 'followed') return clientModrinthV2.getUserFollowedProjects(input.id, signal)
-        if (input.related === 'collections') return clientModrinthV2.getCollections(input.id, signal)
+        if (input.related === 'followed')
+          return clientModrinthV2.getUserFollowedProjects(input.id, signal)
+        if (input.related === 'collections')
+          return clientModrinthV2.getCollections(input.id, signal)
         return clientModrinthV2.getUser(input.id, signal)
       },
       async mutateModrinth(input, signal) {
-        const deleting = input.kind === 'unfollow' || input.kind === 'collection-remove' || input.kind === 'collection-delete'
-        const detail = 'collection' in input ? input.collection : 'project' in input ? input.project : input.name
-        await confirmAgentActionForRun(context, {
-          title: 'Modify Modrinth account',
-          message: `Allow the agent to run ${input.kind}?`,
-          details: [detail],
-          confirmLabel: deleting ? 'Remove' : 'Confirm',
-          destructive: deleting,
-        }, signal)
+        const deleting =
+          input.kind === 'unfollow' ||
+          input.kind === 'collection-remove' ||
+          input.kind === 'collection-delete'
+        const detail =
+          'collection' in input ? input.collection : 'project' in input ? input.project : input.name
+        await confirmAgentActionForRun(
+          context,
+          {
+            title: 'Modify Modrinth account',
+            message: `Allow the agent to run ${input.kind}?`,
+            details: [detail],
+            confirmLabel: deleting ? 'Remove' : 'Confirm',
+            destructive: deleting,
+          },
+          signal,
+        )
         if (input.kind === 'follow') await modrinthAuthenticatedAPI.followProject(input.project)
-        else if (input.kind === 'unfollow') await modrinthAuthenticatedAPI.unfollowProject(input.project)
-        else if (input.kind === 'collection-create') await modrinthAuthenticatedAPI.createCollection(input.name, input.description, input.projects)
-        else if (input.kind === 'collection-add') await modrinthAuthenticatedAPI.addToCollection(input.collection, input.project)
-        else if (input.kind === 'collection-remove') await modrinthAuthenticatedAPI.removeFromCollection(input.collection, input.project)
-        else if (input.kind === 'collection-delete') await modrinthAuthenticatedAPI.deleteCollection(input.collection)
+        else if (input.kind === 'unfollow')
+          await modrinthAuthenticatedAPI.unfollowProject(input.project)
+        else if (input.kind === 'collection-create')
+          await modrinthAuthenticatedAPI.createCollection(
+            input.name,
+            input.description,
+            input.projects,
+          )
+        else if (input.kind === 'collection-add')
+          await modrinthAuthenticatedAPI.addToCollection(input.collection, input.project)
+        else if (input.kind === 'collection-remove')
+          await modrinthAuthenticatedAPI.removeFromCollection(input.collection, input.project)
+        else if (input.kind === 'collection-delete')
+          await modrinthAuthenticatedAPI.deleteCollection(input.collection)
         return { ok: true, action: input.kind }
       },
       async getModrinthCategories(input, signal) {
@@ -838,8 +1188,8 @@ export function useAgentToolFactory() {
           source: 'modrinth',
           type: input.type,
           categories: categories
-            .filter(category => !input.type || category.project_type === input.type)
-            .map(category => ({
+            .filter((category) => !input.type || category.project_type === input.type)
+            .map((category) => ({
               id: category.name,
               name: category.name,
               type: category.project_type,
@@ -852,23 +1202,35 @@ export function useAgentToolFactory() {
         const facets: string[][] = [[`project_type:${input.type}`]]
         const resolvedFilters = resolveAgentMarketFilters(instance.runtime, input)
         const gameVersion = resolvedFilters.gameVersion
-        const loader = input.loader ?? (input.type === 'mod' || input.type === 'modpack' ? resolvedFilters.loader : undefined)
+        const loader =
+          input.loader ??
+          (input.type === 'mod' || input.type === 'modpack' ? resolvedFilters.loader : undefined)
         if (gameVersion) facets.push([`versions:${gameVersion}`])
         if (loader) facets.push([`categories:${loader}`])
-        if (input.categories.length) facets.push(input.categories.map(category => `categories:${category}`))
+        if (input.categories.length)
+          facets.push(input.categories.map((category) => `categories:${category}`))
         if (input.license) facets.push([`license:${input.license}`])
         if (input.environment === 'client') {
-          facets.push(['client_side:optional', 'client_side:required'], ['server_side:optional', 'server_side:unsupported'])
+          facets.push(
+            ['client_side:optional', 'client_side:required'],
+            ['server_side:optional', 'server_side:unsupported'],
+          )
         } else if (input.environment === 'server') {
-          facets.push(['client_side:optional', 'client_side:unsupported'], ['server_side:optional', 'server_side:required'])
+          facets.push(
+            ['client_side:optional', 'client_side:unsupported'],
+            ['server_side:optional', 'server_side:required'],
+          )
         }
-        const result = await clientModrinthV2.searchProjects({
-          query: input.query,
-          facets: JSON.stringify(facets),
-          index: input.index,
-          limit: input.limit,
-          offset: (input.page - 1) * input.limit,
-        }, signal)
+        const result = await clientModrinthV2.searchProjects(
+          {
+            query: input.query,
+            facets: JSON.stringify(facets),
+            index: input.index,
+            limit: input.limit,
+            offset: (input.page - 1) * input.limit,
+          },
+          signal,
+        )
         const totalPages = Math.ceil(result.total_hits / input.limit)
         const projects = result.hits.map(withModrinthSearchInstallRef)
         return {
@@ -887,7 +1249,7 @@ export function useAgentToolFactory() {
             page: input.page,
             pageSize: input.limit,
             totalPages,
-            items: projects.map(project => ({
+            items: projects.map((project) => ({
               provider: 'modrinth',
               projectType: project.project_type,
               id: project.project_id,
@@ -904,11 +1266,15 @@ export function useAgentToolFactory() {
       async getModrinthVersions(input, signal) {
         const instance = currentInstance(context)
         const { gameVersion, loader } = resolveAgentMarketFilters(instance.runtime, input)
-        const versions = await clientModrinthV2.getProjectVersions(input.project, {
-          gameVersions: gameVersion ? [gameVersion] : undefined,
-          loaders: loader ? [loader] : undefined,
-          featured: input.featured,
-        }, signal)
+        const versions = await clientModrinthV2.getProjectVersions(
+          input.project,
+          {
+            gameVersions: gameVersion ? [gameVersion] : undefined,
+            loaders: loader ? [loader] : undefined,
+            featured: input.featured,
+          },
+          signal,
+        )
         const offset = (input.page - 1) * input.limit
         const totalPages = Math.ceil(versions.length / input.limit)
         return {
@@ -919,7 +1285,7 @@ export function useAgentToolFactory() {
           pageSize: input.limit,
           totalPages,
           hasNextPage: input.page < totalPages,
-          versions: versions.slice(offset, offset + input.limit).map(version => ({
+          versions: versions.slice(offset, offset + input.limit).map((version) => ({
             id: version.id,
             name: version.name,
             versionNumber: version.version_number,
@@ -935,9 +1301,12 @@ export function useAgentToolFactory() {
           source: 'curseforge',
           classId: input.classId,
           categories: categories
-            .filter(category => input.classId === undefined || category.parentCategoryId === input.classId)
+            .filter(
+              (category) =>
+                input.classId === undefined || category.parentCategoryId === input.classId,
+            )
             .sort((left, right) => (left.displayIndex ?? 0) - (right.displayIndex ?? 0))
-            .map(category => ({
+            .map((category) => ({
               id: category.id,
               name: category.name,
               slug: category.slug,
@@ -953,32 +1322,51 @@ export function useAgentToolFactory() {
             ? clientCurseforgeV1.getMod(input.ids[0], signal)
             : clientCurseforgeV1.getMods(input.ids, signal)
         }
-        if (input.kind === 'file') return decorateCurseforgeFiles(await clientCurseforgeV1.getModFile(input.project, input.file, signal))
-        if (input.kind === 'files') return decorateCurseforgeFiles(await clientCurseforgeV1.getFiles(input.ids, signal))
-        if (input.kind === 'description') return clientCurseforgeV1.getModDescription(input.project, signal)
-        if (input.kind === 'changelog') return clientCurseforgeV1.getModFileChangelog(input.project, input.file, signal)
+        if (input.kind === 'file')
+          return decorateCurseforgeFiles(
+            await clientCurseforgeV1.getModFile(input.project, input.file, signal),
+          )
+        if (input.kind === 'files')
+          return decorateCurseforgeFiles(await clientCurseforgeV1.getFiles(input.ids, signal))
+        if (input.kind === 'description')
+          return clientCurseforgeV1.getModDescription(input.project, signal)
+        if (input.kind === 'changelog')
+          return clientCurseforgeV1.getModFileChangelog(input.project, input.file, signal)
         return input.fuzzy
           ? clientCurseforgeV1.getFingerprintsFuzzyMatchesByGameId(432, input.fingerprints, signal)
           : clientCurseforgeV1.getFingerprintsMatchesByGameId(432, input.fingerprints, signal)
       },
       async searchCurseforge(input, signal) {
         const instance = currentInstance(context)
-        const filters = resolveAgentMarketFilters(instance.runtime, { gameVersion: input.gameVersion, loader: input.loaders[0], all: input.all })
+        const filters = resolveAgentMarketFilters(instance.runtime, {
+          gameVersion: input.gameVersion,
+          loader: input.loaders[0],
+          all: input.all,
+        })
         const gameVersion = filters.gameVersion
-        const loaders = input.all ? [] : input.loaders.length ? input.loaders : filters.loader ? [curseforgeLoaderName(filters.loader as AgentLoader)] : []
-        const result = await clientCurseforgeV1.searchMods({
-          searchFilter: input.query || undefined,
-          classId: input.classId ?? CurseforgeBuiltinClassId.mod,
-          categoryId: input.category,
-          slug: input.slug,
-          gameVersion,
-          modLoaderTypes: loaders,
-          gameVersionTypeId: input.gameVersionType,
-          sortField: input.sort as ModsSearchSortField | undefined,
-          sortOrder: input.order,
-          index: (input.page - 1) * input.limit,
-          pageSize: input.limit,
-        }, signal)
+        const loaders = input.all
+          ? []
+          : input.loaders.length
+            ? input.loaders
+            : filters.loader
+              ? [curseforgeLoaderName(filters.loader as AgentLoader)]
+              : []
+        const result = await clientCurseforgeV1.searchMods(
+          {
+            searchFilter: input.query || undefined,
+            classId: input.classId ?? CurseforgeBuiltinClassId.mod,
+            categoryId: input.category,
+            slug: input.slug,
+            gameVersion,
+            modLoaderTypes: loaders,
+            gameVersionTypeId: input.gameVersionType,
+            sortField: input.sort as ModsSearchSortField | undefined,
+            sortOrder: input.order,
+            index: (input.page - 1) * input.limit,
+            pageSize: input.limit,
+          },
+          signal,
+        )
         const totalPages = Math.ceil(result.pagination.totalCount / input.limit)
         return {
           filters: input.all ? { all: true } : { gameVersion, loaders },
@@ -996,14 +1384,14 @@ export function useAgentToolFactory() {
             page: input.page,
             pageSize: input.limit,
             totalPages,
-            items: result.data.map(project => ({
+            items: result.data.map((project) => ({
               provider: 'curseforge',
               projectType: 'mod',
               id: String(project.id),
               title: project.name,
               description: project.summary,
               icon: project.logo?.thumbnailUrl || project.logo?.url,
-              author: project.authors?.map(author => author.name).join(', '),
+              author: project.authors?.map((author) => author.name).join(', '),
               downloads: project.downloadCount,
             })),
           },
@@ -1012,14 +1400,17 @@ export function useAgentToolFactory() {
       async getCurseforgeFiles(input, signal) {
         const instance = currentInstance(context)
         const { gameVersion, loader } = resolveAgentMarketFilters(instance.runtime, input)
-        const result = await clientCurseforgeV1.getModFiles({
-          modId: input.project,
-          gameVersion,
-          modLoaderType: curseforgeLoaderType(loader),
-          gameVersionTypeId: input.gameVersionType,
-          index: (input.page - 1) * input.limit,
-          pageSize: input.limit,
-        }, signal)
+        const result = await clientCurseforgeV1.getModFiles(
+          {
+            modId: input.project,
+            gameVersion,
+            modLoaderType: curseforgeLoaderType(loader),
+            gameVersionTypeId: input.gameVersionType,
+            index: (input.page - 1) * input.limit,
+            pageSize: input.limit,
+          },
+          signal,
+        )
         const totalPages = Math.ceil(result.pagination.totalCount / input.limit)
         return {
           project: input.project,
@@ -1029,7 +1420,7 @@ export function useAgentToolFactory() {
           pageSize: input.limit,
           totalPages,
           hasNextPage: input.page < totalPages,
-          files: result.data.map(file => ({
+          files: result.data.map((file) => ({
             id: file.id,
             name: file.displayName,
             filename: file.fileName,
@@ -1043,22 +1434,21 @@ export function useAgentToolFactory() {
         const minecraft = input.minecraft ?? currentInstance(context).runtime.minecraft
         const result = await loaderVersions(loader, minecraft, input.refresh)
         const rawVersions = Array.isArray(result) ? result : result.loaderVersions
-        const versions = loader === 'neoforge'
-          ? sortNeoForgeVersions(rawVersions as string[])
-          : rawVersions
+        const versions =
+          loader === 'neoforge' ? sortNeoForgeVersions(rawVersions as string[]) : rawVersions
         return { loader, minecraft, versions: versions.slice(0, input.limit) }
       },
       async listMinecraftMetadata(input) {
         const result = await metadata.getMinecraftVersions(input.refresh)
         const matching = input.type
-          ? result.versions.filter(version => version.type === input.type)
+          ? result.versions.filter((version) => version.type === input.type)
           : result.versions
         return {
           latest: result.latest,
           type: input.type ?? 'all',
           count: Math.min(matching.length, input.limit),
           total: matching.length,
-          versions: matching.slice(0, input.limit).map(version => ({
+          versions: matching.slice(0, input.limit).map((version) => ({
             id: version.id,
             type: version.type,
             releaseTime: version.releaseTime,
@@ -1069,12 +1459,16 @@ export function useAgentToolFactory() {
         if (input.refresh) await versionService.refreshVersions(true)
         const versions = await versionService.getLocalVersions()
         const entries = input.server ? versions.servers : versions.local
-        return { kind: input.server ? 'server' : 'client', count: entries.length, versions: entries }
+        return {
+          kind: input.server ? 'server' : 'client',
+          count: entries.length,
+          versions: entries,
+        }
       },
       async getLocalVersion(input) {
         const versions = await versionService.getLocalVersions()
         if (input.server) {
-          const header = versions.servers.find(version => version.id === input.id)
+          const header = versions.servers.find((version) => version.id === input.id)
           if (!header) throw new Error(`Local server version not found: ${input.id}`)
           const resolved = await versionService.resolveServerVersion(input.id)
           return {
@@ -1088,7 +1482,7 @@ export function useAgentToolFactory() {
             },
           }
         }
-        const header = versions.local.find(version => version.id === input.id)
+        const header = versions.local.find((version) => version.id === input.id)
         if (!header) throw new Error(`Local client version not found: ${input.id}`)
         const resolved = await versionService.resolveLocalVersion(input.id)
         return {
@@ -1114,18 +1508,28 @@ export function useAgentToolFactory() {
         }
         const versions = await versionService.getLocalVersions()
         const entries = input.server ? versions.servers : versions.local
-        return { ok: true, kind: input.server ? 'server' : 'client', refreshed: input.id ?? 'all', count: entries.length }
+        return {
+          ok: true,
+          kind: input.server ? 'server' : 'client',
+          refreshed: input.id ?? 'all',
+          count: entries.length,
+        }
       },
       async deleteLocalVersion(input, signal) {
         const versions = await versionService.getLocalVersions()
-        if (!versions.local.some(version => version.id === input.id)) throw new Error(`Local client version not found: ${input.id}`)
-        await confirmAgentActionForRun(context, {
-          title: 'Delete local version',
-          message: `Delete local Minecraft version ${input.id}?`,
-          details: [input.id],
-          confirmLabel: 'Delete',
-          destructive: true,
-        }, signal)
+        if (!versions.local.some((version) => version.id === input.id))
+          throw new Error(`Local client version not found: ${input.id}`)
+        await confirmAgentActionForRun(
+          context,
+          {
+            title: 'Delete local version',
+            message: `Delete local Minecraft version ${input.id}?`,
+            details: [input.id],
+            confirmLabel: 'Delete',
+            destructive: true,
+          },
+          signal,
+        )
         await versionService.deleteVersion(input.id)
         return { ok: true, deleted: input.id }
       },
@@ -1137,7 +1541,12 @@ export function useAgentToolFactory() {
       },
       async getInstanceRuntime() {
         const instance = currentInstance(context)
-        return { instance: instance.path, name: instance.name, runtime: instance.runtime, resolvedVersion: instance.version || null }
+        return {
+          instance: instance.path,
+          name: instance.name,
+          runtime: instance.runtime,
+          resolvedVersion: instance.version || null,
+        }
       },
       async setInstanceRuntime(input) {
         const instance = currentInstance(context)
@@ -1157,7 +1566,11 @@ export function useAgentToolFactory() {
         else if (input.loader === 'quilt') runtime.quiltLoader = input.loaderVersion
         const nextRuntime: PartialRuntimeVersions = { ...instance.runtime, ...runtime }
         const runtimeChanged = isAgentRuntimeCompatibilityChanged(instance.runtime, nextRuntime)
-        await instanceService.editInstance({ instancePath: context.scope, runtime: nextRuntime, version: '' })
+        await instanceService.editInstance({
+          instancePath: context.scope,
+          runtime: nextRuntime,
+          version: '',
+        })
         runtimeChange.pending ||= runtimeChanged
         return {
           ok: true,
@@ -1169,12 +1582,18 @@ export function useAgentToolFactory() {
       },
       async installInstance() {
         const instance = currentInstance(context)
-        await confirmInstall(context, 'Install instance', 'Diagnose and install the selected instance runtime?', instance.name)
+        await confirmInstall(
+          context,
+          'Install instance',
+          'Diagnose and install the selected instance runtime?',
+          instance.name,
+        )
         const result = await capabilities.context.installInstance()
-        if (result && typeof result === 'object' && 'error' in result) throw new Error(String(result.error))
+        if (result && typeof result === 'object' && 'error' in result)
+          throw new Error(String(result.error))
         if (!runtimeChange.pending) return result
         runtimeChange.pending = false
-        return { ...result as object, ...await diagnoseRuntimeMods() }
+        return { ...(result as object), ...(await diagnoseRuntimeMods()) }
       },
       async getInstanceManifest() {
         const manifest = await instanceInstall.getInstanceInstallManifest(context.scope)
@@ -1187,18 +1606,39 @@ export function useAgentToolFactory() {
           const normalized = path.replace(/\\/g, '/').replace(/^\/+/, '')
           return normalized.startsWith('mods/') || normalized.includes('/mods/')
         }
-        const addedMods = manifest.files.map(file => file.path).filter(modPath)
-        const removedMods = manifest.oldFiles.map(file => file.path).filter(modPath)
+        const addedMods = manifest.files.map((file) => file.path).filter(modPath)
+        const removedMods = manifest.oldFiles.map((file) => file.path).filter(modPath)
         const presentations: AgentMarketProjectListPresentation[] = []
-        const modrinthIds = [...new Set(manifest.files.flatMap(file => file.modrinth?.projectId ? [file.modrinth.projectId] : []))]
-        const curseforgeIds = [...new Set(manifest.files.flatMap(file => file.curseforge?.projectId ? [file.curseforge.projectId] : []))]
-        const projectType = (path: string) => path.replace(/\\/g, '/').startsWith('resourcepacks/')
-          ? 'resourcepack' as const
-          : path.replace(/\\/g, '/').startsWith('shaderpacks/')
-            ? 'shader' as const
-            : 'mod' as const
-        const modrinthPaths = new Map(manifest.files.flatMap(file => file.modrinth?.projectId ? [[file.modrinth.projectId, file.path] as const] : []))
-        const curseforgePaths = new Map(manifest.files.flatMap(file => file.curseforge?.projectId ? [[file.curseforge.projectId, file.path] as const] : []))
+        const modrinthIds = [
+          ...new Set(
+            manifest.files.flatMap((file) =>
+              file.modrinth?.projectId ? [file.modrinth.projectId] : [],
+            ),
+          ),
+        ]
+        const curseforgeIds = [
+          ...new Set(
+            manifest.files.flatMap((file) =>
+              file.curseforge?.projectId ? [file.curseforge.projectId] : [],
+            ),
+          ),
+        ]
+        const projectType = (path: string) =>
+          path.replace(/\\/g, '/').startsWith('resourcepacks/')
+            ? ('resourcepack' as const)
+            : path.replace(/\\/g, '/').startsWith('shaderpacks/')
+              ? ('shader' as const)
+              : ('mod' as const)
+        const modrinthPaths = new Map(
+          manifest.files.flatMap((file) =>
+            file.modrinth?.projectId ? [[file.modrinth.projectId, file.path] as const] : [],
+          ),
+        )
+        const curseforgePaths = new Map(
+          manifest.files.flatMap((file) =>
+            file.curseforge?.projectId ? [[file.curseforge.projectId, file.path] as const] : [],
+          ),
+        )
         if (modrinthIds.length) {
           try {
             const projects = await clientModrinthV2.getProjects(modrinthIds)
@@ -1207,7 +1647,7 @@ export function useAgentToolFactory() {
               source: 'modrinth',
               query: '',
               total: projects.length,
-              items: projects.map(project => ({
+              items: projects.map((project) => ({
                 provider: 'modrinth',
                 projectType: projectType(modrinthPaths.get(project.id) ?? ''),
                 id: project.id,
@@ -1217,8 +1657,7 @@ export function useAgentToolFactory() {
                 downloads: project.downloads,
               })),
             })
-          } catch {
-          }
+          } catch {}
         }
         if (curseforgeIds.length) {
           try {
@@ -1228,27 +1667,26 @@ export function useAgentToolFactory() {
               source: 'curseforge',
               query: '',
               total: projects.length,
-              items: projects.map(project => ({
+              items: projects.map((project) => ({
                 provider: 'curseforge',
                 projectType: projectType(curseforgePaths.get(project.id) ?? ''),
                 id: String(project.id),
                 title: project.name,
                 description: project.summary,
                 icon: project.logo?.thumbnailUrl || project.logo?.url,
-                author: project.authors?.map(author => author.name).join(', '),
+                author: project.authors?.map((author) => author.name).join(', '),
                 downloads: project.downloadCount,
               })),
             })
-          } catch {
-          }
+          } catch {}
         }
         await confirmAgentActionForRun(context, {
           title: 'Apply instance manifest',
           message: `Apply ${manifest.files.length} addition${manifest.files.length === 1 ? '' : 's'} and ${manifest.oldFiles.length} removal${manifest.oldFiles.length === 1 ? '' : 's'}?`,
           details: [
             currentInstance(context).name,
-            ...manifest.files.map(file => `+ ${file.path}`),
-            ...manifest.oldFiles.map(file => `- ${file.path}`),
+            ...manifest.files.map((file) => `+ ${file.path}`),
+            ...manifest.oldFiles.map((file) => `- ${file.path}`),
           ],
           presentations,
           confirmLabel: 'Apply',
@@ -1258,14 +1696,20 @@ export function useAgentToolFactory() {
         let modDiagnosis: unknown
         if (addedMods.length || removedMods.length) {
           try {
-            modDiagnosis = await capabilities.context.diagnoseModCompatibility({ added: addedMods, removed: removedMods })
+            modDiagnosis = await capabilities.context.diagnoseModCompatibility({
+              added: addedMods,
+              removed: removedMods,
+            })
           } catch (error) {
-            modDiagnosis = { status: 'error', error: error instanceof Error ? error.message : String(error) }
+            modDiagnosis = {
+              status: 'error',
+              error: error instanceof Error ? error.message : String(error),
+            }
           }
         }
         return createAgentManifestApplyResult(
-          manifest.files.map(file => file.path),
-          manifest.oldFiles.map(file => file.path),
+          manifest.files.map((file) => file.path),
+          manifest.oldFiles.map((file) => file.path),
           modDiagnosis as any,
         )
       },
@@ -1299,10 +1743,12 @@ export function useAgentToolFactory() {
         const paths = input.compatible
           ? undefined
           : input.paths.map((path) => {
-            const name = path.replace(/^\.?\/+/, '').replace(/^mods\//, '')
-            const mod = capabilities.context.mods.value.find(value => value.path === path || value.fileName === name || value.modId === name)
-            return mod?.path ?? path
-          })
+              const name = path.replace(/^\.?\/+/, '').replace(/^mods\//, '')
+              const mod = capabilities.context.mods.value.find(
+                (value) => value.path === path || value.fileName === name || value.modId === name,
+              )
+              return mod?.path ?? path
+            })
         await confirmAgentActionForRun(context, {
           title: 'Deploy server mods',
           message: 'Deploy mods into the local server folder?',
@@ -1394,7 +1840,7 @@ export function useAgentToolFactory() {
       },
       async listAccounts() {
         const active = capabilities.context.userProfile.value?.id
-        return capabilities.context.accounts.value.map(account => ({
+        return capabilities.context.accounts.value.map((account) => ({
           id: account.id,
           username: account.username,
           authority: account.authority,
@@ -1404,10 +1850,12 @@ export function useAgentToolFactory() {
         }))
       },
       async selectAccount(input) {
-        const account = capabilities.context.accounts.value.find(value =>
-          value.id === input.ref ||
-          value.username === input.ref ||
-          value.profiles?.[value.selectedProfile]?.name === input.ref)
+        const account = capabilities.context.accounts.value.find(
+          (value) =>
+            value.id === input.ref ||
+            value.username === input.ref ||
+            value.profiles?.[value.selectedProfile]?.name === input.ref,
+        )
         if (!account) throw new Error(`Account not found: ${input.ref}`)
         capabilities.context.selectAccount(account.id)
         return { ok: true, id: account.id, username: account.username }
@@ -1423,9 +1871,14 @@ export function useAgentToolFactory() {
           requiredMajorVersion: status.javaVersion?.majorVersion,
           compatibility: compatibilityLabel(status.compatible),
           selectedJava: selected
-            ? { path: selected.path, version: selected.version, majorVersion: selected.majorVersion, valid: selected.valid }
+            ? {
+                path: selected.path,
+                version: selected.version,
+                majorVersion: selected.majorVersion,
+                valid: selected.valid,
+              }
             : null,
-          installedJavas: capabilities.context.javaList.value.map(java => ({
+          installedJavas: capabilities.context.javaList.value.map((java) => ({
             path: java.path,
             version: java.version,
             majorVersion: java.majorVersion,
@@ -1435,7 +1888,7 @@ export function useAgentToolFactory() {
       },
       async listJava(input) {
         if (input.refresh) await capabilities.context.refreshJavaList(true)
-        return capabilities.context.javaList.value.map(java => ({
+        return capabilities.context.javaList.value.map((java) => ({
           path: java.path,
           version: java.version,
           majorVersion: java.majorVersion,
@@ -1450,8 +1903,9 @@ export function useAgentToolFactory() {
           await instanceService.editInstance({ instancePath: instance.path, java: '' })
           return { ok: true, mode: 'auto' }
         }
-        const java = capabilities.context.javaList.value.find(value => value.path === input.path)
-        if (!java) throw new Error(`Java path is not in the launcher local Java list: ${input.path}`)
+        const java = capabilities.context.javaList.value.find((value) => value.path === input.path)
+        if (!java)
+          throw new Error(`Java path is not in the launcher local Java list: ${input.path}`)
         if (!java.valid) throw new Error(`Java path is invalid: ${input.path}`)
         await instanceService.editInstance({ instancePath: instance.path, java: java.path })
         return {
@@ -1468,13 +1922,10 @@ export function useAgentToolFactory() {
         await confirmAgentActionForRun(context, {
           title: 'Install Java',
           message: 'Install a compatible Java runtime for the selected instance?',
-          details: [
-            instance.name,
-            input.forceZulu ? 'Zulu runtime' : 'Official runtime preferred; Zulu fallback allowed',
-          ],
+          details: [instance.name],
           confirmLabel: 'Continue',
         })
-        return capabilities.context.installJava(input.forceZulu)
+        return capabilities.context.installJava()
       },
       async checkModDependencies() {
         return capabilities.context.checkModDependencies()
@@ -1522,7 +1973,9 @@ export function useAgentToolFactory() {
       },
       async exportWorld(input) {
         const instance = currentInstance(context)
-        const save = capabilities.context.saves.value.find(value => value.name === input.world || value.path === input.world)
+        const save = capabilities.context.saves.value.find(
+          (value) => value.name === input.world || value.path === input.world,
+        )
         if (!save) throw new Error(`World not found: ${input.world}`)
         await savesService.exportSave({
           instancePath: instance.path,
@@ -1534,10 +1987,14 @@ export function useAgentToolFactory() {
       },
       async cloneWorld(input) {
         const instance = currentInstance(context)
-        const save = capabilities.context.saves.value.find(value => value.name === input.world || value.path === input.world)
+        const save = capabilities.context.saves.value.find(
+          (value) => value.name === input.world || value.path === input.world,
+        )
         if (!save) throw new Error(`World not found: ${input.world}`)
         const destination = input.destination
-          ? instances.allInstances.value.find(value => value.path === input.destination || value.name === input.destination)?.path
+          ? instances.allInstances.value.find(
+              (value) => value.path === input.destination || value.name === input.destination,
+            )?.path
           : instance.path
         if (!destination) throw new Error(`Instance not found: ${input.destination}`)
         await savesService.cloneSave({
@@ -1550,13 +2007,18 @@ export function useAgentToolFactory() {
       },
       async linkWorldAsServer(input) {
         const instance = currentInstance(context)
-        const save = capabilities.context.saves.value.find(value => value.name === input.world || value.path === input.world)
+        const save = capabilities.context.saves.value.find(
+          (value) => value.name === input.world || value.path === input.world,
+        )
         if (!save) throw new Error(`World not found: ${input.world}`)
-        await savesService.linkSaveAsServerWorld({ instancePath: instance.path, saveName: save.name })
+        await savesService.linkSaveAsServerWorld({
+          instancePath: instance.path,
+          saveName: save.name,
+        })
         return { ok: true, linked: save.name }
       },
       async listInstances() {
-        return instances.allInstances.value.map(instance => ({
+        return instances.allInstances.value.map((instance) => ({
           path: instance.path,
           name: instance.name,
           description: instance.description,
@@ -1577,14 +2039,25 @@ export function useAgentToolFactory() {
       },
       async repairInstance() {
         const instance = currentInstance(context)
-        await confirmInstall(context, 'Repair instance', 'Install missing files for the selected instance?', instance.name)
+        await confirmInstall(
+          context,
+          'Repair instance',
+          'Install missing files for the selected instance?',
+          instance.name,
+        )
         const before = summarizeInstallInstruction(capabilities.context.installInstruction.value)
         await capabilities.context.fixInstanceInstall()
-        return { ok: true, before, after: summarizeInstallInstruction(capabilities.context.installInstruction.value) }
+        return {
+          ok: true,
+          before,
+          after: summarizeInstallInstruction(capabilities.context.installInstruction.value),
+        }
       },
       async duplicateInstance(input) {
         const source = input.source
-          ? instances.allInstances.value.find(value => value.path === input.source || value.name === input.source)?.path
+          ? instances.allInstances.value.find(
+              (value) => value.path === input.source || value.name === input.source,
+            )?.path
           : context.scope
         if (!source) throw new Error(`Instance not found: ${input.source}`)
         await confirmAgentActionForRun(context, {
@@ -1598,7 +2071,9 @@ export function useAgentToolFactory() {
       },
       async deleteInstance(input) {
         const target = input.target
-          ? instances.allInstances.value.find(value => value.path === input.target || value.name === input.target)?.path
+          ? instances.allInstances.value.find(
+              (value) => value.path === input.target || value.name === input.target,
+            )?.path
           : context.scope
         if (!target) throw new Error(`Instance not found: ${input.target}`)
         await confirmAgentActionForRun(context, {
@@ -1641,20 +2116,28 @@ export function useAgentToolFactory() {
         }
         const expression = new RegExp(input.pattern, input.ignoreCase ? 'i' : '')
         const prefix = requestedPath.replace(/^config\/?/, '')
-        const files = (await optionsService.getInstanceConfigFiles(context.scope))
-          .filter(file => !prefix || file === prefix || file.startsWith(`${prefix}/`))
+        const files = (await optionsService.getInstanceConfigFiles(context.scope)).filter(
+          (file) => !prefix || file === prefix || file.startsWith(`${prefix}/`),
+        )
         const matches: Array<{ file: string; line: number; text: string }> = []
         const offset = input.offset ?? 0
         const limit = input.limit ?? 200
         let seen = 0
         for (const file of files) {
-          const content = await optionsService.getInstanceConfig(context.scope, file).catch(() => '')
+          const content = await optionsService
+            .getInstanceConfig(context.scope, file)
+            .catch(() => '')
           if (content.length > 512 * 1024) continue
           for (const [index, line] of content.split('\n').entries()) {
             expression.lastIndex = 0
             const match = expression.exec(line)
             if (!match) continue
-            if (seen >= offset && matches.length < limit) matches.push({ file: `config/${file}`, line: index + 1, text: grepSnippet(line, match.index) })
+            if (seen >= offset && matches.length < limit)
+              matches.push({
+                file: `config/${file}`,
+                line: index + 1,
+                text: grepSnippet(line, match.index),
+              })
             seen++
             if (seen > offset + limit) return { matches, offset, limit, hasMore: true }
           }
@@ -1664,25 +2147,38 @@ export function useAgentToolFactory() {
       async moveResource(input) {
         const source = normalizeVfsPath(input.source, context.scope)
         const destination = normalizeVfsPath(input.destination, context.scope)
-        const enabling = source.endsWith('.disabled') && destination === source.slice(0, -'.disabled'.length)
+        const enabling =
+          source.endsWith('.disabled') && destination === source.slice(0, -'.disabled'.length)
         const disabling = !source.endsWith('.disabled') && destination === `${source}.disabled`
-        if (!enabling && !disabling) throw new Error('mv only supports adding or removing the .disabled suffix')
+        if (!enabling && !disabling)
+          throw new Error('mv only supports adding or removing the .disabled suffix')
         const [kind, ...parts] = source.split('/')
         const name = parts.join('/')
-        if (!name || !['mods', 'resourcepacks', 'shaderpacks'].includes(kind)) throw new Error(`Unsupported move path: ${source}`)
+        if (!name || !['mods', 'resourcepacks', 'shaderpacks'].includes(kind))
+          throw new Error(`Unsupported move path: ${source}`)
         const enabled = enabling
         if (kind === 'mods') {
-          const resource = capabilities.context.mods.value.find(value => value.fileName === name || value.path === name || value.path === source)
+          const resource = capabilities.context.mods.value.find(
+            (value) => value.fileName === name || value.path === name || value.path === source,
+          )
           if (!resource) throw new Error(`Mod not found: ${name}`)
           const method = enabled ? modsService.enable : modsService.disable
           await method({ path: context.scope, files: [resource.path] })
         } else if (kind === 'resourcepacks') {
-          const resource = capabilities.context.resourcePacks.value.find(value => value.fileName === name || value.path === name || value.path === source || value.name === name)
+          const resource = capabilities.context.resourcePacks.value.find(
+            (value) =>
+              value.fileName === name ||
+              value.path === name ||
+              value.path === source ||
+              value.name === name,
+          )
           if (!resource) throw new Error(`Resource pack not found: ${name}`)
           if (enabled) await capabilities.context.enableResourcePack([resource])
           else await capabilities.context.disableResourcePack([resource])
         } else {
-          const resource = capabilities.context.shaderPacks.value.find(value => value.fileName === name || value.path === name || value.path === source)
+          const resource = capabilities.context.shaderPacks.value.find(
+            (value) => value.fileName === name || value.path === name || value.path === source,
+          )
           if (!resource) throw new Error(`Shader pack not found: ${name}`)
           capabilities.context.selectShaderPack(enabled ? resource.fileName : undefined)
         }
@@ -1694,10 +2190,12 @@ export function useAgentToolFactory() {
       },
       async wait(input, signal) {
         const startedAt = Date.now()
-        const timeoutMs = input.timeoutSeconds === undefined ? undefined : input.timeoutSeconds * 1_000
+        const timeoutMs =
+          input.timeoutSeconds === undefined ? undefined : input.timeoutSeconds * 1_000
         if (signal?.aborted) throw new Error('Wait aborted')
         if (input.gameProcess === undefined) {
-          if (timeoutMs === undefined) throw new Error('A timeout is required when no game process is provided')
+          if (timeoutMs === undefined)
+            throw new Error('A timeout is required when no game process is provided')
           await new Promise<void>((resolve, reject) => {
             const cleanup = () => signal?.removeEventListener('abort', abort)
             const timer = setTimeout(() => {
@@ -1717,7 +2215,9 @@ export function useAgentToolFactory() {
         const pid = input.gameProcess
         let timer: ReturnType<typeof setTimeout> | undefined
         let onAbort: (() => void) | undefined
-        let onExit: ((event: { pid: number; code?: number; signal?: string; launchId: string }) => void) | undefined
+        let onExit:
+          | ((event: { pid: number; code?: number; signal?: string; launchId: string }) => void)
+          | undefined
         const exit = new Promise<Record<string, unknown>>((resolve) => {
           onExit = (event) => {
             if (event.pid !== pid) return
@@ -1736,26 +2236,40 @@ export function useAgentToolFactory() {
         try {
           const process = await launchService.getGameProcess(pid)
           if (process?.options.gameDirectory !== context.scope) {
-            return { ok: true, gameProcess: pid, exited: true, found: false, elapsedMs: Date.now() - startedAt }
+            return {
+              ok: true,
+              gameProcess: pid,
+              exited: true,
+              found: false,
+              elapsedMs: Date.now() - startedAt,
+            }
           }
           const waits: Promise<Record<string, unknown>>[] = [exit]
           if (timeoutMs !== undefined) {
-            waits.push(new Promise(resolve => {
-              timer = setTimeout(() => resolve({
-                ok: true,
-                gameProcess: pid,
-                launchId: process.launchId,
-                exited: false,
-                timedOut: true,
-                elapsedMs: Date.now() - startedAt,
-              }), timeoutMs)
-            }))
+            waits.push(
+              new Promise((resolve) => {
+                timer = setTimeout(
+                  () =>
+                    resolve({
+                      ok: true,
+                      gameProcess: pid,
+                      launchId: process.launchId,
+                      exited: false,
+                      timedOut: true,
+                      elapsedMs: Date.now() - startedAt,
+                    }),
+                  timeoutMs,
+                )
+              }),
+            )
           }
           if (signal) {
-            waits.push(new Promise((_, reject) => {
-              onAbort = () => reject(new Error('Wait aborted'))
-              signal.addEventListener('abort', onAbort, { once: true })
-            }))
+            waits.push(
+              new Promise((_, reject) => {
+                onAbort = () => reject(new Error('Wait aborted'))
+                signal.addEventListener('abort', onAbort, { once: true })
+              }),
+            )
           }
           return await Promise.race(waits)
         } finally {
@@ -1765,7 +2279,13 @@ export function useAgentToolFactory() {
         }
       },
       async stopGame(input) {
-        await confirmInstall(context, 'Stop game', 'Stop the running Minecraft client?', currentInstance(context).name, true)
+        await confirmInstall(
+          context,
+          'Stop game',
+          'Stop the running Minecraft client?',
+          currentInstance(context).name,
+          true,
+        )
         await capabilities.context.killGame('client', input.force)
         return { ok: true }
       },
@@ -1775,18 +2295,28 @@ export function useAgentToolFactory() {
     }
   }
 
-  async function createVfsShellTool(context: AgentRunContext, vfs: Awaited<ReturnType<typeof createVfsTools>>, runtimeChange: AgentRuntimeChangeTracker): Promise<AgentTool> {
-    const runtimeCommands = createAgentRuntimeCommands(createCommandOperations(context, vfs, runtimeChange))
+  async function createVfsShellTool(
+    context: AgentRunContext,
+    vfs: Awaited<ReturnType<typeof createVfsTools>>,
+    runtimeChange: AgentRuntimeChangeTracker,
+  ): Promise<AgentTool> {
+    const runtimeCommands = createAgentRuntimeCommands(
+      createCommandOperations(context, vfs, runtimeChange),
+    )
     const runtimeByName = createAgentRuntimeCommandIndex(runtimeCommands)
     const presentStagedInstall = createAgentStagedInstallPresenter()
-    const allowedCommands = () => commandHost.registry.list({ mode: 'cli' })
-      .filter(command => isAgentCommandAllowed(command.id))
-      .map(command => ({ command, name: command.cli?.name ?? command.id.replace(/\./g, ' ') }))
+    const allowedCommands = () =>
+      commandHost.registry
+        .list({ mode: 'cli' })
+        .filter((command) => isAgentCommandAllowed(command.id))
+        .map((command) => ({ command, name: command.cli?.name ?? command.id.replace(/\./g, ' ') }))
     const rootHelp = () => {
-      const runtimeHelp = runtimeCommands.map(command => {
-        const aliases = command.aliases?.length ? ` (${command.aliases.join(', ')})` : ''
-        return `  ${(command.name + aliases).padEnd(28)} ${command.description}`
-      }).join('\n')
+      const runtimeHelp = runtimeCommands
+        .map((command) => {
+          const aliases = command.aliases?.length ? ` (${command.aliases.join(', ')})` : ''
+          return `  ${(command.name + aliases).padEnd(28)} ${command.description}`
+        })
+        .join('\n')
       const commandHelp = allowedCommands()
         .map(({ command, name }) => `  ${name.padEnd(28)} ${command.title}`)
         .join('\n')
@@ -1795,14 +2325,15 @@ export function useAgentToolFactory() {
     const commandHelp = (name: string) => {
       const runtime = runtimeByName.get(name)
       if (runtime) return formatAgentRuntimeCommandHelp(runtime)
-      const command = allowedCommands().find(value => value.name === name)?.command
+      const command = allowedCommands().find((value) => value.name === name)?.command
       if (!command) throw new Error(`Unknown command: ${name}`)
       return formatCommandHelp(command, { programName: 'vfs_shell' })
     }
     return {
       name: 'vfs_shell',
       label: 'XMCL command',
-      description: 'Run one virtual XMCL command. This is not an OS shell and cannot inspect source code, repositories, or arbitrary host files; use `help` to discover supported commands.',
+      description:
+        'Run one virtual XMCL command. This is not an OS shell and cannot inspect source code, repositories, or arbitrary host files; use `help` to discover supported commands.',
       parameters: Type.Object({ command: Type.String() }),
       executionMode: 'sequential',
       async execute(_id, args: any, signal) {
@@ -1816,17 +2347,23 @@ export function useAgentToolFactory() {
           const runtimeArgv = argv.slice(1)
           return textResult(await executeAgentRuntimeCommand(runtime, runtimeArgv, signal))
         }
-        const candidates = allowedCommands()
-          .sort((a, b) => b.name.length - a.name.length)
-        const match = candidates.find(candidate => args.command === candidate.name || args.command.startsWith(`${candidate.name} `))
+        const candidates = allowedCommands().sort((a, b) => b.name.length - a.name.length)
+        const match = candidates.find(
+          (candidate) =>
+            args.command === candidate.name || args.command.startsWith(`${candidate.name} `),
+        )
         if (!match) throw new Error('Unsupported command. Run `help` to list commands.')
-        const parsed = parseCli([match.name, ...tokenize(args.command.slice(match.name.length).trim())], commandHost.registry)
+        const parsed = parseCli(
+          [match.name, ...tokenize(args.command.slice(match.name.length).trim())],
+          commandHost.registry,
+        )
         if (parsed.kind === 'error') throw new Error(parsed.message)
         if (parsed.kind !== 'command') return textResult(commandHelp(match.name))
         parsed.input.instance = context.scope
-        const result = parsed.commandId === 'mod.install'
-          ? await stageModWithDependencies(parsed.input, context)
-          : await commandHost.dispatch(parsed.commandId, parsed.input)
+        const result =
+          parsed.commandId === 'mod.install'
+            ? await stageModWithDependencies(parsed.input, context)
+            : await commandHost.dispatch(parsed.commandId, parsed.input)
         return textResult(presentStagedInstall(parsed.commandId, result, context.scope))
       },
     }
@@ -1835,10 +2372,7 @@ export function useAgentToolFactory() {
   async function createLauncherTools(context: AgentRunContext) {
     const runtimeChange = { pending: false }
     const vfs = await createVfsTools(context, runtimeChange)
-    return [
-      ...vfs.tools,
-      await createVfsShellTool(context, vfs, runtimeChange),
-    ]
+    return [...vfs.tools, await createVfsShellTool(context, vfs, runtimeChange)]
   }
 
   return { createLauncherTools }
@@ -1866,7 +2400,8 @@ export function useCssAgentToolFactory() {
       {
         selector: {
           type: 'string',
-          description: 'CSS selector. Required for query_dom and get_computed_style; optional for get_dom_outline.',
+          description:
+            'CSS selector. Required for query_dom and get_computed_style; optional for get_dom_outline.',
         },
         limit: { type: 'number', description: 'Max elements for query_dom (1-50).' },
         properties: {
@@ -1893,7 +2428,10 @@ export function useCssAgentToolFactory() {
         parameters: Type.Object({}),
         executionMode: 'parallel',
         async execute() {
-          const [css, theme] = await Promise.all([themeService.getCustomCss(), themeService.getCurrentTheme()])
+          const [css, theme] = await Promise.all([
+            themeService.getCustomCss(),
+            themeService.getCurrentTheme(),
+          ])
           return textResult({ css, enabled: !!theme?.settings?.customCssEnabled })
         },
       },
@@ -1915,7 +2453,12 @@ export function useCssAgentToolFactory() {
         parameters: Type.Object({ enabled: Type.Boolean() }),
         executionMode: 'sequential',
         async execute(_id: string, args: any) {
-          const current = await themeService.getCurrentTheme() ?? { ui: 'keystone', version: 1, assets: {}, settings: {} }
+          const current = (await themeService.getCurrentTheme()) ?? {
+            ui: 'keystone',
+            version: 1,
+            assets: {},
+            settings: {},
+          }
           await themeService.setCurrentTheme({
             ...current,
             settings: { ...current.settings, customCssEnabled: args.enabled },

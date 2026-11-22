@@ -8,10 +8,12 @@ export class RestoreGate {
   private context = new AsyncLocalStorage<{ active: boolean }>()
   private frozen = false
   private operations = new Set<Promise<unknown>>()
-  private writers = new Set<RestoreWriter>()
+  private writers = new Map<RestoreWriter, 'java-update' | undefined>()
+
+  constructor(private readonly maintenanceMessage = 'Restore maintenance is active') {}
 
   assertWritable() {
-    if (this.blocked && !this.context.getStore()?.active) throw new Error('Restore maintenance is active')
+    if (this.blocked && !this.context.getStore()?.active) throw new Error(this.maintenanceMessage)
   }
 
   guardState(state: object, excluded: string[] = []) {
@@ -57,15 +59,27 @@ export class RestoreGate {
     })
   }
 
-  writer(write: () => Promise<void>, delay = 0) {
+  /** Register an ordered writer, optionally grouping it with Java update persistence. */
+  writer(write: () => Promise<void>, delay = 0, group?: 'java-update') {
     const writer = new RestoreWriter(this, write, delay)
-    this.writers.add(writer)
+    this.writers.set(writer, group)
     return writer
   }
 
   get recoveryRequired() { return this.frozen }
 
   get suppressPersistence() { return this.publishing }
+
+  /** Drain all writers or the Java update group, propagating write failures. */
+  async flushWriters(group?: 'java-update') {
+    this.assertWritable()
+    const results = await Promise.allSettled(
+      [...this.writers].filter(([, writerGroup]) => !group || writerGroup === group).map(([writer]) => writer.flush(group === 'java-update')),
+    )
+    const failed = results.find((r): r is PromiseRejectedResult => r.status === 'rejected')
+    if (failed) throw failed.reason
+    this.assertWritable()
+  }
 
   async enter(check: () => void) {
     if (this.blocked) throw new Error('Restore maintenance is active')
@@ -74,7 +88,7 @@ export class RestoreGate {
       check()
       while (this.operations.size) await Promise.allSettled(this.operations)
       check()
-      const results = await Promise.allSettled([...this.writers].map(w => w.flush()))
+      const results = await Promise.allSettled([...this.writers.keys()].map(w => w.flush()))
       const failed = results.find((r): r is PromiseRejectedResult => r.status === 'rejected')
       if (failed) throw failed.reason
     } catch (e) {
@@ -125,10 +139,12 @@ export class RestoreWriter {
     return this.tail
   }
 
-  async flush() {
+  /** Drain pending writes, optionally retrying a previous failure. */
+  async flush(retryFailure = false) {
     if (this.gate.recoveryRequired) return
     if (this.timer) clearTimeout(this.timer)
     this.timer = undefined
+    if (retryFailure && this.failure) this.dirty = true
     await this.enqueue()
     if (this.failure) throw this.failure
   }

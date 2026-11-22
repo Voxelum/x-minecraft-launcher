@@ -4,14 +4,12 @@ import {
   createJavaRuntimeInstallWorkflow,
   createModernForgeInstallWorkflow,
   createNodeInstallRuntime,
-  createZuluRuntimeInstallWorkflow,
   DEFAULT_FORGE_MAVEN,
   DEFAULT_RUNTIME_ALL_URL,
   DEFAULT_VERSION_MANIFEST_URL,
   diagnoseFile,
   diagnoseLibraries,
   diagnoseProfile,
-  detectLibc,
   executeInstallWorkflow,
   executeInstallManifest,
   resolveForgeInstallerFile,
@@ -19,7 +17,6 @@ import {
   resolveMinecraftJarInstallFile,
   resolveMinecraftVersionJsonInstallFile,
   resolveNeoForgedInstallerFile,
-  selectZuluJRE,
   type InstallFile,
   type InstallForgeOptions,
   type InstallRuntime,
@@ -29,7 +26,6 @@ import {
   type LibraryOptions,
   type MinecraftVersionList,
   type PostProcessor,
-  type ZuluJRE,
 } from '@xmcl/installer'
 import { readdir, mkdtemp, rm } from 'fs/promises'
 import { tmpdir } from 'os'
@@ -39,7 +35,6 @@ import { DefaultRangePolicy } from '@xmcl/file-transfer'
 import { Agent, buildConnector, interceptors } from 'undici'
 import { describe, expect, it } from 'vitest'
 import { waitProcess } from '@xmcl/installer/utils'
-import zuluIndex from '../java/zulu.json'
 import { getJavaExeFilePath } from '../java/java'
 import { BmclDownloadController } from '../network/BmclDownloadController'
 import { NetworkAgent } from '../network/NetworkAgent'
@@ -54,26 +49,19 @@ const NEOFORGE_VERSION = '21.1.248'
 
 type Loader = 'forge' | 'neoforge'
 type DownloadSource = 'bmcl' | 'official'
-type JavaSource = 'official' | 'zulu'
-
 interface MatrixCase {
   loader: Loader
   download: DownloadSource
-  java: JavaSource
 }
 
 const pairwiseMatrix: MatrixCase[] = [
-  { loader: 'forge', download: 'bmcl', java: 'official' },
-  { loader: 'forge', download: 'official', java: 'zulu' },
-  { loader: 'neoforge', download: 'bmcl', java: 'zulu' },
-  { loader: 'neoforge', download: 'official', java: 'official' },
+  { loader: 'forge', download: 'bmcl' },
+  { loader: 'forge', download: 'official' },
+  { loader: 'neoforge', download: 'bmcl' },
+  { loader: 'neoforge', download: 'official' },
 ]
 
-const fullMatrix: MatrixCase[] = (['forge', 'neoforge'] as const).flatMap((loader) =>
-  (['bmcl', 'official'] as const).flatMap((download) =>
-    (['official', 'zulu'] as const).map((java) => ({ loader, download, java })),
-  ),
-)
+const fullMatrix: MatrixCase[] = pairwiseMatrix
 
 function replaceHost(url: string, base: string) {
   const result = new URL(url)
@@ -100,34 +88,40 @@ async function fetchJson<T>(urls: string | string[]): Promise<T> {
       }
     }
   }
-  throw new AggregateError(errors, `Cannot fetch JSON from ${typeof urls === 'string' ? urls : urls.join(', ')}`)
+  throw new AggregateError(
+    errors,
+    `Cannot fetch JSON from ${typeof urls === 'string' ? urls : urls.join(', ')}`,
+  )
 }
 
 function resolveOfficialJavaTarget(runtimes: JavaRuntimes): JavaRuntimeTarget {
-  const platform = process.platform === 'win32'
-    ? process.arch === 'arm64'
-      ? 'windows-arm64'
-      : process.arch === 'ia32'
-        ? 'windows-x86'
-        : 'windows-x64'
-    : process.platform === 'darwin'
-      ? process.arch === 'arm64' ? 'mac-os-arm64' : 'mac-os'
-      : process.arch === 'ia32' ? 'linux-i386' : 'linux'
+  const platform =
+    process.platform === 'win32'
+      ? process.arch === 'arm64'
+        ? 'windows-arm64'
+        : process.arch === 'ia32'
+          ? 'windows-x86'
+          : 'windows-x64'
+      : process.platform === 'darwin'
+        ? process.arch === 'arm64'
+          ? 'mac-os-arm64'
+          : 'mac-os'
+        : process.arch === 'ia32'
+          ? 'linux-i386'
+          : 'linux'
   const target = runtimes[platform][JAVA_COMPONENT]?.[0]
   if (!target) throw new Error(`No official ${JAVA_COMPONENT} runtime for ${platform}`)
   return target
 }
 
-function resolveZuluRuntime(): ZuluJRE {
-  const entries = (zuluIndex as Record<string, unknown>)[JAVA_COMPONENT] as ZuluJRE[] | undefined
-  const runtime = entries && selectZuluJRE(entries, process.platform, process.arch, detectLibc())
-  if (!runtime) throw new Error(`No Zulu ${JAVA_COMPONENT} runtime for ${process.platform} ${process.arch}`)
-  return runtime
-}
-
 function getRuntimePlatform() {
   return {
-    os: process.platform === 'win32' ? 'windows' as const : process.platform === 'darwin' ? 'osx' as const : 'linux' as const,
+    os:
+      process.platform === 'win32'
+        ? ('windows' as const)
+        : process.platform === 'darwin'
+          ? ('osx' as const)
+          : ('linux' as const),
     osRelease: '',
     arch: process.arch,
   }
@@ -138,10 +132,15 @@ function createInstallOptions(
   java: string,
 ): InstallForgeOptions & JarOption & LibraryOptions & { fetch: typeof fetch } {
   const libraryHost = (library: ResolvedLibrary) => {
-    const urls = source === 'bmcl'
-      ? [`${BMCL}/maven/${library.download.path}`, library.download.url]
-      : [library.download.url]
-    if (!['mojang', 'minecraft', 'forge', 'fabric', 'optifine'].some((keyword) => library.name.includes(keyword))) {
+    const urls =
+      source === 'bmcl'
+        ? [`${BMCL}/maven/${library.download.path}`, library.download.url]
+        : [library.download.url]
+    if (
+      !['mojang', 'minecraft', 'forge', 'fabric', 'optifine'].some((keyword) =>
+        library.name.includes(keyword),
+      )
+    ) {
       urls.push(`${DEFAULT_FORGE_MAVEN}/${library.download.path}`)
     }
     return urls
@@ -152,9 +151,8 @@ function createInstallOptions(
     java,
     inheritsFrom: MINECRAFT,
     json: (version) => sourceUrls(version.url, source),
-    client: (version) => version.downloads.client
-      ? sourceUrls(version.downloads.client.url, source)
-      : [],
+    client: (version) =>
+      version.downloads.client ? sourceUrls(version.downloads.client.url, source) : [],
     mavenHost: source === 'bmcl' ? [`${BMCL}/maven`, DEFAULT_FORGE_MAVEN] : [DEFAULT_FORGE_MAVEN],
     libraryHost,
   }
@@ -168,38 +166,42 @@ async function createMatrixDispatcher() {
     autoSelectFamily: true,
     autoSelectFamilyAttemptTimeout: 850,
   }
-  const dispatcher = new NetworkAgent({
-    userAgent: 'voxelum/x_minecraft_launcher/install-matrix',
-    requestTls: tls,
-    proxyTls: tls,
-    factory: (connect) => new Agent({
-      connections: 32,
-      headersTimeout: 25_000,
-      bodyTimeout: 10_000,
-      connect,
-    }).compose(
-      interceptors.retry({
-        errorCodes: [
-          'UND_ERR_CONNECT_TIMEOUT',
-          'UND_ERR_HEADERS_TIMEOUT',
-          'UND_ERR_BODY_TIMEOUT',
-          'ECONNRESET',
-          'ECONNREFUSED',
-          'ENOTFOUND',
-          'ENETDOWN',
-          'ETIMEDOUT',
-          'ENETUNREACH',
-          'EHOSTDOWN',
-          'EHOSTUNREACH',
-          'EPIPE',
-          'UND_ERR_SOCKET',
-        ],
-        statusCodes: [567, 500, 502, 503, 504, 429],
-        maxRetries: 3,
-      }),
-      interceptors.redirect({ maxRedirections: 5 }),
-    ) as Agent,
-  }, () => {})
+  const dispatcher = new NetworkAgent(
+    {
+      userAgent: 'voxelum/x_minecraft_launcher/install-matrix',
+      requestTls: tls,
+      proxyTls: tls,
+      factory: (connect) =>
+        new Agent({
+          connections: 32,
+          headersTimeout: 25_000,
+          bodyTimeout: 10_000,
+          connect,
+        }).compose(
+          interceptors.retry({
+            errorCodes: [
+              'UND_ERR_CONNECT_TIMEOUT',
+              'UND_ERR_HEADERS_TIMEOUT',
+              'UND_ERR_BODY_TIMEOUT',
+              'ECONNRESET',
+              'ECONNREFUSED',
+              'ENOTFOUND',
+              'ENETDOWN',
+              'ETIMEDOUT',
+              'ENETUNREACH',
+              'EHOSTDOWN',
+              'EHOSTUNREACH',
+              'EPIPE',
+              'UND_ERR_SOCKET',
+            ],
+            statusCodes: [567, 500, 502, 503, 504, 429],
+            maxRetries: 3,
+          }),
+          interceptors.redirect({ maxRedirections: 5 }),
+        ) as Agent,
+    },
+    () => {},
+  )
   const proxy = process.env.HTTPS_PROXY || process.env.https_proxy
   if (proxy) {
     await dispatcher.setProxy(new URL(proxy))
@@ -208,10 +210,7 @@ async function createMatrixDispatcher() {
   return dispatcher
 }
 
-function observeRuntime(
-  runtime: InstallRuntime,
-  plannedUrls: string[],
-): InstallRuntime {
+function observeRuntime(runtime: InstallRuntime, plannedUrls: string[]): InstallRuntime {
   return {
     ...runtime,
     download: (files) => {
@@ -260,19 +259,22 @@ const matrix = process.env.INSTALL_MATRIX_FULL ? fullMatrix : pairwiseMatrix
 
 run('from-zero Forge and NeoForge install matrix', () => {
   it.each(matrix)(
-    '$loader via $download with $java Java',
-    async ({ loader, download, java }) => {
-      const root = await mkdtemp(join(tmpdir(), `xmcl-${loader}-${download}-${java}-`))
+    '$loader via $download',
+    async ({ loader, download }) => {
+      const root = await mkdtemp(join(tmpdir(), `xmcl-${loader}-${download}-`))
       let stage = 'setup'
       const startedAt = Date.now()
       const heartbeat = setInterval(() => {
-        console.info(`[install-matrix] ${loader}/${download}/${java} stage=${stage} elapsed=${Math.round((Date.now() - startedAt) / 1000)}s`)
+        console.info(
+          `[install-matrix] ${loader}/${download} stage=${stage} elapsed=${Math.round((Date.now() - startedAt) / 1000)}s`,
+        )
       }, 15_000)
       const dispatcher = await createMatrixDispatcher()
       const reports: DownloadResult[] = []
-      const controller = download === 'bmcl'
-        ? new BmclDownloadController({ warmup: 1_500, ttfbDeadline: 6_000, maxResumes: 12 })
-        : undefined
+      const controller =
+        download === 'bmcl'
+          ? new BmclDownloadController({ warmup: 1_500, ttfbDeadline: 6_000, maxResumes: 12 })
+          : undefined
       if (controller) {
         controller.setReassignableHosts([new URL(BMCL).hostname])
         const report = controller.report.bind(controller)
@@ -282,34 +284,37 @@ run('from-zero Forge and NeoForge install matrix', () => {
         }
       }
       const plannedUrls: string[] = []
-      const downloader = createFileTransferInstallDownloader({
-        dispatcher,
-        rangePolicy: new DefaultRangePolicy(5 * 1024 * 1024, 4),
-      }, controller)
-      const runtime = observeRuntime(createNodeInstallRuntime({
-        download: (files) => downloader.download(files),
-      }), plannedUrls)
+      const downloader = createFileTransferInstallDownloader(
+        {
+          dispatcher,
+          rangePolicy: new DefaultRangePolicy(5 * 1024 * 1024, 4),
+        },
+        controller,
+      )
+      const runtime = observeRuntime(
+        createNodeInstallRuntime({
+          download: (files) => downloader.download(files),
+        }),
+        plannedUrls,
+      )
       const folder = MinecraftFolder.from(root)
 
       try {
         expect(await readdir(root)).toEqual([])
-        const javaRoot = join(root, 'jre', `${JAVA_COMPONENT}${java === 'zulu' ? '-zulu' : ''}`)
+        const javaRoot = join(root, 'jre', JAVA_COMPONENT)
         const javaExecutable = getJavaExeFilePath(javaRoot, getRuntimePlatform())
-        stage = `java-${java}`
-        if (java === 'official') {
-          const runtimes = await fetchJson<JavaRuntimes>(sourceUrls(DEFAULT_RUNTIME_ALL_URL, download))
-          await executeInstallWorkflow(createJavaRuntimeInstallWorkflow({
+        stage = 'java-official'
+        const runtimes = await fetchJson<JavaRuntimes>(
+          sourceUrls(DEFAULT_RUNTIME_ALL_URL, download),
+        )
+        await executeInstallWorkflow(
+          createJavaRuntimeInstallWorkflow({
             target: resolveOfficialJavaTarget(runtimes),
             destination: javaRoot,
             apiHost: download === 'bmcl' ? new URL(BMCL).hostname : undefined,
-          }), runtime)
-        } else {
-          await executeInstallWorkflow(createZuluRuntimeInstallWorkflow({
-            runtime: resolveZuluRuntime(),
-            destination: javaRoot,
-            executable: javaExecutable,
-          }), runtime)
-        }
+          }),
+          runtime,
+        )
         await verifyJava(javaExecutable)
 
         stage = 'minecraft-metadata'
@@ -320,57 +325,84 @@ run('from-zero Forge and NeoForge install matrix', () => {
         if (!minecraft) throw new Error(`Cannot find Minecraft ${MINECRAFT}`)
         const options = createInstallOptions(download, javaExecutable)
         stage = 'minecraft-version-json'
-        await executeInstallManifest({
-          schemaVersion: 1,
-          tasks: [{
-            id: 'minecraft-version-json',
-            type: 'files',
-            files: [resolveMinecraftVersionJsonInstallFile(minecraft, folder, options)],
-          }],
-        }, runtime)
+        await executeInstallManifest(
+          {
+            schemaVersion: 1,
+            tasks: [
+              {
+                id: 'minecraft-version-json',
+                type: 'files',
+                files: [resolveMinecraftVersionJsonInstallFile(minecraft, folder, options)],
+              },
+            ],
+          },
+          runtime,
+        )
         const base = await Version.parse(folder, MINECRAFT)
         const baseFiles = resolveLibraryInstallFiles(base.libraries, folder, options)
         const jar = resolveMinecraftJarInstallFile(base, options)
         if (jar) baseFiles.push(jar)
         stage = 'minecraft-base-files'
-        await executeInstallManifest({
-          schemaVersion: 1,
-          tasks: [{ id: 'minecraft-base-files', type: 'files', files: baseFiles }],
-        }, runtime)
+        await executeInstallManifest(
+          {
+            schemaVersion: 1,
+            tasks: [{ id: 'minecraft-base-files', type: 'files', files: baseFiles }],
+          },
+          runtime,
+        )
 
         stage = `${loader}-installer`
-        const installer = loader === 'forge'
-          ? resolveForgeInstallerFile(FORGE_ARTIFACT_VERSION, {
-              path: `net/minecraftforge/forge/${FORGE_ARTIFACT_VERSION}/forge-${FORGE_ARTIFACT_VERSION}-installer.jar`,
-              sha1: 'fa4f90047c23e6df4d2b4e649aec7fd5d1e20acd',
-            }, folder, options).file
-          : (await resolveNeoForgedInstallerFile('neoforge', NEOFORGE_VERSION, folder, options)).file
+        const installer =
+          loader === 'forge'
+            ? resolveForgeInstallerFile(
+                FORGE_ARTIFACT_VERSION,
+                {
+                  path: `net/minecraftforge/forge/${FORGE_ARTIFACT_VERSION}/forge-${FORGE_ARTIFACT_VERSION}-installer.jar`,
+                  sha1: 'fa4f90047c23e6df4d2b4e649aec7fd5d1e20acd',
+                },
+                folder,
+                options,
+              ).file
+            : (await resolveNeoForgedInstallerFile('neoforge', NEOFORGE_VERSION, folder, options))
+                .file
         stage = `${loader}-compile`
-        const result = await executeInstallWorkflow(createModernForgeInstallWorkflow({
-          id: `${loader}:${loader === 'forge' ? FORGE_VERSION : NEOFORGE_VERSION}`,
-          minecraft: folder,
-          minecraftVersion: MINECRAFT,
-          installer,
-          artifactVersion: loader === 'forge' ? FORGE_ARTIFACT_VERSION : NEOFORGE_VERSION,
-          java: javaExecutable,
-          installOptions: options,
-          resolveProcessor: (processor) => resolveMojmapProcessor(processor, folder, download),
-        }), runtime)
+        const result = await executeInstallWorkflow(
+          createModernForgeInstallWorkflow({
+            id: `${loader}:${loader === 'forge' ? FORGE_VERSION : NEOFORGE_VERSION}`,
+            minecraft: folder,
+            minecraftVersion: MINECRAFT,
+            installer,
+            artifactVersion: loader === 'forge' ? FORGE_ARTIFACT_VERSION : NEOFORGE_VERSION,
+            java: javaExecutable,
+            installOptions: options,
+            resolveProcessor: (processor) => resolveMojmapProcessor(processor, folder, download),
+          }),
+          runtime,
+        )
 
         stage = 'diagnose'
         const installed = await Version.parse(folder, result.version)
         expect(await diagnoseProfile(result.profile, folder, 'client')).toBe(false)
         expect(await diagnoseLibraries(installed.libraries, folder, { strict: true })).toEqual([])
-        expect(await diagnoseFile({
-          file: folder.getVersionJar(MINECRAFT, 'client'),
-          expectedChecksum: base.downloads.client?.sha1 ?? '',
-          role: 'minecraftClientJar',
-          hint: 'Reinstall the client version.',
-        }, { strict: true })).toBeUndefined()
-        const bmclPlanned = plannedUrls.some((url) => new URL(url).hostname === new URL(BMCL).hostname)
+        expect(
+          await diagnoseFile(
+            {
+              file: folder.getVersionJar(MINECRAFT, 'client'),
+              expectedChecksum: base.downloads.client?.sha1 ?? '',
+              role: 'minecraftClientJar',
+              hint: 'Reinstall the client version.',
+            },
+            { strict: true },
+          ),
+        ).toBeUndefined()
+        const bmclPlanned = plannedUrls.some(
+          (url) => new URL(url).hostname === new URL(BMCL).hostname,
+        )
         expect(bmclPlanned).toBe(download === 'bmcl')
         if (download === 'bmcl') {
-          expect(reports.some((report) => new URL(report.origin).hostname === new URL(BMCL).hostname)).toBe(true)
+          expect(
+            reports.some((report) => new URL(report.origin).hostname === new URL(BMCL).hostname),
+          ).toBe(true)
         }
       } finally {
         clearInterval(heartbeat)

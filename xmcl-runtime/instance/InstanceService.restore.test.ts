@@ -55,6 +55,14 @@ test('prepares relative launcher metadata without loading, renaming or writing p
   await f.dispose()
 })
 
+test('Java update flush persists an instance Java selection', async () => {
+  const f = await fixture()
+  f.service.state.instanceEdit({ path: f.original, java: '/new/java' })
+  await getRestoreGate(f.app).flushWriters('java-update')
+  expect((await readJson(join(f.original, 'instance.json'))).java).toBe('/new/java')
+  await f.dispose()
+})
+
 test('drains real async instance subscriptions before publication; publication and undo do not persist or rename', async () => {
   const f = await fixture()
   const gate = getRestoreGate(f.app)

@@ -684,7 +684,11 @@ java:
   allocation: مخصصة
   autoHint: الحد الأدنى بيزيد مع زيادة المودات المتثبتة؛ الحد الأقصى بيستخدم ذاكرة النظام المتاحة.
   change: تغيير
+  importedJava: جافا خارجية
+  importedJavaHint: تم استيرادها يدويًا من ملف
   importFromFile: استيراد جافا من ملف
+  internalJava: جافا داخلية
+  internalJavaHint: ثبّتها XMCL
   invalid: موقع جافا غير صحيح
   location: موقع جافا
   locationHint: مفيش جافا محددة — بيتم استخدام الافتراضية للنظام
@@ -700,6 +704,13 @@ java:
   presets: الإعدادات المسبقة
   refresh: تحديث الجافا المحلية
   systemMemory: 'ذاكرة النظام الفاضية: {free} / {total}'
+javaUpdate:
+  title: يتوفر تحديث لجافا
+  description: يتوفر إصدار أحدث من جافا. هل تريد تحديثها قبل تشغيل اللعبة؟
+  currentVersion: الإصدار الحالي
+  newVersion: الإصدار المتاح
+  ok: تحديث
+  later: لاحقًا
 labyMod:
   disable: تعطيل LabyMod
   empty: LabyMod مش بتدعم نسخة ماينكرافت الحالية
@@ -751,6 +762,8 @@ launchPreExecuteCommandFailed:
   title: فشل أمر ما قبل التشغيل
 launchStatus:
   assigningMemory: جاري تخصيص الذاكرة
+  checkingJavaUpdate: جارٍ التحقق من تحديثات جافا
+  confirmingJavaUpdate: في انتظار تأكيد تحديث جافا
   elyByWarning: بديل authlib الخاص بـ Ely.by مفعّل. بعض إصدارات ماينكرافت ممكن متكونش متوافقة وتعمل كراش. تقدر تعطله من إعدادات النسخة لو واجهتك مشاكل.
   exit: إغلاق اللعبة؟
   injectingAuthLib: إعداد AuthLib الخارجي (طرف تالت)
@@ -758,6 +771,7 @@ launchStatus:
   launchingSlow: لسه بيحمل... تشغيل محرك الرسوميات ممكن ياخد وقت...
   refreshingUser: جاري تحديث رمز أمان المستخدم (Token)
   spawningProcess: جاري بدء عملية اللعبة
+  updatingJava: جارٍ تحديث جافا
 launcherUpdate:
   alreadyLatest: اللانشر محدث بالكامل
   installAndQuit: إعادة التشغيل للتثبيت
@@ -1742,10 +1756,19 @@ setting:
   globalSettingHint: النسخ هتستخدم الإعدادات دي بشكل افتراضي.
   importSettings: استيراد الإعدادات
   importSettingsHint: تحميل الإعدادات من ملف تم تصديره سابقاً
+  installJava: تثبيت جافا
   instanceTheme:
     activeDescription: النسخة دي بتستخدم مظهر مخصص حالياً. تقدر تمسحه عشان تستخدم المظهر العالمي المشترك.
     description: تفعيل مظهر مخصص للنسخة دي. ده هيعمل نسخة من المظهر العالمي الحالي ويخصصها للنسخة دي بس.
     name: مظهر النسخة
+  java: إعدادات جافا
+  javaInstaller:
+    noCompatibleBuilds: لم يُعثر على إصدارات متوافقة من جافا.
+    retry: إعادة المحاولة
+    preferredVendor: مزود جافا المفضّل
+    preferredVendorDescription: المزود المفضّل عند تثبيت جافا تلقائيًا.
+    showAllVersions: كل الإصدارات
+  javaProfiles: ملفات تعريف جافا
   language: اللغة
   languageDescription: لغة عرض الواجهة
   latestVersion: أحدث إصدار
@@ -1936,6 +1959,7 @@ shared:
   next: التالي
   'no': لا
   ok: موافق
+  openFolder: افتح المجلد
   previous: السابق
   refresh: تحديث
   remove: إزالة

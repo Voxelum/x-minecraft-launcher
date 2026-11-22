@@ -12,6 +12,10 @@ import craftingTable from '@/assets/craftingtable.webp'
 import oculus from '@/assets/oculus.webp'
 import prism from '@/assets/prism.png'
 import bedrock from '@/assets/LargeLogo.png'
+import mojang from '@/assets/mojang.svg'
+import adoptium from '@/assets/adoptium.svg'
+import azul from '@/assets/azul.svg'
+import ibmSemeru from '@/assets/ibm-semeru.svg'
 
 export const BuiltinImages = {
   minecraft,
@@ -28,5 +32,8 @@ export const BuiltinImages = {
   oculus,
   prism,
   bedrock,
+  mojang,
+  adoptium,
+  azul,
+  ibmSemeru,
 }
-

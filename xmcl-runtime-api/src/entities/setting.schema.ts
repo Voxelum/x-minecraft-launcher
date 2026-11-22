@@ -50,7 +50,9 @@ export const SettingSchema = z.object({
   /** Maximum number of sockets allowed for requesting API */
   maxAPISockets: z.number().catch(16),
   /** Replace natives setting */
-  replaceNatives: z.union([z.literal('all'), z.literal('legacy-only'), z.literal(false)]).catch('legacy-only'),
+  replaceNatives: z
+    .union([z.literal('all'), z.literal('legacy-only'), z.literal(false)])
+    .catch('legacy-only'),
   /** Global minimum memory */
   globalMinMemory: z.number().catch(0),
   /** Global maximum memory */
@@ -63,8 +65,8 @@ export const SettingSchema = z.object({
    * compatible with the instance. Empty string means no preference.
    */
   globalJava: z.string().catch(''),
-  /** Global VM options */
-  globalVmOptions: z.array(z.string()).catch([]),
+  /** Globally preferred Java vendor used for automatic Java installation. */
+  globalPreferredJavaVendor: z.string().catch('default'),
   /** Global Minecraft options */
   globalMcOptions: z.array(z.string()).catch([]),
   /** Global fast launch setting */
@@ -79,8 +81,6 @@ export const SettingSchema = z.object({
   globalDisableElyByAuthlib: z.boolean().catch(false),
   /** Global sync game language setting */
   globalSyncGameLanguage: z.boolean().catch(false),
-  /** Global prepend command */
-  globalPrependCommand: z.string().catch(''),
   /** Global pre-execute command */
   globalPreExecuteCommand: z.string().catch(''),
   /** The launch environment variables */

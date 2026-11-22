@@ -40,9 +40,12 @@ export function getWindowsNativeArchForIa32(
 ): 'x64' | 'arm64' | undefined {
   if (platform !== 'win32' || arch !== 'ia32') return undefined
   switch (environment.PROCESSOR_ARCHITEW6432?.toUpperCase()) {
-    case 'AMD64': return 'x64'
-    case 'ARM64': return 'arm64'
-    default: return undefined
+    case 'AMD64':
+      return 'x64'
+    case 'ARM64':
+      return 'arm64'
+    default:
+      return undefined
   }
 }
 
@@ -52,9 +55,7 @@ export function getWindowsNativeArchForIa32(
  */
 export function sanitizeJavaResolveOutput(output: string | undefined) {
   if (!output) return undefined
-  return output
-    .replace(/(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/)[^\r\n]*/g, '<path>')
-    .slice(0, 1024)
+  return output.replace(/(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/)[^\r\n]*/g, '<path>').slice(0, 1024)
 }
 
 /**
@@ -68,7 +69,10 @@ export function sanitizeJavaResolveOutput(output: string | undefined) {
  *   be spawned or its version parsed (corrupt download, wrong arch, missing
  *   native deps).
  */
-export function classifyJavaInstallFailure({ exeExists, validation }: JavaInstallFailureProbe): JavaInstallFailurePhase {
+export function classifyJavaInstallFailure({
+  exeExists,
+  validation,
+}: JavaInstallFailureProbe): JavaInstallFailurePhase {
   if (!exeExists) {
     return 'download-or-extract'
   }
@@ -79,22 +83,24 @@ export function classifyJavaInstallFailure({ exeExists, validation }: JavaInstal
 }
 
 export function getJavaExeFilePath(javaPath: string, platform: Platform) {
-  return platform.os === 'osx' && !javaPath.endsWith('zulu')
+  return platform.os === 'osx'
     ? join(javaPath, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
-    : join(javaPath, 'bin',
-      platform.os === 'windows' ? 'java.exe' : 'java')
+    : join(javaPath, 'bin', platform.os === 'windows' ? 'java.exe' : 'java')
 }
 
 export function getManagedJavaComponent(javaPath: string, jreRoot: string) {
   const pathFromRoot = relative(resolve(jreRoot), resolve(javaPath))
-  if (!pathFromRoot || isAbsolute(pathFromRoot) || pathFromRoot === '..' || pathFromRoot.startsWith(`..${sep}`)) {
+  if (
+    !pathFromRoot ||
+    isAbsolute(pathFromRoot) ||
+    pathFromRoot === '..' ||
+    pathFromRoot.startsWith(`..${sep}`)
+  ) {
     return undefined
   }
   const folder = pathFromRoot.split(sep)[0]
-  const forceZulu = folder.endsWith('-zulu')
   return {
-    component: forceZulu ? folder.slice(0, -'-zulu'.length) : folder,
-    forceZulu,
+    component: folder,
   }
 }
 
@@ -108,7 +114,10 @@ export async function validateJavaPath(javaPath: string): Promise<JavaValidation
         return JavaValidation.NotExisted
       } else if (e.code === EPERM_ERROR || e.code === 'EACCES') {
         try {
-          return await chmod(javaPath, 0o765).then(() => JavaValidation.Okay, () => JavaValidation.NoPermission)
+          return await chmod(javaPath, 0o765).then(
+            () => JavaValidation.Okay,
+            () => JavaValidation.NoPermission,
+          )
         } catch {
           return JavaValidation.NoPermission
         }
@@ -116,6 +125,47 @@ export async function validateJavaPath(javaPath: string): Promise<JavaValidation
     }
     throw e
   }
+}
+
+/**
+ * Detect whether the current Linux host uses the musl C library (Alpine and
+ * similar) rather than glibc. A musl-linked JRE only runs on musl systems and
+ * a glibc-linked JRE only runs on glibc systems; picking the wrong one makes
+ * the `java` binary fail to `exec` with `ENOENT` (its dynamic loader, e.g.
+ * `/lib/ld-musl-x86-64.so.1`, is absent). See the launch `launchInvalidJavaPath`
+ * failures reported by users on non-musl distros.
+ *
+ * Uses the Node.js diagnostic report: glibc builds expose
+ * `header.glibcVersionRuntime`, musl builds do not (and their loaded shared
+ * objects reference `ld-musl`/`libc.musl`).
+ */
+export function detectLibc(platform: string = process.platform): 'musl' | 'glibc' {
+  if (platform !== 'linux') return 'glibc'
+  try {
+    const report: any =
+      typeof (process as any).report?.getReport === 'function'
+        ? (process as any).report.getReport()
+        : undefined
+    if (report) {
+      if (report.header && report.header.glibcVersionRuntime) {
+        return 'glibc'
+      }
+      const shared: string[] = Array.isArray(report.sharedObjects) ? report.sharedObjects : []
+      if (shared.some((s) => /ld-musl-|libc\.musl-/.test(s))) {
+        return 'musl'
+      }
+      // On glibc the report always carries glibcVersionRuntime; its absence
+      // together with no musl shared objects is inconclusive, so fall through.
+      if (report.header && 'glibcVersionRuntime' in report.header) {
+        return 'glibc'
+      }
+    }
+  } catch {
+    // ignore and fall back to the safe default below
+  }
+  // Default to glibc: it is by far the most common desktop libc, and shipping a
+  // glibc JRE to a musl host is the rarer, opt-in case.
+  return 'glibc'
 }
 
 /**
@@ -146,7 +196,8 @@ export async function detectExecutableLibc(exePath: string): Promise<'musl' | 'g
     const is64 = header[4] === 2
     const isLE = header[5] === 1
     const readUInt = (buf: Buffer, offset: number, size: 2 | 4 | 8): number => {
-      if (size === 8) return Number(isLE ? buf.readBigUInt64LE(offset) : buf.readBigUInt64BE(offset))
+      if (size === 8)
+        return Number(isLE ? buf.readBigUInt64LE(offset) : buf.readBigUInt64BE(offset))
       if (size === 4) return isLE ? buf.readUInt32LE(offset) : buf.readUInt32BE(offset)
       return isLE ? buf.readUInt16LE(offset) : buf.readUInt16BE(offset)
     }
@@ -176,7 +227,12 @@ export async function detectExecutableLibc(exePath: string): Promise<'musl' | 'g
       const interpStr = interp.toString('utf-8', 0, nulIndex >= 0 ? nulIndex : pFilesz)
 
       if (interpStr.includes('ld-musl')) return 'musl'
-      if (interpStr.includes('ld-linux') || interpStr.includes('/ld.so') || interpStr.includes('ld64.so')) return 'glibc'
+      if (
+        interpStr.includes('ld-linux') ||
+        interpStr.includes('/ld.so') ||
+        interpStr.includes('ld64.so')
+      )
+        return 'glibc'
       return undefined
     }
     return undefined
@@ -190,41 +246,58 @@ export async function detectExecutableLibc(exePath: string): Promise<'musl' | 'g
 export interface TsingHuaJreTarget {
   fileName: string
   /**
-     * Url to download
-     */
+   * Url to download
+   */
   url: string
   /**
-     * The sha256 url of the download
-     */
+   * The sha256 url of the download
+   */
   sha256Url?: string
 }
 
-export function parseTsingHuaAdoptOpenJDKFileList(fileList: string[], os: 'linux' | 'windows' | 'unknown' | 'mac', arch: '32' | '64'): TsingHuaJreTarget | undefined {
-  const list = fileList.map(l => l.split('/').slice(5))
-  const zipFile = list.find(l => l[0] === 'jre' &&
-    l[1] === `x${arch}` &&
-    l[2] === os &&
-    (l[3].endsWith('.zip') || l[3].endsWith('.tar.gz')))
+export function parseTsingHuaAdoptOpenJDKFileList(
+  fileList: string[],
+  os: 'linux' | 'windows' | 'unknown' | 'mac',
+  arch: '32' | '64',
+): TsingHuaJreTarget | undefined {
+  const list = fileList.map((l) => l.split('/').slice(5))
+  const zipFile = list.find(
+    (l) =>
+      l[0] === 'jre' &&
+      l[1] === `x${arch}` &&
+      l[2] === os &&
+      (l[3].endsWith('.zip') || l[3].endsWith('.tar.gz')),
+  )
   if (zipFile) {
-    const sha256File = list.find(l => l[3] === `${zipFile[3]}.sha256.txt`)
+    const sha256File = list.find((l) => l[3] === `${zipFile[3]}.sha256.txt`)
     return {
       fileName: zipFile[zipFile.length - 1],
       url: `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${zipFile.join('/')}`,
-      sha256Url: sha256File ? `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${sha256File?.join('/')}` : undefined,
+      sha256Url: sha256File
+        ? `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${sha256File?.join('/')}`
+        : undefined,
     }
   }
   return undefined
 }
 
-export function parseTsingHuaAdpotOpenJDKHotspotArchive(pageText: string, baseUrl: string): TsingHuaJreTarget | undefined {
+export function parseTsingHuaAdpotOpenJDKHotspotArchive(
+  pageText: string,
+  baseUrl: string,
+): TsingHuaJreTarget | undefined {
   const exp = /<a href="([a-zA-Z0-9-._]+)" title="([a-zA-Z0-9-._]+)">/g
   const result = pageText.match(exp)
 
-  const targets = result?.map((r) => new RegExp(exp).exec(r))
-    .filter(isNonnull)
-    .map((a) => a[1]) ?? []
+  const targets =
+    result
+      ?.map((r) => new RegExp(exp).exec(r))
+      .filter(isNonnull)
+      .map((a) => a[1]) ?? []
 
-  const target = targets.find((target) => (target.indexOf('hotspot') !== -1 && target.endsWith('.zip')) || target.endsWith('.tar.gz'))
+  const target = targets.find(
+    (target) =>
+      (target.indexOf('hotspot') !== -1 && target.endsWith('.zip')) || target.endsWith('.tar.gz'),
+  )
   if (target) {
     return {
       fileName: target,
@@ -235,6 +308,10 @@ export function parseTsingHuaAdpotOpenJDKHotspotArchive(pageText: string, baseUr
   return undefined
 }
 
-export function getTsingHuaAdpotOponJDKPageUrl(os: 'linux' | 'windows' | 'unknown' | 'mac', arch: '32' | '64', java: '8' | '9' | '11' | '12' | '13' | '14' | '15' | '16') {
+export function getTsingHuaAdpotOponJDKPageUrl(
+  os: 'linux' | 'windows' | 'unknown' | 'mac',
+  arch: '32' | '64',
+  java: '8' | '9' | '11' | '12' | '13' | '14' | '15' | '16',
+) {
   return `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/${java}/jre/x${arch}/${os}/`
 }

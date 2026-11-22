@@ -35,6 +35,22 @@ export class VersionInstallService extends AbstractService implements IVersionIn
     return this.coordinator.install(request)
   }
 
+  getSupportedMajorJavaVersions() {
+    return this.coordinator.getSupportedMajorJavaVersions()
+  }
+
+  getJavaVendors(force?: boolean) {
+    return this.coordinator.getJavaVendors(force)
+  }
+
+  getMajorJavaVersionsFromVendor(vendor: string, force?: boolean) {
+    return this.coordinator.getMajorJavaVersionsFromVendor(vendor, force)
+  }
+
+  getJavaRuntimes(vendor: string, version: string, metadataSha256?: string, force?: boolean) {
+    return this.coordinator.getJavaRuntimes(vendor, version, metadataSha256, force)
+  }
+
   diagnose(options: DiagnoseOptions) {
     return this.coordinator.diagnose(options)
   }

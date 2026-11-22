@@ -6,6 +6,8 @@ import { useDebounceFn } from '@vueuse/core'
 import { injection } from '@/util/inject'
 import { kLaunchButton } from './launchButton'
 import { AnyError } from '@/util/error'
+import { kJavaContext } from './java'
+import { kInstanceJava } from './instanceJava'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> =
   Symbol('InstanceEdit')
@@ -48,11 +50,9 @@ export function useInstanceEdit(
     globalMcOptions,
     globalMinMemory,
     globalShowLog,
-    globalVmOptions,
     globalDisableAuthlibInjector,
     globalDisableElyByAuthlib,
     globalSyncGameLanguage,
-    globalPrependCommand,
     globalPreExecuteCommand,
     globalEnv,
     globalResolution,
@@ -106,6 +106,9 @@ export function useInstanceEdit(
 
     loading: true,
   })
+
+  const { all: javas } = injection(kJavaContext)
+  const { status: javaStatus } = injection(kInstanceJava)
 
   const isGlobalAssignMemory = computed(() => data.assignMemory === undefined)
   const isGlobalMinMemory = computed(() => data.minMemory === undefined)
@@ -201,8 +204,24 @@ export function useInstanceEdit(
       saveJIT()
     },
   })
+
+  const selectedJava = computed(() => {
+    if (data.javaPath) {
+      return javas.value.find((java) => java.path === data.javaPath)
+    }
+
+    return javaStatus.value?.preferredJava
+  })
+
+  const prependCommand = computed({
+    get: () => data.prependCommand ?? selectedJava.value?.prependCommand ?? '',
+    set: (v) => {
+      data['prependCommand'] = v
+      saveJIT()
+    },
+  })
   const vmOptions = computed({
-    get: () => data.vmOptions ?? globalVmOptions.value.join(' '),
+    get: () => data.vmOptions ?? selectedJava.value?.vmOptions?.join(' ') ?? '',
     set: (v) => {
       data['vmOptions'] = v
       saveJIT()
@@ -212,13 +231,6 @@ export function useInstanceEdit(
     get: () => data.mcOptions ?? globalMcOptions.value.join(' '),
     set: (v) => {
       data['mcOptions'] = v
-      saveJIT()
-    },
-  })
-  const prependCommand = computed({
-    get: () => data.prependCommand ?? globalPrependCommand.value,
-    set: (v) => {
-      data['prependCommand'] = v
       saveJIT()
     },
   })
@@ -396,21 +408,25 @@ export function useInstanceEdit(
       resolution: data.resolution ? { ...data.resolution } : undefined,
     }
     if (!instance.value?.server) {
-      await edit(nullifyUndefined({
-        ...payload,
-        instancePath: instance.value?.path,
-        author: data.author,
-        description: data.description,
-      }))
+      await edit(
+        nullifyUndefined({
+          ...payload,
+          instancePath: instance.value?.path,
+          author: data.author,
+          description: data.description,
+        }),
+      )
     } else {
-      await edit(nullifyUndefined({
-        ...payload,
-        instancePath: instance.value?.path,
-        server: {
-          host: data.host,
-          port: Number.parseInt(data.port, 10),
-        },
-      }))
+      await edit(
+        nullifyUndefined({
+          ...payload,
+          instancePath: instance.value?.path,
+          server: {
+            host: data.host,
+            port: Number.parseInt(data.port, 10),
+          },
+        }),
+      )
     }
     data.icon = instance.value?.icon
     load()

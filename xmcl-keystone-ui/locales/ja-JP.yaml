@@ -620,7 +620,11 @@ items:
 java:
   allocatedLong: システムのデフォルトのJavaを使用
   allocatedShort: 自動割り当て
+  importedJava: 外部 Java
+  importedJavaHint: ファイルから手動でインポート
   importFromFile: Javaをファイルからインポート
+  internalJava: 内部 Java
+  internalJavaHint: XMCL によってインストール済み
   invalid: Javaの場所が無効です
   location: Javaの場所
   maxMemory: 最大メモリー割り当て
@@ -639,6 +643,13 @@ java:
   locationHint: Javaが選択されていません — システムのデフォルトを使用
   openFolder: Javaフォルダを開く
   presets: プリセット
+javaUpdate:
+  title: Java の更新があります
+  description: 新しいバージョンの Java が利用できます。ゲームの起動前に更新しますか？
+  currentVersion: 現在のバージョン
+  newVersion: 利用可能なバージョン
+  ok: 更新
+  later: 後で
 labyMod:
   disable: LabyMod を使用しない
   empty: LabyMod は現在のMinecraftをサポートしていません
@@ -692,6 +703,8 @@ launchFailed:
   title: ゲームが異常なコードで終了しました
 launchStatus:
   assigningMemory: メモリを割り当て中
+  checkingJavaUpdate: Java の更新を確認中
+  confirmingJavaUpdate: Java の更新の確認待ち
   elyByWarning: Ely.by の Authlib 置換が有効になっています。いくつかの Minecraft バージョンは互換性がなく、クラッシュする可能性があります。問題が発生した場合はインスタンス設定で無効にしてください。
   exit: ゲームを終了しますか?
   injectingAuthLib: サードパーティAuthLibを設定中
@@ -699,6 +712,7 @@ launchStatus:
   launchingSlow: まだ起動中です... グラフィックスエンジンの立ち上げは時間がかかるかもしれません...
   refreshingUser: ユーザートークンを更新中
   spawningProcess: プロセスを生成中
+  updatingJava: Java を更新中
 launcherUpdate:
   alreadyLatest: 最新の状態です
   installAndQuit: 再起動してインストールします
@@ -1625,6 +1639,7 @@ setting:
   globalSettingHint: 起動構成はこれらの設定をデフォルトとして設定します
   importSettings: 設定をインポート
   importSettingsHint: 以前エクスポートしたファイルから設定を読み込み
+  installJava: Java をインストール
   instanceTheme:
     activeDescription: |-
       このインスタンスはカスタム テーマを使用しています。
@@ -1633,6 +1648,14 @@ setting:
       このインスタンスのカスタム テーマを有効にします。
       これにより、現在のグローバル テーマのコピーが作成されます。
     name: インスタンスのテーマ
+  java: Java の設定
+  javaInstaller:
+    noCompatibleBuilds: 互換性のある Java ビルドが見つかりません。
+    retry: 再試行
+    preferredVendor: 優先する Java ベンダー
+    preferredVendorDescription: Java の自動インストール時にこのベンダーを優先します。
+    showAllVersions: すべてのバージョン
+  javaProfiles: Java プロファイル
   language: 言語
   languageDescription: 表示する言語
   latestVersion: 最新版
@@ -1808,6 +1831,7 @@ shared:
   next: 次へ
   'no': いいえ
   ok: はい
+  openFolder: フォルダーを開く
   previous: 以前の
   refresh: 最新の情報に更新
   remove: 削除

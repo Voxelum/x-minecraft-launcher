@@ -684,7 +684,11 @@ java:
   allocation: Dialokasikan
   autoHint: Min bertambah seiring jumlah mod terpasang; maks menggunakan memori sistem yang tersedia.
   change: Ubah
+  importedJava: Java eksternal
+  importedJavaHint: Diimpor secara manual dari berkas
   importFromFile: Impor Java Dari Berkas
+  internalJava: Java internal
+  internalJavaHint: Dipasang oleh XMCL
   invalid: Lokasi Java Tidak Valid
   location: Lokasi Java
   locationHint: Tidak ada Java yang dipilih — menggunakan default sistem
@@ -700,6 +704,13 @@ java:
   presets: Preset
   refresh: Segarkan Java Lokal
   systemMemory: 'Memori Bebas Sistem: {free} / {total}'
+javaUpdate:
+  title: Pembaruan Java tersedia
+  description: Versi Java yang lebih baru tersedia. Perbarui sebelum menjalankan gim?
+  currentVersion: Versi saat ini
+  newVersion: Versi yang tersedia
+  ok: Perbarui
+  later: Nanti
 labyMod:
   disable: Nonaktifkan LabyMod
   empty: LabyMod tidak mendukung Minecraft saat ini
@@ -751,6 +762,8 @@ launchPreExecuteCommandFailed:
   title: Perintah Pra-Eksekusi Gagal
 launchStatus:
   assigningMemory: Mengalokasikan memori
+  checkingJavaUpdate: Memeriksa pembaruan Java
+  confirmingJavaUpdate: Menunggu konfirmasi pembaruan Java
   elyByWarning: Pengganti authlib Ely.by diaktifkan. Beberapa versi Minecraft mungkin tidak kompatibel dan dapat crash. Anda dapat menonaktifkannya di pengaturan instansi jika terjadi masalah.
   exit: Keluar Game?
   injectingAuthLib: Menyiapkan AuthLib Pihak Ketiga
@@ -758,6 +771,7 @@ launchStatus:
   launchingSlow: Masih meluncurkan... Memulai mesin grafis bisa lambat...
   refreshingUser: Segarkan Token Pengguna
   spawningProcess: Memulai Proses
+  updatingJava: Memperbarui Java
 launcherUpdate:
   alreadyLatest: Sudah Terbaru
   installAndQuit: Mulai Ulang untuk Memasang
@@ -1744,10 +1758,19 @@ setting:
   globalSettingHint: Instansi akan menggunakan pengaturan ini secara default.
   importSettings: Impor Pengaturan
   importSettingsHint: Muat pengaturan dari berkas yang diekspor sebelumnya
+  installJava: Pasang Java
   instanceTheme:
     activeDescription: Instansi ini menggunakan tema kustom. Anda dapat menghapusnya untuk menggunakan tema global.
     description: Aktifkan tema kustom untuk instansi ini. Ini akan membuat salinan tema global saat ini.
     name: Tema Instansi
+  java: Pengaturan Java
+  javaInstaller:
+    noCompatibleBuilds: Tidak ditemukan build Java yang kompatibel.
+    retry: Coba lagi
+    preferredVendor: Vendor Java pilihan
+    preferredVendorDescription: Vendor ini diutamakan saat memasang Java secara otomatis.
+    showAllVersions: Semua versi
+  javaProfiles: Profil Java
   language: Bahasa
   languageDescription: Bahasa tampilan
   latestVersion: Versi Terbaru
@@ -1938,6 +1961,7 @@ shared:
   next: Berikutnya
   'no': Tidak
   ok: OK
+  openFolder: Buka folder
   previous: Sebelumnya
   refresh: Segarkan
   remove: Hapus

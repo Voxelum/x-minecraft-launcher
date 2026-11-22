@@ -5,17 +5,20 @@
       <div class="flex items-center justify-between text-caption text-medium-emphasis mb-1">
         <span class="flex items-center gap-1">
           <v-icon size="small">memory</v-icon>
-          {{ t('java.systemMemory', { free: getExpectedSize(sysmem.free, 'B'), total: getExpectedSize(sysmem.total, 'B') }) }}
+          {{
+            t('java.systemMemory', {
+              free: getExpectedSize(sysmem.free, 'B'),
+              total: getExpectedSize(sysmem.total, 'B'),
+            })
+          }}
         </span>
         <span v-if="!off">
-          {{ t('java.allocation') }}: {{ getExpectedSize(displayMin * MB, 'B') }} – {{ getExpectedSize(displayMax * MB, 'B') }}
+          {{ t('java.allocation') }}: {{ getExpectedSize(displayMin * MB, 'B') }} –
+          {{ getExpectedSize(displayMax * MB, 'B') }}
         </span>
       </div>
       <div class="java-memory__bar">
-        <div
-          class="java-memory__bar-used"
-          :style="{ width: usedPercent + '%' }"
-        />
+        <div class="java-memory__bar-used" :style="{ width: usedPercent + '%' }" />
         <div
           v-if="!off && sysmem.total"
           class="java-memory__bar-range"
@@ -57,7 +60,7 @@
         :min="MIN_MEM"
         :max="Math.max(MIN_MEM, displayMax - STEP)"
         :step="STEP"
-        suffix="MB"
+        suffix=" MB"
         variant="outlined"
         density="compact"
         hide-details
@@ -96,7 +99,7 @@
         :min="Math.max(MIN_MAX, displayMin + STEP)"
         :max="totalMb"
         :step="STEP"
-        suffix="MB"
+        suffix=" MB"
         variant="outlined"
         density="compact"
         hide-details
@@ -185,7 +188,9 @@ const displayMin = computed(() => {
   const ceiling = Math.max(MIN_MEM, (props.max || MIN_MAX) - STEP)
   return Math.min(raw, ceiling)
 })
-const displayMax = computed(() => (auto.value ? totalMb.value : Math.max(MIN_MAX, props.max || MIN_MAX)))
+const displayMax = computed(() =>
+  auto.value ? totalMb.value : Math.max(MIN_MAX, props.max || MIN_MAX),
+)
 
 // Auto-correct invalid saved state where min > max - STEP
 watch(
@@ -204,8 +209,12 @@ const usedPercent = computed(() => {
   if (!sysmem.value.total) return 0
   return ((sysmem.value.total - sysmem.value.free) / sysmem.value.total) * 100
 })
-const minPercent = computed(() => (sysmem.value.total ? (displayMin.value * MB) / sysmem.value.total * 100 : 0))
-const maxPercent = computed(() => (sysmem.value.total ? (displayMax.value * MB) / sysmem.value.total * 100 : 0))
+const minPercent = computed(() =>
+  sysmem.value.total ? ((displayMin.value * MB) / sysmem.value.total) * 100 : 0,
+)
+const maxPercent = computed(() =>
+  sysmem.value.total ? ((displayMax.value * MB) / sysmem.value.total) * 100 : 0,
+)
 
 function formatMb(mb: number) {
   if (mb >= 1024) {
@@ -284,11 +293,7 @@ onMounted(() => {
   position: absolute;
   top: 0;
   bottom: 0;
-  background: linear-gradient(
-    to right,
-    rgb(var(--v-theme-warning)),
-    rgb(var(--v-theme-primary))
-  );
+  background: linear-gradient(to right, rgb(var(--v-theme-warning)), rgb(var(--v-theme-primary)));
   border-radius: 4px;
 }
 .java-memory__row {

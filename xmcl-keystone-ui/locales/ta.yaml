@@ -684,7 +684,11 @@ java:
   allocation: ஒதுக்கப்பட்டது
   autoHint: நிறுவப்பட்ட மாட் எண்ணிக்கையுடன் குறைந்தபட்ச அளவு வளரும்; அதிகபட்ச அளவு கணினியில் கிடைக்கும் நினைவகத்தைப் பயன்படுத்துகிறது.
   change: மாற்று
+  importedJava: வெளிப்புற ஜாவா
+  importedJavaHint: கோப்பிலிருந்து கைமுறையாக இறக்குமதி செய்யப்பட்டது
   importFromFile: கோப்பிலிருந்து ஜாவாவை இறக்குமதி செய்
+  internalJava: உள்ளமை ஜாவா
+  internalJavaHint: XMCL மூலம் நிறுவப்பட்டது
   invalid: தவறான ஜாவா இருப்பிடம்
   location: ஜாவா இருப்பிடம்
   locationHint: ஜாவா எதுவும் தேர்ந்தெடுக்கப்படவில்லை — கணினி இயல்புநிலையைப் பயன்படுத்துகிறது
@@ -700,6 +704,13 @@ java:
   presets: முன்னமைப்புகள்
   refresh: உள்ளூர் ஜாவாவை புதுப்பி
   systemMemory: 'கணினியின் இலவச நினைவகம்: {free} / {total}'
+javaUpdate:
+  title: ஜாவா புதுப்பிப்பு கிடைக்கிறது
+  description: ஜாவாவின் புதிய பதிப்பு கிடைக்கிறது. விளையாட்டைத் தொடங்கும்முன் புதுப்பிக்கவா?
+  currentVersion: தற்போதைய பதிப்பு
+  newVersion: கிடைக்கும் பதிப்பு
+  ok: புதுப்பி
+  later: பிறகு
 labyMod:
   disable: LabyMod ஐ முடக்கு
   empty: LabyMod தற்போதைய Minecraft ஐ ஆதரிக்காது
@@ -751,6 +762,8 @@ launchPreExecuteCommandFailed:
   title: முன்-செயலாக்க கட்டளை தோல்வியடைந்தது
 launchStatus:
   assigningMemory: நினைவகத்தை ஒதுக்குகிறது
+  checkingJavaUpdate: ஜாவா புதுப்பிப்புகளைச் சரிபார்க்கிறது
+  confirmingJavaUpdate: ஜாவா புதுப்பிப்புக்கான உறுதிப்படுத்தலுக்காகக் காத்திருக்கிறது
   elyByWarning: Ely.by authlib மாற்றீடு இயக்கப்பட்டுள்ளது. சில Minecraft பதிப்புகள் இணக்கமாக இருக்காது மற்றும் செயலிழக்கக்கூடும். சிக்கல்கள் ஏற்பட்டால் நிகழ்வு அமைப்புகளில் அதை முடக்கலாம்.
   exit: விளையாட்டிலிருந்து வெளியேறவா?
   injectingAuthLib: மூன்றாம் தரப்பு AuthLib அமைக்கப்படுகிறது
@@ -758,6 +771,7 @@ launchStatus:
   launchingSlow: இன்னும் துவங்குகிறது... கிராபிக்ஸ் இன்ஜினைத் தொடங்குவது மெதுவாக இருக்கலாம்...
   refreshingUser: பயனர் டோக்கன் புதுப்பிக்கப்படுகிறது
   spawningProcess: செயல்முறை உருவாக்கப்படுகிறது
+  updatingJava: ஜாவாவைப் புதுப்பிக்கிறது
 launcherUpdate:
   alreadyLatest: புதுப்பித்த நிலையில் உள்ளது
   installAndQuit: நிறுவ மறுதொடக்கம் செய்
@@ -1744,10 +1758,19 @@ setting:
   globalSettingHint: நிகழ்வு இயல்பாக இந்த அமைப்புகளை பயன்படுத்தும்.
   importSettings: அமைப்புகளை இறக்குமதி செய்
   importSettingsHint: முன்பு ஏற்றுமதி செய்யப்பட்ட கோப்பிலிருந்து அமைப்புகளை ஏற்றவும்
+  installJava: ஜாவாவை நிறுவு
   instanceTheme:
     activeDescription: இந்த நிகழ்வு தனிப்பயன் தீம்களைப் பயன்படுத்துகிறது. உலகளாவிய தீமிற்கு மாற இதை நீங்கள் நீக்கலாம்.
     description: இந்த நிகழ்விற்கு தனிப்பயன் தீமை இயக்கவும். இது தற்போதைய உலகளாவிய தீமின் நகலை உருவாக்கும்.
     name: நிகழ்வு தீம்
+  java: ஜாவா அமைப்புகள்
+  javaInstaller:
+    noCompatibleBuilds: இணக்கமான ஜாவா கட்டமைப்புகள் எதுவும் கிடைக்கவில்லை.
+    retry: மீண்டும் முயற்சி செய்
+    preferredVendor: விருப்பமான ஜாவா வழங்குநர்
+    preferredVendorDescription: ஜாவாவைத் தானாக நிறுவும்போது இந்த வழங்குநருக்கு முன்னுரிமை அளிக்கப்படும்.
+    showAllVersions: அனைத்துப் பதிப்புகள்
+  javaProfiles: ஜாவா சுயவிவரங்கள்
   language: மொழி
   languageDescription: காட்சி மொழி
   latestVersion: சமீபத்திய பதிப்பு
@@ -1938,6 +1961,7 @@ shared:
   next: அடுத்தது
   'no': இல்லை
   ok: சரி
+  openFolder: கோப்புறையைத் திற
   previous: முந்தைய
   refresh: புதுப்பி
   remove: அகற்று

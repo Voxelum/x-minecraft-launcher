@@ -16,7 +16,9 @@ export function useTaskCount() {
 export function useTaskOverallProgress() {
   const tasks = inject(kTaskManager, undefined)?.tasks ?? shallowRef<Tasks[]>([])
 
-  const runningTasks = computed(() => tasks.value.filter((t: Tasks) => t.state === TaskState.Running))
+  const runningTasks = computed(() =>
+    tasks.value.filter((t: Tasks) => t.state === TaskState.Running),
+  )
   const count = computed(() => runningTasks.value.length)
 
   const progress = computed(() => {
@@ -31,15 +33,22 @@ export function useTaskOverallProgress() {
         totalBytes += t.progress.total
         hasDeterminate = true
       }
-      if (t.progress && 'speed' in t.progress && typeof (t.progress as any).speed === 'number' && (t.progress as any).speed > 0) {
+      if (
+        t.progress &&
+        'speed' in t.progress &&
+        typeof (t.progress as any).speed === 'number' &&
+        (t.progress as any).speed > 0
+      ) {
         totalSpeed += (t.progress as any).speed
       }
     }
 
-    const remainingBytes = hasDeterminate && totalBytes > currentBytes ? totalBytes - currentBytes : 0
-    const percent = hasDeterminate && totalBytes > 0
-      ? Math.min(100, Math.max(0, (currentBytes / totalBytes) * 100))
-      : 0
+    const remainingBytes =
+      hasDeterminate && totalBytes > currentBytes ? totalBytes - currentBytes : 0
+    const percent =
+      hasDeterminate && totalBytes > 0
+        ? Math.min(100, Math.max(0, (currentBytes / totalBytes) * 100))
+        : 0
 
     return {
       percent,
@@ -197,11 +206,7 @@ export function useLocalizedTaskFunc() {
     if (task.type === 'installJre') {
       const title = t('installJre.name')
       let subtitle = ''
-      if (task.substate.type === 'zulu-java.download') {
-        subtitle = t('installJre.download')
-      } else if (task.substate.type === 'zulu-java.extract') {
-        subtitle = t('installJre.decompress')
-      } else if (task.substate.type === 'java-runtime.file') {
+      if (task.substate.type === 'java-runtime.file') {
         subtitle = t('installJre.download')
       } else if (task.substate.type === 'java-runtime.json') {
         subtitle = ''
@@ -227,8 +232,12 @@ export function useLocalizedTaskFunc() {
       return {
         title,
         subtitle: fileName
-          ? (name ? name + (subtitle ? ' • ' + subtitle : '') : subtitle)
-          : (name ? (t('installInstance.name') + (subtitle ? ' • ' + subtitle : '')) : subtitle),
+          ? name
+            ? name + (subtitle ? ' • ' + subtitle : '')
+            : subtitle
+          : name
+            ? t('installInstance.name') + (subtitle ? ' • ' + subtitle : '')
+            : subtitle,
       }
     }
 

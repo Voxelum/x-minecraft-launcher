@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mkdtempSync, writeFileSync, rmSync } from 'fs'
+import { mkdtempSync, writeFileSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import {
@@ -13,54 +13,61 @@ import {
 
 describe('classifyJavaInstallFailure', () => {
   it('reports download-or-extract when the binary never landed', () => {
-    expect(classifyJavaInstallFailure({ exeExists: false, validation: undefined }))
-      .toBe('download-or-extract')
+    expect(classifyJavaInstallFailure({ exeExists: false, validation: undefined })).toBe(
+      'download-or-extract',
+    )
     // Missing binary dominates even if validation somehow computed.
-    expect(classifyJavaInstallFailure({ exeExists: false, validation: JavaValidation.NotExisted }))
-      .toBe('download-or-extract')
+    expect(
+      classifyJavaInstallFailure({ exeExists: false, validation: JavaValidation.NotExisted }),
+    ).toBe('download-or-extract')
   })
 
   it('reports permission when the binary exists but is not executable', () => {
-    expect(classifyJavaInstallFailure({ exeExists: true, validation: JavaValidation.NoPermission }))
-      .toBe('permission')
+    expect(
+      classifyJavaInstallFailure({ exeExists: true, validation: JavaValidation.NoPermission }),
+    ).toBe('permission')
   })
 
   it('reports parse-or-spawn when the binary exists and is accessible but unresolvable', () => {
-    expect(classifyJavaInstallFailure({ exeExists: true, validation: JavaValidation.Okay }))
-      .toBe('parse-or-spawn')
+    expect(classifyJavaInstallFailure({ exeExists: true, validation: JavaValidation.Okay })).toBe(
+      'parse-or-spawn',
+    )
     // Unknown validation with an existing exe still points at spawn/parse.
-    expect(classifyJavaInstallFailure({ exeExists: true, validation: undefined }))
-      .toBe('parse-or-spawn')
+    expect(classifyJavaInstallFailure({ exeExists: true, validation: undefined })).toBe(
+      'parse-or-spawn',
+    )
   })
 
   it('redacts absolute paths and truncates Java process output for telemetry', () => {
-    expect(sanitizeJavaResolveOutput('Error loading C:\\Users\\Alice\\.minecraftx\\jre\\bin\\server\\jvm.dll'))
-      .toBe('Error loading <path>')
-    expect(sanitizeJavaResolveOutput('Failed: /home/alice/.minecraftx/jre/bin/java'))
-      .toBe('Failed: <path>')
+    expect(
+      sanitizeJavaResolveOutput(
+        'Error loading C:\\Users\\Alice\\.minecraftx\\jre\\bin\\server\\jvm.dll',
+      ),
+    ).toBe('Error loading <path>')
+    expect(sanitizeJavaResolveOutput('Failed: /home/alice/.minecraftx/jre/bin/java')).toBe(
+      'Failed: <path>',
+    )
     expect(sanitizeJavaResolveOutput('x'.repeat(2000))?.length).toBe(1024)
   })
 
   it('only selects a native 64-bit Java runtime for WOW64 processes', () => {
-    expect(getWindowsNativeArchForIa32('win32', 'ia32', { PROCESSOR_ARCHITEW6432: 'AMD64' }))
-      .toBe('x64')
-    expect(getWindowsNativeArchForIa32('win32', 'ia32', { PROCESSOR_ARCHITEW6432: 'ARM64' }))
-      .toBe('arm64')
+    expect(getWindowsNativeArchForIa32('win32', 'ia32', { PROCESSOR_ARCHITEW6432: 'AMD64' })).toBe(
+      'x64',
+    )
+    expect(getWindowsNativeArchForIa32('win32', 'ia32', { PROCESSOR_ARCHITEW6432: 'ARM64' })).toBe(
+      'arm64',
+    )
     expect(getWindowsNativeArchForIa32('win32', 'ia32', {})).toBeUndefined()
-    expect(getWindowsNativeArchForIa32('win32', 'x64', { PROCESSOR_ARCHITEW6432: 'AMD64' }))
-      .toBeUndefined()
+    expect(
+      getWindowsNativeArchForIa32('win32', 'x64', { PROCESSOR_ARCHITEW6432: 'AMD64' }),
+    ).toBeUndefined()
   })
 
-  it('identifies managed official and Zulu Java runtimes', () => {
+  it('identifies managed official Java runtimes', () => {
     const root = join('launcher', 'jre')
-    expect(getManagedJavaComponent(
-      join(root, 'java-runtime-delta', 'bin', 'java'),
-      root,
-    )).toEqual({ component: 'java-runtime-delta', forceZulu: false })
-    expect(getManagedJavaComponent(
-      join(root, 'java-runtime-delta-zulu', 'bin', 'java'),
-      root,
-    )).toEqual({ component: 'java-runtime-delta', forceZulu: true })
+    expect(getManagedJavaComponent(join(root, 'java-runtime-delta', 'bin', 'java'), root)).toEqual({
+      component: 'java-runtime-delta',
+    })
     expect(getManagedJavaComponent(join('system', 'bin', 'java'), root)).toBeUndefined()
   })
 })
@@ -77,7 +84,10 @@ describe('detectExecutableLibc', () => {
 
     const buf = Buffer.alloc(total)
     // e_ident
-    buf[0] = 0x7f; buf[1] = 0x45; buf[2] = 0x4c; buf[3] = 0x46
+    buf[0] = 0x7f
+    buf[1] = 0x45
+    buf[2] = 0x4c
+    buf[3] = 0x46
     buf[4] = 2 // EI_CLASS = ELFCLASS64
     buf[5] = 1 // EI_DATA = little endian
     buf[6] = 1 // EI_VERSION

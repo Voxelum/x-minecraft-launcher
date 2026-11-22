@@ -580,8 +580,12 @@ items:
   total: '{total} całkowity'
 java:
   allocatedLong: Użyj domyślnej systemowej Javy
-  allocatedShort: Automatyczne przydzielona
-  importFromFile: Import Javy z pliku
+  allocatedShort: Automatycznie przydzielona
+  importedJava: Zewnętrzna
+  importedJavaHint: Ręcznie zaimportowana z pliku
+  importFromFile: Importuj Javę z pliku
+  internalJava: Wewnętrzna
+  internalJavaHint: Zainstalowana przez XMCL
   invalid: Nieprawidłowa lokalizacja Javy
   location: Lokalizacja Javy
   maxMemory: Maksymalna pamięć
@@ -600,6 +604,13 @@ java:
   locationHint: Nie wybrano Javy — używana jest domyślna systemowa
   openFolder: Otwórz folder Javy
   presets: Presety
+javaUpdate:
+  title: Dostępna jest aktualizacja Javy
+  description: Dostępna jest nowsza wersja Javy. Zaktualizować przed uruchomieniem?
+  currentVersion: Obecna wersja
+  newVersion: Dostępna wersja
+  ok: Zaktualizuj
+  later: Później
 labyMod:
   disable: Wyłącz LabyMod
   empty: LabyMod nie obsługuje aktualnej wersji Minecrafta
@@ -661,6 +672,9 @@ launchStatus:
   injectingAuthLib: Konfiguracja Thirdparty AuthLib
   launching: Uruchomienie...
   launchingSlow: Wciąż się uruchamia... Uruchamianie silnika graficznego może być powolne...
+  checkingJavaUpdate: Sprawdzanie aktualizacji Javy...
+  confirmingJavaUpdate: Czekanie na wybór dotyczący aktualizacji Javy...
+  updatingJava: Aktualizowanie Javy...
   refreshingUser: Odświeżanie tokena użytkownika
   spawningProcess: Proces odradzania się
 launcherUpdate:
@@ -1648,10 +1662,19 @@ setting:
   globalSettingHint: Instancja będzie używać tych ustawień domyślnie.
   importSettings: Importuj ustawienia
   importSettingsHint: Wczytaj ustawienia z wcześniej wyeksportowanego pliku
+  installJava: Zainstaluj Javę
   instanceTheme:
     activeDescription: Ta instancja używa motywu niestandardowego. Możesz go usunąć, aby użyć motywu globalnego.
     description: Włącz niestandardowy motyw dla tej instancji. Spowoduje to utworzenie kopii bieżącego motywu globalnego.
     name: Motyw instancji
+  java: Ustawienia Javy
+  javaInstaller:
+    noCompatibleBuilds: Nie znaleziono zgodnych kompilacji Javy.
+    retry: Spróbuj ponownie
+    preferredVendor: Preferowany dostawca Javy
+    preferredVendorDescription: Preferowany dostawca używany do automatycznych instalacji Javy.
+    showAllVersions: Wszystkie wersje
+  javaProfiles: Profile Javy
   language: Język
   languageDescription: Język wyświetlania
   latestVersion: Najnowsza wersja
@@ -1817,6 +1840,7 @@ shared:
   close: Zamknij
   copyFailed: Kopiowanie nie powiodło się
   copyFailedHint: Nie można skopiować do schowka
+  defaultOption: Domyślne
   description: Opis
   disable: Wyłącz
   download: Pobierz
@@ -1995,10 +2019,11 @@ tutorial:
     detailTitle: Szczegóły świata i Akcje
     detailDescription: Twórz kopie zapasowe, eksportuj, sprawdzaj level.dat lub zmieniaj opcje świata.
   settings:
-    navDescription: Przełączaj między Ogólnymi, Wyglądem, Globalnymi ustawieniami gry a Siecią.
-    generalDescription: Konfiguruj język launchera, katalog danych, kanały aktualizacji i opcje startu.
-    appearanceDescription: Dostosuj motyw, tapety tła, kolory akcentów i układ interfejsu.
-    globalDescription: Ustaw domyślną wersję Javy, alokację pamięci RAM i argumenty JVM.
+    appearanceDescription: Dostosuj motyw, obraz tła, kolory akcentów i układ interfejsu.
+    generalDescription: Konfiguruj język launchera, katalog główny, kanały aktualizacji i opcje startu.
+    globalDescription: Ustaw domyślną rozdzielczość gry, zmienne środowiskowe i argumenty uruchamiania.
+    javaDescription: Ustaw domyślne środowisko Javy, preferowanego dostawcę Javy, alokację pamięci i argumenty uruchamiania JVM. Tutaj możesz również zainstalować Javę od różnych dostawców.
+    navDescription: Przełączaj między różnymi zakładkami.
     networkDescription: Konfiguruj serwery lustrzane pobierania, proxy i limity jednoczesnych zadań.
   shaderpack:
     searchTitle: Szukaj shaderów

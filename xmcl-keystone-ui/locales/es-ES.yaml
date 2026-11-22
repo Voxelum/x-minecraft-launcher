@@ -684,7 +684,11 @@ java:
   allocation: Asignado
   autoHint: El mínimo crece con la cantidad de mods instalados; el máximo usa la memoria disponible del sistema.
   change: Cambiar
+  importedJava: Java externo
+  importedJavaHint: Importado manualmente desde un archivo
   importFromFile: Importar Java desde archivo
+  internalJava: Java interno
+  internalJavaHint: Instalado por XMCL
   invalid: Ubicación de Java no válida
   location: Ubicación de Java
   locationHint: Ningún Java seleccionado — usando el predeterminado del sistema
@@ -700,6 +704,13 @@ java:
   presets: Predeterminados
   refresh: Actualizar Java local
   systemMemory: 'Memoria libre del sistema: {free} / {total}'
+javaUpdate:
+  title: Actualización de Java disponible
+  description: Hay una versión más reciente de Java. ¿Quieres actualizar antes de iniciar el juego?
+  currentVersion: Versión actual
+  newVersion: Versión disponible
+  ok: Actualizar
+  later: Más tarde
 unauthenticatedWarning:
   title: No has iniciado sesión
   description: No has iniciado sesión en ninguna cuenta. El juego se ejecutará en modo demo. Inicia sesión para acceder a todas las funciones.
@@ -757,6 +768,8 @@ launchPreExecuteCommandFailed:
   title: Fallo del comando de preejecución
 launchStatus:
   assigningMemory: Asignando memoria
+  checkingJavaUpdate: Buscando actualizaciones de Java
+  confirmingJavaUpdate: Esperando confirmación para actualizar Java
   elyByWarning: La sustitución de Authlib de Ely.by está habilitada. Algunas versiones de Minecraft pueden no ser compatibles y podrían provocar fallos. Puedes desactivarla en la configuración de la instancia si surgen problemas.
   exit: ¿Salir del juego?
   injectingAuthLib: Configurando AuthLib de terceros
@@ -764,6 +777,7 @@ launchStatus:
   launchingSlow: Lanzando... El motor gráfico puede tardar...
   refreshingUser: Actualizar token de usuario
   spawningProcess: Iniciando proceso
+  updatingJava: Actualizando Java
 launcherUpdate:
   alreadyLatest: Actualizado
   installAndQuit: Reiniciar para instalar
@@ -1690,6 +1704,7 @@ setting:
   globalSettingHint: La instancia utilizará estos ajustes por defecto.
   importSettings: Importar configuración
   importSettingsHint: Cargar configuración desde un archivo exportado anteriormente
+  installJava: Instalar Java
   instanceTheme:
     activeDescription: |-
       Esta instancia utiliza un tema personalizado.
@@ -1698,6 +1713,14 @@ setting:
       Habilite un tema personalizado para esta instancia.
       Esto creará una copia del tema global actual.
     name: Tema de instancia
+  java: Ajustes de Java
+  javaInstaller:
+    noCompatibleBuilds: No se han encontrado compilaciones compatibles de Java.
+    retry: Reintentar
+    preferredVendor: Proveedor de Java preferido
+    preferredVendorDescription: Se da prioridad a este proveedor al instalar Java automáticamente.
+    showAllVersions: Todas las versiones
+  javaProfiles: Perfiles de Java
   language: Idioma
   languageDescription: El idioma de la interfaz
   latestVersion: Última Versión
@@ -1882,6 +1905,7 @@ shared:
   next: Siguiente
   'no': 'No'
   ok: Aceptar
+  openFolder: Abrir carpeta
   previous: Anterior
   refresh: Actualizar
   remove: Eliminar

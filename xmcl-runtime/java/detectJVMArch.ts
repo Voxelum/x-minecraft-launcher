@@ -11,17 +11,29 @@ export async function ensureClass(app: LauncherApp) {
   await writeFile(dest, javaProxy)
 }
 
-export async function getJavaArch(serv: JavaService, javaPath: string) {
+/** Probe JVM architecture with a timeout; warn and return undefined on failure. */
+export async function getJavaArch(serv: JavaService, javaPath: string, timeout = 5000) {
   const dest = join(serv.app.appDataPath, 'JavaProxy.class')
   try {
     if (!existsSync(dest)) {
       await writeFile(dest, javaProxy)
     }
     const stdout = await new Promise<string>((resolve, reject) => {
-      execFile(javaPath, ['JavaProxy', '-jvm_info'], { cwd: serv.app.appDataPath, windowsHide: true }, (err, stdout) => {
+      let timedOut = false
+      const child = execFile(javaPath, ['JavaProxy', '-jvm_info'], { cwd: serv.app.appDataPath, windowsHide: true }, (err, stdout) => {
+        clearTimeout(timer)
+        if (timedOut) return
         if (err) reject(err)
         else resolve(stdout)
       })
+      const timer = setTimeout(() => {
+        timedOut = true
+        child.kill('SIGKILL')
+        child.stdout?.destroy()
+        child.stderr?.destroy()
+        reject(new Error(`Java architecture probe timed out after ${timeout} ms`))
+      }, timeout)
+      timer.unref()
     })
     const content = JSON.parse(stdout)
     const arch = content.java_arch as string
