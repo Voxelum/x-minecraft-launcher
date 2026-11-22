@@ -16,6 +16,7 @@
         <img
           :key="imgSrc"
           :src="imgSrc"
+          @error="onImageError"
           class="explore-card__img w-full h-full object-cover"
           loading="lazy"
         />
@@ -57,7 +58,8 @@
       <!-- Header row: floating avatar + title/author inline -->
       <div class="flex items-center gap-3">
         <img
-          :src="value.iconUrl"
+          :src="resolveImage(value.iconUrl)"
+          @error="onImageError"
           class="explore-card__avatar w-12 h-12 rounded-xl object-cover bg-surface-variant shrink-0"
         />
         <div class="overflow-hidden min-w-0 flex-1">
@@ -106,6 +108,7 @@
 
 <script setup lang="ts">
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { useStoreCardImages } from '@/util/storeCardImages'
 import { useElementHover, useInterval } from '@vueuse/core'
 
 const props = defineProps<{ value: ExploreProjectModern }>()
@@ -127,11 +130,13 @@ watch(hover, (isHovering) => {
   }
 })
 
+const { resolveImage, onImageError } = useStoreCardImages(() => props.value.imageFallbacks)
+
 const imgSrc = computed(() => {
   if (props.value.gallery && props.value.gallery.length > 0) {
-    return props.value.gallery[counter.value % props.value.gallery.length]
+    return resolveImage(props.value.gallery[counter.value % props.value.gallery.length])
   }
-  return props.value.iconUrl
+  return resolveImage(props.value.iconUrl)
 })
 
 const sourceIcon = computed(() => {
@@ -186,6 +191,7 @@ export interface ExploreProjectModern {
   updatedAt: string
   version?: string
   gallery?: string[]
+  imageFallbacks?: Record<string, string>
   localizedTitle?: string
   localizedDescription?: string
 }
