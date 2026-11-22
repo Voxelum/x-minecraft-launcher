@@ -642,7 +642,11 @@ items:
 java:
   allocatedLong: Використовувати системну Java за замовчуванням
   allocatedShort: Автоматично виділено
+  importedJava: Зовнішня Java
+  importedJavaHint: Імпортовано вручну з файлу
   importFromFile: Імпортувати Java з файлу
+  internalJava: Внутрішня Java
+  internalJavaHint: Встановлено через XMCL
   invalid: Недійсне розташування Java
   location: Розташування Java
   maxMemory: Макс. пам'ять
@@ -661,6 +665,13 @@ java:
   locationHint: Java не обрана — використовується системна за замовчуванням
   openFolder: Відкрити теку Java
   presets: Налаштування
+javaUpdate:
+  title: Доступне оновлення Java
+  description: Доступна новіша версія Java. Оновити перед запуском гри?
+  currentVersion: Поточна версія
+  newVersion: Доступна версія
+  ok: Оновити
+  later: Пізніше
 labyMod:
   disable: Вимкнути LabyMod
   empty: LabyMod не підтримує поточний Minecraft
@@ -717,6 +728,8 @@ launchPreExecuteCommandFailed:
   title: Не вдалося виконати команду попереднього виконання
 launchStatus:
   assigningMemory: Виділення пам'яті
+  checkingJavaUpdate: Перевірка оновлень Java
+  confirmingJavaUpdate: Очікування підтвердження оновлення Java
   elyByWarning: Заміну Authlib Ely.by увімкнено. Деякі версії Minecraft можуть бути несумісні і викликати аварійне завершення. Ви можете відключити її в налаштуваннях інстансу, якщо виникнуть проблеми.
   exit: Вийти з гри?
   injectingAuthLib: Налаштування сторонньої AuthLib
@@ -724,6 +737,7 @@ launchStatus:
   launchingSlow: Все ще запускається... Запуск графічного рушія може бути повільним...
   refreshingUser: Оновлення токена користувача
   spawningProcess: Створення процесу
+  updatingJava: Оновлення Java
 launcherUpdate:
   alreadyLatest: Актуальна версія
   installAndQuit: Перезапустити для встановлення
@@ -1706,6 +1720,7 @@ setting:
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
   importSettings: Імпорт налаштувань
   importSettingsHint: Завантажити налаштування з раніше експортованого файлу
+  installJava: Встановити Java
   instanceTheme:
     activeDescription: |-
       Цей екземпляр використовує спеціальну тему.
@@ -1714,6 +1729,14 @@ setting:
       Увімкніть спеціальну тему для цього екземпляра.
       Це створить копію поточної глобальної теми.
     name: Тема екземпляра
+  java: Налаштування Java
+  javaInstaller:
+    noCompatibleBuilds: Сумісних збірок Java не знайдено.
+    retry: Спробувати ще раз
+    preferredVendor: Бажаний постачальник Java
+    preferredVendorDescription: Цей постачальник має пріоритет під час автоматичного встановлення Java.
+    showAllVersions: Усі версії
+  javaProfiles: Профілі Java
   language: Мова
   languageDescription: Мова відображення
   latestVersion: Остання версія

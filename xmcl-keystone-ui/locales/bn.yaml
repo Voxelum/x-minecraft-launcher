@@ -684,7 +684,11 @@ java:
   allocation: বরাদ্দকৃত
   autoHint: ইন্সটল করা মডের সংখ্যার সাথে সাথে সর্বনিম্ন বরাদ্দ বৃদ্ধি পায়; সর্বোচ্চ বরাদ্দ সিস্টেমের উপলব্ধ মেমরি ব্যবহার করে।
   change: পরিবর্তন করুন
+  importedJava: বাহ্যিক জাভা
+  importedJavaHint: ফাইল থেকে ম্যানুয়ালি ইম্পোর্ট করা হয়েছে
   importFromFile: ফাইল থেকে জাভা ইম্পোর্ট করুন
+  internalJava: অভ্যন্তরীণ জাভা
+  internalJavaHint: XMCL দিয়ে ইনস্টল করা হয়েছে
   invalid: অবৈধ জাভা অবস্থান
   location: জাভা অবস্থান
   locationHint: কোনো জাভা নির্বাচিত হয়নি — সিস্টেম ডিফল্ট ব্যবহার করা হচ্ছে
@@ -700,6 +704,13 @@ java:
   presets: প্রিসেট
   refresh: লোকাল জাভা রিফ্রেশ করুন
   systemMemory: 'সিস্টেমের খালি মেমরি: {free} / {total}'
+javaUpdate:
+  title: জাভার আপডেট পাওয়া গেছে
+  description: জাভার একটি নতুন সংস্করণ পাওয়া গেছে। গেম চালুর আগে আপডেট করবেন?
+  currentVersion: বর্তমান সংস্করণ
+  newVersion: উপলব্ধ সংস্করণ
+  ok: আপডেট করুন
+  later: পরে
 labyMod:
   disable: LabyMod নিষ্ক্রিয় করুন
   empty: LabyMod বর্তমান Minecraft সমর্থন করে না
@@ -751,6 +762,8 @@ launchPreExecuteCommandFailed:
   title: প্রাক-কার্যকরী কমান্ড ব্যর্থ হয়েছে
 launchStatus:
   assigningMemory: মেমরি বরাদ্দ করা হচ্ছে
+  checkingJavaUpdate: জাভার আপডেট খোঁজা হচ্ছে
+  confirmingJavaUpdate: জাভা আপডেটের অনুমোদনের অপেক্ষায়
   elyByWarning: Ely.by authlib প্রতিস্থাপন সক্ষম করা আছে। কিছু মাইনক্রাফ্ট সংস্করণ সামঞ্জস্যপূর্ণ নাও হতে পারে এবং ক্র্যাশ করতে পারে। কোনো সমস্যা হলে আপনি ইনস্ট্যান্স সেটিংসে এটি নিষ্ক্রিয় করতে পারেন।
   exit: গেম থেকে প্রস্থান করবেন?
   injectingAuthLib: তৃতীয় পক্ষের AuthLib সেট আপ করা হচ্ছে
@@ -758,6 +771,7 @@ launchStatus:
   launchingSlow: এখনও চালু হচ্ছে... গ্রাফিক্স ইঞ্জিন শুরু হতে ধীর হতে পারে...
   refreshingUser: ইউজার টোকেন রিফ্রেশ করা হচ্ছে
   spawningProcess: প্রসেস তৈরি করা হচ্ছে
+  updatingJava: জাভা আপডেট করা হচ্ছে
 launcherUpdate:
   alreadyLatest: হালনাগাদ রয়েছে
   installAndQuit: ইনস্টল করতে পুনরায় চালু করুন
@@ -1744,10 +1758,19 @@ setting:
   globalSettingHint: ইনস্ট্যান্স ডিফল্টরূপে এই সেটিংস ব্যবহার করবে।
   importSettings: সেটিংস ইম্পোর্ট করুন
   importSettingsHint: পূর্বে এক্সপোর্ট করা ফাইল থেকে সেটিংস লোড করুন
+  installJava: জাভা ইনস্টল করুন
   instanceTheme:
     activeDescription: এই ইনস্ট্যান্সটি একটি কাস্টম থিম ব্যবহার করছে। গ্লোবাল থিম ব্যবহার করতে আপনি এটি মুছে ফেলতে পারেন।
     description: এই ইনস্ট্যান্সের জন্য একটি কাস্টম থিম সক্ষম করুন। এটি বর্তমান গ্লোবাল থিমের একটি অনুলিপি তৈরি করবে।
     name: ইনস্ট্যান্স থিম
+  java: জাভা সেটিংস
+  javaInstaller:
+    noCompatibleBuilds: জাভার কোনো সামঞ্জস্যপূর্ণ বিল্ড পাওয়া যায়নি।
+    retry: আবার চেষ্টা করুন
+    preferredVendor: জাভার পছন্দের সরবরাহকারী
+    preferredVendorDescription: জাভা স্বয়ংক্রিয়ভাবে ইনস্টল করার সময় এই সরবরাহকারীকে অগ্রাধিকার দেওয়া হয়।
+    showAllVersions: সব সংস্করণ
+  javaProfiles: জাভা প্রোফাইল
   language: ভাষা
   languageDescription: প্রদর্শনের ভাষা
   latestVersion: সর্বশেষ সংস্করণ
@@ -1938,6 +1961,7 @@ shared:
   next: পরবর্তী
   'no': না
   ok: ঠিক আছে
+  openFolder: ফোল্ডার খুলুন
   previous: পূর্ববর্তী
   refresh: রিফ্রেশ করুন
   remove: সরিয়ে ফেলুন

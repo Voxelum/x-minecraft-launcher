@@ -609,7 +609,11 @@ items:
 java:
   allocatedLong: Жүйелік әдепкі java-ны қолдану
   allocatedShort: Автоматты бөлу
+  importedJava: Сыртқы Java
+  importedJavaHint: Файлдан қолмен импортталған
   importFromFile: Java-ны файлдан импорттау
+  internalJava: Ішкі Java
+  internalJavaHint: XMCL орнатқан
   invalid: Жарамсыз Java орналасуы
   location: Java орналасуы
   maxMemory: Максимал жады
@@ -628,6 +632,13 @@ java:
   locationHint: Java таңдалмаған — жүйелік әдепкі қолданылуда
   openFolder: Java қалтасын ашу
   presets: Алдын ала орнатулар
+javaUpdate:
+  title: Java жаңартуы қолжетімді
+  description: Java-ның жаңарақ нұсқасы қолжетімді. Ойынды іске қоспас бұрын жаңартасыз ба?
+  currentVersion: Ағымдағы нұсқа
+  newVersion: Қолжетімді нұсқа
+  ok: Жаңарту
+  later: Кейінірек
 labyMod:
   disable: LabyMod-ты өшіру
   empty: LabyMod ағымдағы Minecraft-ты қолдамайды
@@ -684,6 +695,8 @@ launchPreExecuteCommandFailed:
   title: Алдын-ала орындау командасы сәтсіз аяқталды
 launchStatus:
   assigningMemory: Жадты бөлу
+  checkingJavaUpdate: Java жаңартуларын тексеру
+  confirmingJavaUpdate: Java жаңартуын растау күтілуде
   elyByWarning: Ely.by authlib алмастыруы қосулы. Кейбір Minecraft нұсқалары үйлесімді болмауы мүмкін және құлауы мүмкін. Егер мәселелер пайда болса, оны жеке жағдай баптауларында өшіре аласыз.
   exit: Ойыннан шығу керек пе?
   injectingAuthLib: Үшінші тарап AuthLib орнату
@@ -691,6 +704,7 @@ launchStatus:
   launchingSlow: Әлі де іске қосылу... Графикалық қозғалтқышты іске қосу баяу болуы мүмкін...
   refreshingUser: Пайдаланушы токенін жаңарту
   spawningProcess: Процесті іске қосу
+  updatingJava: Java жаңартылуда
 launcherUpdate:
   alreadyLatest: Ең соңғы нұсқа
   installAndQuit: Орнату үшін қайта іске қосу
@@ -1528,10 +1542,19 @@ setting:
   globalSettingHint: Жеке жағдайлар әдепкі бұл баптауларды қолданады.
   importSettings: Баптауларды импорттау
   importSettingsHint: Алдын-ағым экспортталған файлдан баптауларды жүктеңіз
+  installJava: Java орнату
   instanceTheme:
     activeDescription: Бұл жеке жағдай арнайы тақырыпты қолдануда. Сіз оны жойып, глобалды тақырыпты қолдана аласыз.
     description: Бұл жеке жағдай үшін арнайы тақырыпты қосыңыз. Бұл ағымдағы глобалды тақырыптың көшірмесін жасайды.
     name: Жеке жағдай тақырыбы
+  java: Java баптаулары
+  javaInstaller:
+    noCompatibleBuilds: Үйлесімді Java жинақтары табылмады.
+    retry: Қайталап көру
+    preferredVendor: Таңдаулы Java жеткізушісі
+    preferredVendorDescription: Java автоматты түрде орнатылғанда осы жеткізушіге басымдық беріледі.
+    showAllVersions: Барлық нұсқалар
+  javaProfiles: Java профильдері
   language: Тіл
   languageDescription: Көрсетілетін тіл
   latestVersion: Ең соңғы нұсқа
@@ -1701,6 +1724,7 @@ shared:
   next: Келесі
   'no': Жоқ
   ok: ОК
+  openFolder: Қалтаны ашу
   previous: Алдыңғы
   refresh: Жаңарту
   remove: Жою

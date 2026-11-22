@@ -608,7 +608,11 @@ items:
 java:
   allocatedLong: Gebruik systeemstandaard java
   allocatedShort: Auto Toegewezen
+  importedJava: Java externo
+  importedJavaHint: Importado manualmente desde un ficheiro
   importFromFile: Importeer Java uit bestand
+  internalJava: Java interno
+  internalJavaHint: Instalado por XMCL
   invalid: Ongeldige Java Locatie
   location: Java Locatie
   maxMemory: Max Geheugen
@@ -627,6 +631,13 @@ java:
   locationHint: Ningún Java seleccionado — usando o predeterminado do sistema
   openFolder: Abrir cartafol de Java
   presets: Predefinicións
+javaUpdate:
+  title: Actualización de Java dispoñible
+  description: Hai unha versión máis recente de Java. Queres actualizar antes de iniciar o xogo?
+  currentVersion: Versión actual
+  newVersion: Versión dispoñible
+  ok: Actualizar
+  later: Máis tarde
 labyMod:
   disable: Schakel LabyMod uit
   empty: LabyMod ondersteunt huidige Minecraft niet
@@ -683,6 +694,8 @@ launchPreExecuteCommandFailed:
   title: Pre-Execute Commando Mislukt
 launchStatus:
   assigningMemory: Geheugen toewijzen
+  checkingJavaUpdate: Buscando actualizacións de Java
+  confirmingJavaUpdate: Agardando pola confirmación da actualización de Java
   elyByWarning: Ely.by authlib vervanging is ingeschakeld. Sommige Minecraft-versies zijn mogelijk niet compatibel en kunnen crashen. Je kunt het uitschakelen in instantie-instellingen als er problemen optreden.
   exit: Game afsluiten?
   injectingAuthLib: AuthLib van derden opzetten
@@ -690,6 +703,7 @@ launchStatus:
   launchingSlow: Nog steeds starten... Grafische engine starten kan traag zijn...
   refreshingUser: Gebruikerstoken verversen
   spawningProcess: Proces aanmaken
+  updatingJava: Actualizando Java
 launcherUpdate:
   alreadyLatest: Up-to-date
   installAndQuit: Herstarten om te installeren
@@ -1529,10 +1543,19 @@ setting:
   globalSettingHint: Instantie gebruikt deze instellingen standaard.
   importSettings: Importeer Instellingen
   importSettingsHint: Laad instellingen van een eerder geëxporteerd bestand
+  installJava: Instalar Java
   instanceTheme:
     activeDescription: Deze instantie gebruikt een aangepast thema. Je kunt het verwijderen om het globale thema te gebruiken.
     description: Schakel een aangepast thema in voor deze instantie. Dit maakt een kopie van het huidige globale thema.
     name: Instantie Thema
+  java: Configuración de Java
+  javaInstaller:
+    noCompatibleBuilds: Non se atoparon compilacións compatibles de Java.
+    retry: Tentar de novo
+    preferredVendor: Fornecedor de Java preferido
+    preferredVendorDescription: Dáselle prioridade a este fornecedor cando Java se instala automaticamente.
+    showAllVersions: Todas as versións
+  javaProfiles: Perfís de Java
   language: Taal
   languageDescription: De weergavetaal
   latestVersion: Laatste Versie
@@ -1702,6 +1725,7 @@ shared:
   next: Volgende
   'no': Nee
   ok: OK
+  openFolder: Abrir cartafol
   previous: Vorige
   refresh: Verversen
   remove: Verwijderen

@@ -609,7 +609,11 @@ items:
 java:
   allocatedLong: USE DEFAULT SYSTEM JAVA
   allocatedShort: AUTO ALLOCATED
+  importedJava: Outside Java
+  importedJavaHint: Hooman imported frum a file
   importFromFile: IMPORT JAVA FROM FILE
+  internalJava: Inside Java
+  internalJavaHint: XMCL put it heer
   invalid: BAD JAVA LOCASHUN
   location: JAVA LOCASHUN
   maxMemory: MAX MEMRY
@@ -628,6 +632,13 @@ java:
   locationHint: No Java pikd — uzin systmm defawlt
   openFolder: Open Java fldr
   presets: Presetz
+javaUpdate:
+  title: Java update iz heer
+  description: Newer Java iz heer. Update befor playin?
+  currentVersion: Current vershun
+  newVersion: Available vershun
+  ok: Update nao
+  later: Laterz
 labyMod:
   disable: DISABL LABYMOD
   empty: LABYMOD DOES NOT SUPPORT CURREN MINECWAFT
@@ -684,6 +695,8 @@ launchPreExecuteCommandFailed:
   title: PRE-EXECUTE COMMAND FAILED
 launchStatus:
   assigningMemory: ASSIGNING MEMRY
+  checkingJavaUpdate: Lookin fer Java updates
+  confirmingJavaUpdate: Waitin fer u to say yes to Java update
   elyByWarning: ELY.BY AUTHLIB REPLACEMENT IS ENABLED. SOME MINECWAFT VERSHUNS MAY NOT BE COMPATIBLE AN CUD CRASH. U CAN DISABL IT IN INSTANCE SETTINGZ IF ISSUES OCCUR.
   exit: EXIT GAME?
   injectingAuthLib: SETTING UP THIRD-PARTY AUTHLIB
@@ -691,6 +704,7 @@ launchStatus:
   launchingSlow: STILL LAUNCHING... STARTING GRAPHICS ENGINE CAN BE SLOW...
   refreshingUser: REFRESHING USER TOKEN
   spawningProcess: SPAWNING PROCESS
+  updatingJava: Updatin Java
 launcherUpdate:
   alreadyLatest: UP TO DATE
   installAndQuit: RESTART TO INSTALL
@@ -1530,10 +1544,19 @@ setting:
   globalSettingHint: INSTANCE WILL USE THESE SETTINGZ BY DEFAULT.
   importSettings: IMPORT SETTINGZ
   importSettingsHint: LOAD SETTINGZ FROM A PREVIOUSLY EXPORTED FILE
+  installJava: Install Java
   instanceTheme:
     activeDescription: THIS INSTANCE IS USING A CUSTOM THEEM. U CAN DELET IT TO USE DA GLOBAL THEEM.
     description: ENABL A CUSTOM THEEM FUR THIS INSTANCE. THIS WILL MAKE A COPY OF DA CURREN GLOBAL THEEM.
     name: INSTANCE THEEM
+  java: Java settinz
+  javaInstaller:
+    noCompatibleBuilds: Cant find any Java buildz dat fit.
+    retry: Try againz
+    preferredVendor: Favrit Java vendor
+    preferredVendorDescription: We pick dis vendor furst when installin Java automatically.
+    showAllVersions: All vershunz
+  javaProfiles: Java profilez
   language: LANGUAG
   languageDescription: TEH DISPLAY LANGUAG
   latestVersion: LATEST VERSHUN
@@ -1703,6 +1726,7 @@ shared:
   next: NEXT
   'no': 'NO'
   ok: OK
+  openFolder: Open teh folder
   previous: PREVIOUS
   refresh: REFRESH
   remove: REMOVE

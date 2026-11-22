@@ -636,7 +636,11 @@ java:
   allocatedLong: استخدم Java الافتراضي للنظام
   allocatedShort: تخصيص تلقائي
   change: يتغير
+  importedJava: جافا خارجية
+  importedJavaHint: تم استيرادها يدويًا من ملف
   importFromFile: استيراد جافا من الملف
+  internalJava: جافا داخلية
+  internalJavaHint: ثبّتها XMCL
   invalid: موقع جافا غير صالح
   location: موقع جافا
   locationHint: لم يتم تحديد Java — باستخدام النظام الافتراضي
@@ -654,6 +658,13 @@ java:
   allocation: المخصصة
   autoHint: ينمو Min مع عدد التعديلات المثبتة؛ يستخدم الحد الأقصى ذاكرة النظام المتوفرة.
   systemMemory: 'الذاكرة الحرة للنظام: {free} / {total}'
+javaUpdate:
+  title: يتوفر تحديث لجافا
+  description: يتوفر إصدار أحدث من جافا. هل تريد تحديثها قبل تشغيل اللعبة؟
+  currentVersion: الإصدار الحالي
+  newVersion: الإصدار المتاح
+  ok: تحديث
+  later: لاحقًا
 labyMod:
   disable: تعطيل لابي مود
   empty: LabyMod لا يدعم لعبة Minecraft الحالية
@@ -710,6 +721,8 @@ launchPreExecuteCommandFailed:
   title: فشل تنفيذ الأمر مسبقًا
 launchStatus:
   assigningMemory: تخصيص الذاكرة
+  checkingJavaUpdate: جارٍ التحقق من تحديثات جافا
+  confirmingJavaUpdate: في انتظار تأكيد تحديث جافا
   elyByWarning: تم تمكين استبدال Ely.by authlib. قد لا تكون بعض إصدارات Minecraft متوافقة وقد تتعطل. يمكنك تعطيله في إعدادات المثيل في حالة حدوث مشكلات.
   exit: الخروج من اللعبة؟
   injectingAuthLib: إعداد AuthLib لجهة خارجية
@@ -717,6 +730,7 @@ launchStatus:
   launchingSlow: لا يزال قيد التشغيل... يمكن أن يكون بدء تشغيل محرك الرسومات بطيئًا...
   refreshingUser: تحديث رمز المستخدم
   spawningProcess: عملية التفريخ
+  updatingJava: جارٍ تحديث جافا
 launcherUpdate:
   alreadyLatest: حتى الآن
   installAndQuit: أعد التشغيل للتثبيت
@@ -1588,10 +1602,19 @@ setting:
   globalSettingHint: سيستخدم المثيل هذه الإعدادات بشكل افتراضي.
   importSettings: إعدادات الاستيراد
   importSettingsHint: تحميل الإعدادات من ملف تم تصديره مسبقًا
+  installJava: تثبيت جافا
   instanceTheme:
     activeDescription: يستخدم هذا المثيل سمة مخصصة. يمكنك حذفه لاستخدام السمة العالمية.
     description: تمكين سمة مخصصة لهذه الحالة. سيؤدي هذا إلى إنشاء نسخة من السمة العالمية الحالية.
     name: موضوع المثيل
+  java: إعدادات جافا
+  javaInstaller:
+    noCompatibleBuilds: لم يُعثر على إصدارات متوافقة من جافا.
+    retry: إعادة المحاولة
+    preferredVendor: مزود جافا المفضّل
+    preferredVendorDescription: المزود المفضّل عند تثبيت جافا تلقائيًا.
+    showAllVersions: جميع الإصدارات
+  javaProfiles: ملفات تعريف جافا
   language: لغة
   languageDescription: لغة العرض
   latestVersion: أحدث نسخة
@@ -1760,6 +1783,7 @@ shared:
   next: التالي
   'no': لا
   ok: نعم
+  openFolder: فتح المجلد
   previous: سابق
   refresh: ينعش
   remove: يزيل

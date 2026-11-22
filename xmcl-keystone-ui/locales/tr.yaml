@@ -653,7 +653,11 @@ items:
 java:
   allocatedLong: Sistem varsayılan java'sını kullan
   allocatedShort: Otomatik Tahsis
+  importedJava: Harici Java
+  importedJavaHint: Dosyadan elle içe aktarıldı
   importFromFile: Dosyadan Java İçe Aktar
+  internalJava: Dahili Java
+  internalJavaHint: XMCL tarafından kuruldu
   invalid: Geçersiz Java Konumu
   location: Java Konumu
   maxMemory: Maks Bellek
@@ -672,6 +676,13 @@ java:
   locationHint: Java seçilmedi — sistem varsayılanı kullanılıyor
   openFolder: Java klasörünü aç
   presets: Hazır ayarlar
+javaUpdate:
+  title: Java güncellemesi mevcut
+  description: Java’nın daha yeni bir sürümü mevcut. Oyunu başlatmadan önce güncellemek ister misiniz?
+  currentVersion: Geçerli sürüm
+  newVersion: Mevcut sürüm
+  ok: Güncelle
+  later: Daha sonra
 labyMod:
   disable: LabyMod'u Devre Dışı Bırak
   empty: LabyMod mevcut Minecraft'ı desteklemiyor
@@ -729,6 +740,8 @@ launchPreExecuteCommandFailed:
   title: Ön Yürütme Komutu Başarısız
 launchStatus:
   assigningMemory: Bellek atanıyor
+  checkingJavaUpdate: Java güncellemeleri denetleniyor
+  confirmingJavaUpdate: Java güncellemesi için onay bekleniyor
   elyByWarning: Ely.by authlib değişimi etkin. Bazı Minecraft sürümleri uyumlu olmayabilir ve çökebilir. Sorun oluşursa instance ayarlarından devre dışı bırakabilirsiniz.
   exit: Oyundan Çık?
   injectingAuthLib: Üçüncü Taraf AuthLib Kuruluyor
@@ -736,6 +749,7 @@ launchStatus:
   launchingSlow: Hala başlatılıyor... Grafik motorunu başlatmak yavaş olabilir...
   refreshingUser: Kullanıcı Belirteci Yenileniyor
   spawningProcess: İşlem Oluşturuluyor
+  updatingJava: Java güncelleniyor
 launcherUpdate:
   alreadyLatest: Güncel
   installAndQuit: Yüklemek için Yeniden Başlat
@@ -1608,10 +1622,19 @@ setting:
   globalSettingHint: Instance varsayılan olarak bu ayarları kullanacaktır.
   importSettings: Ayarları İçe Aktar
   importSettingsHint: Daha önce dışa aktarılan bir dosyadan ayarları yükleyin
+  installJava: Java’yı kur
   instanceTheme:
     activeDescription: Bu instance özel bir tema kullanıyor. Global temayı kullanmak için bunu silebilirsiniz.
     description: Bu instance için özel bir tema etkinleştirin. Bu, mevcut global temanın bir kopyasını oluşturacaktır.
     name: Instance Teması
+  java: Java ayarları
+  javaInstaller:
+    noCompatibleBuilds: Uyumlu Java derlemesi bulunamadı.
+    retry: Yeniden dene
+    preferredVendor: Tercih edilen Java sağlayıcısı
+    preferredVendorDescription: Otomatik Java kurulumlarında bu sağlayıcıya öncelik verilir.
+    showAllVersions: Tüm sürümler
+  javaProfiles: Java profilleri
   language: Dil
   languageDescription: Görüntüleme dili
   latestVersion: En Son Sürüm
@@ -1814,6 +1837,7 @@ shared:
   next: İleri
   'no': Hayır
   ok: Tamam
+  openFolder: Klasörü aç
   previous: Önceki
   refresh: Yenile
   remove: Kaldır

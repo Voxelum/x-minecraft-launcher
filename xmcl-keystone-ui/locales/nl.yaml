@@ -609,7 +609,11 @@ items:
 java:
   allocatedLong: Gebruik systeemstandaard java
   allocatedShort: Automatisch Toegewezen
+  importedJava: Externe Java
+  importedJavaHint: Handmatig geïmporteerd uit een bestand
   importFromFile: Importeer Java Vanuit Bestand
+  internalJava: Interne Java
+  internalJavaHint: Geïnstalleerd door XMCL
   invalid: Ongeldige Java Locatie
   location: Java Locatie
   maxMemory: Max Geheugen
@@ -628,6 +632,13 @@ java:
   locationHint: Geen Java geselecteerd — systeemstandaard wordt gebruikt
   openFolder: Java-map openen
   presets: Voorinstellingen
+javaUpdate:
+  title: Java-update beschikbaar
+  description: Er is een nieuwere versie van Java beschikbaar. Wil je Java bijwerken voordat je het spel start?
+  currentVersion: Huidige versie
+  newVersion: Beschikbare versie
+  ok: Bijwerken
+  later: Later
 labyMod:
   disable: LabyMod Uitschakelen
   empty: LabyMod ondersteunt de huidige Minecraft niet
@@ -684,6 +695,8 @@ launchPreExecuteCommandFailed:
   title: Pre-uitvoer Commando Mislukt
 launchStatus:
   assigningMemory: Geheugen Toewijzen
+  checkingJavaUpdate: Zoeken naar Java-updates
+  confirmingJavaUpdate: Wachten op bevestiging van de Java-update
   elyByWarning: Ely.by authlib-vervanging is ingeschakeld. Sommige Minecraft-versies zijn mogelijk niet compatibel en kunnen crashen. U kunt dit uitschakelen in de instance-instellingen als problemen optreden.
   exit: Game Afsluiten?
   injectingAuthLib: Third-party AuthLib Instellen
@@ -691,6 +704,7 @@ launchStatus:
   launchingSlow: Nog steeds aan het starten... Het opstarten van de graphics engine kan traag zijn...
   refreshingUser: Gebruikerstoken Vernieuwen
   spawningProcess: Proces Starten
+  updatingJava: Java wordt bijgewerkt
 launcherUpdate:
   alreadyLatest: Up-to-date
   installAndQuit: Herstarten om te Installeren
@@ -1528,10 +1542,19 @@ setting:
   globalSettingHint: Instance zal deze instellingen standaard gebruiken.
   importSettings: Instellingen Importeren
   importSettingsHint: Laad instellingen van een eerder geëxporteerd bestand
+  installJava: Java installeren
   instanceTheme:
     activeDescription: Deze instance gebruikt een aangepast thema. U kunt het verwijderen om het globale thema te gebruiken.
     description: Schakel een aangepast thema in voor deze instance. Dit zal een kopie maken van het huidige globale thema.
     name: Instance Thema
+  java: Java-instellingen
+  javaInstaller:
+    noCompatibleBuilds: Geen compatibele Java-builds gevonden.
+    retry: Opnieuw proberen
+    preferredVendor: Voorkeursleverancier voor Java
+    preferredVendorDescription: Deze leverancier heeft voorrang bij automatische Java-installaties.
+    showAllVersions: Alle versies
+  javaProfiles: Java-profielen
   language: Taal
   languageDescription: De weergavetaal
   latestVersion: Laatste Versie
@@ -1701,6 +1724,7 @@ shared:
   next: Volgende
   'no': Nee
   ok: OK
+  openFolder: Map openen
   previous: Vorige
   refresh: Vernieuwen
   remove: Verwijderen

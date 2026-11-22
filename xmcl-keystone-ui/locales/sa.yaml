@@ -684,7 +684,11 @@ java:
   allocation: विनिहितम्
   autoHint: न्यूनतमं संस्थापित-मोड-सङ्ख्यया वर्धते; अधिकतमं तन्त्रस्मृतिं प्रयुङ्क्ते।
   change: परिवर्तयतु
+  importedJava: बाह्या जावा
+  importedJavaHint: सञ्चिकातः हस्तेन आयातिता
   importFromFile: सञ्चिकातः जावा आयातयतु
+  internalJava: आन्तरिकी जावा
+  internalJavaHint: XMCL द्वारा संस्थापिता
   invalid: अमान्यं जावा स्थानम्
   location: जावा स्थानम्
   locationHint: किमपि जावा न चितम् — तन्त्रस्य पूर्वनिर्धारितं प्रयुज्यते
@@ -700,6 +704,13 @@ java:
   presets: पूर्वनिर्धारणानि
   refresh: स्थानिक-जावा पुनः पश्यतु
   systemMemory: 'तन्त्रस्य मुक्ता स्मृतिः: {free} / {total}'
+javaUpdate:
+  title: जावायाः नवीकरणम् उपलब्धम्
+  description: जावायाः नवीनतरं संस्करणम् उपलब्धम्। क्रीडारम्भात् पूर्वं नवीकरोतु वा?
+  currentVersion: वर्तमानसंस्करणम्
+  newVersion: उपलब्धसंस्करणम्
+  ok: नवीकरोतु
+  later: पश्चात्
 labyMod:
   disable: LabyMod निष्क्रियं करोतु
   empty: LabyMod वर्तमान-माइनक्राफ्ट् प्रति समर्थं नास्ति
@@ -751,6 +762,8 @@ launchPreExecuteCommandFailed:
   title: पूर्वनिष्पादननिर्देशः विफलः
 launchStatus:
   assigningMemory: स्मृतिं वितरति
+  checkingJavaUpdate: जावायाः नवीकरणानां परीक्षणम्
+  confirmingJavaUpdate: जावायाः नवीकरणाय अनुमतेः प्रतीक्षा
   elyByWarning: Ely.by authlib प्रतिस्थापनं सक्रियम् अस्ति। केचन माइनक्राफ्ट् संस्करणाणि असुसङ्गतानि भवितुं शक्नुवन्ति।
   exit: क्रीडायाः बहिर्गन्तुम् इच्छति?
   injectingAuthLib: तृतीयपक्ष-AuthLib व्यवस्थापयति
@@ -758,6 +771,7 @@ launchStatus:
   launchingSlow: अद्यापि प्रवर्तयति... रेखाचित्र-इञ्जिन-आरम्भः मन्दः भवितुं शक्नोति...
   refreshingUser: प्रयोक्तुः प्रतीकं नवीकरोतु
   spawningProcess: प्रक्रियां जनयति
+  updatingJava: जावायाः नवीकरणं प्रचलति
 launcherUpdate:
   alreadyLatest: अद्यतनम्
   installAndQuit: संस्थापनाय पुनः आरभताम्
@@ -1742,10 +1756,19 @@ setting:
   globalSettingHint: क्षणाः पूर्वनिर्धारितरूपेण एतान् विकल्पान् प्रयुञ्जते।
   importSettings: विकल्पान् आयातयतु
   importSettingsHint: पूर्वरक्षितसञ्चिकातः विकल्पान् आयातयतु
+  installJava: जावां संस्थापयतु
   instanceTheme:
     activeDescription: एषः क्षणः प्रथाप्रसङ्गं प्रयुङ्क्ते। वैश्विकप्रसङ्गप्रयोगाय भवान् एतत् लोपयितुं शक्नोति।
     description: क्षणाय विशिष्टं प्रसङ्गं सक्रियं करोतु।
     name: क्षणप्रसङ्गः
+  java: जावायाः विन्यासाः
+  javaInstaller:
+    noCompatibleBuilds: जावायाः सङ्गतं संस्करणं न प्राप्तम्।
+    retry: पुनः प्रयतताम्
+    preferredVendor: जावायाः प्राधान्यप्राप्तः प्रदाता
+    preferredVendorDescription: जावायाः स्वचालितसंस्थापने अस्मै प्रदात्रे प्राधान्यं दीयते।
+    showAllVersions: सर्वाणि संस्करणानि
+  javaProfiles: जावायाः प्रोफाइलानि
   language: भाषा
   languageDescription: प्रदर्शनी भाषा
   latestVersion: अद्यतनसंस्करणम्
@@ -1936,6 +1959,7 @@ shared:
   next: अग्रिमम्
   'no': न
   ok: अस्तु (OK)
+  openFolder: कोशं उद्घाटयतु
   previous: पूर्वतनम्
   refresh: पुनश्चर्या
   remove: निष्कासयतु

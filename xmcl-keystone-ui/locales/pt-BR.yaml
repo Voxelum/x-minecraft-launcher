@@ -612,7 +612,11 @@ items:
 java:
   allocatedLong: Usar o Java padrão do sistema
   allocatedShort: Alocar automaticamente
+  importedJava: Java externo
+  importedJavaHint: Importado manualmente de um arquivo
   importFromFile: Importar Java de arquivo
+  internalJava: Java interno
+  internalJavaHint: Instalado pelo XMCL
   invalid: Localização do Java inválida
   location: Localização do Java
   maxMemory: Memória máxima
@@ -631,6 +635,13 @@ java:
   locationHint: Nenhum Java selecionado — usando o padrão do sistema
   openFolder: Abrir pasta do Java
   presets: Predefinições
+javaUpdate:
+  title: Atualização do Java disponível
+  description: Há uma versão mais recente do Java. Deseja atualizar antes de iniciar o jogo?
+  currentVersion: Versão atual
+  newVersion: Versão disponível
+  ok: Atualizar
+  later: Mais tarde
 labyMod:
   disable: Desabilitar LabyMod
   empty: LabyMod não é compatível com a versão atual do Minecraft.
@@ -686,6 +697,8 @@ launchPreExecuteCommandFailed:
   title: Falha no comando de pré-execução
 launchStatus:
   assigningMemory: Atribuindo memória
+  checkingJavaUpdate: Verificando atualizações do Java
+  confirmingJavaUpdate: Aguardando confirmação da atualização do Java
   elyByWarning: A substituição do Authlib do Ely.by está ativada. Algumas versões do Minecraft podem não ser compatíveis e podem travar. Você pode desativá-la nas configurações da instância se ocorrerem problemas.
   exit: Sair do jogo?
   injectingAuthLib: Configurando AuthLib de terceiros
@@ -693,6 +706,7 @@ launchStatus:
   launchingSlow: Ainda iniciando... O início do motor gráfico pode ser demorado...
   refreshingUser: Atualizando token do usuário
   spawningProcess: Inicializando o processo
+  updatingJava: Atualizando o Java
 launcherUpdate:
   alreadyLatest: Atualizado
   installAndQuit: Reiniciar para instalar
@@ -1528,6 +1542,7 @@ setting:
   globalSettingHint: A instância usará essas configurações como padrão.
   importSettings: Importar configurações
   importSettingsHint: Carregar configurações de um arquivo exportado anteriormente
+  installJava: Instalar Java
   instanceTheme:
     activeDescription: |-
       Esta instância está usando um tema personalizado.
@@ -1536,6 +1551,14 @@ setting:
       Habilite um tema personalizado para esta instância.
       Isso criará uma cópia do tema global atual.
     name: Tema da instância
+  java: Configurações do Java
+  javaInstaller:
+    noCompatibleBuilds: Nenhuma compilação compatível do Java encontrada.
+    retry: Tentar novamente
+    preferredVendor: Fornecedor de Java preferido
+    preferredVendorDescription: Este fornecedor tem prioridade nas instalações automáticas do Java.
+    showAllVersions: Todas as versões
+  javaProfiles: Perfis do Java
   language: Idioma
   languageDescription: O idioma de exibição
   latestVersion: Última versão
@@ -1710,6 +1733,7 @@ shared:
   next: Próximo
   'no': Não
   ok: OK
+  openFolder: Abrir pasta
   previous: Anterior
   refresh: Atualizar
   remove: Remover

@@ -627,7 +627,11 @@ items:
 java:
   allocatedLong: Utiliser l'exécutable Java par défaut du système
   allocatedShort: Attribué Automatiquement
+  importedJava: Java externe
+  importedJavaHint: Importé manuellement depuis un fichier
   importFromFile: Importer Java à partir d'un fichier
+  internalJava: Java interne
+  internalJavaHint: Installé par XMCL
   invalid: Emplacement Java non valide
   location: Emplacement Java
   maxMemory: Mémoire Maximum
@@ -646,6 +650,13 @@ java:
   locationHint: Aucun Java sélectionné — utilisation de celui par défaut du système
   openFolder: Ouvrir le dossier Java
   presets: Préréglages
+javaUpdate:
+  title: Mise à jour de Java disponible
+  description: Une version plus récente de Java est disponible. La mettre à jour avant de lancer le jeu ?
+  currentVersion: Version actuelle
+  newVersion: Version disponible
+  ok: Mettre à jour
+  later: Plus tard
 unauthenticatedWarning:
   title: Non connecté
   description: Vous n’êtes connecté à aucun compte. Le jeu se lancera en mode démo. Connectez-vous pour accéder à toutes les fonctionnalités.
@@ -705,12 +716,15 @@ launchPreExecuteCommandFailed:
   title: Échec de la commande de pré-exécution
 launchStatus:
   assigningMemory: Attribution de mémoire
+  checkingJavaUpdate: Recherche de mises à jour de Java
+  confirmingJavaUpdate: En attente de confirmation de la mise à jour de Java
   elyByWarning: Le remplacement d'Authlib d'Ely.by est activé. Certaines versions de Minecraft peuvent être incompatibles et provoquer des plantages. Vous pouvez le désactiver dans les paramètres de l'instance si des problèmes surviennent.
   injectingAuthLib: Configuration d'AuthLib tiers
   launching: Lancement...
   launchingSlow: Toujours en cours de lancement... Le démarrage du moteur graphique peut être lent...
   refreshingUser: Actualisation du jeton utilisateur
   spawningProcess: Démarrage du processus
+  updatingJava: Mise à jour de Java en cours
 launcherUpdate:
   alreadyLatest: À jour
   installAndQuit: Redémarrer pour installer
@@ -1568,6 +1582,7 @@ setting:
   globalSettingHint: Les instances utiliseront ces paramètres par défaut.
   importSettings: Importer les paramètres
   importSettingsHint: Charger les paramètres depuis un fichier précédemment exporté
+  installJava: Installer Java
   instanceTheme:
     activeDescription: |-
       Cette instance utilise un thème personnalisé.
@@ -1576,6 +1591,14 @@ setting:
       Activez un thème personnalisé pour cette instance.
       Cela créera une copie du thème global actuel.
     name: Thème d'instance
+  java: Paramètres de Java
+  javaInstaller:
+    noCompatibleBuilds: Aucune compilation compatible de Java n’a été trouvée.
+    retry: Réessayer
+    preferredVendor: Fournisseur de Java préféré
+    preferredVendorDescription: Ce fournisseur est privilégié lors des installations automatiques de Java.
+    showAllVersions: Toutes les versions
+  javaProfiles: Profils Java
   language: Langue
   languageDescription: Langue d'affichage
   latestVersion: Dernière version
@@ -1753,6 +1776,7 @@ shared:
   next: Suivant
   'no': Non
   ok: OK
+  openFolder: Ouvrir le dossier
   previous: Précédent
   refresh: Rafraîchir
   remove: Enlever

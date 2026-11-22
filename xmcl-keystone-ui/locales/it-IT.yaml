@@ -601,7 +601,11 @@ items:
 java:
   allocatedLong: Usa Java di sistema predefinito
   allocatedShort: Auto Allocato
+  importedJava: Java esterno
+  importedJavaHint: Importato manualmente da un file
   importFromFile: Importa Java da file
+  internalJava: Java interno
+  internalJavaHint: Installato da XMCL
   invalid: Percorso Java non valido
   location: Percorso Java
   maxMemory: Memoria massima
@@ -620,6 +624,13 @@ java:
   locationHint: Nessun Java selezionato — uso quello predefinito del sistema
   openFolder: Apri cartella Java
   presets: Preimpostazioni
+javaUpdate:
+  title: Aggiornamento di Java disponibile
+  description: È disponibile una versione più recente di Java. Aggiornare prima di avviare il gioco?
+  currentVersion: Versione attuale
+  newVersion: Versione disponibile
+  ok: Aggiorna
+  later: Più tardi
 labyMod:
   disable: Disabilita LabyMod
   empty: LabyMod non supporta l'attuale versione di Minecraft
@@ -676,6 +687,8 @@ launchPreExecuteCommandFailed:
   title: Comando pre-esecuzione fallito
 launchStatus:
   assigningMemory: Assegnazione memoria
+  checkingJavaUpdate: Verifica degli aggiornamenti di Java
+  confirmingJavaUpdate: In attesa di conferma dell’aggiornamento di Java
   elyByWarning: La sostituzione di Authlib di Ely.by è abilitata. Alcune versioni di Minecraft potrebbero non essere compatibili e potrebbero arrestarsi in modo anomalo. Puoi disattivarla nelle impostazioni dell'istanza se si verificano problemi.
   exit: Uscire dal gioco?
   injectingAuthLib: Configurazione AuthLib di terze parti
@@ -683,6 +696,7 @@ launchStatus:
   launchingSlow: Avvio ancora in corso... L'avvio del motore grafico potrebbe richiedere tempo...
   refreshingUser: Aggiornamento token utente
   spawningProcess: Avvio processo
+  updatingJava: Aggiornamento di Java in corso
 launcherUpdate:
   alreadyLatest: Aggiornato
   installAndQuit: Riavvia per installare
@@ -1528,6 +1542,7 @@ setting:
   globalSettingHint: L'istanza utilizzerà queste impostazioni per impostazione predefinita.
   importSettings: Importa impostazioni
   importSettingsHint: Carica impostazioni da un file esportato in precedenza
+  installJava: Installa Java
   instanceTheme:
     activeDescription: |-
       Questa istanza utilizza un tema personalizzato.
@@ -1536,6 +1551,14 @@ setting:
       Abilita un tema personalizzato per questa istanza.
       Questo creerà una copia del tema globale corrente.
     name: Tema dell'istanza
+  java: Impostazioni Java
+  javaInstaller:
+    noCompatibleBuilds: Nessuna build compatibile di Java trovata.
+    retry: Riprova
+    preferredVendor: Fornitore Java preferito
+    preferredVendorDescription: Questo fornitore ha la priorità nelle installazioni automatiche di Java.
+    showAllVersions: Tutte le versioni
+  javaProfiles: Profili Java
   language: Lingua
   languageDescription: La lingua visualizzata
   latestVersion: Ultima versione
@@ -1710,6 +1733,7 @@ shared:
   next: Prossimo
   'no': 'No'
   ok: OK
+  openFolder: Apri cartella
   previous: Precedente
   refresh: Aggiorna
   remove: Rimuovi

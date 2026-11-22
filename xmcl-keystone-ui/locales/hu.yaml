@@ -633,7 +633,11 @@ items:
 java:
   allocatedLong: Rendszer alapértelmezett java használata
   allocatedShort: Automatikusan hozzárendelt
+  importedJava: Külső Java
+  importedJavaHint: Kézzel importálva fájlból
   importFromFile: Java importálása fájlból
+  internalJava: Belső Java
+  internalJavaHint: Az XMCL telepítette
   invalid: Érvénytelen Java hely
   location: Java elhelyezkedése
   maxMemory: Maximum memória
@@ -652,6 +656,13 @@ java:
   locationHint: Nincs Java kiválasztva — a rendszer alapértelmezettjét használja
   openFolder: Java mappa megnyitása
   presets: Előbeállítások
+javaUpdate:
+  title: Elérhető Java-frissítés
+  description: Elérhető a Java egy újabb verziója. Frissíted a játék indítása előtt?
+  currentVersion: Jelenlegi verzió
+  newVersion: Elérhető verzió
+  ok: Frissítés
+  later: Később
 labyMod:
   disable: LabyMod letiltása
   empty: A LabyMod nem támogatja a jelenlegi Minecraftot
@@ -708,6 +719,8 @@ launchPreExecuteCommandFailed:
   title: A végrehajtás előtti parancs sikertelen
 launchStatus:
   assigningMemory: Memória kiosztása
+  checkingJavaUpdate: Java-frissítések keresése
+  confirmingJavaUpdate: Várakozás a Java-frissítés jóváhagyására
   elyByWarning: Az Ely.by Authlib pótlás engedélyezve van. Néhány Minecraft verzió inkompatibilis lehet és összeomolhat. Ha problémák merülnek fel, tiltsd le az instance beállításaiban.
   exit: Kilépés?
   injectingAuthLib: Harmadik fél AuthLib beállítása
@@ -715,6 +728,7 @@ launchStatus:
   launchingSlow: Még mindig indul... A grafikus motor indítása lassú lehet...
   refreshingUser: Felhasználói token frissítése
   spawningProcess: Spawnolási folyamat
+  updatingJava: Java frissítése
 launcherUpdate:
   alreadyLatest: Naprakész
   installAndQuit: Újraindítás a telepítéshez
@@ -1573,6 +1587,7 @@ setting:
   globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
   importSettings: Beállítások importálása
   importSettingsHint: Beállítások betöltése korábban exportált fájlból
+  installJava: Java telepítése
   instanceTheme:
     activeDescription: |-
       Ez a példány egyéni témát használ.
@@ -1581,6 +1596,14 @@ setting:
       Egyéni téma engedélyezése ehhez a példányhoz.
       Ezzel létrejön az aktuális globális téma másolata.
     name: Példány téma
+  java: Java-beállítások
+  javaInstaller:
+    noCompatibleBuilds: Nem található kompatibilis Java-build.
+    retry: Újrapróbálkozás
+    preferredVendor: Előnyben részesített Java-szolgáltató
+    preferredVendorDescription: Automatikus Java-telepítéskor ezt a szolgáltatót részesíti előnyben a program.
+    showAllVersions: Összes verzió
+  javaProfiles: Java-profilok
   language: Nyelv
   languageDescription: A megjelenített nyelv
   latestVersion: Legújabb verzió
@@ -1755,6 +1778,7 @@ shared:
   next: Következő
   'no': Nem
   ok: Oké
+  openFolder: Mappa megnyitása
   previous: Előző
   refresh: Frissítés
   remove: Eltávolítás

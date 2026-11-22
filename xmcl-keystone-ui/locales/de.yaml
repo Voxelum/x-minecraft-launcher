@@ -642,7 +642,11 @@ items:
 java:
   allocatedLong: Java im System standardmäßig verwenden
   allocatedShort: Automatische Auswahl
+  importedJava: Externes Java
+  importedJavaHint: Manuell aus einer Datei importiert
   importFromFile: Java aus einer Datei importieren
+  internalJava: Internes Java
+  internalJavaHint: Von XMCL installiert
   invalid: Falscher Speicherort von Java
   location: Java-Standort
   maxMemory: Max. Speicherkapazität
@@ -661,6 +665,13 @@ java:
   locationHint: Kein Java ausgewählt — Systemstandard wird verwendet
   openFolder: Java-Ordner öffnen
   presets: Voreinstellungen
+javaUpdate:
+  title: Java-Update verfügbar
+  description: Eine neuere Version von Java ist verfügbar. Vor dem Spielstart aktualisieren?
+  currentVersion: Aktuelle Version
+  newVersion: Verfügbare Version
+  ok: Aktualisieren
+  later: Später
 labyMod:
   disable: LabyMod ausschalten
   empty: LabyMod unterstützt nicht das aktuelle Minecraft
@@ -719,6 +730,8 @@ launchPreExecuteCommandFailed:
   title: Vor-Ausführungsbefehl fehlgeschlagen
 launchStatus:
   assigningMemory: Speicher zuweisen
+  checkingJavaUpdate: Suche nach Java-Updates
+  confirmingJavaUpdate: Warte auf Bestätigung des Java-Updates
   elyByWarning: Die Ely.by Authlib-Ersetzung ist aktiviert. Einige Minecraft-Versionen sind möglicherweise nicht kompatibel und können abstürzen. Sie können sie in den Instanz-Einstellungen deaktivieren, falls Probleme auftreten.
   exit: Das Spiel aufgeben?
   injectingAuthLib: Einrichten einer AuthLib eines Drittanbieters
@@ -726,6 +739,7 @@ launchStatus:
   launchingSlow: Fährt noch hoch... Die Grafik-Engine kann langsam starten.
   refreshingUser: Aktualisierung des Benutzertokens
   spawningProcess: Start des Prozesses
+  updatingJava: Java wird aktualisiert
 launcherUpdate:
   alreadyLatest: Die neueste Version
   installAndQuit: Neustart zur Installation
@@ -1601,6 +1615,7 @@ setting:
   globalSettingHint: Die Instanz wird diese Parameter standardmäßig verwenden.
   importSettings: Einstellungen importieren
   importSettingsHint: Einstellungen aus zuvor exportierter Datei laden
+  installJava: Java installieren
   instanceTheme:
     activeDescription: |-
       Diese Instanz verwendet ein benutzerdefiniertes Design.
@@ -1609,6 +1624,14 @@ setting:
       Aktivieren Sie ein benutzerdefiniertes Design für diese Instanz.
       Dadurch wird eine Kopie des aktuellen globalen Themas erstellt.
     name: Instanzthema
+  java: Java-Einstellungen
+  javaInstaller:
+    noCompatibleBuilds: Keine kompatiblen Java-Builds gefunden.
+    retry: Erneut versuchen
+    preferredVendor: Bevorzugter Java-Anbieter
+    preferredVendorDescription: Dieser Anbieter wird bei automatischen Java-Installationen bevorzugt.
+    showAllVersions: Alle Versionen
+  javaProfiles: Java-Profile
   language: Sprache.
   languageDescription: Sprache der Schnittstelle
   latestVersion: neueste Version
@@ -1809,6 +1832,7 @@ shared:
   next: Nächste.
   'no': Nein.
   ok: ОК
+  openFolder: Ordner öffnen
   previous: Vorherige
   refresh: Update
   remove: Vidaliti

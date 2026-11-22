@@ -684,7 +684,11 @@ java:
   allocation: आवंटित
   autoHint: न्यूनतम मेमोरी स्थापित मॉड की संख्या के साथ बढ़ती है; अधिकतम उपलब्ध सिस्टम मेमोरी का उपयोग करती है।
   change: बदलें
+  importedJava: बाहरी जावा
+  importedJavaHint: फ़ाइल से मैन्युअल रूप से आयात किया गया
   importFromFile: फ़ाइल से जावा आयात करें
+  internalJava: आंतरिक जावा
+  internalJavaHint: XMCL द्वारा इंस्टॉल किया गया
   invalid: अमान्य जावा स्थान
   location: जावा स्थान
   locationHint: कोई जावा चयनित नहीं — सिस्टम डिफ़ॉल्ट का उपयोग कर रहे हैं
@@ -700,6 +704,13 @@ java:
   presets: प्रीसेट
   refresh: स्थानीय जावा रिफ्रेश करें
   systemMemory: 'सिस्टम मुक्त मेमोरी: {free} / {total}'
+javaUpdate:
+  title: जावा अपडेट उपलब्ध है
+  description: जावा का नया संस्करण उपलब्ध है। क्या गेम शुरू करने से पहले अपडेट करें?
+  currentVersion: मौजूदा संस्करण
+  newVersion: उपलब्ध संस्करण
+  ok: अपडेट करें
+  later: बाद में
 labyMod:
   disable: LabyMod अक्षम करें
   empty: LabyMod वर्तमान माइनक्राफ्ट का समर्थन नहीं करता है
@@ -751,6 +762,8 @@ launchPreExecuteCommandFailed:
   title: प्री-एग्जीक्यूट कमांड विफल
 launchStatus:
   assigningMemory: मेमोरी आवंटित की जा रही है
+  checkingJavaUpdate: जावा अपडेट की जाँच हो रही है
+  confirmingJavaUpdate: जावा अपडेट की पुष्टि की प्रतीक्षा है
   elyByWarning: Ely.by authlib प्रतिस्थापन सक्षम है। कुछ माइनक्राफ्ट संस्करण संगत नहीं हो सकते हैं और क्रैश हो सकते हैं। यदि समस्याएं आती हैं तो आप इसे इंस्टेंस सेटिंग्स में अक्षम कर सकते हैं।
   exit: गेम से बाहर निकलें?
   injectingAuthLib: तृतीय-पक्ष AuthLib सेट किया जा रहा है
@@ -758,6 +771,7 @@ launchStatus:
   launchingSlow: अभी भी लॉन्च हो रहा है... ग्राफिक्स इंजन शुरू करना धीमा हो सकता है...
   refreshingUser: यूज़र टोकन रिफ्रेश किया जा रहा है
   spawningProcess: प्रक्रिया शुरू की जा रही है
+  updatingJava: जावा अपडेट हो रहा है
 launcherUpdate:
   alreadyLatest: अद्यतित (Up to date)
   installAndQuit: स्थापित करने के लिए पुनरारंभ करें
@@ -1744,10 +1758,19 @@ setting:
   globalSettingHint: इंस्टेंस डिफ़ॉल्ट रूप से इन सेटिंग का उपयोग करेगा।
   importSettings: सेटिंग आयात करें
   importSettingsHint: पहले निर्यात की गई फ़ाइल से सेटिंग लोड करें
+  installJava: जावा इंस्टॉल करें
   instanceTheme:
     activeDescription: यह इंस्टेंस एक कस्टम थीम का उपयोग कर रहा है। आप वैश्विक थीम का उपयोग करने के लिए इसे हटा सकते हैं।
     description: इस इंस्टेंस के लिए एक कस्टम थीम सक्षम करें। यह वर्तमान वैश्विक थीम की एक प्रति बनाएगा।
     name: इंस्टेंस थीम
+  java: जावा सेटिंग्स
+  javaInstaller:
+    noCompatibleBuilds: जावा का कोई संगत बिल्ड नहीं मिला।
+    retry: फिर से कोशिश करें
+    preferredVendor: पसंदीदा जावा प्रदाता
+    preferredVendorDescription: जावा को अपने आप इंस्टॉल करते समय इस प्रदाता को प्राथमिकता दी जाती है।
+    showAllVersions: सभी संस्करण
+  javaProfiles: जावा प्रोफ़ाइल
   language: भाषा
   languageDescription: प्रदर्शन भाषा
   latestVersion: नवीनतम संस्करण
@@ -1938,6 +1961,7 @@ shared:
   next: अगला
   'no': 'No'
   ok: OK
+  openFolder: फ़ोल्डर खोलें
   previous: पिछला
   refresh: रिफ्रेश करें
   remove: हटाएँ

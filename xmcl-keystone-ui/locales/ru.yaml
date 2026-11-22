@@ -552,7 +552,11 @@ items:
 java:
   allocatedLong: Использовать системный Java по умолчанию
   allocatedShort: Автоматическое выделение
+  importedJava: Внешняя Java
+  importedJavaHint: Импортирована вручную из файла
   importFromFile: Импортировать Java из файла
+  internalJava: Внутренняя Java
+  internalJavaHint: Установлена через XMCL
   invalid: Неверное расположение Java
   location: Расположение Java
   maxMemory: Максимальная память
@@ -571,6 +575,13 @@ java:
   locationHint: Java не выбрана — используется системная по умолчанию
   openFolder: Открыть папку Java
   presets: Предустановки
+javaUpdate:
+  title: Доступно обновление Java
+  description: Доступна более новая версия Java. Обновить перед запуском игры?
+  currentVersion: Текущая версия
+  newVersion: Доступная версия
+  ok: Обновить
+  later: Позже
 labyMod:
   disable: LabyMod не выбран
   empty: LabyMod не поддерживает текущую версию Minecraft
@@ -637,6 +648,8 @@ launchPreExecuteCommandFailed:
   title: Команда предварительного выполнения не выполнена
 launchStatus:
   assigningMemory: Распределение памяти
+  checkingJavaUpdate: Проверка обновлений Java
+  confirmingJavaUpdate: Ожидание подтверждения обновления Java
   elyByWarning: >-
     Заменитель Authlib Ely.by включён. Некоторые версии Minecraft могут быть несовместимы и вызывать падения. Вы можете отключить его в настройках инстанса, если возникнут проблемы.
   exit: Выйти из игры?
@@ -646,6 +659,7 @@ launchStatus:
     Запуск игры всё ещё выполняется... Для инициализации графического движка может потребоваться некоторое время...
   refreshingUser: Обновление токена пользователя
   spawningProcess: Запуск процесса
+  updatingJava: Обновление Java
 launcherUpdate:
   alreadyLatest: Последняя версия
   installAndQuit: Перезапустите, чтобы установить
@@ -1434,6 +1448,7 @@ setting:
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
   importSettings: Импорт настроек
   importSettingsHint: Загрузить настройки из ранее экспортированного файла
+  installJava: Установить Java
   instanceTheme:
     activeDescription: |-
       Этот экземпляр использует пользовательскую тему.
@@ -1442,6 +1457,14 @@ setting:
       Включите пользовательскую тему для этого экземпляра.
       Это создаст копию текущей глобальной темы.
     name: Тема экземпляра
+  java: Настройки Java
+  javaInstaller:
+    noCompatibleBuilds: Совместимые сборки Java не найдены.
+    retry: Повторить попытку
+    preferredVendor: Предпочитаемый поставщик Java
+    preferredVendorDescription: Этот поставщик имеет приоритет при автоматической установке Java.
+    showAllVersions: Все версии
+  javaProfiles: Профили Java
   language: Язык
   languageDescription: Отображаемый язык интерфейса.
   latestVersion: Последняя версия
@@ -1632,6 +1655,7 @@ shared:
   next: Далее
   'no': Нет
   ok: ОК
+  openFolder: Открыть папку
   previous: Назад
   refresh: Обновить
   remove: Удалить
