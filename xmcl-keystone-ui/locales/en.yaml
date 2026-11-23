@@ -2359,6 +2359,26 @@ shaderPack:
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
+  translate:
+    batchSize: Entries per batch
+    batchSizeHint: This is an upper bound. A batch is split earlier when it reaches the character limit.
+    done: Done
+    entriesCount: '{count} entries'
+    loading: Scanning language files…
+    menu: AI translate language files
+    noLangFiles: This shader pack has no lang/*.lang or shaders/lang/*.lang file.
+    parallelism: Parallel requests
+    parallelismHint: More workers translate faster, but send more requests at the same time.
+    progress: 'Translated {done}/{total} entries ({skipped} skipped)'
+    sameLanguage: The selected source file is already in the target language.
+    sourceTitle: Source language file
+    start: Start translation
+    success: 'Written {path} with {count} translated entries'
+    targetExists: A target language file already exists. Its entries are updated and other entries are kept.
+    targetPath: Target file in the pack
+    targetTitle: Target language
+    title: AI language translation
+    writing: Writing the shader pack…
   'off': 'Off'
 shared:
   openFolder: Open Folder

@@ -316,7 +316,11 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
       ? wrapAgentToolsWithResultSpill(createdTools, (content, toolName) => service.writeArtifact(artifactKey, { content, toolName }))
       : createdTools
     setAgentRunTelemetryTools(telemetry, tools.map(tool => tool.name))
-    const role = options.agentId === 'css' ? 'css-main' : options.agentId === 'modpack-changelog' ? 'modpack-changelog-main' : 'launcher-main'
+    const role = options.agentId === 'css'
+      ? 'css-main'
+      : options.agentId === 'modpack-changelog'
+        ? 'modpack-changelog-main'
+        : options.agentId === 'shader-lang' ? 'shader-lang-main' : 'launcher-main'
     telemetry.failureStage = 'documents'
     const documents = role === 'launcher-main' && tools.some(tool => tool.name === 'vfs_shell')
       ? await service.listDocuments()

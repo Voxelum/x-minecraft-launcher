@@ -2276,6 +2276,26 @@ shaderPack:
   selectSearchHint: 查看已选择的光影包
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此光影包
+  translate:
+    batchSize: 每批条数
+    batchSizeHint: 这里只是上限，达到字符量上限时会提前切批。
+    done: 完成
+    entriesCount: '{count} 条'
+    loading: 正在扫描语言文件…
+    menu: AI 翻译语言文件
+    noLangFiles: 该光影包内没有 lang/*.lang 或 shaders/lang/*.lang 文件。
+    parallelism: 并行数
+    parallelismHint: 并行越高翻译越快，但同一时间发出的请求也越多。
+    progress: '已翻译 {done}/{total} 条（跳过 {skipped} 条）'
+    sameLanguage: 选中的源文件已经是目标语言。
+    sourceTitle: 源语言文件
+    start: 开始翻译
+    success: '已写入 {path}，共 {count} 条译文'
+    targetExists: 目标语言文件已存在，同名条目会被覆盖，其余条目保留。
+    targetPath: 包内目标文件
+    targetTitle: 目标语言
+    title: AI 语言翻译
+    writing: 正在写回光影包…
   'off': 'Off'
 shared:
   reset: 重置

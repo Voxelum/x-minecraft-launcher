@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import MarketItem from '@/components/MarketItem.vue'
 import { useService } from '@/composables'
+import { useDialog } from '@/composables/dialog'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kInstance } from '@/composables/instance'
 import { ShaderPackProject } from '@/composables/shaderPackSearch'
@@ -49,6 +50,7 @@ const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { uninstall } = useService(InstanceShaderPacksServiceKey)
 const { path } = injection(kInstance)
+const { show: showLangTranslate } = useDialog('shaderpack-lang-translate')
 const getContextMenuItems = () => {
   const all = [] as ContextMenuItem[]
   // const id = props.pack.modrinth?.project_id || props.pack.modrinthProjectId
@@ -59,6 +61,20 @@ const getContextMenuItems = () => {
         showItemInDirectory(props.pack.installed[0].path)
       },
       icon: 'folder',
+      section: 'action',
+    }, {
+      // AI 语言翻译：直接传入资源的绝对路径，避免渲染进程自行拼接共享目录
+      text: t('shaderPack.translate.menu'),
+      onClick: () => {
+        const file = props.pack.installed[0]
+        showLangTranslate({
+          instancePath: path.value,
+          packPath: file.path,
+          fileName: file.fileName || file.path.split(/[\\/]/).pop() || props.pack.title,
+          packName: props.pack.title,
+        })
+      },
+      icon: 'translate',
       section: 'action',
     }, {
       text: t('delete.name', { name: props.pack.title }),
