@@ -16,8 +16,10 @@ import {
 
 let root = ''
 
-async function createPack(files: Record<string, string>) {
+async function createPack(files: Record<string, string>, directories: string[] = []) {
   const zip = new ZipFile()
+  // 真实光影包通常带显式目录条目，写回时必须原样保留
+  for (const directory of directories) zip.addEmptyDirectory(directory)
   for (const [name, content] of Object.entries(files)) {
     zip.addBuffer(Buffer.from(content, 'utf-8'), name)
   }
@@ -109,6 +111,27 @@ describe('shaderPackZip', () => {
     const entries = await readPackEntries(packPath)
     expect(Object.keys(entries).filter(name => name === 'shaders/lang/zh_CN.lang')).toHaveLength(1)
     expect(entries['shaders/lang/zh_CN.lang']).toBe('a=新\n')
+  })
+
+  it('keeps explicit directory entries when rewriting the pack', async () => {
+    const packPath = await createPack(
+      { 'shaders/lang/en_US.lang': 'a=1\n' },
+      ['shaders/', 'shaders/lang/'],
+    )
+
+    // 曾经这里会抛 options.compress not allowed（目录条目不能传 compress）
+    const result = await writeShaderPackLangBuffer(packPath, 'shaders/lang/zh_CN.lang', Buffer.from('a=一\n', 'utf-8'))
+    expect(result.replaced).toBe(false)
+
+    const entries = await readPackEntries(packPath)
+    expect(entries['shaders/lang/zh_CN.lang']).toBe('a=一\n')
+    expect(entries['shaders/lang/en_US.lang']).toBe('a=1\n')
+
+    // 目录条目本身也要保留
+    const zip = await open(packPath)
+    const names = (await readAllEntries(zip)).map(entry => entry.fileName)
+    zip.close()
+    expect(names).toContain('shaders/lang/')
   })
 
   it('rejects non zip paths', async () => {

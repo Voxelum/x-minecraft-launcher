@@ -99,13 +99,36 @@ export function getShaderLangFileLocale(path: string): string {
   return SHADER_LANG_PATH_RE.exec(path.replace(/\\/g, '/'))?.[1] ?? ''
 }
 
+/**
+ * 取源条目的完整 16 位 unix mode（含文件类型位，如 0o100664 / 0o40775）。
+ *
+ * 只取 `& 0o777` 会丢掉类型位，写回后条目会变成"未知类型"。
+ */
+function getEntryMode(entry: Entry): number | undefined {
+  const mode = entry.externalFileAttributes >>> 16
+  // Windows 上创建的 zip 高位可能为 0，交给 yazl 使用默认值
+  return mode === 0 ? undefined : mode
+}
+
+/** 文件条目选项：保留修改时间、权限与压缩方式 */
 function toEntryOptions(entry: Entry) {
-  const mode = (entry.externalFileAttributes >>> 16) & 0o777
   return {
     mtime: entry.getLastModDate(),
-    // 权限位为 0 时交给 yazl 使用默认值，避免生成 000 权限的条目
-    mode: mode === 0 ? undefined : mode,
+    mode: getEntryMode(entry),
     compress: entry.compressionMethod !== 0,
+  }
+}
+
+/**
+ * 目录条目选项。
+ *
+ * yazl 的 `addEmptyDirectory` 明确拒绝 `compress`/`size`（会抛
+ * "options.compress not allowed"），所以目录只能传 mtime 和 mode。
+ */
+function toDirectoryOptions(entry: Entry) {
+  return {
+    mtime: entry.getLastModDate(),
+    mode: getEntryMode(entry),
   }
 }
 
@@ -188,7 +211,7 @@ export async function writeShaderPackLangBuffer(packPath: string, targetPath: st
 
     for (const entry of entries) {
       if (entry.fileName.endsWith('/')) {
-        output.addEmptyDirectory(entry.fileName, toEntryOptions(entry))
+        output.addEmptyDirectory(entry.fileName, toDirectoryOptions(entry))
         continue
       }
       if (entry.fileName.toLowerCase() === normalizedTarget) {
