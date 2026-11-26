@@ -2268,6 +2268,7 @@ settingLabel:
   local: Lokalne
   localHint: To ustawienie jest modyfikowane przez bieżącą instancję
 setup:
+  focusLayoutDescription: Układ skupienia to klasyczny układ Minecraft Launchera. Został zaprojektowany z myślą o jednej lub kilku instancjach.
   account:
     description: Zaloguj się na swoje konto w grze. Jeśli go nie posiadasz, możesz je na razie pominąć.
     name: Dodaj konto gry
@@ -2599,6 +2600,9 @@ userServices:
     password: No Password
     uuid: UUID użytkownika (opcjonalnie)
 userSkin:
+  uploadRejected: Minecraft odrzucił przesłanie tej skórki. Spróbuj ponownie później.
+  invalidImageTitle: Nieprawidłowy obraz skórki
+  invalidImage: Wybierz prawidłowy obraz skórki Minecraft.
   import: Importuj skórkę
   importFile: Otwórz z pliku
   importLink: Opióro od Link

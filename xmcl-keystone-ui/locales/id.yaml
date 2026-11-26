@@ -1998,6 +1998,7 @@ serverStatus:
   refuse: §4Server menolak!
   timeout: §4Batas waktu koneksi server habis!
 setting:
+  aboutLauncherNotice: BUKAN PRODUK RESMI MINECRAFT. TIDAK DISETUJUI OLEH ATAU TERKAIT DENGAN MOJANG ATAU MICROSOFT.
   about: Tentang
   aboutBmclDescription: BMCL API menyediakan unduhan yang nyaman bagi pengguna di Tiongkok Daratan
   aboutContributors: 🧑‍💻 Kontributor 🧑‍💻
@@ -2293,6 +2294,7 @@ shaderPack:
   showFile: Tampilkan paket shader ini di folder
   'off': 'Off'
 shared:
+  defaultOption: Bawaan
   pressKeyCombination: Tekan kombinasi tombol...
   add: Tambah
   author: Pembuat
@@ -2491,6 +2493,7 @@ tutorial:
     detailTitle: Detail Dunia & Aksi
     detailDescription: Cadangkan, ekspor, periksa level.dat, atau kelola pengaturan dunia.
   settings:
+    javaDescription: Atur runtime Java bawaan, vendor Java pilihan, alokasi memori, dan argumen peluncuran JVM. Di sini Anda juga dapat memasang Java dari berbagai vendor.
     navDescription: Beralih antara Umum, Tampilan, Pengaturan Permainan Global, dan Jaringan.
     generalDescription: Konfigurasikan bahasa peluncur, direktori data, saluran pembaruan, dan opsi awal.
     appearanceDescription: Sesuaikan tema, wallpaper latar belakang, warna aksen, dan gaya tata letak.

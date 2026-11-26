@@ -2053,6 +2053,7 @@ serverStatus:
   refuse: 伺服器中斷咗連線！
   timeout: 伺服器響應超時！
 setting:
+  aboutLauncherNotice: 非官方 MINECRAFT 產品。未經 MOJANG 或 MICROSOFT 批准，亦無關聯。
   about: 關於
   aboutBmclDescription: BMCL API 為中國地區用戶提供便捷嘅下載服務
   aboutContributors: 🧑‍💻 貢獻者 🧑‍💻
@@ -2360,6 +2361,7 @@ shaderPack:
   showFile: 喺資料夾中顯示此光影包
   'off': 'Off'
 shared:
+  defaultOption: 預設
   reset: 重設
   pressKeyCombination: 按下按鍵組合...
   add: 新增
@@ -2573,6 +2575,7 @@ tutorial:
     detailTitle: 世界詳情與操作
     detailDescription: 備份、匯出、檢查 level.dat 或管理世界設定。
   settings:
+    javaDescription: 設定預設 Java 執行環境、偏好的 Java 供應商、記憶體配置及 JVM 啟動參數。你亦可以在此從不同供應商安裝 Java。
     navDescription: 在一般、外觀、全域遊戲設定和網絡之間切換。
     generalDescription: 設定啟動器語言、資料目錄、更新通道與啟動選項。
     appearanceDescription: 自訂主題、背景桌布、強調色與介面版面風格。

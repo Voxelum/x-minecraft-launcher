@@ -1996,6 +1996,7 @@ serverStatus:
   refuse: §4सेवाप्रदाता अस्वीकृतवान्!
   timeout: §4सम्पर्ककालः समाप्तः!
 setting:
+  aboutLauncherNotice: इदम् आधिकारिकं MINECRAFT उत्पादं नास्ति। MOJANG अथवा MICROSOFT द्वारा अनुमोदितं सम्बद्धं वा नास्ति।
   about: विषये
   aboutBmclDescription: BMCL API प्रदान करोति अवतरणानि चीनदेशे।
   aboutContributors: 🧑‍💻 योगदानकर्तारः 🧑‍💻
@@ -2291,6 +2292,7 @@ shaderPack:
   showFile: कोशे एतं छायाकारसञ्चयं दर्शयतु
   'off': 'Off'
 shared:
+  defaultOption: पूर्वनिर्धारितम्
   pressKeyCombination: कुञ्जीसंयोजनं नुदतु...
   add: योजयतु
   author: लेखकः
@@ -2489,6 +2491,7 @@ tutorial:
     detailTitle: लोकविवरणं क्रियाः च
     detailDescription: रक्षितां प्रतिकृतिं कुर्वन्तु, निर्हरन्तु, level.dat परीक्ष्यताम्।
   settings:
+    javaDescription: पूर्वनिर्धारितं Java संचालनं, अभिमतं Java प्रदातारं, स्मृति-आवंटनं तथा JVM आरम्भतर्कान् च नियोजयतु। अत्र विभिन्नप्रदातृभ्यः Java संस्थापयितुमपि शक्यते।
     navDescription: सामान्येषु, रूपे, क्रीडाविन्यासे जाले च परिवर्तयन्तु।
     generalDescription: भाषां, दत्तांशनिर्देशिकां, नवीकरणमार्गान् प्रारम्भविकल्पान् च विन्यस्यन्तु।
     appearanceDescription: विषयवस्तु, भित्तिचित्राणि, वर्णाः विन्यासशैलीं चानुकूलयन्तु।

@@ -1998,6 +1998,7 @@ serverStatus:
   refuse: §4Máy chủ từ chối!
   timeout: §4Kết nối máy chủ hết thời gian!
 setting:
+  aboutLauncherNotice: KHÔNG PHẢI SẢN PHẨM CHÍNH THỨC CỦA MINECRAFT. KHÔNG ĐƯỢC PHÊ DUYỆT BỞI HOẶC LIÊN KẾT VỚI MOJANG HOẶC MICROSOFT.
   about: Giới thiệu
   aboutBmclDescription: BMCL API cung cấp các bản tải xuống thuận tiện cho người dùng tại Trung Quốc Đại Lục
   aboutContributors: 🧑‍💻 Những người đóng góp 🧑‍💻
@@ -2293,6 +2294,7 @@ shaderPack:
   showFile: Hiển thị gói shader này trong thư mục
   'off': 'Off'
 shared:
+  defaultOption: Mặc định
   pressKeyCombination: Nhấn tổ hợp phím...
   add: Thêm
   author: Tác giả
@@ -2491,6 +2493,7 @@ tutorial:
     detailTitle: Chi tiết thế giới & Thao tác
     detailDescription: Sao lưu, xuất ra tệp, kiểm tra level.dat hoặc quản lý cài đặt thế giới.
   settings:
+    javaDescription: Thiết lập môi trường chạy Java mặc định, nhà cung cấp Java ưu tiên, dung lượng bộ nhớ và đối số khởi chạy JVM. Tại đây bạn cũng có thể cài đặt Java từ nhiều nhà cung cấp khác nhau.
     navDescription: Chuyển đổi giữa Cài đặt chung, Giao diện, Cài đặt trò chơi chung và Mạng.
     generalDescription: Định cấu hình ngôn ngữ, thư mục dữ liệu, kênh cập nhật và tùy chọn khởi động.
     appearanceDescription: Tùy chỉnh chủ đề, hình nền, màu nhấn và bố cục giao diện.

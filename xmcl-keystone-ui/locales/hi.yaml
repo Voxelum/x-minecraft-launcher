@@ -1998,6 +1998,7 @@ serverStatus:
   refuse: §4सर्वर ने अस्वीकार कर दिया!
   timeout: §4सर्वर से कनेक्शन टाइमआउट!
 setting:
+  aboutLauncherNotice: यह आधिकारिक MINECRAFT उत्पाद नहीं है। MOJANG या MICROSOFT द्वारा अनुमोदित या उनसे संबद्ध नहीं है।
   about: के बारे में
   aboutBmclDescription: BMCL API चीनी मुख्य भूमि के उपयोगकर्ताओं के लिए सुविधाजनक डाउनलोड प्रदान करता है
   aboutContributors: 🧑‍💻 योगदानकर्ता 🧑‍💻
@@ -2293,6 +2294,7 @@ shaderPack:
   showFile: इस शेडर पैक को फ़ोल्डर में दिखाएँ
   'off': 'Off'
 shared:
+  defaultOption: डिफ़ॉल्ट
   pressKeyCombination: कुंजी संयोजन दबाएँ...
   add: Add
   author: लेखक
@@ -2491,6 +2493,7 @@ tutorial:
     detailTitle: विश्व विवरण और क्रियाएं
     detailDescription: बैकअप लें, निर्यात करें, level.dat का निरीक्षण करें या विश्व सेटिंग्स प्रबंधित करें।
   settings:
+    javaDescription: डिफ़ॉल्ट Java रनटाइम, पसंदीदा Java प्रदाता, मेमोरी आवंटन और JVM लॉन्च तर्क सेट करें। यहाँ आप विभिन्न प्रदाताओं से Java इंस्टॉल भी कर सकते हैं।
     navDescription: सामान्य, रूप-रंग, वैश्विक गेम सेटिंग्स और नेटवर्क के बीच स्विच करें।
     generalDescription: लॉन्चर भाषा, डेटा निर्देशिका, अपडेट चैनल और स्टार्टअप विकल्प कॉन्फ़िगर करें।
     appearanceDescription: थीम, बैकग्राउंड वॉलपेपर, एक्सेंट रंग और लेआउट कस्टमाइज़ करें।

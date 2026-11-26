@@ -1893,6 +1893,7 @@ agent:
     shader: шейдерлер жинағы
   marketResultCount: '{count} нәтиже'
 setting:
+  aboutLauncherNotice: РЕСМИ MINECRAFT ӨНІМІ ЕМЕС. MOJANG НЕМЕСЕ MICROSOFT МАҚҰЛДАМАҒАН ЖӘНЕ ОЛАРМЕН БАЙЛАНЫСЫ ЖОҚ.
   aiAgentApiKeyDescription: OpenAI-мен үйлесімді провайдерді баптаңыз, мысалы OpenAI немесе Claude үшін шлюз. Кілт осы құрылғыда жергілікті сақталады.
   aiAgentApiKeyPlaceholder: OpenAI немесе Claude провайдерінің API кілті
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2188,6 +2189,7 @@ shaderPack:
   noLocalPacksFound: Іздеуге сәйкес жергілікті шейдерлер жинағы табылмады.
   noPacksInstalled: Сізде ешқандай шейдерлер жинағы орнатылмаған.
 shared:
+  defaultOption: Әдепкі
   close: Жабу
   pressKeyCombination: Пернелер тіркесімін басыңыз...
   add: Қосу
@@ -2385,6 +2387,7 @@ tutorial:
     detailTitle: Әлем мәліметтері мен Әрекеттер
     detailDescription: Сақтық көшірме жасаңыз, экспорттаңыз, level.dat қараңыз немесе баптауларды өзгертіңіз.
   settings:
+    javaDescription: Әдепкі Java ортасын, таңдаулы Java жеткізушісін, жад бөлуді және JVM іске қосу аргументтерін баптаңыз. Мұнда әртүрлі жеткізушілерден Java орнатуға да болады.
     navDescription: Жалпы, Сыртқы көрініс, Ойын параметрлері және Желі арасында ауысыңыз.
     generalDescription: Лаунчер тілін, деректер каталогын, жаңарту арналарын және қосу параметрлерін реттеңіз.
     appearanceDescription: Тақырыпты, тұсқағаздарды, түстерді және интерфейс стилін баптаңыз.

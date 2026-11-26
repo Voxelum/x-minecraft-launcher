@@ -1944,6 +1944,7 @@ serverStatus:
   refuse: §4¡El servidor lo ha rechazado!
   timeout: §4¡Conexión al servidor agotada!
 setting:
+  aboutLauncherNotice: NO ES UN PRODUCTO OFICIAL DE MINECRAFT. NO ESTÁ APROBADO POR MOJANG O MICROSOFT NI ASOCIADO CON ELLOS.
   themeStore:
     name: Almacén de temas
     description: Guardar y gestionar temas globales
@@ -2248,6 +2249,7 @@ shaderPack:
   search: Buscar shaders...
   'off': 'Off'
 shared:
+  defaultOption: Predeterminado
   pressKeyCombination: Pulsa una combinación de teclas...
   add: Añadir
   author: Autor
@@ -2452,6 +2454,7 @@ tutorial:
     detailTitle: Detalles del mundo y Acciones
     detailDescription: Crea copias de seguridad, exporta, inspecciona level.dat o edita ajustes del mundo.
   settings:
+    javaDescription: Configura el entorno de ejecución Java predeterminado, el proveedor de Java preferido, la asignación de memoria y los argumentos de inicio de la JVM. Aquí también puedes instalar Java de diferentes proveedores.
     navDescription: Alterna entre General, Apariencia, Ajustes globales del juego y Red.
     generalDescription: Configura el idioma del lanzador, carpeta de datos, canales de actualización y arranque.
     appearanceDescription: Personaliza el tema, fondos de pantalla, colores de acento y estilo de interfaz.

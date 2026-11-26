@@ -1895,6 +1895,7 @@ agent:
   suggestion3: 'MAEK A MODPACK: FIND MODZ I WANT N PUT IN DIS GAEM'
   toggleHint: 2 TOGGLE
 setting:
+  aboutLauncherNotice: NOT AN OFFICIAL MINECRAFT PRODUCTZ. NOT APPROVED BY OR ASSOCIATED WIF MOJANG OR MICROSOFT.
   aiAgentApiKeyDescription: CONFIGUR AN OPENAI-COMPATIBL PROVIDR, SUCH AS OPENAI OR A GATEWAY FUR CLAUDE. TEH KEY IZ STORED LOCALY ON DIS DEVICE.
   aiAgentApiKeyPlaceholder: PASTE API KEY HERE…
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2190,6 +2191,7 @@ shaderPack:
   noLocalPacksFound: NO LOCAL SHADR PACKS FOUND MATCHIN SEARCH.
   noPacksInstalled: U DONT HAZ ANY SHADR PACKS INSTALLED.
 shared:
+  defaultOption: Defaultz
   close: Close dis
   pressKeyCombination: PRESS KEY COMBO...
   add: ADD
@@ -2382,6 +2384,7 @@ tutorial:
     detailTitle: WORLD DETAILZ & BUTTONZ
     detailDescription: BACKUP, EXPORT N CHECK LEVEL.DAT.
   settings:
+    javaDescription: Set default Java runtimez, preferred Java vendor, memoryz an JVM launch argz. Here u can also install Java frum diffrent vendorz.
     navDescription: SWITCH GENRAL, LOOKS, GAME OPTS N NETWERK.
     generalDescription: LANGUAGE, DATA FOLDER, UPDATEZ N STARTUP.
     appearanceDescription: THEMES, PURR-TY WALLPAPERS N COLORS.

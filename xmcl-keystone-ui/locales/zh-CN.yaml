@@ -2061,6 +2061,7 @@ serverStatus:
   refuse: 服务器断开了连接！
   timeout: 服务器响应超时！
 setting:
+  aboutLauncherNotice: 非官方 MINECRAFT 产品。未经 MOJANG 或 MICROSOFT 批准，亦无关联。
   appImageUpdateMode: AppImage 更新管理方式
   appImageExternalMode: 外部管理器或手动替换（默认）
   appImageSelfMode: XMCL 自维护（此 AppImage 由我自行管理）
@@ -2374,6 +2375,7 @@ shaderPack:
   showFile: 在文件夹中显示此光影包
   'off': 'Off'
 shared:
+  defaultOption: 默认
   reset: 重置
   missing: 缺失
   healthy: 正常
@@ -2587,6 +2589,7 @@ tutorial:
     detailTitle: 世界详情与操作
     detailDescription: 备份、导出、检查 level.dat 或管理世界设置。
   settings:
+    javaDescription: 设置默认 Java 运行时、首选 Java 发行商、内存分配和 JVM 启动参数。你也可以在这里从不同发行商安装 Java。
     navDescription: 在常规、外观、全局游戏设置和网络之间切换。
     generalDescription: 配置启动器语言、数据目录、更新通道和启动选项。
     appearanceDescription: 自定义主题、背景壁纸、强调色与界面布局风格。

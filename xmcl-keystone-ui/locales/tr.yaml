@@ -1837,6 +1837,7 @@ serverStatus:
   refuse: §4Sunucu reddetti!
   timeout: §4Sunucu bağlantısı zaman aşımı!
 setting:
+  aboutLauncherNotice: RESMİ BİR MINECRAFT ÜRÜNÜ DEĞİLDİR. MOJANG VEYA MICROSOFT TARAFINDAN ONAYLANMAMIŞTIR VEYA ONLARLA İLİŞKİLİ DEĞİLDİR.
   themeStore:
     name: Tema Deposu
     description: Genel temaları kaydedin ve yönetin
@@ -2132,6 +2133,7 @@ shaderPack:
   noPacksInstalled: Hiç gölgelendirici paketiniz yüklü değil.
   'off': 'Off'
 shared:
+  defaultOption: Varsayılan
   pressKeyCombination: Tuş kombinasyonuna basın...
   add: Ekle
   author: Yazar
@@ -2330,6 +2332,7 @@ tutorial:
     detailTitle: Dünya Detayları ve İşlemler
     detailDescription: Yedek alın, dışa aktarın, level.dat inceleyin veya dünya ayarlarını yönetin.
   settings:
+    javaDescription: Varsayılan Java çalışma zamanını, tercih edilen Java sağlayıcısını, bellek ayırmayı ve JVM başlatma argümanlarını ayarlayın. Buradan farklı sağlayıcılardan Java da yükleyebilirsiniz.
     navDescription: Genel, Görünüm, Genel Oyun Ayarları ve Ağ arasında geçiş yapın.
     generalDescription: Başlatıcı dilini, veri klasörünü, güncelleme kanallarını ve açılış ayarlarını yapılandırın.
     appearanceDescription: Temayı, arka plan görsellerini, vurgu renklerini ve arayüz stilini özelleştirin.

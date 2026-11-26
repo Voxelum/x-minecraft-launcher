@@ -1973,6 +1973,7 @@ agent:
   suggestion3: 'Ein Modpack erstellen: Finde Mods für gewünschte Funktionen und installiere sie in dieser Instanz'
   toggleHint: zum Umschalten
 setting:
+  aboutLauncherNotice: KEIN OFFIZIELLES MINECRAFT-PRODUKT. NICHT VON MOJANG ODER MICROSOFT GENEHMIGT ODER MIT IHNEN VERBUNDEN.
   aiAgentApiKeyDescription: Konfigurieren Sie einen OpenAI-kompatiblen Anbieter, z. B. OpenAI oder ein Gateway für Claude. Der Schlüssel wird lokal auf diesem Gerät gespeichert.
   aiAgentApiKeyPlaceholder: API-Schlüssel eingeben…
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2302,6 +2303,7 @@ shaderPack:
   noLocalPacksFound: Keine lokalen Shader-Pakete gefunden, die deiner Suche entsprechen.
   noPacksInstalled: Du hast keine Shader-Pakete installiert.
 shared:
+  defaultOption: Standard
   close: Schließen
   pressKeyCombination: Tastenkombination drücken...
   add: hinzufügen
@@ -2513,6 +2515,7 @@ tutorial:
     detailTitle: Weltdetails & Aktionen
     detailDescription: Backups erstellen, exportieren, level.dat einsehen oder Welteinstellungen verwalten.
   settings:
+    javaDescription: Lege die Standard-Java-Laufzeitumgebung, den bevorzugten Java-Anbieter, die Speicherzuweisung und die JVM-Startargumente fest. Hier kannst du auch Java von verschiedenen Anbietern installieren.
     navDescription: Zwischen Allgemein, Aussehen, globalen Spieleinstellungen und Netzwerk wechseln.
     generalDescription: Sprache, Datenverzeichnis, Update-Kanäle und Startoptionen konfigurieren.
     appearanceDescription: Design, Hintergrundbilder, Akzentfarben und Layout anpassen.

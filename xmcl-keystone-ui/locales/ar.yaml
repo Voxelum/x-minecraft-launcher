@@ -1912,6 +1912,7 @@ agent:
   title: وكيل XMCL
   toggleHint: للتبديل
 setting:
+  aboutLauncherNotice: ليس منتجًا رسميًا من MINECRAFT. غير معتمد من MOJANG أو MICROSOFT ولا يرتبط بهما.
   aiAgentApiKeyDescription: قم بتكوين موفر متوافق مع OpenAI، مثل OpenAI أو بوابة لـ Claude. يتم تخزين المفتاح محليًا على هذا الجهاز.
   aiAgentApiKeyPlaceholder: مفتاح API لموفر OpenAI أو Claude
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2207,6 +2208,7 @@ shaderPack:
   showFile: إظهار حزمة التظليل هذه في المجلد
   'off': 'Off'
 shared:
+  defaultOption: افتراضي
   close: إغلاق
   pressKeyCombination: اضغط مجموعة مفاتيح...
   add: يضيف
@@ -2405,6 +2407,7 @@ tutorial:
     detailTitle: تفاصيل العالم والإجراءات
     detailDescription: إنشاء نسخ احتياطية وتصديرها وفحص level.dat أو إدارة إعدادات العالم.
   settings:
+    javaDescription: عيّن بيئة تشغيل Java الافتراضية ومزود Java المفضل وتخصيص الذاكرة ووسيطات تشغيل JVM. يمكنك هنا أيضًا تثبيت Java من مزودين مختلفين.
     navDescription: التبديل بين الإعدادات العامة والمظهر وإعدادات اللعبة العامة والشبكة.
     generalDescription: تكوين لغة المشغل ودليل البيانات وقنوات التحديث وخيارات البدء.
     appearanceDescription: تخصيص السمة وخلفيات الشاشة وألوان التمييز ونمط الواجهة.

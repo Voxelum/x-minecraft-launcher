@@ -1893,6 +1893,7 @@ agent:
   suggestion3: 'Bouw een modpack: zoek mods voor een gewenste functie en installeer ze in deze instantie'
   toggleHint: om te schakelen
 setting:
+  aboutLauncherNotice: GEEN OFFICIEEL MINECRAFT-PRODUCT. NIET GOEDGEKEURD DOOR OF VERBONDEN MET MOJANG OF MICROSOFT.
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
   aiAgentApiKeyPlaceholder: Voer API-sleutel in…
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2188,6 +2189,7 @@ shaderPack:
   noLocalPacksFound: Geen lokale shaderpacks gevonden die overeenkomen met je zoekopdracht.
   noPacksInstalled: Je hebt geen shaderpacks geïnstalleerd.
 shared:
+  defaultOption: Standaard
   close: Sluiten
   pressKeyCombination: Druk op een toetsencombinatie...
   add: Toevoegen
@@ -2385,6 +2387,7 @@ tutorial:
     detailTitle: Werelddetails & Acties
     detailDescription: Maak back-ups, exporteer, inspecteer level.dat of wijzig wereldinstellingen.
   settings:
+    javaDescription: Stel de standaard Java-runtime, voorkeurs-Java-leverancier, geheugentoewijzing en JVM-opstartargumenten in. Hier kun je ook Java van verschillende leveranciers installeren.
     navDescription: Schakel tussen Algemeen, Uiterlijk, Globale spelinstellingen en Netwerk.
     generalDescription: Stel launchertaal, gegevensmap, updatekanalen en opstartopties in.
     appearanceDescription: Pas thema, achtergronden, accentkleuren en interfacestijl aan.

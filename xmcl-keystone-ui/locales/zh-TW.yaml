@@ -2028,6 +2028,7 @@ agent:
     shader: 光影包包
   marketResultCount: 共 {count} 個結果
 setting:
+  aboutLauncherNotice: 非官方 MINECRAFT 產品。未經 MOJANG 或 MICROSOFT 核准，亦無關聯。
   aiAgentApiKeyDescription: 配置 OpenAI 相容供應商，例如 OpenAI 或 Claude 閘道。API 金鑰僅儲存在本機裝置。
   aiAgentApiKeyPlaceholder: OpenAI 或 Claude 供應商 API 金鑰
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2335,6 +2336,7 @@ shaderPack:
   noLocalPacksFound: 未找到匹配搜尋的本機光影包包。
   noPacksInstalled: 您尚未安装任何光影包包。
 shared:
+  defaultOption: 預設
   reset: 重設
   close: 關閉
   pressKeyCombination: 按下按鍵組合...
@@ -2548,6 +2550,7 @@ tutorial:
     detailTitle: 世界詳情與操作
     detailDescription: 備份、匯出、檢查 level.dat 或管理世界設定。
   settings:
+    javaDescription: 設定預設 Java 執行環境、偏好的 Java 供應商、記憶體配置與 JVM 啟動參數。你也可以在這裡從不同供應商安裝 Java。
     navDescription: 在一般、外觀、全域遊戲設定和網路之間切換。
     generalDescription: 設定啟動器語言、資料目錄、更新通道與啟動選項。
     appearanceDescription: 自訂主題、背景桌布、強調色與介面版面風格。

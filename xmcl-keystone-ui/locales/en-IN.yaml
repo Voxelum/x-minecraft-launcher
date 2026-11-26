@@ -1998,6 +1998,7 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  aboutLauncherNotice: NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
   about: About
   aboutBmclDescription: BMCL API provides convenient downloads for users in Chinese Mainland
   aboutContributors: 🧑‍💻 Contributors 🧑‍💻
@@ -2293,6 +2294,7 @@ shaderPack:
   showFile: Show this shader pack in folder
   'off': 'Off'
 shared:
+  defaultOption: Default
   pressKeyCombination: Press key combination...
   add: Add
   author: Author
@@ -2491,6 +2493,7 @@ tutorial:
     detailTitle: World Details & Actions
     detailDescription: Backup, export, inspect level.dat, or manage world settings.
   settings:
+    javaDescription: Set default Java runtime, preferred Java vendor, memory allocation and JVM launch arguments. Here you can also install Java from different vendors.
     navDescription: Switch between General, Appearance, Global Game Settings, and Network.
     generalDescription: Configure launcher language, data directory, update channels, and startup options.
     appearanceDescription: Customize theme, background wallpapers, accent colors, and layout style.

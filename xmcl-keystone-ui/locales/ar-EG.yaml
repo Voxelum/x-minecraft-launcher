@@ -1996,6 +1996,7 @@ serverStatus:
   refuse: §4السيرفر رفض الاتصال!
   timeout: §4انتهت مهلة الاتصال بالسيرفر!
 setting:
+  aboutLauncherNotice: ده مش منتج رسمي من MINECRAFT. مش معتمد من MOJANG أو MICROSOFT ومش مرتبط بيهم.
   about: حول البرنامج
   aboutBmclDescription: خدمة BMCL API بتوفر تنزيلات سريعة للمستخدمين في الصين
   aboutContributors: 🧑‍💻 المساهمون 🧑‍💻
@@ -2291,6 +2292,7 @@ shaderPack:
   showFile: عرض حزمة الشيدر دي في المجلد
   'off': 'Off'
 shared:
+  defaultOption: افتراضي
   pressKeyCombination: اضغط مجموعة مفاتيح...
   add: إضافة
   author: المؤلف
@@ -2489,6 +2491,7 @@ tutorial:
     detailTitle: تفاصيل العالم والإجراءات
     detailDescription: عمل نسخ احتياطية وتصديرها وفحص level.dat أو تعديل إعدادات العالم.
   settings:
+    javaDescription: حدد بيئة تشغيل Java الافتراضية ومزود Java المفضل وتخصيص الذاكرة ووسائط تشغيل JVM. وتقدر هنا كمان تثبت Java من مزودين مختلفين.
     navDescription: التبديل بين عام والمظهر وإعدادات اللعبة العامة والشبكة.
     generalDescription: ضبط لغة المشغل ومجلد البيانات وقنوات التحديث وخيارات البدء.
     appearanceDescription: تخصيص الثيم وخلفيات الشاشة وألوان الواجهة.

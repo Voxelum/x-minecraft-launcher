@@ -1895,6 +1895,7 @@ agent:
   title: Axente de XMCL
   toggleHint: para alternar
 setting:
+  aboutLauncherNotice: NON É UN PRODUTO OFICIAL DE MINECRAFT. NON ESTÁ APROBADO POR MOJANG OU MICROSOFT NIN ASOCIADO CON ELES.
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
   aiAgentApiKeyPlaceholder: API-sleutel van OpenAI- of Claude-provider
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2190,6 +2191,7 @@ shaderPack:
   noLocalPacksFound: Non se atoparon paquetes de shaders locais que coincidan coa túa busca.
   noPacksInstalled: Non tes ningún paquete de shaders instalado.
 shared:
+  defaultOption: Predeterminado
   close: Pechar
   pressKeyCombination: Preme unha combinación de teclas...
   add: Toevoegen
@@ -2388,6 +2390,7 @@ tutorial:
     detailTitle: Detalles do mundo e Accións
     detailDescription: Fai copias de seguranza, exporta, inspecciona level.dat ou xestiona axustes.
   settings:
+    javaDescription: Establece o entorno de execución Java predeterminado, o provedor de Java preferido, a asignación de memoria e os argumentos de inicio da JVM. Aquí tamén podes instalar Java de diferentes provedores.
     navDescription: Cambia entre Xeral, Aparencia, Axustes globais do xogo e Rede.
     generalDescription: Configura o idioma, cartafol de datos, canles de actualización e arranque.
     appearanceDescription: Personaliza o tema, fondos de pantalla, cores de acento e estilo visual.

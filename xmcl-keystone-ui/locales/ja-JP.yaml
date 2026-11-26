@@ -1978,6 +1978,7 @@ agent:
     shader: シェーダーパック
   marketResultCount: '{count} 件の結果'
 setting:
+  aboutLauncherNotice: MINECRAFT の公式製品ではありません。MOJANG または MICROSOFT によって承認されたものではなく、関連もありません。
   aiAgentApiKeyDescription: OpenAI や Claude 用ゲートウェイなど、OpenAI 互換プロバイダーを設定します。キーはこのデバイスにローカル保存されます。
   aiAgentApiKeyPlaceholder: OpenAI または Claude プロバイダーの API キー
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2280,6 +2281,7 @@ shaderPack:
   noLocalPacksFound: 検索に一致するローカルシェーダーパックが見つかりませんでした。
   noPacksInstalled: シェーダーパックがインストールされていません。
 shared:
+  defaultOption: デフォルト
   close: 閉じる
   pressKeyCombination: キーの組み合わせを押してください...
   add: 追加
@@ -2478,6 +2480,7 @@ tutorial:
     detailTitle: ワールドの詳細と操作
     detailDescription: バックアップ、エクスポート、level.datの確認やワールド設定の管理を行います。
   settings:
+    javaDescription: デフォルトの Java ランタイム、優先する Java ベンダー、メモリ割り当て、JVM 起動引数を設定します。ここでは別のベンダーから Java をインストールすることもできます。
     navDescription: 一般、外観、ゲーム全体設定、ネットワーク設定を切り替えます。
     generalDescription: 言語、データフォルダ、更新チャンネル、起動オプションを設定します。
     appearanceDescription: テーマ、壁紙、アクセントカラー、レイアウトスタイルをカスタマイズします。

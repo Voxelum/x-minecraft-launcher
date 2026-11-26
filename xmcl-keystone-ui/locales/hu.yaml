@@ -1938,6 +1938,7 @@ agent:
   suggestion3: 'Modcsomag készítése: keress modokat egy adott funkcióhoz és telepítsd őket ide'
   toggleHint: a váltáshoz
 setting:
+  aboutLauncherNotice: NEM HIVATALOS MINECRAFT TERMÉK. NEM HAGYTA JÓVÁ A MOJANG VAGY A MICROSOFT, ÉS NEM KAPCSOLÓDIK HOZZÁJUK.
   aiAgentApiKeyDescription: Állítson be OpenAI-kompatibilis szolgáltatót, például OpenAI-t vagy Claude-hoz használható átjárót. A kulcs helyileg, ezen az eszközön lesz tárolva.
   aiAgentApiKeyPlaceholder: Illeszd be az API-kulcsot…
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2240,6 +2241,7 @@ shaderPack:
   noLocalPacksFound: Nem található a keresésnek megfelelő helyi shader csomag.
   noPacksInstalled: Nincsenek telepített shader csomagjaid.
 shared:
+  defaultOption: Alapértelmezett
   close: Bezárás
   pressKeyCombination: Nyomjon meg egy billentyűkombinációt...
   add: Új
@@ -2442,6 +2444,7 @@ tutorial:
     detailTitle: Világ részletei és Műveletek
     detailDescription: Készíts biztonsági mentést, exportáld, vizsgáld a level.dat-ot vagy módosítsd a beállításokat.
   settings:
+    javaDescription: Állítsd be az alapértelmezett Java futtatókörnyezetet, a preferált Java-szolgáltatót, a memóriakiosztást és a JVM indítási argumentumait. Itt különböző szolgáltatóktól is telepíthetsz Java-t.
     navDescription: Váltás az Általános, Megjelenés, Globális játékbeállítások és Hálózat között.
     generalDescription: Nyelv, adatmappa, frissítési csatornák és indítási beállítások konfigurálása.
     appearanceDescription: Téma, háttérképek, kiemelő színek és felületi elrendezés testreszabása.

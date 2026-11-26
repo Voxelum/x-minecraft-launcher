@@ -1996,6 +1996,7 @@ agent:
   title: Agent XMCL
   toggleHint: pour basculer
 setting:
+  aboutLauncherNotice: CECI N'EST PAS UN PRODUIT MINECRAFT OFFICIEL. NON APPROUVÉ PAR MOJANG OU MICROSOFT ET NON ASSOCIÉ À EUX.
   aiAgentApiKeyDescription: Configurez un fournisseur compatible OpenAI, comme OpenAI ou une passerelle pour Claude. La clé est stockée localement sur cet appareil.
   aiAgentApiKeyPlaceholder: Clé API du fournisseur OpenAI ou Claude
   aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
@@ -2309,6 +2310,7 @@ shaderPack:
   searchHint: Rechercher des packs de shaders sur Modrinth et CurseForge
   selectSearchHint: Rechercher et sélectionner un pack de shaders
 shared:
+  defaultOption: Par défaut
   close: Fermer
   pressKeyCombination: Appuyez sur une combinaison de touches...
   add: Ajouter
@@ -2524,6 +2526,7 @@ tutorial:
     detailTitle: Détails du monde & Actions
     detailDescription: Sauvegardez, exportez, inspectez level.dat ou modifiez les paramètres du monde.
   settings:
+    javaDescription: Définissez l'environnement d'exécution Java par défaut, le fournisseur Java préféré, l'allocation mémoire et les arguments de lancement JVM. Vous pouvez aussi installer Java depuis différents fournisseurs ici.
     navDescription: Basculez entre Général, Apparence, Paramètres globaux du jeu et Réseau.
     generalDescription: Configurez la langue, le répertoire de données, les canaux de mise à jour et le démarrage.
     appearanceDescription: Personnalisez le thème, les fonds d'écran, les couleurs d'accentuation et le style.
