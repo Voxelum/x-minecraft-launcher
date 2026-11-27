@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 326 (in 334 Vue files)
+**Total anchors:** 329 (in 335 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -166,8 +166,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `instance-fullscreen-switch` | [`xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L36`](../xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L36) |
 | `instance-item` | [`xmcl-keystone-ui/src/views/AppSideBarInstanceItem.vue#L7`](../xmcl-keystone-ui/src/views/AppSideBarInstanceItem.vue#L7) |
 | `instance-monitor-select` | [`xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L56`](../xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L56) |
-| `instance-repair-rescan` | [`xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L856`](../xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L856) |
-| `instance-repair-run` | [`xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L875`](../xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L875) |
+| `instance-repair-rescan` | [`xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L842`](../xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L842) |
+| `instance-repair-run` | [`xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L861`](../xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L861) |
 | `instance-server-edit-dialog` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L3`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L3) |
 | `instance-server-edit-host` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L79`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L79) |
 | `instance-server-edit-name` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L66`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L66) |
@@ -220,6 +220,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `minecraft-friends-menu` | [`xmcl-keystone-ui/src/views/MeProfilePanel.vue#L196`](../xmcl-keystone-ui/src/views/MeProfilePanel.vue#L196) |
 | `minecraft-friends-menu-activator` | [`xmcl-keystone-ui/src/views/MeProfilePanel.vue#L155`](../xmcl-keystone-ui/src/views/MeProfilePanel.vue#L155) |
 | `minecraft-friends-outgoing-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L226`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L226) |
+| `mod-item-change-version` | [`xmcl-keystone-ui/src/views/ModItem.vue#L87`](../xmcl-keystone-ui/src/views/ModItem.vue#L87) |
+| `mod-item-update` | [`xmcl-keystone-ui/src/views/ModItem.vue#L39`](../xmcl-keystone-ui/src/views/ModItem.vue#L39) |
 | `modrinth-project-bind` | [`xmcl-keystone-ui/src/components/BaseSettingModrinthProjectCard.vue#L10`](../xmcl-keystone-ui/src/components/BaseSettingModrinthProjectCard.vue#L10) |
 | `modrinth-project-bind-cancel` | [`xmcl-keystone-ui/src/views/AppModrinthProjectBindDialog.vue#L41`](../xmcl-keystone-ui/src/views/AppModrinthProjectBindDialog.vue#L41) |
 | `modrinth-project-bind-confirm` | [`xmcl-keystone-ui/src/views/AppModrinthProjectBindDialog.vue#L42`](../xmcl-keystone-ui/src/views/AppModrinthProjectBindDialog.vue#L42) |
@@ -308,6 +310,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `setup-next` | [`xmcl-keystone-ui/src/views/SetupFooter.vue#L19`](../xmcl-keystone-ui/src/views/SetupFooter.vue#L19) |
 | `setup-prev` | [`xmcl-keystone-ui/src/views/SetupFooter.vue#L7`](../xmcl-keystone-ui/src/views/SetupFooter.vue#L7) |
 | `setup-root` | [`xmcl-keystone-ui/src/views/Setup.vue#L5`](../xmcl-keystone-ui/src/views/Setup.vue#L5) |
+| `shader-lang-translate-dialog` | [`xmcl-keystone-ui/src/views/ShaderPackLangTranslateDialog.vue#L10`](../xmcl-keystone-ui/src/views/ShaderPackLangTranslateDialog.vue#L10) |
 | `sidebar-account-menu` | [`xmcl-keystone-ui/src/views/AppSideBarAccountMenu.vue#L12`](../xmcl-keystone-ui/src/views/AppSideBarAccountMenu.vue#L12) |
 | `store-install` | [`xmcl-keystone-ui/src/components/StoreProjectHeader.vue#L47`](../xmcl-keystone-ui/src/components/StoreProjectHeader.vue#L47) |
 | `store-page` | [`xmcl-keystone-ui/src/views/Store.vue#L3`](../xmcl-keystone-ui/src/views/Store.vue#L3) |

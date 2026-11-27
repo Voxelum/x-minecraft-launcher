@@ -9,7 +9,7 @@ import { notNullish, useLocalStorage } from '@vueuse/core'
 import { File, FileModLoaderType } from '@xmcl/curseforge'
 import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InjectionKey, Ref } from 'vue'
+import { computed, markRaw, ref, shallowRef, watch, type InjectionKey, type Ref } from 'vue'
 import { useDialog } from './dialog'
 import { useErrorHandler } from './exception'
 import { InstanceInstallDialog } from './instanceUpdate'
@@ -59,8 +59,11 @@ export function useModUpgrade(
   const plans = shallowRef({} as Record<string, UpgradePlan>)
   const checked = ref(false)
   const { show } = useDialog(InstanceInstallDialog)
+  let submittedPlans: Record<string, UpgradePlan> = {}
   const operation = useInstanceInstallOperation(path, () => {
-    plans.value = {}
+    plans.value = Object.fromEntries(Object.entries(plans.value)
+      .filter(([id, plan]) => submittedPlans[id] !== plan))
+    submittedPlans = {}
   })
 
   const skipVersion = useLocalStorage(computed(() => `${destinationPrefix}UpgradeSkipVersion:${path.value}`), false, { writeDefaults: false })
@@ -81,6 +84,7 @@ export function useModUpgrade(
     checked.value = false
     plans.value = {}
     operation.reset()
+    submittedPlans = {}
     error.value = null
   })
 
@@ -260,14 +264,25 @@ export function useModUpgrade(
     return buildModUpgradeManifest(Object.values(plans.value), destinationPrefix)
   }
 
-  function upgrade() {
-    const { oldFiles, files } = prepareUpgradeManifest()
+  function showUpgrade(selectedPlans: Record<string, UpgradePlan>) {
+    if (operation.task.value || !Object.keys(selectedPlans).length) return
+    const { oldFiles, files } = buildModUpgradeManifest(Object.values(selectedPlans), destinationPrefix)
+    submittedPlans = selectedPlans
     show({
       type: 'updates',
       oldFiles,
       files,
       id: operation.id.value,
     })
+  }
+
+  function upgrade() {
+    showUpgrade(plans.value)
+  }
+
+  function upgradeOne(projectId: string) {
+    const plan = plans.value[projectId]
+    if (plan) showUpgrade({ [projectId]: plan })
   }
 
   /**
@@ -293,6 +308,7 @@ export function useModUpgrade(
     plans,
     checked,
     upgrade,
+    upgradeOne,
     prepareUpgradeManifest,
     upgrading: computed(() => !!operation.task.value),
     getModsWithoutUpgrade,

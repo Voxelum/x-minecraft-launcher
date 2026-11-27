@@ -34,21 +34,24 @@
       />
     </template>
 
+    <template v-if="hasUpdate && isInstalled && !hasDuplicate && !selectionMode" #avatar-action>
+      <v-btn
+        data-testid="mod-item-update"
+        class="absolute"
+        icon
+        color="primary"
+        size="x-small"
+        :aria-label="t('mod.updateMod')"
+        :disabled="upgrading"
+        v-shared-tooltip="t('mod.updateMod')"
+        @click.stop="emit('update-mod')"
+      >
+        <v-icon size="17">update</v-icon>
+      </v-btn>
+    </template>
+
     <template #append>
       <div class="flex items-center gap-1 pl-2 select-none" @click.stop>
-        <!-- Update Available Badge -->
-        <v-chip
-          v-if="hasUpdate"
-          size="x-small"
-          color="primary"
-          variant="tonal"
-          class="font-semibold text-xs cursor-pointer mr-1"
-          v-shared-tooltip="t('mod.hasUpdate')"
-        >
-          <v-icon start size="13">update</v-icon>
-          {{ t('mod.hasUpdate') }}
-        </v-chip>
-
         <!-- Duplicate warning -->
         <v-icon
           v-if="hasDuplicate"
@@ -78,6 +81,20 @@
             @update:model-value="onToggle"
           />
         </div>
+
+        <v-btn
+          v-if="isInstalled && canChangeVersion && !selectionMode"
+          data-testid="mod-item-change-version"
+          icon
+          variant="text"
+          size="x-small"
+          density="comfortable"
+          :aria-label="t('mod.changeVersion')"
+          v-shared-tooltip="t('mod.changeVersion')"
+          @click.stop="emit('change-version')"
+        >
+          <v-icon size="16">swap_horiz</v-icon>
+        </v-btn>
 
         <!-- Settings Context Menu Trigger -->
         <v-btn
@@ -119,6 +136,8 @@ const props = defineProps<{
   selected: boolean
   itemHeight: number
   hasUpdate?: boolean
+  upgrading?: boolean
+  canChangeVersion?: boolean
   dense?: boolean
   indent?: boolean
   indentColor?: string
@@ -127,7 +146,7 @@ const props = defineProps<{
   install: (p: ProjectEntry) => Promise<void>
 }>()
 
-const emit = defineEmits(['click', 'checked', 'install', 'click-dependency', 'drop-on-mod'])
+const emit = defineEmits(['click', 'checked', 'install', 'click-dependency', 'drop-on-mod', 'update-mod', 'change-version'])
 
 const { t } = useI18n()
 const { open } = useContextMenu()
@@ -218,6 +237,9 @@ const hasLabel = computed(() => !props.dense && props.item.installed && (props.i
 }
 .mod-toggle-wrapper :deep(.v-selection-control) {
   min-height: 28px;
+}
+.mod-item-switch :deep(.v-selection-control__wrapper) {
+  zoom: 0.75;
 }
 .mod-settings-btn {
   transition: opacity 0.15s ease;

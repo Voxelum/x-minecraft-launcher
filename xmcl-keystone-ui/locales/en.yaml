@@ -1055,6 +1055,8 @@ mod:
   groupName: Group Name
   groupNameRequired: Group name is required
   hasUpdate: Mod has a new version!
+  changeVersion: Change version
+  updateMod: Update mod
   incompatible: Incompatible Mod.
   incompatibleHint: Show Incompatible
   incompatibleHintDescription: Some mods dependencies might be missing. Or some dependencies versions do not matched.

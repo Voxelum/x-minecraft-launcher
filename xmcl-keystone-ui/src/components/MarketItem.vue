@@ -74,6 +74,7 @@
             file_download
           </v-icon>
         </v-btn>
+        <slot name="avatar-action" />
       </v-avatar>
       <div
         v-if="indent"

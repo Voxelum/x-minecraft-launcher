@@ -47,6 +47,7 @@ import { FileModLoaderType, Mod, ModStatus } from '@xmcl/curseforge'
 import { ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
+  versionsRequest?: number
   curseforge?: Mod
   curseforgeId: number
   installed: ProjectFile[]
@@ -505,6 +506,7 @@ const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modr
 </script>
 <template>
   <MarketProjectDetail
+    :versions-request="props.versionsRequest"
     :detail="model"
     :enabled="enabled"
     :selected-installed="installed"

@@ -284,6 +284,8 @@
         :indent-color="getGroupColor((item as ProjectEntry<ModFile>).installed?.[0]?.fileName)"
         :item-height="itemHeight"
         :has-update="hasUpdate"
+        :upgrading="upgrading"
+        :can-change-version="!!(item.modrinthProjectId || item.curseforgeProjectId || item.modrinth || item.curseforge)"
         :checked="checked"
         :selection-mode="selectionMode"
         :selected="selected"
@@ -292,6 +294,8 @@
         :draggable="isLocalView"
         :get-context-menu-items="getContextMenuItems"
         @click="on.click"
+        @update-mod="upgradeOne(item.id)"
+        @change-version="openVersions(item.id)"
         @click-dependency="onClickDependency"
         @drop-on-mod="handleModDropOnMod"
       />
@@ -349,6 +353,7 @@
         :key="selectedModrinthId"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
+        :versions-request="versionsRequest?.id === selectedItem?.id ? versionsRequest?.sequence : undefined"
         :upgrade-version="getModrinthUpgradeVersion(selectedModrinthId)"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
         :loader="modLoader"
@@ -370,6 +375,7 @@
         :key="selectedCurseforgeId"
         :curseforge="selectedItem?.curseforge"
         :curseforge-id="Number(selectedCurseforgeId)"
+        :versions-request="versionsRequest?.id === selectedItem?.id ? versionsRequest?.sequence : undefined"
         :installed="selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId)"
         :game-version="gameVersion"
         :loader="modLoader"
@@ -886,7 +892,7 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
   v?.id === 'OptiFine'
 
 // Upgrade
-const { plans, error: upgradeError } = injection(kModUpgrade)
+const { plans, error: upgradeError, upgradeOne, upgrading } = injection(kModUpgrade)
 
 const getModrinthUpgradeVersion = (projectId: string) => {
   const plan = plans.value[projectId]
@@ -955,6 +961,19 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 
 const route = useRoute()
 const { replace } = useRouter()
+const versionsRequest = shallowRef<{ id: string; sequence: number }>()
+let versionsRequestSequence = 0
+watch(() => route.query.id, (id) => {
+  if (id !== versionsRequest.value?.id) versionsRequest.value = undefined
+})
+
+async function openVersions(id: string) {
+  const sequence = ++versionsRequestSequence
+  if (route.query.id !== id) await replace({ query: { ...route.query, id } })
+  if (sequence === versionsRequestSequence && route.query.id === id) {
+    versionsRequest.value = { id, sequence }
+  }
+}
 
 function onCollapseAllGroups() {
   collapseAllGroups()

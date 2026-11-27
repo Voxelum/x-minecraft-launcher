@@ -280,7 +280,7 @@
             <v-icon start size="16">photo_library</v-icon>
             {{ t('modrinth.gallery') }}
           </v-tab>
-          <v-tab v-if="versions.length > 0 && !noVersion" :value="2" class="detail-tab">
+          <v-tab v-if="(versions.length > 0 || tab === 2) && !noVersion" :value="2" class="detail-tab">
             <v-icon start size="16">history</v-icon>
             {{ t('modrinth.versions') }}
           </v-tab>
@@ -744,6 +744,7 @@ const props = defineProps<{
   noDelete?: boolean
   noEnabled?: boolean
   noVersion?: boolean
+  versionsRequest?: number
   /**
    * Force-disable the install / enable actions (e.g. no valid install target).
    */
@@ -873,7 +874,10 @@ export interface ProjectDetail {
   info: Info[]
   archived?: boolean
 }
-const tab = ref(0)
+const tab = ref(props.versionsRequest ? 2 : 0)
+watch(() => props.versionsRequest, (request) => {
+  if (request) tab.value = 2
+})
 
 const _enabled = computed({
   get() {
@@ -989,7 +993,7 @@ watch(
     if (d?.id !== o?.id) {
       showDependencies.value = undefined
       selectedVersion.value = undefined
-      tab.value = 0
+      tab.value = props.versionsRequest ? 2 : 0
     }
   },
 )

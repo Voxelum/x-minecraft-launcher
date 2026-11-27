@@ -25,6 +25,7 @@ import { getMarketRoutePathFromModrinthProjectType } from '@/util/marketRoute'
 import Hint from './Hint.vue'
 
 const props = defineProps<{
+  versionsRequest?: number
   modrinth?: SearchResultHit
   projectId: string
   upgradeVersion?: ProjectVersion
@@ -309,6 +310,7 @@ const { t } = useI18n()
     </div>
   </Hint>
   <MarketProjectDetail
+    :versions-request="props.versionsRequest"
     v-else
     :detail="model"
     :has-more="false"
