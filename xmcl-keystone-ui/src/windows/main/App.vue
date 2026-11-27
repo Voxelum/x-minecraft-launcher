@@ -119,6 +119,7 @@ const lazyDialogComponents = {
   'modrinth-version-publish': defineAsyncComponent(() => import('@/views/AppModrinthVersionPublishDialog.vue')),
   'java-update': defineAsyncComponent(() => import('@/views/AppJavaUpdateDialog.vue')),
   'shaderpack-lang-translate': defineAsyncComponent(() => import('@/views/ShaderPackLangTranslateDialog.vue')),
+  'instance-repair': defineAsyncComponent(() => import('@/views/AppInstanceRepairDialog.vue')),
 }
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
