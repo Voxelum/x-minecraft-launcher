@@ -238,6 +238,9 @@ const hasLabel = computed(() => !props.dense && props.item.installed && (props.i
 .mod-toggle-wrapper :deep(.v-selection-control) {
   min-height: 28px;
 }
+.mod-item-switch :deep(.v-selection-control__wrapper) {
+  zoom: 0.75;
+}
 .mod-settings-btn {
   transition: opacity 0.15s ease;
 }
