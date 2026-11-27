@@ -29,4 +29,10 @@ describe('analyzeCrashReport', () => {
     expect(result.causes).toContain('mixin')
     expect(result.causes).toContain('missingMod')
   })
+
+  test.each(['Metaspace', 'Direct buffer memory', 'unable to create native thread'])('does not suggest increasing heap for %s', (reason) => {
+    const result = analyzeCrashReport('crash.txt', `java.lang.OutOfMemoryError: ${reason}`)
+    expect(result.causes).toEqual(['oom'])
+    expect(result.needsMoreMemory).toBe(false)
+  })
 })

@@ -71,7 +71,7 @@ export function analyzeCrashReport(fileName: string, content: string): CrashAnal
     fileName,
     causes,
     details,
-    needsMoreMemory: causes.includes('oom'),
+    needsMoreMemory: /java\.lang\.OutOfMemoryError:\s*(?:Java heap space|GC overhead limit exceeded)\b/i.test(content),
     suggestedJavaMajor,
   }
 }

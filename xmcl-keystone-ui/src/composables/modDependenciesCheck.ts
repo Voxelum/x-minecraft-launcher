@@ -125,7 +125,7 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     await updateMetadata()
 
     const result: [InstanceFile, ModFile][] = []
-    const mods = instanceMods.value
+    const mods = instanceMods.value.filter(mod => mod.enabled)
     const _path = path.value
     const runtimes = runtime.value
 

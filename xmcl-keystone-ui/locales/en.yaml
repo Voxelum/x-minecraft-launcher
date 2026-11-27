@@ -2868,6 +2868,8 @@ bigPicture:
   qaFeedbackDesc: Report an issue or give feedback
   qaExitDesc: Return to desktop mode
 instanceRepair:
+  disabledDependency: "Possible dependency is installed but disabled: {file}. Check its version before enabling it in Mods."
+  heapOomAdvice: "This report indicates a Java heap OOM. If it recurs, review the memory settings before increasing the heap."
   title: Automatic Build Repair
   statusScanning: Scanning...
   statusRepairing: Repairing...

@@ -4,6 +4,7 @@ import type { ModFile } from '@/util/mod'
 import {
   deduplicateModDependencyInstallations,
   getModDependencyIdentity,
+  hasDisabledModDependencyMatch,
 } from './modDependencyInstall'
 
 function installation(file: InstanceFile): [InstanceFile, ModFile] {
@@ -76,6 +77,7 @@ describe('mod dependency install planning', () => {
       path: '/instance/mods/cloth-config-15.0.130-fabric.jar',
       fileName: 'cloth-config-15.0.130-fabric.jar',
       hash: 'old-hash',
+      enabled: true,
       modId: 'cloth-config',
       provideRuntime: { 'cloth-config': '15.0.130' },
     } as unknown as ModFile
@@ -83,5 +85,18 @@ describe('mod dependency install planning', () => {
     expect(deduplicateModDependencyInstallations([
       installation(candidate),
     ], [installedLocal])).toEqual([])
+  })
+
+  test('keeps disabled local dependencies unresolved and flags them for manual review', () => {
+    const candidate: InstanceFile = { path: 'mods/cloth-config-15.0.140-fabric.jar' }
+    const disabled = {
+      path: '/instance/mods/cloth-config-15.0.130-fabric.jar.disabled',
+      enabled: false,
+      modId: 'cloth-config',
+    } as ModFile
+
+    expect(deduplicateModDependencyInstallations([installation(candidate)], [disabled])).toEqual([installation(candidate)])
+    expect(hasDisabledModDependencyMatch(candidate, [disabled])).toBe(true)
+    expect(hasDisabledModDependencyMatch({ path: 'mods/unrelated-1.jar' }, [disabled])).toBe(false)
   })
 })

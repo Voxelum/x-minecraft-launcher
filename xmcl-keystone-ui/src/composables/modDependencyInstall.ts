@@ -23,7 +23,7 @@ export function getModDependencyIdentity(file: InstanceFile): string {
   return `path:${normalizeModFileName(file.path).toLocaleLowerCase()}`
 }
 
-function collectInstalledModIndex(installedMods: readonly ModFile[]) {
+function collectInstalledModIndex(installedMods: readonly ModFile[], enabled = true) {
   const hashes = new Set<string>()
   const modrinthIds = new Set<string>()
   const curseforgeIds = new Set<number>()
@@ -31,6 +31,7 @@ function collectInstalledModIndex(installedMods: readonly ModFile[]) {
   const stems = new Set<string>()
 
   installedMods.forEach((mod) => {
+    if (mod.enabled !== enabled) return
     if (mod.hash) hashes.add(mod.hash.toLowerCase())
     if (mod.modrinth?.projectId) modrinthIds.add(mod.modrinth.projectId)
     if (mod.curseforge?.projectId) curseforgeIds.add(mod.curseforge.projectId)
@@ -47,11 +48,12 @@ function collectInstalledModIndex(installedMods: readonly ModFile[]) {
   return { hashes, modrinthIds, curseforgeIds, fileNames, stems }
 }
 
-export function isModDependencyAlreadyInstalled(
-  file: InstanceFile,
-  installedMods: readonly ModFile[],
-): boolean {
-  const index = collectInstalledModIndex(installedMods)
+/** A possible disabled match blocks unattended installation, but never satisfies a dependency. */
+export function hasDisabledModDependencyMatch(file: InstanceFile, mods: readonly ModFile[]): boolean {
+  return matchesInstalledMod(file, collectInstalledModIndex(mods, false))
+}
+
+function matchesInstalledMod(file: InstanceFile, index: ReturnType<typeof collectInstalledModIndex>): boolean {
   const sha1 = file.hashes?.sha1?.toLowerCase()
   const fileName = normalizeModFileName(file.path).toLowerCase()
   const stem = extractModNameStem(file.path)
@@ -81,13 +83,7 @@ export function deduplicateModDependencyInstallations(
     const fileName = normalizeModFileName(file.path).toLowerCase()
     const stem = extractModNameStem(file.path)
 
-    const alreadyInstalled = Boolean(
-      (sha1 && installedIndex.hashes.has(sha1)) ||
-      (file.modrinth?.projectId && installedIndex.modrinthIds.has(file.modrinth.projectId)) ||
-      (file.curseforge?.projectId && installedIndex.curseforgeIds.has(file.curseforge.projectId)) ||
-      installedIndex.fileNames.has(fileName) ||
-      (stem.length >= 4 && installedIndex.stems.has(stem)),
-    )
+    const alreadyInstalled = matchesInstalledMod(file, installedIndex)
 
     const alreadyQueued = Boolean(
       seenIdentities.has(identity) ||

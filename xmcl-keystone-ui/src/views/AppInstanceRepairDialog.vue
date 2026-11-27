@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
-import { analyzeCrashReport, type CrashAnalysisResult } from '@/composables/instanceCrashAnalyze'
+import { analyzeCrashReport } from '@/composables/instanceCrashAnalyze'
 import { kInstanceFiles } from '@/composables/instanceFiles'
 import { kInstanceJava } from '@/composables/instanceJava'
 import { getInstanceJavaIssue } from '@/composables/instanceJavaDiagnose'
@@ -10,6 +10,7 @@ import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceVersionInstall, type InstanceInstallInstruction } from '@/composables/instanceVersionInstall'
 import { kJavaContext } from '@/composables/java'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
+import { hasDisabledModDependencyMatch } from '@/composables/modDependencyInstall'
 import { useNotifier } from '@/composables/notifier'
 import { useService } from '@/composables/service'
 import { getInstanceIcon } from '@/util/favicon'
@@ -111,7 +112,6 @@ const lastRepairCount = ref(0)
 const showLog = ref(false)
 const copiedReport = ref(false)
 const activityLog = ref<string[]>([])
-const lastCrashAnalysis = shallowRef<CrashAnalysisResult | undefined>(undefined)
 
 function createCheckItem(id: RepairCheckId): RepairCheckItem {
   return {
@@ -320,6 +320,7 @@ async function runDiagnostics(postRepair = false) {
 
     await dependencyCheck.refresh().catch(() => undefined)
     const missingDeps = dependencyCheck.installation.value ?? []
+    const blockedDeps = missingDeps.filter(([file]) => hasDisabledModDependencyMatch(file, instanceMods.mods.value))
     const duplicateGroups = Object.entries(instanceMods.conflicted.value ?? {})
     const loaderIncompat = instanceMods.loaderIncompatibilities.value ?? []
     const incompatibleModIds = Object.entries(instanceMods.compatibility.value ?? {})
@@ -327,7 +328,8 @@ async function runDiagnostics(postRepair = false) {
       .map(([modId]) => modId)
 
     const modDetails = [
-      ...missingDeps.slice(0, 4).map(([depFile, parentMod]) =>
+      ...blockedDeps.map(([file]) => t('instanceRepair.disabledDependency', { file: file.path })),
+      ...missingDeps.filter(dep => !blockedDeps.includes(dep)).slice(0, 4).map(([depFile, parentMod]) =>
         `${t('instanceRepair.missingDepLabel')}: ${depFile.path.replace(/^\/?mods\//, '')} (${parentMod.name || parentMod.fileName})`,
       ),
       ...duplicateGroups.slice(0, 4).map(([modId, dupList]) =>
@@ -342,7 +344,7 @@ async function runDiagnostics(postRepair = false) {
     ]
 
     const totalModIssues = missingDeps.length + duplicateGroups.length + loaderIncompat.length + incompatibleModIds.length
-    const autoFixableMods = missingDeps.length + duplicateGroups.length + loaderIncompat.length > 0
+    const autoFixableMods = missingDeps.length - blockedDeps.length + duplicateGroups.length + loaderIncompat.length > 0
     setCheckResult(
       'mods',
       totalModIssues,
@@ -364,18 +366,19 @@ async function runDiagnostics(postRepair = false) {
     const analysis = latestCrashFile && crashContent
       ? analyzeCrashReport(latestCrashFile, crashContent)
       : undefined
-    lastCrashAnalysis.value = analysis
 
     const crashDetails = analysis?.details ?? []
     const crashCount = crashDetails.length
     setCheckResult(
       'crash',
       crashCount,
-      latestCrashFile && crashCount > 0 ? [latestCrashFile, ...crashDetails] : crashDetails,
+      latestCrashFile && crashCount > 0
+        ? [latestCrashFile, ...(analysis?.needsMoreMemory ? [t('instanceRepair.heapOomAdvice')] : []), ...crashDetails]
+        : crashDetails,
       t('instanceRepair.crashHealthy'),
       t('instanceRepair.crashIssuesFound', { count: crashCount }),
       postRepair,
-      Boolean(analysis?.needsMoreMemory),
+      false,
     )
 
     pushLog(t('instanceRepair.logScanFinished', { count: totalIssues.value }))
@@ -464,7 +467,8 @@ async function repairCoreAndLibrariesStep(instPath: string): Promise<number> {
 
 async function repairModsStep(instPath: string): Promise<number> {
   let fixed = 0
-  const missingDeps = dependencyCheck.installation.value ?? []
+  const missingDeps = (dependencyCheck.installation.value ?? [])
+    .filter(([file]) => !hasDisabledModDependencyMatch(file, instanceMods.mods.value))
   if (missingDeps.length > 0) {
     const depFiles = missingDeps.map(([file]) => file)
     const opId = crypto.getRandomValues(new Uint32Array(2)).join('')
@@ -502,20 +506,7 @@ async function repairModsStep(instPath: string): Promise<number> {
   return fixed
 }
 
-async function repairCrashMemoryStep(instPath: string): Promise<number> {
-  if (!lastCrashAnalysis.value?.needsMoreMemory) return 0
-  const currentMax = instance.value.maxMemory || 2048
-  const boostedMax = Math.min(8192, Math.max(4096, currentMax + 2048))
-  await instanceService.editInstance({
-    instancePath: instPath,
-    assignMemory: true,
-    maxMemory: boostedMax,
-  })
-  pushLog(t('instanceRepair.logMemoryBoosted', { memory: boostedMax }))
-  return 1
-}
-
-const STEP_RUNNERS: Record<RepairCheckId, (instPath: string) => Promise<number>> = {
+const STEP_RUNNERS: Record<Exclude<RepairCheckId, 'crash'>, (instPath: string) => Promise<number>> = {
   java: repairJavaStep,
   core: repairCoreAndLibrariesStep,
   libraries: repairCoreAndLibrariesStep,
@@ -525,11 +516,10 @@ const STEP_RUNNERS: Record<RepairCheckId, (instPath: string) => Promise<number>>
     return count
   },
   mods: repairModsStep,
-  crash: repairCrashMemoryStep,
 }
 
 async function repairSingleCategory(id: RepairCheckId) {
-  if (repairing.value || scanning.value) return
+  if (id === 'crash' || repairing.value || scanning.value) return
   const inst = instance.value
   if (!inst?.path) return
   repairing.value = true
@@ -571,10 +561,6 @@ async function runAutoRepair() {
 
     if (checks.value.mods.selected && checks.value.mods.issueCount > 0) {
       fixedItemsCount += await executeStep(['mods'], () => repairModsStep(instPath))
-    }
-
-    if (checks.value.crash.selected && checks.value.crash.autoFixable && checks.value.crash.issueCount > 0) {
-      fixedItemsCount += await executeStep(['crash'], () => repairCrashMemoryStep(instPath))
     }
 
     lastRepairCount.value = fixedItemsCount

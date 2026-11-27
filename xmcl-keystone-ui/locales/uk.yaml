@@ -2524,6 +2524,8 @@ localCollection:
   noMatchingMods: Не знайдено модів за запитом
   addSelectedMods: Додати {count} модів
 instanceRepair:
+  disabledDependency: "Можлива залежність встановлена, але вимкнена: {file}. Перевірте версію, перш ніж увімкнути її в розділі модів."
+  heapOomAdvice: "Звіт вказує на нестачу пам’яті купи Java. Якщо це повториться, перевірте налаштування пам’яті, перш ніж збільшувати купу."
   title: Авто-ремонт збірки
   statusScanning: Перевірка...
   statusRepairing: Відновлення...
