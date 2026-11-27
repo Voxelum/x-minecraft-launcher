@@ -689,8 +689,13 @@ export class BackupService extends AbstractService implements IBackupService {
     const estimatedCompressedBytes = Math.max(1024 * 1024, totalUncompressedBytes * 0.75)
     let lastProgressEmit = Date.now()
 
-    await ensureDir(dirname(destination))
-    destination = await safeBackupPath(dirname(destination), basename(destination))
+    const destinationDirectory = dirname(resolve(destination))
+    // Windows recursive mkdir can fail on an existing drive root. If
+    // the root is unavailable, staging the archive will fail instead.
+    if (dirname(destinationDirectory) !== destinationDirectory) {
+      await ensureDir(destinationDirectory)
+    }
+    destination = await safeBackupPath(destinationDirectory, basename(destination))
     if (existsSync(destination)) throw new Error('Backup destination already exists')
     const pending = await mkdtemp(join(dirname(destination), '.xmcl-backup-pending-'))
     const pendingFile = join(pending, 'archive.partial')
@@ -718,7 +723,9 @@ export class BackupService extends AbstractService implements IBackupService {
 
     signal?.throwIfAborted()
     await this.loadBackupManifest(pendingFile)
-    const handle = await openFile(pendingFile, 'r')
+    // FlushFileBuffers on Windows requires a writable handle. Keep the
+    // durability check before publication and propagate real flush failures.
+    const handle = await openFile(pendingFile, 'r+')
     try { await handle.sync() } finally { await handle.close() }
     // link is a no-clobber publication in the same destination filesystem. No
     // completed service name is ever visible while the archive is being written.
