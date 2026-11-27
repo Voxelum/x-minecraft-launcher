@@ -1045,6 +1045,8 @@ mod:
   groupName: 分组名称
   groupNameRequired: 分组名称是必需的
   hasUpdate: mod有一个新版本！
+  changeVersion: 切换版本
+  updateMod: 更新模组
   incompatible: 可能不兼容当前版本。
   incompatibleHint: 查看您的模组兼容性报告
   incompatibleHintDescription: |-
