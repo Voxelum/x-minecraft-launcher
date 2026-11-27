@@ -107,7 +107,7 @@ export function parseCli(argv: ReadonlyArray<string>, registry: CommandRegistry)
       continue
     }
     if (tok === '--json') { globals.json = true; continue }
-    if (tok === '--no-window') { globals.noWindow = true; continue }
+    if (tok === '--no-window' || tok === '--silent' || tok === '--minimized' || tok === '--hide') { globals.noWindow = true; continue }
     if (tok === '--verbose') { globals.verbose = true; continue }
     if (tok === '--yes' || tok === '-y') { globals.yes = true; continue }
     if (tok === '--root') {
