@@ -74,7 +74,7 @@ bedrock:
   installFailed: 打開 Microsoft Store 失敗
   installed: 已安装：{version}
   launchHint: 使用“啟動”按鈕啟動基岩版。
-  licenseRequired: 请登入拥有 Minecraft 許可證的微軟帳號以安装和遊玩基岩版。
+  licenseRequired: 請登入擁有 Minecraft 授權的 Microsoft 帳號，以安裝及遊玩基岩版。
   refresh: 重新整理
 backup:
   title: 備份與還原
@@ -403,7 +403,7 @@ errors:
     body: 網路問題中斷了安装，请檢查您的網路或代理后重試。
     title: 無法下載 Minecraft 檔案
   InstallPermissionDenied:
-    body: 杀毒軟件或目錄權限阻止了安装。请将啟動器加入杀毒軟件白名單，或在設定中選擇其他數據目錄。
+    body: 防毒軟體或資料夾權限阻擋了安裝。請將啟動器加入防毒軟體的排除清單，或在啟動器設定中選擇其他資料根目錄。
     title: 無法寫入啟動器目錄
 eula:
   body: 勾選此複選框即表示您同意 Minecraft 的 {eula}。
@@ -602,7 +602,7 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: value
   fileApiPlaceholder: 若需保持資源同步，請在此處填入遠端同步網址
-  deleteHintBedrock: Minecraft 基岩版及其所有數據将从您的电脑中完全刪除。確定要繼續吗？
+  deleteHintBedrock: Minecraft 基岩版及其所有資料將從您的電腦中完全刪除。確定要繼續嗎？
   monitor: 全屏顯示器
   monitorDefault: 預設（主顯示器）
   monitorNumber: 顯示器 {number}

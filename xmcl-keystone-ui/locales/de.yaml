@@ -397,7 +397,7 @@ errors:
   bedrockUnsupportedPlatform: Minecraft Bedrock Edition wird nur unter Windows unterstützt.
   bedrockNotInstalled: Minecraft Bedrock Edition ist nicht installiert.
   bedrockLaunchFailed: Minecraft Bedrock Edition konnte nicht gestartet werden.
-  bedrockInstallFailed: Installation der Minecraft Bedrock Edition konnte nicht initiiert werden.
+  bedrockInstallFailed: Die Installation von Minecraft Bedrock Edition ist fehlgeschlagen.
   CorruptedResourceMetadata: Beschädigte Metadaten für {count} Ressource(n) erkannt und bereinigt. Die Dateien funktionieren weiterhin, aber ihre Modrinth/CurseForge-Zuordnung ging verloren und wird automatisch neu ermittelt.
   InstallInstructionFailed:
     body: '{name}: {message}'
