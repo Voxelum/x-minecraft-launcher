@@ -88,7 +88,7 @@ describe('mod dependency install planning', () => {
   })
 
   test('keeps disabled local dependencies unresolved and flags them for manual review', () => {
-    const candidate: InstanceFile = { path: 'mods/cloth-config-15.0.140-fabric.jar' }
+    const candidate: InstanceFile = { path: 'mods/cloth-config-15.0.140-fabric.jar', hashes: {} }
     const disabled = {
       path: '/instance/mods/cloth-config-15.0.130-fabric.jar.disabled',
       enabled: false,
@@ -97,6 +97,6 @@ describe('mod dependency install planning', () => {
 
     expect(deduplicateModDependencyInstallations([installation(candidate)], [disabled])).toEqual([installation(candidate)])
     expect(hasDisabledModDependencyMatch(candidate, [disabled])).toBe(true)
-    expect(hasDisabledModDependencyMatch({ path: 'mods/unrelated-1.jar' }, [disabled])).toBe(false)
+    expect(hasDisabledModDependencyMatch({ path: 'mods/unrelated-1.jar', hashes: {} }, [disabled])).toBe(false)
   })
 })
