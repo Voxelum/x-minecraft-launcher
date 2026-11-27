@@ -1,7 +1,6 @@
 import { readAllEntries, open, openEntryReadStream, readEntryBuffered } from '@xmcl/unzip'
 import { Entry } from '@xmcl/yauzl'
-import { randomBytes } from 'crypto'
-import { rename, stat, unlink } from 'fs/promises'
+import { link, mkdtemp, rm, stat } from 'fs/promises'
 import { basename, dirname, join } from 'path'
 import { ZipFile as WriteZipFile } from 'yazl'
 import { writeZipFile } from '~/util/zip'
@@ -187,66 +186,59 @@ export async function readShaderPackLangBuffer(packPath: string, langPath: strin
 }
 
 /**
- * 重写 zip 并原子替换原文件：新增或替换目标语言文件，其它条目原样复制。
+ * Build a separate ZIP and publish it atomically without replacing any existing path.
  */
-export async function writeShaderPackLangBuffer(packPath: string, targetPath: string, content: Buffer): Promise<{ replaced: boolean }> {
+export async function writeShaderPackLangBuffer(packPath: string, outputPath: string, targetPath: string, content: Buffer, beforePublish?: () => Promise<void>): Promise<{ replaced: boolean }> {
   await assertShaderPackZip(packPath)
   if (!isShaderLangPath(targetPath)) {
     throw new Error(`Invalid shader language target path: ${targetPath}`)
   }
 
-  const zip = await open(packPath)
-  const output = new WriteZipFile()
-  let replaced = false
-  const tempPath = join(dirname(packPath), `.${Date.now()}-${randomBytes(4).toString('hex')}${SHADER_LANG_TEMP_SUFFIX}`)
-  const backupPath = `${tempPath}.bak`
+  const staging = await mkdtemp(join(dirname(outputPath), `.${SHADER_LANG_TEMP_SUFFIX}-`))
+  const tempPath = join(staging, 'pack.tmp')
   try {
-    const entries = await readAllEntries(zip)
-    // 目标只允许出现一次，避免生成重复条目
-    const normalizedTarget = targetPath.replace(/\\/g, '/').toLowerCase()
-    const duplicated = entries.filter(entry => entry.fileName.toLowerCase() === normalizedTarget)
-    if (duplicated.length > 1) {
-      throw new Error(`Duplicated language entry in shader pack: ${targetPath}`)
-    }
-
-    for (const entry of entries) {
-      if (entry.fileName.endsWith('/')) {
-        output.addEmptyDirectory(entry.fileName, toDirectoryOptions(entry))
-        continue
+    const zip = await open(packPath)
+    const output = new WriteZipFile()
+    let replaced = false
+    try {
+      const entries = await readAllEntries(zip)
+      // 目标只允许出现一次，避免生成重复条目
+      const normalizedTarget = targetPath.replace(/\\/g, '/').toLowerCase()
+      const duplicated = entries.filter(entry => entry.fileName.toLowerCase() === normalizedTarget)
+      if (duplicated.length > 1) {
+        throw new Error(`Duplicated language entry in shader pack: ${targetPath}`)
       }
-      if (entry.fileName.toLowerCase() === normalizedTarget) {
-        output.addBuffer(content, entry.fileName, toEntryOptions(entry))
-        replaced = true
-        continue
+
+      for (const entry of entries) {
+        if (entry.fileName.endsWith('/')) {
+          output.addEmptyDirectory(entry.fileName, toDirectoryOptions(entry))
+          continue
+        }
+        if (entry.fileName.toLowerCase() === normalizedTarget) {
+          output.addBuffer(content, entry.fileName, toEntryOptions(entry))
+          replaced = true
+          continue
+        }
+        // 逐条流式复制，保留修改时间、权限与压缩方式；一次只保留当前条目数据
+        output.addReadStream(await openEntryReadStream(zip, entry), entry.fileName, toEntryOptions(entry))
       }
-      // 逐条流式复制，保留修改时间、权限与压缩方式；一次只保留当前条目数据
-      output.addReadStream(await openEntryReadStream(zip, entry), entry.fileName, toEntryOptions(entry))
-    }
-    if (!replaced) {
-      output.addBuffer(content, targetPath, { mtime: new Date() })
+      if (!replaced) {
+        output.addBuffer(content, targetPath, { mtime: new Date() })
+      }
+
+      await writeZipFile(output, tempPath)
+    } finally {
+      zip.close()
     }
 
-    await writeZipFile(output, tempPath)
-  } catch (e) {
-    await unlink(tempPath).catch(() => undefined)
-    throw e
-  } finally {
-    zip.close()
-  }
-
-  let backedUp = false
-  try {
-    // 先改名备份再替换，任何一步失败都恢复原包
-    await rename(packPath, backupPath)
-    backedUp = true
-    await rename(tempPath, packPath)
-    await unlink(backupPath).catch(() => undefined)
+    await beforePublish?.()
+    // Unlike rename, link fails atomically if the destination already exists.
+    await link(tempPath, outputPath).catch((error: NodeJS.ErrnoException) => {
+      if (error.code === 'EEXIST') throw new Error(`Translated copy already exists: ${basename(outputPath)}`, { cause: error })
+      throw error
+    })
     return { replaced }
-  } catch (e) {
-    if (backedUp) {
-      await rename(backupPath, packPath).catch(() => undefined)
-    }
-    await unlink(tempPath).catch(() => undefined)
-    throw e
+  } finally {
+    await rm(staging, { recursive: true, force: true }).catch(() => undefined)
   }
 }

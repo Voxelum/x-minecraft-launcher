@@ -2373,12 +2373,15 @@ shaderPack:
     sameLanguage: The selected source file is already in the target language.
     sourceTitle: Source language file
     start: Start translation
-    success: 'Written {path} with {count} translated entries'
-    targetExists: A target language file already exists. Its entries are updated and other entries are kept.
+    success: 'Created {path} with {count} new translations'
+    targetExists: Only missing keys are added to the copy. Existing translations are preserved.
     targetPath: Target file in the pack
     targetTitle: Target language
     title: AI language translation
-    writing: Writing the shader pack…
+    writing: Saving the translated copy (cannot cancel at this stage)…
+    disclosure: Starting sends missing shader-pack language entries to your configured AI provider. The original stays unchanged. Select the translated ZIP in the game to use it. If that filename already exists, it will not be overwritten.
+    sharedFolder: Unlink this instance’s shared shaderpacks folder before translating. The copy is saved only in the instance’s local shaderpacks folder.
+    noMissing: No keys are missing. No copy was created.
   'off': 'Off'
 shared:
   openFolder: Open Folder

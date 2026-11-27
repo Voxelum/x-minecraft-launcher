@@ -197,6 +197,54 @@ export function mergeShaderLang(
   return (parsed.bom ? '\uFEFF' : '') + output.join('')
 }
 
+/** Fill only absent target keys, regardless of what the client submitted. */
+export function fillMissingShaderLang(
+  source: ShaderLangParseResult,
+  target: ShaderLangParseResult | undefined,
+  translations: readonly ShaderPackLangEntry[],
+): { content: string; written: number } | undefined {
+  const existing = new Set(target?.entries.map(entry => entry.key))
+  const missing = source.entries.filter(entry => !existing.has(entry.key))
+  const map = validateTranslations(source.entries, missing, translations)
+  if (!missing.length) return undefined
+  return { content: mergeShaderLang(target ?? source, map, missing), written: missing.length }
+}
+
+/**
+ * 校验译文完整性：键必须来自源文件、不能重复，且非空源值必须有非空译文。
+ *
+ * 放在模块作用域而不是服务方法，避免被 IPC 按名字直接调用。
+ */
+function validateTranslations(source: readonly ShaderPackLangEntry[], missing: readonly ShaderPackLangEntry[], translations: readonly ShaderPackLangEntry[]) {
+  const sourceKeys = new Set(source.map(entry => entry.key))
+  const missingKeys = new Set(missing.map(entry => entry.key))
+  const map = new Map<string, string>()
+  for (const entry of translations) {
+    if (typeof entry.key !== 'string' || typeof entry.value !== 'string') {
+      throw new Error('Invalid translation entry')
+    }
+    if (!sourceKeys.has(entry.key)) {
+      throw new Error(`Unexpected translation key: ${entry.key}`)
+    }
+    if (!missingKeys.has(entry.key)) continue
+    if (map.has(entry.key)) {
+      throw new Error(`Duplicated translation key: ${entry.key}`)
+    }
+    // 语言文件是逐行的，译文里出现换行会破坏结构
+    if (entry.value.includes('\n') || entry.value.includes('\r')) {
+      throw new Error(`Translation of ${entry.key} contains a line break`)
+    }
+    map.set(entry.key, entry.value)
+  }
+  for (const entry of missing) {
+    if (entry.value.trim().length === 0) continue
+    const translated = map.get(entry.key)
+    if (translated === undefined || translated.trim().length === 0) {
+      throw new Error(`Missing translation for key: ${entry.key}`)
+    }
+  }
+  return map
+}
 /**
  * 校验译文是否可写回：每个非空源值都必须有译文，且译文键必须来自源文件。
  */

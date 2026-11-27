@@ -1,6 +1,6 @@
 import { open, readAllEntries, readEntryBuffered } from '@xmcl/unzip'
 import { createWriteStream } from 'fs'
-import { mkdtemp, rm, writeFile } from 'fs/promises'
+import { mkdtemp, readFile, readdir, rm, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { pipeline } from 'stream/promises'
@@ -89,10 +89,11 @@ describe('shaderPackZip', () => {
       'shaders/program/water.fsh': 'void main() {}\n',
     })
 
-    const result = await writeShaderPackLangBuffer(packPath, 'shaders/lang/zh_CN.lang', Buffer.from('a=一\n', 'utf-8'))
+    const outputPath = join(root, 'translated.zip')
+    const result = await writeShaderPackLangBuffer(packPath, outputPath, 'shaders/lang/zh_CN.lang', Buffer.from('a=一\n', 'utf-8'))
     expect(result.replaced).toBe(false)
 
-    const entries = await readPackEntries(packPath)
+    const entries = await readPackEntries(outputPath)
     expect(entries['shaders/lang/zh_CN.lang']).toBe('a=一\n')
     expect(entries['shaders/lang/en_US.lang']).toBe('a=1\n')
     expect(entries['shaders/shaders.properties']).toBe('screen=SHADERS\n')
@@ -105,10 +106,13 @@ describe('shaderPackZip', () => {
       'shaders/lang/zh_CN.lang': 'a=旧\n',
     })
 
-    const result = await writeShaderPackLangBuffer(packPath, 'shaders/lang/zh_CN.lang', Buffer.from('a=新\n', 'utf-8'))
+    const outputPath = join(root, 'translated.zip')
+    const original = await readFile(packPath)
+    const result = await writeShaderPackLangBuffer(packPath, outputPath, 'shaders/lang/zh_CN.lang', Buffer.from('a=新\n', 'utf-8'))
+    expect(await readFile(packPath)).toEqual(original)
     expect(result.replaced).toBe(true)
 
-    const entries = await readPackEntries(packPath)
+    const entries = await readPackEntries(outputPath)
     expect(Object.keys(entries).filter(name => name === 'shaders/lang/zh_CN.lang')).toHaveLength(1)
     expect(entries['shaders/lang/zh_CN.lang']).toBe('a=新\n')
   })
@@ -120,18 +124,31 @@ describe('shaderPackZip', () => {
     )
 
     // 曾经这里会抛 options.compress not allowed（目录条目不能传 compress）
-    const result = await writeShaderPackLangBuffer(packPath, 'shaders/lang/zh_CN.lang', Buffer.from('a=一\n', 'utf-8'))
+    const outputPath = join(root, 'translated.zip')
+    const result = await writeShaderPackLangBuffer(packPath, outputPath, 'shaders/lang/zh_CN.lang', Buffer.from('a=一\n', 'utf-8'))
     expect(result.replaced).toBe(false)
 
-    const entries = await readPackEntries(packPath)
+    const entries = await readPackEntries(outputPath)
     expect(entries['shaders/lang/zh_CN.lang']).toBe('a=一\n')
     expect(entries['shaders/lang/en_US.lang']).toBe('a=1\n')
 
     // 目录条目本身也要保留
-    const zip = await open(packPath)
+    const zip = await open(outputPath)
     const names = (await readAllEntries(zip)).map(entry => entry.fileName)
     zip.close()
     expect(names).toContain('shaders/lang/')
+  })
+
+  it('publishes at most one copy on concurrent writes and leaves an existing output intact', async () => {
+    const packPath = await createPack({ 'shaders/lang/en_US.lang': 'a=1\n' })
+    const outputPath = join(root, 'translated.zip')
+    const write = (value: string) => writeShaderPackLangBuffer(packPath, outputPath, 'shaders/lang/zh_CN.lang', Buffer.from(value))
+    const results = await Promise.allSettled([write('a=一'), write('a=二')])
+    expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(1)
+    const copy = await readFile(outputPath)
+    await expect(write('a=三')).rejects.toThrow(/already exists/)
+    expect(await readFile(outputPath)).toEqual(copy)
+    expect((await readdir(root)).sort()).toEqual(['pack.zip', 'translated.zip'])
   })
 
   it('rejects non zip paths', async () => {

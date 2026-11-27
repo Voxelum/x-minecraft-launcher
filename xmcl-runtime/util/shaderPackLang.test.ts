@@ -2,11 +2,22 @@ import { describe, expect, it } from 'vitest'
 import {
   decodeShaderLangFile,
   mergeShaderLang,
+  fillMissingShaderLang,
   parseShaderLang,
   assertCompleteTranslations,
 } from './shaderPackLang'
 
 describe('shaderPackLang', () => {
+  it('preserves existing translations, including empty values, even if the client submits replacements', () => {
+    const source = parseShaderLang('a=Apple\nb=Banana\nc=Cherry\n')
+    const target = parseShaderLang('# Official\na=苹果\nb=\nextra=手工\n')
+    expect(fillMissingShaderLang(source, target, [
+      { key: 'a', value: '覆盖苹果' }, { key: 'b', value: '覆盖空值' }, { key: 'c', value: '樱桃' },
+    ])).toEqual({ content: '# Official\na=苹果\nb=\nextra=手工\nc=樱桃\n', written: 1 })
+    expect(fillMissingShaderLang(source, source, [])).toBeUndefined()
+    expect(() => fillMissingShaderLang(source, target, [])).toThrow(/Missing translation for key: c/)
+  })
+
   it('parses comments, CRLF, empty values and extra equals signs', () => {
     const content = '# comment\r\nprofile.POTATO=§aPotato\r\nempty=\r\nurl=https://example.com/a=b\r\n'
     const parsed = parseShaderLang(content)

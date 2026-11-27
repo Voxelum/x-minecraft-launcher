@@ -35,6 +35,8 @@ export interface ShaderPackLangDocument {
   path: string
   locale: string
   entries: ShaderPackLangEntry[]
+  /** Keys already present in the target, including intentionally empty values. */
+  targetKeys: string[]
   targetPath: string
   targetExists: boolean
 }
@@ -43,7 +45,7 @@ export interface ShaderPackLangDocument {
  * 写回翻译结果的参数。
  */
 export interface ShaderPackLangWriteOptions {
-  /** 实例根目录，仅用于失效该实例的光影资源缓存 */
+  /** 实例根目录，用于确认译制副本写入非共享的实例目录 */
   instancePath: string
   /** 光影包 zip 的绝对路径（来自资源的 `path`） */
   packPath: string
@@ -59,9 +61,11 @@ export interface ShaderPackLangWriteOptions {
  * 写回结果。
  */
 export interface ShaderPackLangWriteResult {
+  /** ZIP copy filename, absent when there were no missing keys. */
+  fileName?: string
   /** 实际写回的 zip 内路径 */
   path: string
-  /** 替换（或新增）的条目数 */
+  /** 补齐的条目数 */
   written: number
   /** 结束阶段写入的字节数 */
   bytes: number
@@ -93,12 +97,12 @@ export interface InstanceShaderPacksService extends InstanceResourcesService {
   /**
    * 读取光影包 zip 内某个语言文件的内容。
    *
-   * `targetLocale` 用于同时返回目标路径与覆盖状态，供界面直接展示。
+   * `targetLocale` 用于同时返回目标路径及已有键，供界面直接展示。
    */
   readShaderPackLangFile(packPath: string, langPath: string, targetLocale: string): Promise<ShaderPackLangDocument>
 
   /**
-   * 将翻译结果合并进目标语言文件并原子写回 zip。
+   * 只补齐缺失的目标语言键，并创建不覆盖任何现有文件的本地 ZIP 副本。
    *
    * 目标文件已存在时以目标文件为模板，避免丢弃已有的人工翻译与注释。
    */

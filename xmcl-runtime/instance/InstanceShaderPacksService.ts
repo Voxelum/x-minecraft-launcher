@@ -1,16 +1,17 @@
+import { lstat, realpath } from 'fs/promises'
+import { basename, dirname, join, resolve } from 'path'
 import { ResourceDomain } from '@xmcl/resource'
 import {
   InstanceShaderPacksService as IInstanceShaderPacksServic,
   InstanceShaderPacksServiceKey,
   ShaderPackLangDocument,
-  ShaderPackLangEntry,
   ShaderPackLangFileInfo,
   ShaderPackLangWriteOptions,
   ShaderPackLangWriteResult,
 } from '@xmcl/runtime-api'
 import { Inject, LauncherAppKey } from '~/app'
 import { ExposeServiceKey, ServiceStateManager } from '~/service'
-import { decodeShaderLangFile, mergeShaderLang, parseShaderLang } from '~/util/shaderPackLang'
+import { decodeShaderLangFile, fillMissingShaderLang, parseShaderLang } from '~/util/shaderPackLang'
 import { LauncherApp } from '../app/LauncherApp'
 import { AbstractInstanceDomainService } from './AbstractInstanceDomainService'
 import {
@@ -63,20 +64,36 @@ export class InstanceShaderPacksService extends AbstractInstanceDomainService im
     const buffer = await readShaderPackLangBuffer(packPath, sourcePath)
     const parsed = parseShaderLang(decodeShaderLangFile(buffer))
     const targetPath = resolveShaderLangTargetPath(sourcePath, targetLocale, paths)
+    const targetExists = paths.some(path => path.toLowerCase() === targetPath.toLowerCase())
+    const targetKeys = targetExists
+      ? parseShaderLang(decodeShaderLangFile(await readShaderPackLangBuffer(packPath, targetPath))).entries.map(entry => entry.key)
+      : []
     return {
       path: sourcePath,
+      targetKeys,
       locale: getShaderLangFileLocale(sourcePath),
       entries: parsed.entries,
       targetPath,
-      targetExists: paths.some(path => path.toLowerCase() === targetPath.toLowerCase()),
+      targetExists,
     }
   }
 
   /**
-   * 把翻译结果合并进目标语言文件，并原子写回光影包 zip。
+   * 把翻译结果合并进目标语言文件，并保存到独立光影包 ZIP。
    */
   async writeShaderPackLangFile(options: ShaderPackLangWriteOptions): Promise<ShaderPackLangWriteResult> {
     const { instancePath, packPath, sourcePath, targetLocale, translations } = options
+    const instanceDir = join(await realpath(instancePath), this.domain)
+    const shared = await realpath(await this.getSharedDirectory()).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== 'ENOENT') throw error
+    })
+    if (await realpath(instanceDir) !== instanceDir || instanceDir === shared) {
+      throw new Error('Unlink the shared shaderpacks folder before translating.')
+    }
+    const sourceStat = await lstat(packPath)
+    if (await realpath(dirname(resolve(packPath))) !== instanceDir || !sourceStat.isFile()) {
+      throw new Error('The shader pack must be a local ZIP in the instance shaderpacks folder.')
+    }
     const entries = await listShaderPackLangEntries(packPath)
     const paths = entries.map(entry => entry.fileName)
 
@@ -88,6 +105,7 @@ export class InstanceShaderPacksService extends AbstractInstanceDomainService im
     }
 
     const target = toMcLangCode(targetLocale)
+    if (!/^[a-z]{2,3}(?:_[a-z0-9]{2,8})?$/.test(target)) throw new Error('Invalid target locale')
     if (toMcLangCode(sourceEntry.locale) === target) {
       throw new Error('Source and target language are the same')
     }
@@ -96,21 +114,30 @@ export class InstanceShaderPacksService extends AbstractInstanceDomainService im
     const sourceParsed = parseShaderLang(decodeShaderLangFile(await readShaderPackLangBuffer(packPath, sourceEntry.fileName)))
     const targetExists = paths.some(path => path.toLowerCase() === targetPath.toLowerCase())
     const targetBuffer = targetExists ? await readShaderPackLangBuffer(packPath, targetPath) : undefined
-    // 目标文件存在时以目标为模板，保留已有注释与人工翻译
-    const template = targetBuffer ? parseShaderLang(decodeShaderLangFile(targetBuffer)) : sourceParsed
+    const filled = fillMissingShaderLang(sourceParsed, targetBuffer && parseShaderLang(decodeShaderLangFile(targetBuffer)), translations)
+    if (!filled) return { path: targetPath, written: 0, bytes: 0 }
+    const { content, written } = filled
+    const buffer = Buffer.from(content, 'utf-8')
 
-    const map = validateTranslations(sourceParsed.entries, translations)
-    const merged = mergeShaderLang(template, map, sourceParsed.entries)
-    const buffer = Buffer.from(merged, 'utf-8')
-
-    await writeShaderPackLangBuffer(packPath, targetPath, buffer)
+    const fileName = `${basename(packPath).slice(0, -4)}.translated-${target}.zip`
+    const outputPath = join(instanceDir, fileName)
+    await writeShaderPackLangBuffer(packPath, outputPath, targetPath, buffer, async () => {
+      const current = await lstat(packPath)
+      if (current.dev !== sourceStat.dev || current.ino !== sourceStat.ino || current.size !== sourceStat.size || current.ctimeMs !== sourceStat.ctimeMs) {
+        throw new Error('The original shader pack changed during translation. Try again.')
+      }
+      if (await realpath(instanceDir) !== instanceDir) {
+        throw new Error('The instance shaderpacks folder changed during translation.')
+      }
+    })
     // 失效该实例的光影资源缓存；不阻塞写回结果，实际重扫由资源监听器完成
     revalidateShaderPacks(this.app, this.domain, instancePath)
-    this.log(`Written shader language file ${targetPath} (${map.size} entries) to ${packPath}`)
+    this.log(`Written shader language file ${targetPath} (${written} entries) to ${outputPath}`)
 
     return {
+      fileName,
       path: targetPath,
-      written: map.size,
+      written,
       bytes: buffer.length,
     }
   }
@@ -125,38 +152,4 @@ function revalidateShaderPacks(app: LauncherApp, domain: ResourceDomain, instanc
   app.registry.get(ServiceStateManager)
     .then(stateManager => stateManager.revalidate(key))
     .catch(error => app.getLogger('InstanceShaderPacksService').warn(`Failed to revalidate shader packs of ${instancePath}: ${error}`))
-}
-
-/**
- * 校验译文完整性：键必须来自源文件、不能重复，且非空源值必须有非空译文。
- *
- * 放在模块作用域而不是服务方法，避免被 IPC 按名字直接调用。
- */
-function validateTranslations(source: readonly ShaderPackLangEntry[], translations: readonly ShaderPackLangEntry[]) {
-  const sourceKeys = new Set(source.map(entry => entry.key))
-  const map = new Map<string, string>()
-  for (const entry of translations) {
-    if (typeof entry.key !== 'string' || typeof entry.value !== 'string') {
-      throw new Error('Invalid translation entry')
-    }
-    if (!sourceKeys.has(entry.key)) {
-      throw new Error(`Unexpected translation key: ${entry.key}`)
-    }
-    if (map.has(entry.key)) {
-      throw new Error(`Duplicated translation key: ${entry.key}`)
-    }
-    // 语言文件是逐行的，译文里出现换行会破坏结构
-    if (entry.value.includes('\n') || entry.value.includes('\r')) {
-      throw new Error(`Translation of ${entry.key} contains a line break`)
-    }
-    map.set(entry.key, entry.value)
-  }
-  for (const entry of source) {
-    if (entry.value.trim().length === 0) continue
-    const translated = map.get(entry.key)
-    if (translated === undefined || translated.trim().length === 0) {
-      throw new Error(`Missing translation for key: ${entry.key}`)
-    }
-  }
-  return map
 }

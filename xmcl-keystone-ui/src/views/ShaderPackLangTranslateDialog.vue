@@ -38,6 +38,13 @@
           </v-btn>
         </v-alert>
 
+        <v-alert type="info" variant="tonal" density="compact" class="mb-4">
+          {{ t('shaderPack.translate.disclosure') }}
+        </v-alert>
+        <v-alert v-if="sharedFolder" type="warning" variant="tonal" density="compact" class="mb-4">
+          {{ t('shaderPack.translate.sharedFolder') }}
+        </v-alert>
+
         <v-alert v-if="error" type="error" variant="tonal" density="compact" class="mb-4">
           {{ error }}
         </v-alert>
@@ -152,7 +159,7 @@
                 {{ t('shaderPack.translate.writing') }}
               </template>
               <template v-else>
-                {{ t('shaderPack.translate.success', { path: writtenPath, count: translatedCount }) }}
+                {{ writtenPath ? t('shaderPack.translate.success', { path: writtenPath, count: translatedCount }) : t('shaderPack.translate.noMissing') }}
               </template>
             </div>
           </div>
@@ -165,7 +172,7 @@
           {{ t('shared.close') }}
         </v-btn>
         <v-spacer />
-        <v-btn v-if="status === 'translating'" variant="text" color="error" @click="onCancel">
+        <v-btn v-if="status === 'loading' || status === 'translating'" variant="text" color="error" @click="onCancel">
           {{ t('shared.cancel') }}
         </v-btn>
         <v-btn
@@ -180,7 +187,6 @@
           v-else
           color="primary"
           variant="flat"
-          :loading="status === 'loading'"
           :disabled="!canStart"
           @click="onStart"
         >
@@ -196,9 +202,10 @@ import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { useShaderLangTranslateAgent } from '@/composables/agent/shaderLangTranslateAgent'
 import { SHADER_LANG_BATCH_SIZE_KEY, SHADER_LANG_PARALLELISM_KEY, SHADER_LANG_TARGETS, toMcLang } from '@/util/shaderPackLangClient'
+import { runShaderPackLangJob } from '@/util/shaderPackLangJob'
 import { InstanceShaderPacksServiceKey, ShaderPackLangFileInfo } from '@xmcl/runtime-api'
 import { useLocalStorage } from '@vueuse/core'
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
 interface DialogParams {
   instancePath: string
@@ -230,13 +237,16 @@ const progressTotal = ref(0)
 const translatedCount = ref(0)
 const skipped = ref(0)
 const writtenPath = ref('')
+const sharedFolder = ref(false)
+const activeTranslation = ref(false)
 
 const busy = computed(() => status.value === 'loading' || status.value === 'translating' || status.value === 'writing')
 const sourceFile = computed(() => files.value.find(file => file.path === sourcePath.value))
 const targetPath = computed(() => sourceFile.value?.targetPath ?? '')
 const targetExists = computed(() => !!sourceFile.value?.targetExists)
 const sameLanguage = computed(() => !!sourceFile.value && toMcLang(sourceFile.value.locale) === toMcLang(targetLocale.value))
-const canStart = computed(() => !!sourceFile.value && !sameLanguage.value && agent.available.value)
+let translationVersion = 0
+const canStart = computed(() => !busy.value && !activeTranslation.value && !sharedFolder.value && !!sourceFile.value && !sameLanguage.value && agent.available.value)
 
 const targetItems = computed(() => {
   const items = SHADER_LANG_TARGETS.map(item => ({ title: item.label, value: item.value }))
@@ -267,14 +277,21 @@ function extractError(e: unknown): string {
 /** 扫描 zip 内语言文件；targetLocale 变化时重新计算目标路径 */
 let loadVersion = 0
 async function loadFiles() {
-  if (!params.value) return
+  const pack = params.value
+  if (!pack) return
+  files.value = []
+  sharedFolder.value = false
   // 版本号用于丢弃过期结果：目标语言快速切换时只保留最后一次请求
   const version = ++loadVersion
   const requestedLocale = targetLocale.value
   status.value = 'loading'
   error.value = ''
   try {
-    const info = await service.listShaderPackLangFiles(params.value.packPath, requestedLocale)
+    const shared = await service.isLinked(pack.instancePath)
+    if (version !== loadVersion) return
+    sharedFolder.value = shared
+    if (shared) return
+    const info = await service.listShaderPackLangFiles(pack.packPath, requestedLocale)
     if (version !== loadVersion) return
     files.value = info
     // 优先选中第一个非目标语言文件，否则退回第一个
@@ -296,7 +313,10 @@ async function loadFiles() {
 // immediate：弹窗组件是懒加载的，首次打开时组件挂载完成时 isShown 已经为 true，
 // 普通 watch 不会触发，必须立即执行一次扫描，否则要等用户改目标语言才加载出文件列表。
 watch(isShown, (shown) => {
-  if (!shown) return
+  if (!shown) {
+    invalidate()
+    return
+  }
   status.value = 'idle'
   files.value = []
   sourcePath.value = ''
@@ -308,7 +328,7 @@ watch(isShown, (shown) => {
   skipped.value = 0
   targetLocale.value = toMcLang(locale.value)
   void loadFiles()
-}, { immediate: true })
+}, { immediate: true, flush: 'sync' })
 
 // 目标语言变化会改变目标路径与覆盖状态；翻译/写回过程中不允许重扫
 watch(targetLocale, () => {
@@ -321,11 +341,20 @@ function openSettings() {
 }
 
 function onEsc() {
-  if (!busy.value) hide()
+  if (status.value === 'loading' || status.value === 'translating') onCancel()
+  else if (!busy.value) hide()
 }
 
+function invalidate() {
+  ++loadVersion
+  ++translationVersion
+  if (status.value === 'translating') agent.abort()
+}
+
+onBeforeUnmount(invalidate)
+
 function onCancel() {
-  agent.abort()
+  invalidate()
   progress.value = 0
   status.value = 'idle'
 }
@@ -333,7 +362,12 @@ function onCancel() {
 async function onStart() {
   const info = sourceFile.value
   const pack = params.value
-  if (!info || !pack) return
+  if (!info || !pack || !canStart.value) return
+  const version = ++translationVersion
+  const target = targetLocale.value
+  const current = () => version === translationVersion && isShown.value && params.value === pack
+  activeTranslation.value = true
+  skipped.value = 0
   error.value = ''
   writtenPath.value = ''
   status.value = 'translating'
@@ -342,38 +376,45 @@ async function onStart() {
   progressTotal.value = 0
 
   try {
-    const document = await service.readShaderPackLangFile(pack.packPath, info.path, targetLocale.value)
-    const result = await agent.translateAll({
-      // 每个光影包独立会话历史，避免不同包的术语互相污染
-      scopeKey: `${pack.instancePath}::${pack.fileName}`,
-      entries: document.entries,
-      sourceLocale: info.locale,
-      targetLocale: targetLocale.value,
-      // 数字输入框可能回传字符串，这里统一转成数字并兜底
-      parallelism: Number(parallelism.value) || 3,
-      batchSize: Number(batchSize.value) || 60,
-      onProgress: (done, total) => {
-        progressDone.value = done
-        progressTotal.value = total
-        progress.value = total === 0 ? 0 : Math.min(1, done / total)
+    const written = await runShaderPackLangJob({
+      isCurrent: current,
+      read: () => service.readShaderPackLangFile(pack.packPath, info.path, target),
+      translate: async (missing) => {
+        const result = await agent.translateAll({
+          scopeKey: `${pack.instancePath}::${pack.fileName}`,
+          entries: missing,
+          sourceLocale: info.locale,
+          targetLocale: target,
+          parallelism: Number(parallelism.value) || 3,
+          batchSize: Number(batchSize.value) || 60,
+          onProgress: (done, total) => {
+            if (!current()) return
+            progressDone.value = done
+            progressTotal.value = total
+            progress.value = total === 0 ? 0 : Math.min(1, done / total)
+          },
+        })
+        if (current()) skipped.value = result.skipped
+        return result.entries
+      },
+      commit: (translations) => {
+        status.value = 'writing'
+        progress.value = 1
+        return service.writeShaderPackLangFile({
+          instancePath: pack.instancePath,
+          packPath: pack.packPath,
+          sourcePath: info.path,
+          targetLocale: target,
+          translations,
+        })
       },
     })
-    skipped.value = result.skipped
-    translatedCount.value = result.translated
-
-    status.value = 'writing'
-    progress.value = 1
-    const written = await service.writeShaderPackLangFile({
-      instancePath: pack.instancePath,
-      packPath: pack.packPath,
-      sourcePath: info.path,
-      targetLocale: targetLocale.value,
-      translations: result.entries,
-    })
-    writtenPath.value = written.path
+    if (!written || !current()) return
+    writtenPath.value = written.fileName ?? ''
     translatedCount.value = written.written
     status.value = 'done'
   } catch (e) {
+    if (!current()) return
     if (e instanceof Error && e.name === 'ShaderLangTranslationCancelled') {
       status.value = 'idle'
       progress.value = 0
@@ -381,6 +422,8 @@ async function onStart() {
     }
     error.value = extractError(e)
     status.value = 'idle'
+  } finally {
+    activeTranslation.value = false
   }
 }
 </script>

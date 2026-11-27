@@ -2290,12 +2290,15 @@ shaderPack:
     sameLanguage: 选中的源文件已经是目标语言。
     sourceTitle: 源语言文件
     start: 开始翻译
-    success: '已写入 {path}，共 {count} 条译文'
-    targetExists: 目标语言文件已存在，同名条目会被覆盖，其余条目保留。
+    success: '已创建 {path}，新增 {count} 条译文'
+    targetExists: 副本只补齐缺失的键，保留已有翻译。
     targetPath: 包内目标文件
     targetTitle: 目标语言
     title: AI 语言翻译
-    writing: 正在写回光影包…
+    writing: 正在保存译制副本（此阶段不可取消）…
+    disclosure: 开始后会将光影包中待补齐的语言条目发送给你配置的 AI 服务商。原包不会修改，请在游戏中选择译制 ZIP。若已存在同名文件，不会覆盖。
+    sharedFolder: 请先取消该实例的光影目录共享。译制副本仅保存到该实例的本地光影目录。
+    noMissing: 目标语言没有缺失的键，未创建副本。
   'off': 'Off'
 shared:
   reset: 重置

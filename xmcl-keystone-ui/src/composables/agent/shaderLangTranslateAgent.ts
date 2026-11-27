@@ -59,7 +59,7 @@ function createCancelledError() {
 export function useShaderLangTranslateAgent() {
   // 所有 worker 共享同一个包级 scope 前缀，worker 之间用 `#index` 区分
   const scopeValue = ref('')
-  let cancelled = false
+  let active: AbortController | undefined
 
   const workers: ShaderLangWorker[] = Array.from({ length: SHADER_LANG_MAX_PARALLELISM }, (_, index) => {
     const slot: { captured?: ShaderPackLangEntry[] } = {}
@@ -119,6 +119,7 @@ export function useShaderLangTranslateAgent() {
     worker: ShaderLangWorker,
     options: ShaderLangTranslateOptions,
     batch: ShaderLangBatch,
+    signal: AbortSignal,
   ): Promise<ShaderPackLangEntry[]> {
     const scope = `${options.scopeKey}#${workerIndex}`
     if (worker.loadedScope !== scope) {
@@ -135,12 +136,13 @@ export function useShaderLangTranslateAgent() {
 
     let lastError: unknown
     for (let attempt = 0; attempt < 2; attempt++) {
-      if (cancelled) throw createCancelledError()
+      if (signal.aborted) throw createCancelledError()
       // 每批重置上下文，避免上一批的术语影响到这一批
       await worker.local.reset()
+      if (signal.aborted) throw createCancelledError()
       worker.slot.captured = undefined
-      await worker.local.send(prompt)
-      if (cancelled) throw createCancelledError()
+      await worker.local.send(prompt, signal)
+      if (signal.aborted) throw createCancelledError()
       if (worker.local.runError.value) {
         lastError = new Error(worker.local.runError.value)
         continue
@@ -162,7 +164,17 @@ export function useShaderLangTranslateAgent() {
    * 并行翻译全部条目。
    */
   async function translateAll(options: ShaderLangTranslateOptions): Promise<ShaderLangTranslateResult> {
-    cancelled = false
+    if (active) throw new Error('A shader translation is still running')
+    const controller = new AbortController()
+    active = controller
+    try {
+      return await runTranslation(options, controller.signal)
+    } finally {
+      active = undefined
+    }
+  }
+
+  async function runTranslation(options: ShaderLangTranslateOptions, signal: AbortSignal): Promise<ShaderLangTranslateResult> {
     const prepared = prepareShaderLangEntries(options.entries)
     if (prepared.items.length === 0) {
       return { entries: options.entries, translated: 0, skipped: prepared.skipped }
@@ -179,13 +191,13 @@ export function useShaderLangTranslateAgent() {
     // JS 单线程保证 `nextBatch++` 不会重复分配同一批
     const runWorker = async (workerIndex: number) => {
       const worker = workers[workerIndex]
-      while (!cancelled && !failure) {
+      while (!signal.aborted && !failure) {
         const cursor = nextBatch++
         if (cursor >= batches.length) return
         const batch = batches[cursor]
         try {
-          const result = await translateBatch(workerIndex, worker, options, batch)
-          if (cancelled) return
+          const result = await translateBatch(workerIndex, worker, options, batch, signal)
+          if (signal.aborted) return
           for (const entry of result) translations.set(entry.key, entry.value)
           done += batch.entries.length
           options.onProgress?.(done, total)
@@ -197,7 +209,7 @@ export function useShaderLangTranslateAgent() {
     }
 
     await Promise.all(Array.from({ length: workerCount }, (_, index) => runWorker(index)))
-    if (cancelled) throw createCancelledError()
+    if (signal.aborted) throw createCancelledError()
     if (failure) throw failure
     if (translations.size !== prepared.items.length) {
       throw new Error('The AI returned an incomplete translation')
@@ -212,7 +224,7 @@ export function useShaderLangTranslateAgent() {
 
   /** 取消所有 worker 的请求；不写回任何内容 */
   function abort() {
-    cancelled = true
+    active?.abort()
     for (const worker of workers) worker.local.abort()
   }
 
