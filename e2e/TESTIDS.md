@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 320 (in 329 Vue files)
+**Total anchors:** 326 (in 334 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -138,22 +138,23 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `gamepad-hints-card` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L7`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L7) |
 | `gamepad-key-guide` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L13`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L13) |
 | `gamepad-toggle-card` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L37`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L37) |
-| `global-fullscreen-switch` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L157`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L157) |
-| `global-monitor-select` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L160`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L160) |
+| `global-fullscreen-switch` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L109`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L109) |
+| `global-monitor-select` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L129`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L129) |
 | `home-bedrock` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L3`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L3) |
 | `home-bedrock-install` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L60`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L60) |
 | `home-bedrock-installed` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L48`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L48) |
 | `home-bedrock-license-required` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L29`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L29) |
 | `home-bedrock-refresh` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L71`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L71) |
 | `home-bedrock-unsupported` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L14`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L14) |
-| `home-folder-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L41`](../xmcl-keystone-ui/src/views/HomeActions.vue#L41) |
+| `home-folder-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L53`](../xmcl-keystone-ui/src/views/HomeActions.vue#L53) |
 | `home-grid` | [`xmcl-keystone-ui/src/views/HomeGrid.vue#L2`](../xmcl-keystone-ui/src/views/HomeGrid.vue#L2) |
-| `home-log-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L28`](../xmcl-keystone-ui/src/views/HomeActions.vue#L28) |
+| `home-log-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L40`](../xmcl-keystone-ui/src/views/HomeActions.vue#L40) |
+| `home-repair-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L17`](../xmcl-keystone-ui/src/views/HomeActions.vue#L17) |
 | `home-screenshot-carousel` | [`xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L60`](../xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L60) |
 | `home-screenshot-next` | [`xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L87`](../xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L87) |
 | `home-screenshot-prev` | [`xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L75`](../xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L75) |
 | `home-screenshot-slide` | [`xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L103`](../xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L103) |
-| `home-screenshots-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L17`](../xmcl-keystone-ui/src/views/HomeActions.vue#L17) |
+| `home-screenshots-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L29`](../xmcl-keystone-ui/src/views/HomeActions.vue#L29) |
 | `home-server-card` | [`xmcl-keystone-ui/src/views/HomeServerCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeServerCard.vue#L3) |
 | `home-world-card` | [`xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3) |
 | `install-incompatible-alert` | [`xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L88`](../xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L88) |
@@ -161,9 +162,12 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `install-version-confirm` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97) |
 | `install-version-dialog` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4) |
 | `install-version-item` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L208`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L208) |
+| `instance-auto-repair` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L74`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L74) |
 | `instance-fullscreen-switch` | [`xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L36`](../xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L36) |
 | `instance-item` | [`xmcl-keystone-ui/src/views/AppSideBarInstanceItem.vue#L7`](../xmcl-keystone-ui/src/views/AppSideBarInstanceItem.vue#L7) |
 | `instance-monitor-select` | [`xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L56`](../xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L56) |
+| `instance-repair-rescan` | [`xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L856`](../xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L856) |
+| `instance-repair-run` | [`xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L875`](../xmcl-keystone-ui/src/views/AppInstanceRepairDialog.vue#L875) |
 | `instance-server-edit-dialog` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L3`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L3) |
 | `instance-server-edit-host` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L79`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L79) |
 | `instance-server-edit-name` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L66`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L66) |
@@ -173,14 +177,16 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `instance-server-edit-save` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143) |
 | `instance-theme-card` | [`xmcl-keystone-ui/src/views/BaseSetting.vue#L403`](../xmcl-keystone-ui/src/views/BaseSetting.vue#L403)<br>[`xmcl-keystone-ui/src/views/BaseSettingAppearance.vue#L3`](../xmcl-keystone-ui/src/views/BaseSettingAppearance.vue#L3) |
 | `java-import` | [`xmcl-keystone-ui/src/components/JavaActions.vue#L18`](../xmcl-keystone-ui/src/components/JavaActions.vue#L18) |
+| `java-installer-close` | [`xmcl-keystone-ui/src/views/SettingJavaInstaller.vue#L61`](../xmcl-keystone-ui/src/views/SettingJavaInstaller.vue#L61) |
+| `java-metadata-refresh` | [`xmcl-keystone-ui/src/views/SettingJavaInstaller.vue#L33`](../xmcl-keystone-ui/src/views/SettingJavaInstaller.vue#L33) |
 | `java-refresh` | [`xmcl-keystone-ui/src/components/JavaActions.vue#L5`](../xmcl-keystone-ui/src/components/JavaActions.vue#L5) |
 | `launch-button` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17) |
 | `launch-button-menu` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L90`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L90) |
 | `launch-button-play` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L46`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L46) |
 | `launch-target-client` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99) |
 | `launch-target-server` | [`xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41) |
-| `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L192`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L192) |
-| `launch-to-world` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L239`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L239) |
+| `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L205`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L205) |
+| `launch-to-world` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L252`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L252) |
 | `local-collection-corrupted` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L45`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L45) |
 | `local-collection-create-confirm` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L252`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L252) |
 | `local-collection-create-row` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L234`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L234) |
@@ -291,7 +297,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L92`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L92) |
 | `server-worlds` | [`xmcl-keystone-ui/src/views/BaseSettingServerRun.vue#L107`](../xmcl-keystone-ui/src/views/BaseSettingServerRun.vue#L107) |
 | `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L28`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L28) |
-| `settings-page` | [`xmcl-keystone-ui/src/views/Setting.vue#L3`](../xmcl-keystone-ui/src/views/Setting.vue#L3) |
+| `settings-page` | [`xmcl-keystone-ui/src/views/Setting.vue#L2`](../xmcl-keystone-ui/src/views/Setting.vue#L2) |
 | `settings-proxy-host` | [`xmcl-keystone-ui/src/views/SettingNetwork.vue#L37`](../xmcl-keystone-ui/src/views/SettingNetwork.vue#L37) |
 | `setup-account` | [`xmcl-keystone-ui/src/views/SetupAccount.vue#L3`](../xmcl-keystone-ui/src/views/SetupAccount.vue#L3) |
 | `setup-account-add` | [`xmcl-keystone-ui/src/views/SetupAccount.vue#L22`](../xmcl-keystone-ui/src/views/SetupAccount.vue#L22) |

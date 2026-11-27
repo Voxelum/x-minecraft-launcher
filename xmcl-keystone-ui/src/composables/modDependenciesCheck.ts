@@ -125,7 +125,7 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     await updateMetadata()
 
     const result: [InstanceFile, ModFile][] = []
-    const mods = instanceMods.value
+    const mods = instanceMods.value.filter(mod => mod.enabled)
     const _path = path.value
     const runtimes = runtime.value
 
@@ -161,7 +161,7 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     // Modrinth / CurseForge checks run in parallel). Keep one file per
     // dependency project so an install plan can never contain two versions
     // of the same mod.
-    installation.value = deduplicateModDependencyInstallations(result)
+    installation.value = deduplicateModDependencyInstallations(result, mods)
     checked.value = true
     operation.begin(_path)
   })
