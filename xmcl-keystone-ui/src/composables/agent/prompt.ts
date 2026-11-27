@@ -7,7 +7,7 @@ export interface AgentPromptCapability {
 }
 
 export interface AgentPromptProfile {
-  role: 'launcher-main' | 'css-main' | 'modpack-changelog-main'
+  role: 'launcher-main' | 'css-main' | 'modpack-changelog-main' | 'shader-lang-main'
   locale: string
   tools: readonly AgentPromptCapability[]
   readonly: boolean
@@ -25,10 +25,11 @@ export type AgentPromptSessionContext =
     }
   | { scope: 'global' }
   | { releaseContext: string }
+  | { shaderLangContext: string }
 
 export interface XmclBuiltInAgentContext {
   promptVersion: 1
-  agentType: 'launcher' | 'css' | 'modpack-changelog' | 'compaction'
+  agentType: 'launcher' | 'css' | 'modpack-changelog' | 'shader-lang' | 'compaction'
   locale: string
   documents?: readonly AgentDocumentMetadata[]
   sessionContext?: AgentPromptSessionContext
@@ -66,6 +67,10 @@ export function renderAgentSessionContext(profile: Pick<AgentPromptProfile, 'rol
   if (profile.role === 'css-main') return 'Global XMCL custom CSS scope.'
   if (profile.role === 'modpack-changelog-main') {
     return 'releaseContext' in profile.sessionContext ? profile.sessionContext.releaseContext : ''
+  }
+  if (profile.role === 'shader-lang-main') {
+    // 光影翻译会话只传入光影包与目标语言等短上下文
+    return 'shaderLangContext' in profile.sessionContext ? profile.sessionContext.shaderLangContext : ''
   }
   if (!('instancePath' in profile.sessionContext)) return ''
   const context = profile.sessionContext
@@ -121,6 +126,7 @@ function capabilitySection(profile: AgentPromptProfile) {
 const launcherIdentity = `You are the primary XMCL (XMCL) assistant. Help the user manage the explicitly selected Minecraft instance, resources, Java, local servers, worlds, launch failures, and launcher settings.`
 const cssIdentity = `You are the XMCL Custom CSS assistant. Your only responsibility is inspecting the launcher UI and maintaining the global custom CSS document. Do not manage Minecraft instances, resources, accounts, or game launch.`
 const modpackChangelogIdentity = `You are the XMCL Modrinth modpack release-notes writer. Your only responsibility is proposing a version number and a changelog for a new modpack version, based on the provided mod/file diff and any draft notes.`
+const shaderLangIdentity = `You are the XMCL shader pack localization editor. Your only responsibility is translating the values of one batch of Minecraft shader pack language entries into the requested target language, and submitting them through the provided tool.`
 
 export function buildAgentSystemPrompt(profile: AgentPromptProfile) {
   const rules = [
@@ -135,13 +141,23 @@ export function buildAgentSystemPrompt(profile: AgentPromptProfile) {
     rules.push('- Passive launcher context records describe state changes since the session started. Treat their latest user and page values as authoritative over the initial session context.')
   } else if (profile.role === 'css-main') {
     rules.push('- Read existing CSS before replacing it. After writing CSS, enable it unless the user explicitly asked otherwise.')
+  } else if (profile.role === 'shader-lang-main') {
+    rules.push('- You MUST finish by calling the provided tool exactly once with every translated entry of this batch. Never reply with translations as plain chat text.')
+    rules.push('- Translate only values. Never change, reorder, split, merge or omit a key.')
+    rules.push('- Keep technical identifiers, option IDs, file paths, commands, numbers, units, color codes and `⟦XMCLn⟧` placeholders unchanged.')
+    rules.push('- Never add explanations, Markdown fences, comments or new keys.')
   } else {
     rules.push('- You MUST finish by calling the provided tool exactly once with your proposed `version` and `changelog`. Never reply with the changelog as plain chat text instead of calling the tool.')
     rules.push('- The changelog should be concise Markdown, grouped by Added/Changed/Removed/Fixed where useful; omit empty groups and code fences.')
     rules.push('- Never invent mods, versions, or changes that were not provided in the context.')
   }
+  const identity = profile.role === 'css-main'
+    ? cssIdentity
+    : profile.role === 'modpack-changelog-main'
+      ? modpackChangelogIdentity
+      : profile.role === 'shader-lang-main' ? shaderLangIdentity : launcherIdentity
   return [
-    profile.role === 'css-main' ? cssIdentity : profile.role === 'modpack-changelog-main' ? modpackChangelogIdentity : launcherIdentity,
+    identity,
     rules.join('\n'),
     capabilitySection(profile),
     profile.sessionContext ? `## Launcher session context\n${renderAgentSessionContext(profile)}` : '',

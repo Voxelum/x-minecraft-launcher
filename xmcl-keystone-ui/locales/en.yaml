@@ -2359,6 +2359,29 @@ shaderPack:
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
+  translate:
+    batchSize: Entries per batch
+    batchSizeHint: This is an upper bound. A batch is split earlier when it reaches the character limit.
+    done: Done
+    entriesCount: '{count} entries'
+    loading: Scanning language files…
+    menu: AI translate language files
+    noLangFiles: This shader pack has no lang/*.lang or shaders/lang/*.lang file.
+    parallelism: Parallel requests
+    parallelismHint: More workers translate faster, but send more requests at the same time.
+    progress: 'Translated {done}/{total} entries ({skipped} skipped)'
+    sameLanguage: The selected source file is already in the target language.
+    sourceTitle: Source language file
+    start: Start translation
+    success: 'Created {path} with {count} new translations'
+    targetExists: Only missing keys are added to the copy. Existing translations are preserved.
+    targetPath: Target file in the pack
+    targetTitle: Target language
+    title: AI language translation
+    writing: Saving the translated copy (cannot cancel at this stage)…
+    disclosure: Starting sends missing shader-pack language entries to your configured AI provider. The original stays unchanged. Select the translated ZIP in the game to use it. If that filename already exists, it will not be overwritten.
+    sharedFolder: Unlink this instance’s shared shaderpacks folder before translating. The copy is saved only in the instance’s local shaderpacks folder.
+    noMissing: No keys are missing. No copy was created.
   'off': 'Off'
 shared:
   openFolder: Open Folder

@@ -59,7 +59,7 @@ export interface LocalAgentSession {
   readonly contextUsage: Readonly<Ref<AgentContextUsage>>
   load(scope?: string): Promise<void>
   replaceMessages(messages: AgentMessage[]): Promise<void>
-  send(userInput: string): Promise<void>
+  send(userInput: string, signal?: AbortSignal): Promise<void>
   reset(): Promise<void>
   abort(): void
 }
@@ -253,9 +253,11 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     }
   }
 
-  async function send(input: string) {
+  async function send(input: string, signal?: AbortSignal) {
+    signal?.throwIfAborted()
     await settings.ready
     await settings.flush()
+    signal?.throwIfAborted()
     if (running.value) throw new Error('Agent: a request is already in flight')
     if (!settings.configured.value) throw new Error('Agent: provider is not configured')
     const scope = options.getScope()
@@ -316,7 +318,11 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
       ? wrapAgentToolsWithResultSpill(createdTools, (content, toolName) => service.writeArtifact(artifactKey, { content, toolName }))
       : createdTools
     setAgentRunTelemetryTools(telemetry, tools.map(tool => tool.name))
-    const role = options.agentId === 'css' ? 'css-main' : options.agentId === 'modpack-changelog' ? 'modpack-changelog-main' : 'launcher-main'
+    const role = options.agentId === 'css'
+      ? 'css-main'
+      : options.agentId === 'modpack-changelog'
+        ? 'modpack-changelog-main'
+        : options.agentId === 'shader-lang' ? 'shader-lang-main' : 'launcher-main'
     telemetry.failureStage = 'documents'
     const documents = role === 'launcher-main' && tools.some(tool => tool.name === 'vfs_shell')
       ? await service.listDocuments()
@@ -370,6 +376,7 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
       telemetry.failureStage = 'setup'
     }
 
+    signal?.throwIfAborted()
     telemetry.failureStage = 'compaction'
     const compacted = await compactConversation(messages.value, initialSystemPrompt, input, providerModel, builtInContext)
     telemetry.failureStage = 'setup'
@@ -455,6 +462,7 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     let stopReason = 'stop'
     registerAgentConfirmationScope(permissionScope)
     try {
+      signal?.throwIfAborted()
       await agent.prompt(input)
       const last = [...agent.state.messages].reverse().find((message): message is AssistantMessage => message.role === 'assistant')
       stopReason = last?.stopReason ?? 'stop'
@@ -464,7 +472,7 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
         runError.value = last?.errorMessage ?? agent.state.errorMessage ?? ''
       }
     } catch (error) {
-      outcome = agent.signal?.aborted ? 'aborted' : 'failed'
+      outcome = (signal?.aborted || agent.signal?.aborted) ? 'aborted' : 'failed'
       stopReason = outcome === 'aborted' ? 'aborted' : 'error'
       runError.value = error instanceof Error ? error.message : String(error)
       agentDebug('run.error', error)
