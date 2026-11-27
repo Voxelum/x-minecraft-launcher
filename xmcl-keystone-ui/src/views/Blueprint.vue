@@ -201,7 +201,8 @@
         </div>
         <SplitPane
           split="horizontal"
-          :default-percent="65"
+          :default-percent="previewSplitPercent"
+          @resize="savePreviewSplitPercent"
           :min-percent="20"
           class="flex-grow min-h-0"
         >
@@ -478,12 +479,22 @@ import { injection } from '@/util/inject'
 import { useTutorial } from '@/composables/tutorial'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getLocalDateString } from '@/util/date'
+import { useLocalStorage } from '@vueuse/core'
 import {
   BlueprintMarketItem,
   BlueprintMarketProvider,
   BlueprintMarketServiceKey,
   InstanceBlueprintsServiceKey,
 } from '@xmcl/runtime-api'
+
+const savedPreviewSplitPercent = useLocalStorage('blueprintPreviewSplitPercent', 65, { writeDefaults: false, flush: 'sync' })
+function savePreviewSplitPercent(percent: number) {
+  savedPreviewSplitPercent.value = percent
+}
+const previewSplitPercent = computed(() => {
+  const percent = savedPreviewSplitPercent.value
+  return Number.isFinite(percent) && percent >= 20 && percent <= 80 ? percent : 65
+})
 
 const { t, locale } = useI18n()
 const { push } = useRouter()

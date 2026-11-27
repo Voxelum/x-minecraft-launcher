@@ -13,7 +13,8 @@
     <SplitPane
       flex-left
       :min-percent="minPercentage ?? 30"
-      :default-percent="30"
+      :default-percent="splitPercent"
+      @resize="saveSplitPercent"
       class="flex h-full w-full overflow-auto py-0"
     >
       <template #left>
@@ -114,6 +115,17 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { hasMarketSelectionContent, isMarketMultiSelectionClick, updateMarketSelection } from '@/util/marketSelection'
 import { ProjectEntry } from '@/util/search'
+import { useLocalStorage } from '@vueuse/core'
+
+const savedSplitPercent = useLocalStorage('marketSplitPercent', 30, { writeDefaults: false, flush: 'sync' })
+function saveSplitPercent(percent: number) {
+  savedSplitPercent.value = percent
+}
+const splitPercent = computed(() => {
+  const min = props.minPercentage ?? 30
+  const percent = savedSplitPercent.value
+  return Number.isFinite(percent) && percent >= min && percent <= 100 - min ? percent : 30
+})
 
 const props = defineProps<{
   plans: Record<string, UpgradePlan>
