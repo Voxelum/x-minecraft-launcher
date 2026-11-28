@@ -176,6 +176,7 @@
                     <v-icon size="19" class="mr-2">link</v-icon>
                     {{ t('userSkin.urlOrPlayer') }}
                   </v-tab>
+                  <v-tab value="mosaicary" class="font-semibold text-sm">Mosaicary</v-tab>
                 </v-tabs>
 
                 <v-window v-model="importTab">
@@ -247,6 +248,13 @@
                       </div>
                     </div>
                   </v-window-item>
+                  <v-window-item value="mosaicary">
+                    <UserSkinMosaicaryCatalog
+                      v-if="modelValue && importTab === 'mosaicary'"
+                      :selected-id="mosaicarySelection?.id || ''"
+                      @select="selectMosaicarySkin"
+                    />
+                  </v-window-item>
                 </v-window>
               </div>
             </div>
@@ -267,7 +275,7 @@
                 v-if="!editingSkin"
                 color="success"
                 class="px-6 font-semibold"
-                :disabled="!canSaveDraft"
+                :disabled="!canSaveDraft || !canUploadSkin"
                 @click="saveDraft(true)"
               >
                 {{ t('userSkin.saveAndEquip') }}
@@ -379,6 +387,7 @@
 <script lang="ts" setup>
 import SkinView from '@/components/SkinView.vue'
 import UserSkinCard from '@/components/UserSkinCard.vue'
+import UserSkinMosaicaryCatalog from '@/components/UserSkinMosaicaryCatalog.vue'
 import { getDropFilePaths } from '@/composables/dropHandler'
 import { useLocaleError } from '@/composables/error'
 import { useNotifier } from '@/composables/notifier'
@@ -412,10 +421,12 @@ const selectedSkin = ref<SkinLibraryItem | null>(null)
 const isEditorOpen = ref(false)
 const editingSkin = ref<SkinLibraryItem | null>(null)
 const isUploading = ref(false)
+const isSavingDraft = ref(false)
 const draftName = ref('')
 const draftUrl = ref('')
 const draftSlim = ref(false)
 const importTab = ref('file')
+const mosaicarySelection = ref<{ id: string; name: string; url: string; slim: boolean }>()
 const urlInput = ref('')
 const isFetchingUrl = ref(false)
 const loadSkinError = ref('')
@@ -440,10 +451,18 @@ const authorityItems = computed(() => [
       icon: metadata.favicon || '',
     })),
 ])
-const previewUrl = computed(() => isEditorOpen.value ? draftUrl.value : selectedSkin.value?.url || '')
+const mosaicaryPreviewUrl = computed(() => {
+  if (!mosaicarySelection.value) return ''
+  const url = new URL(mosaicarySelection.value.url)
+  url.searchParams.set('for', 'view')
+  return url.href
+})
+const previewUrl = computed(() => isEditorOpen.value
+  ? mosaicarySelection.value ? mosaicaryPreviewUrl.value : draftUrl.value
+  : selectedSkin.value?.url || '')
 const previewSlim = computed(() => isEditorOpen.value ? draftSlim.value : selectedSkin.value?.slim || false)
 const previewName = computed(() => isEditorOpen.value ? draftName.value : selectedSkin.value?.name || '')
-const canSaveDraft = computed(() => !!draftUrl.value && !!draftName.value.trim())
+const canSaveDraft = computed(() => !isSavingDraft.value && !!draftUrl.value && !!draftName.value.trim())
 const activeProfileSkinUrl = computed(() => (props.profile?.skins ? props.profile.skins.find(s => s.state === 'ACTIVE')?.url : undefined) || props.profile?.textures?.SKIN?.url || '')
 const currentSkinDefaultName = computed(() => `${props.profile.name}@${getAuthorityName(props.user.authority)}`)
 const currentSkinLegacyName = computed(() => `${props.profile.name}@${props.user.authority}`)
@@ -539,6 +558,23 @@ watch([urlInput, selectedAuthority, importTab], () => {
   loadSkinError.value = ''
 })
 
+watch(importTab, (tab, previous) => {
+  if (tab === 'mosaicary' || previous === 'mosaicary') {
+    mosaicarySelection.value = undefined
+    draftUrl.value = ''
+    draftName.value = ''
+    draftSlim.value = false
+  }
+}, { flush: 'sync' })
+
+function selectMosaicarySkin(skin: NonNullable<typeof mosaicarySelection.value>) {
+  mosaicarySelection.value = skin
+  draftUrl.value = skin.url
+  draftName.value = skin.name
+  draftSlim.value = skin.slim
+  loadSkinError.value = ''
+}
+
 function openAddEditor() {
   editingSkin.value = null
   draftName.value = ''
@@ -564,6 +600,7 @@ async function loadAuthorities() {
 }
 
 function onEditItem(item: SkinLibraryItem) {
+  importTab.value = 'file'
   editingSkin.value = item
   draftName.value = item.name
   draftUrl.value = item.url
@@ -578,7 +615,7 @@ function closeEditor() {
 }
 
 function onModelDetected(modelType: 'default' | 'slim') {
-  if (isEditorOpen.value && !editingSkin.value && !draftUrl.value.includes('http://launcher/media')) {
+  if (isEditorOpen.value && !editingSkin.value && !mosaicarySelection.value && !draftUrl.value.includes('http://launcher/media')) {
     draftSlim.value = modelType === 'slim'
   }
 }
@@ -592,7 +629,7 @@ async function pickFile() {
     title: t('userSkin.importFile'),
     filters: [{ extensions: ['png'], name: 'PNG Images' }],
   })
-  if (filePaths?.[0]) setFileSkin(filePaths[0])
+  if (filePaths?.[0] && isEditorOpen.value && importTab.value === 'file') setFileSkin(filePaths[0])
 }
 
 function onDropFile(event: DragEvent) {
@@ -620,6 +657,7 @@ async function fetchFromUrl() {
       if (!draftName.value) draftName.value = 'Web Skin'
     } else {
       const resolved = await fetchSkinFromUsername(input, selectedAuthority.value)
+      if (!isEditorOpen.value || importTab.value !== 'url') return
       draftUrl.value = resolved.url
       draftSlim.value = resolved.slim
       if (!draftName.value) draftName.value = `${input}@${getAuthorityName(selectedAuthority.value)}`
@@ -643,7 +681,8 @@ async function onDeleteItem(item: SkinLibraryItem) {
 }
 
 async function saveDraft(equipImmediately: boolean) {
-  if (!canSaveDraft.value) return
+  if (!canSaveDraft.value || (equipImmediately && !canUploadSkin.value)) return
+  isSavingDraft.value = true
   try {
     if (editingSkin.value) {
       const updated = await updateSkin(editingSkin.value.id, { name: draftName.value.trim(), slim: draftSlim.value })
@@ -663,6 +702,8 @@ async function saveDraft(equipImmediately: boolean) {
     } else {
       loadSkinError.value = toLocaleError(e)
     }
+  } finally {
+    isSavingDraft.value = false
   }
 }
 
