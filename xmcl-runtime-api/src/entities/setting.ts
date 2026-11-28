@@ -1,6 +1,6 @@
 import { type InvalidDirectoryErrorCode } from '../services/BaseService'
 import { DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '../services/AgentService'
-import { type SettingSchema } from './setting.schema'
+import { DEFAULT_MAX_HTTP_SOCKETS, type SettingSchema } from './setting.schema'
 import { type ReleaseInfo, type UpdateCapability } from './update'
 
 /**
@@ -74,7 +74,7 @@ export class Settings implements SettingSchema {
 
   httpProxyEnabled = false
 
-  maxSockets = 0
+  maxSockets = DEFAULT_MAX_HTTP_SOCKETS
 
   maxAPISockets = 0
 
@@ -103,7 +103,7 @@ export class Settings implements SettingSchema {
     this.apiSetsPreference = config.apiSetsPreference
     this.httpProxy = config.httpProxy
     this.httpProxyEnabled = config.httpProxyEnabled
-    this.maxSockets = config.maxSockets ?? 16
+    this.maxSockets = config.maxSockets ?? DEFAULT_MAX_HTTP_SOCKETS
     this.maxAPISockets = config.maxAPISockets ?? 0
     this.theme = config.theme
     this.globalMinMemory = config.globalMinMemory

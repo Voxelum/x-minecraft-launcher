@@ -397,7 +397,7 @@ describe('pluginSettings', () => {
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark',
-        maxSockets: 64,
+        maxSockets: 8,
         maxAPISockets: 16,
         replaceNatives: 'legacy-only',
         globalMinMemory: 0,
@@ -468,7 +468,7 @@ describe('pluginSettings', () => {
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark', // default value, not 'invalid-theme'
-        maxSockets: 64, // default value, not 'not-a-number'
+        maxSockets: 8, // default value, not 'not-a-number'
         maxAPISockets: 16,
         replaceNatives: 'legacy-only',
         globalMinMemory: 0,

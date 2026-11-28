@@ -3,14 +3,24 @@ import { join, win32 } from 'path'
 import { homedir } from 'os'
 import { readdirIfPresent } from '../util/fs'
 
-export async function getMojangJavaPaths() {
-  const runtimeDir = 'C:\\Program Files (x86)\\Minecraft Launcher\\runtime'
-  const runtimes = await readdir(runtimeDir).catch(() => [])
+export async function getMojangJavaPaths(environment = process.env) {
+  const roots = [
+    win32.join(environment['ProgramFiles(x86)'] || 'C:\\Program Files (x86)', 'Minecraft Launcher', 'runtime'),
+  ]
+  if (environment.APPDATA) roots.push(win32.join(environment.APPDATA, '.minecraft', 'runtime'))
   const arch = process.arch === 'ia32' ? 'x86' : 'x64'
-  const platformArch = `windows-${arch}`
-  return runtimes
-    .map((runtime) => join(runtimeDir, runtime, platformArch, runtime, 'bin', 'java.exe'))
-    .flat()
+  const candidates = await Promise.all(roots.map(async (root) => {
+    const runtimes = await readdir(root).catch(() => [])
+    const nested = runtimes.map(runtime => win32.join(root, runtime, `windows-${arch}`, runtime, 'bin', 'java.exe'))
+    const flat = await Promise.all(runtimes.map(async (runtime) => {
+      const bin = win32.join(root, runtime, 'bin')
+      const files = await readdir(bin).catch(() => [])
+      const executable = ['java.exe', 'javaw.exe'].find(name => files.includes(name))
+      return executable ? [win32.join(bin, executable)] : []
+    }))
+    return [...nested, ...flat.flat()]
+  }))
+  return candidates.flat()
 }
 
 export async function getOrcaleJavaPaths() {

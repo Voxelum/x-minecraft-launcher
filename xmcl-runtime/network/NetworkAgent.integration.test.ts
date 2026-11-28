@@ -66,3 +66,47 @@ test('real custom pools preserve requests, redirects, retries, ranges, cancellat
     await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
   }
 }, 15_000)
+
+test('changing the proxy route does not reuse an existing direct or tunneled socket', async () => {
+  const target = createServer((_req, res) => res.end('direct'))
+  const proxy = createServer()
+  const tunnels = new Set<import('node:stream').Duplex>()
+  let connects = 0
+  proxy.on('connect', (_req, socket) => {
+    connects++
+    tunnels.add(socket)
+    socket.on('close', () => tunnels.delete(socket))
+    socket.write('HTTP/1.1 200 Connection Established\r\n\r\n')
+    socket.on('data', () => {
+      socket.write('HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nproxy')
+    })
+  })
+  const listen = async (server: ReturnType<typeof createServer>) => {
+    server.listen(0, '127.0.0.1')
+    await once(server, 'listening')
+    const address = server.address()
+    if (!address || typeof address === 'string') throw new Error('No loopback address')
+    return `http://127.0.0.1:${address.port}`
+  }
+  const [origin, proxyUrl] = await Promise.all([listen(target), listen(proxy)])
+  const agent = new NetworkAgent({
+    userAgent: 'xmcl-proxy-regression',
+    factory: connect => new Agent({ connect, connections: 1 }),
+  }, () => {})
+  const response = async () => (await request(origin, { dispatcher: agent })).body.text()
+  try {
+    expect(await response()).toBe('direct')
+    await agent.setProxy(new URL(proxyUrl))
+    agent.setProxyEnabled(true)
+    expect(await response()).toBe('proxy')
+    expect(connects).toBe(1)
+    await agent.setProxy(undefined)
+    expect(await response()).toBe('direct')
+    expect(connects).toBe(1)
+  } finally {
+    for (const socket of tunnels) socket.destroy()
+    await agent.close()
+    target.closeAllConnections()
+    await Promise.all([target, proxy].map(server => new Promise<void>(resolve => server.close(() => resolve()))))
+  }
+}, 10_000)

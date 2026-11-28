@@ -1,5 +1,5 @@
 import { ConcurrencyDispatcher, DefaultRangePolicy } from '@xmcl/file-transfer'
-import { NetworkStatus } from '@xmcl/runtime-api'
+import { DEFAULT_MAX_HTTP_SOCKETS, NetworkStatus } from '@xmcl/runtime-api'
 import { join } from 'path'
 import {
   Agent,
@@ -13,7 +13,7 @@ import { kFlights } from '~/infra'
 import { kSettings } from '~/settings'
 import { BmclDownloadController } from './BmclDownloadController'
 import { DownloadPerformanceWindow } from './DownloadPerformanceWindow'
-import { NetworkAgent, ProxySettingController } from './NetworkAgent'
+import { NetworkAgent } from './NetworkAgent'
 import { SpeedMonitor, TrackSpeedHandler } from './TrackSpeedHandler'
 import { kDownloadController, kDownloadOptions, kNetworkInterface } from './networkInterface'
 import { kInstallFileDownloader } from '~/install/InstallManifestService'
@@ -28,7 +28,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   downloadController.load(join(app.appDataPath, 'download-reputation.json')).catch(() => {})
   app.registryDisposer(() => downloadController.save())
 
-  let maxConnection = 64
+  let maxConnection = DEFAULT_MAX_HTTP_SOCKETS
   const connectorOptions: buildConnector.BuildOptions = {
     timeout: 25_000,
     rejectUnauthorized: false,
@@ -39,19 +39,26 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
 
   const globalProxyHttps = process.env.HTTPS_PROXY || process.env.https_proxy
 
-  const proxyControl = new ProxySettingController()
   app.registry.get(kSettings).then((state) => {
-    maxConnection = state.maxSockets > 0 ? state.maxSockets : 64
-    proxyControl.setProxyEnabled(state.httpProxyEnabled)
-    const proxy = state.httpProxy || globalProxyHttps
-    if (proxy) {
-      try {
-        proxyControl.setProxy(new URL(proxy))
-        app.setProxy(proxy)
-      } catch (e) {
-        logger.warn(`Fail to set url as it's not a valid url ${proxy}`, e)
+    maxConnection = state.maxSockets > 0 ? state.maxSockets : DEFAULT_MAX_HTTP_SOCKETS
+    const applyProxy = () => {
+      const proxy = (state.httpProxy || globalProxyHttps || '').trim()
+      let url: URL | undefined
+      if (state.httpProxyEnabled && proxy) {
+        try {
+          const parsed = new URL(proxy.includes('://') ? proxy : `http://${proxy}`)
+          if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') throw new Error('Unsupported proxy protocol')
+          url = parsed
+        } catch {
+          logger.warn('Invalid HTTP proxy address; ignoring the explicit proxy setting')
+        }
       }
+      if (!url) agent.setProxyEnabled(false)
+      void agent.setProxy(url).catch(() => logger.warn('Failed to update the HTTP proxy client'))
+      if (url) agent.setProxyEnabled(true)
+      app.setProxy(url?.origin ?? '')
     }
+    applyProxy()
 
     const updateReassignableHosts = () => {
       const hosts: string[] = []
@@ -68,20 +75,10 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     state.subscribe('apiSetsSet', updateReassignableHosts)
 
     state.subscribe('maxSocketsSet', (val) => {
-      maxConnection = val > 0 ? val : 64
+      maxConnection = val > 0 ? val : DEFAULT_MAX_HTTP_SOCKETS
     })
-    state.subscribe('httpProxySet', (p) => {
-      app.setProxy(p)
-      try {
-        proxyControl.setProxy(new URL(p))
-      } catch (e) {
-        logger.warn(`Fail to set url as it's not a valid url ${p}`, e)
-      }
-    })
-    state.subscribe('httpProxyEnabledSet', (e) => {
-      proxyControl.setProxyEnabled(e)
-      app.setProxy(e ? state.httpProxy || globalProxyHttps || '' : '')
-    })
+    state.subscribe('httpProxySet', applyProxy)
+    state.subscribe('httpProxyEnabledSet', applyProxy)
   })
 
   const patchPool = (origin: string, dispatcher: Pool) => {
@@ -164,7 +161,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     },
   )
 
-  proxyControl.add(agent)
   const rangePolicy = new DefaultRangePolicy(
     1024 * 1024 * 5, // 5MB
     4,

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { readdir } from 'fs-extra'
 import { join } from 'path'
 import { readdirIfPresent } from '../util/fs'
-import { getAdoptiumJavaPaths, getJavaPathsLinux, isFlatpakSandbox } from './javaPaths'
+import { getAdoptiumJavaPaths, getJavaPathsLinux, getMojangJavaPaths, isFlatpakSandbox } from './javaPaths'
 
 vi.mock('../util/fs', () => ({ readdirIfPresent: vi.fn() }))
 vi.mock('fs-extra', () => ({ readdir: vi.fn() }))
@@ -12,6 +12,20 @@ const mockedReaddir = vi.mocked(readdir)
 function mockDirs(map: Record<string, string[]>) {
   mockedReaddir.mockImplementation((async (root: string) => map[root] ?? []) as any)
 }
+
+describe('getMojangJavaPaths', () => {
+  it('finds flat Mojang runtimes in roaming AppData alongside nested candidates', async () => {
+    const appData = 'D:\\Users\\Player\\AppData\\Roaming'
+    const root = `${appData}\\.minecraft\\runtime`
+    const bin = `${root}\\java-runtime-epsilon\\bin`
+    mockDirs({ [root]: ['java-runtime-epsilon'], [bin]: ['javaw.exe'] })
+    const arch = process.arch === 'ia32' ? 'x86' : 'x64'
+    expect(await getMojangJavaPaths({ APPDATA: appData })).toEqual([
+      `${root}\\java-runtime-epsilon\\windows-${arch}\\java-runtime-epsilon\\bin\\java.exe`,
+      `${bin}\\javaw.exe`,
+    ])
+  })
+})
 
 describe('getAdoptiumJavaPaths', () => {
   beforeEach(() => {

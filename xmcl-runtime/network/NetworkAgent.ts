@@ -18,36 +18,12 @@ function defaultProtocolPort(protocol: string) {
   return protocol === 'https:' ? 443 : 80
 }
 
-interface Proxy {
-  setProxyEnabled(e: boolean): void
-  setProxy(uri: URL, auth?: string): Promise<void>
-}
-
-export class ProxySettingController {
-  #settings: Proxy[] = []
-
-  add(p: Proxy) {
-    this.#settings.push(p)
-  }
-
-  setProxyEnabled(e: boolean) {
-    for (const p of this.#settings) {
-      p.setProxyEnabled(e)
-    }
-  }
-
-  async setProxy(uri: URL, auth?: string): Promise<void> {
-    for (const p of this.#settings) {
-      await p.setProxy(uri, auth)
-    }
-  }
-}
-
 /**
  * Implement mutable proxy
  */
 export class NetworkAgent extends Dispatcher {
-  readonly agent: Agent
+  agent: Agent
+  private createAgent: () => Agent
 
   private isProxyEnabled = false
   private proxyUri?: URL
@@ -63,22 +39,21 @@ export class NetworkAgent extends Dispatcher {
   #userAgent: string
   #activated = false
 
-  async setProxy(uri: URL, auth?: string) {
+  async setProxy(uri?: URL, auth?: string) {
     const oldClient = this.proxyClient
+    this.proxyClient = uri ? new Client(uri, { connect: this.pConnect }) : undefined
     this.proxyUri = uri
-    this.proxyClient = new Client(uri, { connect: this.pConnect })
-    if (auth) {
-      this.proxyHeader = {
-        'proxy-authorization': `Basic ${auth}`,
-      }
-    }
+    this.proxyHeader = auth ? { 'proxy-authorization': `Basic ${auth}` } : undefined
+    if (this.isProxyEnabled) this.refreshAgent()
     if (oldClient) {
       await oldClient.close()
     }
   }
 
   setProxyEnabled(enabled: boolean) {
+    if (this.isProxyEnabled === enabled) return
     this.isProxyEnabled = enabled
+    if (this.proxyClient) this.refreshAgent()
   }
 
   setConnectTimeout(timeout: number) {
@@ -108,8 +83,8 @@ export class NetworkAgent extends Dispatcher {
     this.requestTls = opts.requestTls
     this.proxyTls = opts.proxyTls
 
-    this.pConnect = buildConnector(opts.proxyTls)
-    this.rConnect = buildConnector(opts.requestTls)
+    this.pConnect = buildConnector(opts.proxyTls ?? {})
+    this.rConnect = buildConnector(opts.requestTls ?? {})
 
     const connect = async (opts: any, callback: buildConnector.Callback) => {
       if (!this.isProxyEnabled || !this.proxyClient) {
@@ -132,6 +107,7 @@ export class NetworkAgent extends Dispatcher {
         if (statusCode !== 200) {
           socket.on('error', () => {}).destroy()
           callback(new RequestAbortedError('Proxy response !== 200 when HTTP Tunneling'), null)
+          return
         }
         if (opts.protocol !== 'https:') {
           callback(null, socket as Socket)
@@ -151,19 +127,32 @@ export class NetworkAgent extends Dispatcher {
       }
     }
 
-    this.agent = opts.factory(connect as any)
+    this.createAgent = () => {
+      const agent = opts.factory(connect as any)
+      agent.on('connect', () => {
+        if (agent === this.agent && !this.#activated) {
+          this.#activated = true
+          this.onActivityChanged(true)
+        }
+      })
+      agent.on('drain', (url) => {
+        setTimeout(() => {
+          if (agent === this.agent) this.#cleanup(url)
+        }, 60_000).unref()
+      })
+      return agent
+    }
+    this.agent = this.createAgent()
     this.#dispatcher = this.agent
-    this.agent.on('connect', () => {
-      if (!this.#activated) {
-        this.#activated = true
-        this.onActivityChanged(true)
-      }
-    })
-    this.agent.on('drain', (url) => {
-      setTimeout(() => {
-        this.#cleanup(url)
-      }, 60_000)
-    })
+  }
+
+  private refreshAgent() {
+    // Existing keep-alive sockets retain their original route. Drain them
+    // without interrupting downloads, and submit new requests to fresh pools.
+    const previous = this.agent
+    this.agent = this.createAgent()
+    this.#dispatcher = this.agent
+    void previous.close().catch(() => {})
   }
 
   #cleanup(url: URL) {
