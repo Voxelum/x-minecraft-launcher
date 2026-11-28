@@ -2480,6 +2480,15 @@ userServices:
     password: Без пароля
     uuid: UUID користувача (необов'язково)
 userSkin:
+  mosaicarySource: "Скіни з Mosaicary"
+  mosaicarySearch: "Пошук за назвою або тегом"
+  mosaicaryModel: "Модель"
+  mosaicaryAllModels: "Усі моделі"
+  mosaicaryFailed: "Не вдалося завантажити каталог Mosaicary. Повторіть пошук."
+  mosaicaryFound: "Знайдено у гравця"
+  mosaicaryAuthor: "Автор: {author}"
+  mosaicaryPrevious: "Попередня сторінка"
+  mosaicaryNext: "Наступна сторінка"
   import: Імпортувати скін
   importFile: Відкрити з файлу
   importLink: Відкрити за посиланням

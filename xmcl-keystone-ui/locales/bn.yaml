@@ -2582,6 +2582,15 @@ userServices:
     password: কোনো পাসওয়ার্ড নেই
     uuid: ব্যবহারকারী ইউইউআইডি (ঐচ্ছিক)
 userSkin:
+  mosaicarySource: "Mosaicary থেকে স্কিন"
+  mosaicarySearch: "নাম বা ট্যাগ দিয়ে খুঁজুন"
+  mosaicaryModel: "মডেল"
+  mosaicaryAllModels: "সব মডেল"
+  mosaicaryFailed: "Mosaicary ক্যাটালগ লোড করা যায়নি। আবার খুঁজুন।"
+  mosaicaryFound: "একজন খেলোয়াড়ের কাছে পাওয়া গেছে"
+  mosaicaryAuthor: "নির্মাতা {author}"
+  mosaicaryPrevious: "আগের পৃষ্ঠা"
+  mosaicaryNext: "পরের পৃষ্ঠা"
   classic: ক্লাসিক
   import: স্কিন ইম্পোর্ট করুন
   importFile: ফাইল থেকে খুলুন

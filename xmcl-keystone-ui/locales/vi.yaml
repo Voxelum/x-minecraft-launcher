@@ -2582,6 +2582,15 @@ userServices:
     password: Không có mật khẩu
     uuid: UUID người dùng (Tùy chọn)
 userSkin:
+  mosaicarySource: "Skin từ Mosaicary"
+  mosaicarySearch: "Tìm theo tên hoặc thẻ"
+  mosaicaryModel: "Mẫu"
+  mosaicaryAllModels: "Tất cả mẫu"
+  mosaicaryFailed: "Không thể tải danh mục Mosaicary. Hãy thử tìm lại."
+  mosaicaryFound: "Tìm thấy trên người chơi"
+  mosaicaryAuthor: "Tác giả: {author}"
+  mosaicaryPrevious: "Trang trước"
+  mosaicaryNext: "Trang sau"
   classic: Cổ điển (Classic)
   import: Nhập trang phục (Skin)
   importFile: Mở từ tệp

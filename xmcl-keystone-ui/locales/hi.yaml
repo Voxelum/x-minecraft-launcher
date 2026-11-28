@@ -2582,6 +2582,15 @@ userServices:
     password: कोई पासवर्ड नहीं
     uuid: उपयोगकर्ता UUID (वैकल्पिक)
 userSkin:
+  mosaicarySource: "Mosaicary की स्किनें"
+  mosaicarySearch: "नाम या टैग से खोजें"
+  mosaicaryModel: "मॉडल"
+  mosaicaryAllModels: "सभी मॉडल"
+  mosaicaryFailed: "Mosaicary कैटलॉग लोड नहीं हो सका। फिर से खोजें।"
+  mosaicaryFound: "किसी खिलाड़ी पर मिली"
+  mosaicaryAuthor: "निर्माता {author}"
+  mosaicaryPrevious: "पिछला पृष्ठ"
+  mosaicaryNext: "अगला पृष्ठ"
   classic: क्लासिक
   import: त्वचा (Skin) आयात करें
   importFile: फ़ाइल से खोलें

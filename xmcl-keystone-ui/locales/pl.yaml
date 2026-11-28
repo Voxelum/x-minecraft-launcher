@@ -2600,6 +2600,15 @@ userServices:
     password: No Password
     uuid: UUID użytkownika (opcjonalnie)
 userSkin:
+  mosaicarySource: "Skórki z Mosaicary"
+  mosaicarySearch: "Szukaj według nazwy lub tagu"
+  mosaicaryModel: "Model"
+  mosaicaryAllModels: "Wszystkie modele"
+  mosaicaryFailed: "Nie udało się wczytać katalogu Mosaicary. Wyszukaj ponownie."
+  mosaicaryFound: "Znaleziona u gracza"
+  mosaicaryAuthor: "Autor: {author}"
+  mosaicaryPrevious: "Poprzednia strona"
+  mosaicaryNext: "Następna strona"
   uploadRejected: Minecraft odrzucił przesłanie tej skórki. Spróbuj ponownie później.
   invalidImageTitle: Nieprawidłowy obraz skórki
   invalidImage: Wybierz prawidłowy obraz skórki Minecraft.

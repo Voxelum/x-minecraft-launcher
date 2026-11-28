@@ -2470,6 +2470,15 @@ userServices:
     password: Құпиясөз жоқ
     uuid: Пайдаланушы UUID (Міндетті емес)
 userSkin:
+  mosaicarySource: "Mosaicary скиндері"
+  mosaicarySearch: "Атауы немесе тег бойынша іздеу"
+  mosaicaryModel: "Модель"
+  mosaicaryAllModels: "Барлық модельдер"
+  mosaicaryFailed: "Mosaicary каталогын жүктеу мүмкін болмады. Қайта іздеп көріңіз."
+  mosaicaryFound: "Ойыншыдан табылды"
+  mosaicaryAuthor: "Авторы {author}"
+  mosaicaryPrevious: "Алдыңғы бет"
+  mosaicaryNext: "Келесі бет"
   import: Теріді импорттау
   importFile: Файлдан ашу
   importLink: Сілтемеден ашу

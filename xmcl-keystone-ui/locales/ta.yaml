@@ -2582,6 +2582,15 @@ userServices:
     password: கடவுச்சொல் இல்லை
     uuid: பயனர் UUID (விருப்பத்திற்குரியது)
 userSkin:
+  mosaicarySource: "Mosaicary தோற்றங்கள்"
+  mosaicarySearch: "பெயர் அல்லது குறிச்சொல் மூலம் தேடவும்"
+  mosaicaryModel: "மாதிரி"
+  mosaicaryAllModels: "அனைத்து மாதிரிகளும்"
+  mosaicaryFailed: "Mosaicary பட்டியலை ஏற்ற முடியவில்லை. மீண்டும் தேடவும்."
+  mosaicaryFound: "ஒரு வீரரிடம் கண்டது"
+  mosaicaryAuthor: "உருவாக்கியவர் {author}"
+  mosaicaryPrevious: "முந்தைய பக்கம்"
+  mosaicaryNext: "அடுத்த பக்கம்"
   classic: கிளாசிக்
   import: ஸ்கின் இறக்குமதி செய்
   importFile: கோப்பிலிருந்து திறக்கவும்

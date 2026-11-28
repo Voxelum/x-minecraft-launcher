@@ -2582,6 +2582,15 @@ userServices:
     password: Tanpa Kata Sandi
     uuid: UUID Pengguna (Opsional)
 userSkin:
+  mosaicarySource: "Skin dari Mosaicary"
+  mosaicarySearch: "Cari berdasarkan nama atau tag"
+  mosaicaryModel: "Model"
+  mosaicaryAllModels: "Semua model"
+  mosaicaryFailed: "Katalog Mosaicary tidak dapat dimuat. Coba cari lagi."
+  mosaicaryFound: "Ditemukan pada pemain"
+  mosaicaryAuthor: "Oleh {author}"
+  mosaicaryPrevious: "Halaman sebelumnya"
+  mosaicaryNext: "Halaman berikutnya"
   classic: Klasik
   import: Impor Skin
   importFile: Buka dari Berkas

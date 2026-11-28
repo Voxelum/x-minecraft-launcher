@@ -2537,6 +2537,15 @@ userServices:
     password: Sin contraseña
     uuid: UUID de usuario (Opcional)
 userSkin:
+  mosaicarySource: "Skins de Mosaicary"
+  mosaicarySearch: "Buscar por nombre o etiqueta"
+  mosaicaryModel: "Modelo"
+  mosaicaryAllModels: "Todos los modelos"
+  mosaicaryFailed: "No se pudo cargar el catálogo de Mosaicary. Vuelve a buscar."
+  mosaicaryFound: "Encontrada en un jugador"
+  mosaicaryAuthor: "De {author}"
+  mosaicaryPrevious: "Página anterior"
+  mosaicaryNext: "Página siguiente"
   classic: Clásico
   import: Importar skin
   importFile: Abrir desde archivo

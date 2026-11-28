@@ -7,7 +7,7 @@
   >
     <v-card class="skin-library-dialog rounded-2xl flex flex-row h-[680px] overflow-hidden border border-[rgba(var(--v-theme-on-surface),0.1)]">
       <!-- Left Panel: 3D Preview & Actions -->
-      <div class="w-[330px] flex-shrink-0 flex flex-col items-center justify-between p-6 border-r border-[rgba(var(--v-theme-on-surface),0.08)] bg-black/25">
+      <div class="w-[32%] flex-shrink-0 flex flex-col items-center justify-between overflow-y-auto p-4 lg:p-6 border-r border-[rgba(var(--v-theme-on-surface),0.08)] bg-black/25">
         <!-- Top Info Header -->
         <div class="w-full flex items-center justify-between">
           <div class="text-xs font-bold uppercase tracking-wider opacity-60">
@@ -98,9 +98,9 @@
       </div>
 
       <!-- Right Panel -->
-      <div class="flex-1 flex flex-col p-6 overflow-hidden bg-surface">
+      <div class="min-w-0 flex-1 flex flex-col p-4 lg:p-6 overflow-hidden bg-surface">
         <template v-if="isEditorOpen">
-          <div class="flex items-center justify-between gap-3 mb-5">
+          <div class="flex items-center justify-between gap-3 mb-3 shrink-0">
             <div class="flex items-center gap-3 min-w-0">
               <v-btn icon size="small" variant="text" @click="closeEditor">
                 <v-icon>arrow_back</v-icon>
@@ -132,38 +132,40 @@
             </v-alert>
           </div>
 
-          <div class="flex-1 min-h-0 flex flex-col justify-between">
-            <div class="flex flex-col gap-5 overflow-y-auto pr-1">
-              <div>
-                <div class="text-xs font-bold uppercase opacity-70 mb-2">
-                  {{ t('userSkin.skinName') }}
+          <div class="flex-1 min-h-0 flex flex-col">
+            <div class="min-h-0 flex-1 overflow-y-auto pr-2">
+              <div class="mb-3 grid grid-cols-1 items-end gap-3 md:grid-cols-2">
+                <div>
+                  <div class="text-xs font-bold uppercase opacity-70 mb-2">
+                    {{ t('userSkin.skinName') }}
+                  </div>
+                  <v-text-field
+                    v-model="draftName"
+                    :placeholder="t('userSkin.skinNamePlaceholder')"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  />
                 </div>
-                <v-text-field
-                  v-model="draftName"
-                  :placeholder="t('userSkin.skinNamePlaceholder')"
-                  variant="outlined"
-                  density="comfortable"
-                  hide-details
-                />
-              </div>
 
-              <div>
-                <v-btn-toggle
-                  v-model="draftSlim"
-                  mandatory
-                  density="comfortable"
-                  class="w-full surface-panel"
-                  rounded="lg"
-                >
-                  <v-btn :value="false" class="flex-1 font-semibold">
-                    <v-icon size="18" class="mr-2">accessibility_new</v-icon>
-                    {{ t('userSkin.classic') }}
-                  </v-btn>
-                  <v-btn :value="true" class="flex-1 font-semibold">
-                    <v-icon size="18" class="mr-2">accessibility</v-icon>
-                    {{ t('userSkin.slim') }}
-                  </v-btn>
-                </v-btn-toggle>
+                <div>
+                  <v-btn-toggle
+                    v-model="draftSlim"
+                    mandatory
+                    density="compact"
+                    class="w-full surface-panel"
+                    rounded="lg"
+                  >
+                    <v-btn :value="false" class="flex-1 font-semibold">
+                      <v-icon size="18" class="mr-2">accessibility_new</v-icon>
+                      {{ t('userSkin.classic') }}
+                    </v-btn>
+                    <v-btn :value="true" class="flex-1 font-semibold">
+                      <v-icon size="18" class="mr-2">accessibility</v-icon>
+                      {{ t('userSkin.slim') }}
+                    </v-btn>
+                  </v-btn-toggle>
+                </div>
               </div>
 
               <div v-if="!editingSkin">
@@ -176,6 +178,7 @@
                     <v-icon size="19" class="mr-2">link</v-icon>
                     {{ t('userSkin.urlOrPlayer') }}
                   </v-tab>
+                  <v-tab value="mosaicary" class="font-semibold text-sm">Mosaicary</v-tab>
                 </v-tabs>
 
                 <v-window v-model="importTab">
@@ -247,11 +250,18 @@
                       </div>
                     </div>
                   </v-window-item>
+                  <v-window-item value="mosaicary">
+                    <UserSkinMosaicaryCatalog
+                      v-if="modelValue && importTab === 'mosaicary'"
+                      :selected-id="mosaicarySelection?.id || ''"
+                      @select="selectMosaicarySkin"
+                    />
+                  </v-window-item>
                 </v-window>
               </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 mt-5 pt-5 border-t border-[rgba(var(--v-theme-on-surface),0.08)]">
+            <div class="flex items-center justify-end gap-2 mt-3 pt-3 shrink-0 flex-wrap border-t border-[rgba(var(--v-theme-on-surface),0.08)]">
               <v-btn variant="text" class="px-5" @click="closeEditor">
                 {{ t('shared.cancel') }}
               </v-btn>
@@ -267,7 +277,7 @@
                 v-if="!editingSkin"
                 color="success"
                 class="px-6 font-semibold"
-                :disabled="!canSaveDraft"
+                :disabled="!canSaveDraft || !canUploadSkin"
                 @click="saveDraft(true)"
               >
                 {{ t('userSkin.saveAndEquip') }}
@@ -379,6 +389,7 @@
 <script lang="ts" setup>
 import SkinView from '@/components/SkinView.vue'
 import UserSkinCard from '@/components/UserSkinCard.vue'
+import UserSkinMosaicaryCatalog from '@/components/UserSkinMosaicaryCatalog.vue'
 import { getDropFilePaths } from '@/composables/dropHandler'
 import { useLocaleError } from '@/composables/error'
 import { useNotifier } from '@/composables/notifier'
@@ -412,10 +423,12 @@ const selectedSkin = ref<SkinLibraryItem | null>(null)
 const isEditorOpen = ref(false)
 const editingSkin = ref<SkinLibraryItem | null>(null)
 const isUploading = ref(false)
+const isSavingDraft = ref(false)
 const draftName = ref('')
 const draftUrl = ref('')
 const draftSlim = ref(false)
 const importTab = ref('file')
+const mosaicarySelection = ref<{ id: string; name: string; url: string; slim: boolean }>()
 const urlInput = ref('')
 const isFetchingUrl = ref(false)
 const loadSkinError = ref('')
@@ -440,10 +453,18 @@ const authorityItems = computed(() => [
       icon: metadata.favicon || '',
     })),
 ])
-const previewUrl = computed(() => isEditorOpen.value ? draftUrl.value : selectedSkin.value?.url || '')
+const mosaicaryPreviewUrl = computed(() => {
+  if (!mosaicarySelection.value) return ''
+  const url = new URL(mosaicarySelection.value.url)
+  url.searchParams.set('for', 'view')
+  return url.href
+})
+const previewUrl = computed(() => isEditorOpen.value
+  ? mosaicarySelection.value ? mosaicaryPreviewUrl.value : draftUrl.value
+  : selectedSkin.value?.url || '')
 const previewSlim = computed(() => isEditorOpen.value ? draftSlim.value : selectedSkin.value?.slim || false)
 const previewName = computed(() => isEditorOpen.value ? draftName.value : selectedSkin.value?.name || '')
-const canSaveDraft = computed(() => !!draftUrl.value && !!draftName.value.trim())
+const canSaveDraft = computed(() => !isSavingDraft.value && !!draftUrl.value && !!draftName.value.trim())
 const activeProfileSkinUrl = computed(() => (props.profile?.skins ? props.profile.skins.find(s => s.state === 'ACTIVE')?.url : undefined) || props.profile?.textures?.SKIN?.url || '')
 const currentSkinDefaultName = computed(() => `${props.profile.name}@${getAuthorityName(props.user.authority)}`)
 const currentSkinLegacyName = computed(() => `${props.profile.name}@${props.user.authority}`)
@@ -539,6 +560,23 @@ watch([urlInput, selectedAuthority, importTab], () => {
   loadSkinError.value = ''
 })
 
+watch(importTab, (tab, previous) => {
+  if (tab === 'mosaicary' || previous === 'mosaicary') {
+    mosaicarySelection.value = undefined
+    draftUrl.value = ''
+    draftName.value = ''
+    draftSlim.value = false
+  }
+}, { flush: 'sync' })
+
+function selectMosaicarySkin(skin: NonNullable<typeof mosaicarySelection.value>) {
+  mosaicarySelection.value = skin
+  draftUrl.value = skin.url
+  draftName.value = skin.name
+  draftSlim.value = skin.slim
+  loadSkinError.value = ''
+}
+
 function openAddEditor() {
   editingSkin.value = null
   draftName.value = ''
@@ -564,6 +602,7 @@ async function loadAuthorities() {
 }
 
 function onEditItem(item: SkinLibraryItem) {
+  importTab.value = 'file'
   editingSkin.value = item
   draftName.value = item.name
   draftUrl.value = item.url
@@ -578,7 +617,7 @@ function closeEditor() {
 }
 
 function onModelDetected(modelType: 'default' | 'slim') {
-  if (isEditorOpen.value && !editingSkin.value && !draftUrl.value.includes('http://launcher/media')) {
+  if (isEditorOpen.value && !editingSkin.value && !mosaicarySelection.value && !draftUrl.value.includes('http://launcher/media')) {
     draftSlim.value = modelType === 'slim'
   }
 }
@@ -592,7 +631,7 @@ async function pickFile() {
     title: t('userSkin.importFile'),
     filters: [{ extensions: ['png'], name: 'PNG Images' }],
   })
-  if (filePaths?.[0]) setFileSkin(filePaths[0])
+  if (filePaths?.[0] && isEditorOpen.value && importTab.value === 'file') setFileSkin(filePaths[0])
 }
 
 function onDropFile(event: DragEvent) {
@@ -620,6 +659,7 @@ async function fetchFromUrl() {
       if (!draftName.value) draftName.value = 'Web Skin'
     } else {
       const resolved = await fetchSkinFromUsername(input, selectedAuthority.value)
+      if (!isEditorOpen.value || importTab.value !== 'url') return
       draftUrl.value = resolved.url
       draftSlim.value = resolved.slim
       if (!draftName.value) draftName.value = `${input}@${getAuthorityName(selectedAuthority.value)}`
@@ -643,7 +683,8 @@ async function onDeleteItem(item: SkinLibraryItem) {
 }
 
 async function saveDraft(equipImmediately: boolean) {
-  if (!canSaveDraft.value) return
+  if (!canSaveDraft.value || (equipImmediately && !canUploadSkin.value)) return
+  isSavingDraft.value = true
   try {
     if (editingSkin.value) {
       const updated = await updateSkin(editingSkin.value.id, { name: draftName.value.trim(), slim: draftSlim.value })
@@ -663,6 +704,8 @@ async function saveDraft(equipImmediately: boolean) {
     } else {
       loadSkinError.value = toLocaleError(e)
     }
+  } finally {
+    isSavingDraft.value = false
   }
 }
 
@@ -751,6 +794,7 @@ function onEquipItem(item: SkinLibraryItem) {
 .skin-library-dialog {
   background: rgba(var(--v-theme-surface), 0.95);
   backdrop-filter: blur(20px);
+  max-height: calc(100dvh - 48px);
 }
 
 .file-drop-zone {

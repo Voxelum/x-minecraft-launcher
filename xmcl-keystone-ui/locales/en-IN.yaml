@@ -2582,6 +2582,15 @@ userServices:
     password: No Password
     uuid: User UUID (Optional)
 userSkin:
+  mosaicarySource: "Skins from Mosaicary"
+  mosaicarySearch: "Search by name or tag"
+  mosaicaryModel: "Model"
+  mosaicaryAllModels: "All models"
+  mosaicaryFailed: "Could not load the Mosaicary catalog. Try searching again."
+  mosaicaryFound: "Found on a player"
+  mosaicaryAuthor: "By {author}"
+  mosaicaryPrevious: "Previous page"
+  mosaicaryNext: "Next page"
   classic: Classic
   import: Import Skin
   importFile: Open from File

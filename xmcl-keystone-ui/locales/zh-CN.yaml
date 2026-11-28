@@ -2697,6 +2697,15 @@ userServices:
     password: 无需密码
     uuid: 用户的 UUID (除了特殊用途，否则不填写)
 userSkin:
+  mosaicarySource: 皮肤来自 Mosaicary
+  mosaicarySearch: 按名称或标签搜索
+  mosaicaryModel: 模型
+  mosaicaryAllModels: 所有模型
+  mosaicaryFailed: 无法加载 Mosaicary 皮肤目录，请重新搜索。
+  mosaicaryFound: 采集自玩家
+  mosaicaryAuthor: 作者：{author}
+  mosaicaryPrevious: 上一页
+  mosaicaryNext: 下一页
   import: 导入皮肤
   importFile: 从文件导入
   importLink: 从链接导入
