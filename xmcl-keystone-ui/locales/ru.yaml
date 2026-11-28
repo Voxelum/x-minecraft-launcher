@@ -1860,6 +1860,15 @@ userServices:
     password: Нет пароля
     uuid: UUID пользователя (необязательно)
 userSkin:
+  mosaicarySource: "Скины с Mosaicary"
+  mosaicarySearch: "Поиск по названию или тегу"
+  mosaicaryModel: "Модель"
+  mosaicaryAllModels: "Все модели"
+  mosaicaryFailed: "Не удалось загрузить каталог Mosaicary. Повторите поиск."
+  mosaicaryFound: "Найден у игрока"
+  mosaicaryAuthor: "Автор: {author}"
+  mosaicaryPrevious: "Предыдущая страница"
+  mosaicaryNext: "Следующая страница"
   import: Импортировать скин
   importFile: Импортировать из файла
   importLink: Импортировать из ссылки

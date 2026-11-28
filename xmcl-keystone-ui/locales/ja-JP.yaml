@@ -2563,6 +2563,15 @@ userServices:
     password: パスワードがありません
     uuid: ユーザーUUID (オプション)
 userSkin:
+  mosaicarySource: "Mosaicary のスキン"
+  mosaicarySearch: "名前またはタグで検索"
+  mosaicaryModel: "モデル"
+  mosaicaryAllModels: "すべてのモデル"
+  mosaicaryFailed: "Mosaicary のカタログを読み込めませんでした。もう一度検索してください。"
+  mosaicaryFound: "プレイヤーから取得"
+  mosaicaryAuthor: "作者：{author}"
+  mosaicaryPrevious: "前のページ"
+  mosaicaryNext: "次のページ"
   import: インポート
   importFile: ファイルから開く
   importLink: リンクから開く

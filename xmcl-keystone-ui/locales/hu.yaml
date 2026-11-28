@@ -2527,6 +2527,15 @@ userServices:
     password: Nincs jelszó
     uuid: Felhasználó UUID (Opcionális)
 userSkin:
+  mosaicarySource: "Kinézetek a Mosaicary oldaláról"
+  mosaicarySearch: "Keresés név vagy címke alapján"
+  mosaicaryModel: "Modell"
+  mosaicaryAllModels: "Minden modell"
+  mosaicaryFailed: "A Mosaicary katalógusa nem tölthető be. Próbálj újra keresni."
+  mosaicaryFound: "Egy játékosnál talált kinézet"
+  mosaicaryAuthor: "Készítette {author}"
+  mosaicaryPrevious: "Előző oldal"
+  mosaicaryNext: "Következő oldal"
   import: Kinézet importálása
   importFile: Megnyitás fájlból
   importLink: Megnyitás linkről

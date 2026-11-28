@@ -2528,6 +2528,15 @@ userServices:
     password: لا كلمة المرور
     uuid: UUID للمستخدم (اختياري)
 userSkin:
+  mosaicarySource: "جلود من Mosaicary"
+  mosaicarySearch: "البحث بالاسم أو الوسم"
+  mosaicaryModel: "الطراز"
+  mosaicaryAllModels: "كل الطرز"
+  mosaicaryFailed: "تعذّر تحميل كتالوج Mosaicary. حاول البحث مرة أخرى."
+  mosaicaryFound: "عُثر عليه لدى لاعب"
+  mosaicaryAuthor: "بواسطة {author}"
+  mosaicaryPrevious: "الصفحة السابقة"
+  mosaicaryNext: "الصفحة التالية"
   import: استيراد الجلد
   importFile: فتح من ملف
   importLink: فتح من الرابط

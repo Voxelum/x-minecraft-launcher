@@ -2470,6 +2470,15 @@ userServices:
     password: Geen Wachtwoord
     uuid: Gebruiker UUID (Optioneel)
 userSkin:
+  mosaicarySource: "Skins van Mosaicary"
+  mosaicarySearch: "Zoeken op naam of tag"
+  mosaicaryModel: "Model"
+  mosaicaryAllModels: "Alle modellen"
+  mosaicaryFailed: "De Mosaicary-catalogus kon niet worden geladen. Zoek opnieuw."
+  mosaicaryFound: "Gevonden bij een speler"
+  mosaicaryAuthor: "Door {author}"
+  mosaicaryPrevious: "Vorige pagina"
+  mosaicaryNext: "Volgende pagina"
   import: Skin Importeren
   importFile: Openen van Bestand
   importLink: Openen van Link

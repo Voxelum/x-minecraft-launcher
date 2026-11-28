@@ -2664,6 +2664,15 @@ userServices:
     password: 無需密碼
     uuid: 使用者嘅 UUID (除了特殊用途，否則唔填寫)
 userSkin:
+  mosaicarySource: "外觀來自 Mosaicary"
+  mosaicarySearch: "按名稱或標籤搜尋"
+  mosaicaryModel: "模型"
+  mosaicaryAllModels: "所有模型"
+  mosaicaryFailed: "無法載入 Mosaicary 外觀目錄，請重新搜尋。"
+  mosaicaryFound: "取自玩家"
+  mosaicaryAuthor: "作者：{author}"
+  mosaicaryPrevious: "上一頁"
+  mosaicaryNext: "下一頁"
   classic: 經典
   import: 匯入皮膚
   importFile: 從檔案匯入

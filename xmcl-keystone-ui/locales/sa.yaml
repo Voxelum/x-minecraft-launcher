@@ -2580,6 +2580,15 @@ userServices:
     password: कोऽपि सङ्केतशब्दो नास्ति
     uuid: प्रयोक्तृ UUID (वैकल्पिकम्)
 userSkin:
+  mosaicarySource: "Mosaicary इत्यस्मात् त्वचः"
+  mosaicarySearch: "नाम्ना चिह्नेन वा अन्वेषयतु"
+  mosaicaryModel: "प्रतिरूपम्"
+  mosaicaryAllModels: "सर्वाणि प्रतिरूपाणि"
+  mosaicaryFailed: "Mosaicary सूचीं लोड् कर्तुं न शक्यते। पुनः अन्वेषयतु।"
+  mosaicaryFound: "क्रीडके प्राप्ता"
+  mosaicaryAuthor: "रचयिता {author}"
+  mosaicaryPrevious: "पूर्वपृष्ठम्"
+  mosaicaryNext: "अग्रिमपृष्ठम्"
   classic: पारम्परिकम्
   import: त्वचां आयातयतु
   importFile: सञ्चिकातः उद्घाटयतु

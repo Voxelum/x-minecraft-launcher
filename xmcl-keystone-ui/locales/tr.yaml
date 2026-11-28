@@ -2415,6 +2415,15 @@ userServices:
     password: Şifre Yok
     uuid: Kullanıcı UUID (İsteğe Bağlı)
 userSkin:
+  mosaicarySource: "Mosaicary görünümleri"
+  mosaicarySearch: "Ada veya etikete göre ara"
+  mosaicaryModel: "Model"
+  mosaicaryAllModels: "Tüm modeller"
+  mosaicaryFailed: "Mosaicary kataloğu yüklenemedi. Tekrar aramayı deneyin."
+  mosaicaryFound: "Bir oyuncuda bulundu"
+  mosaicaryAuthor: "Yapan: {author}"
+  mosaicaryPrevious: "Önceki sayfa"
+  mosaicaryNext: "Sonraki sayfa"
   import: Cilt İçe Aktar
   importFile: Dosyadan Aç
   importLink: Bağlantıdan Aç

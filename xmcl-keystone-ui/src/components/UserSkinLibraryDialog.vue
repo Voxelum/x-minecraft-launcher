@@ -7,7 +7,7 @@
   >
     <v-card class="skin-library-dialog rounded-2xl flex flex-row h-[680px] overflow-hidden border border-[rgba(var(--v-theme-on-surface),0.1)]">
       <!-- Left Panel: 3D Preview & Actions -->
-      <div class="w-[330px] flex-shrink-0 flex flex-col items-center justify-between p-6 border-r border-[rgba(var(--v-theme-on-surface),0.08)] bg-black/25">
+      <div class="w-[32%] flex-shrink-0 flex flex-col items-center justify-between overflow-y-auto p-4 lg:p-6 border-r border-[rgba(var(--v-theme-on-surface),0.08)] bg-black/25">
         <!-- Top Info Header -->
         <div class="w-full flex items-center justify-between">
           <div class="text-xs font-bold uppercase tracking-wider opacity-60">
@@ -98,9 +98,9 @@
       </div>
 
       <!-- Right Panel -->
-      <div class="flex-1 flex flex-col p-6 overflow-hidden bg-surface">
+      <div class="min-w-0 flex-1 flex flex-col p-4 lg:p-6 overflow-hidden bg-surface">
         <template v-if="isEditorOpen">
-          <div class="flex items-center justify-between gap-3 mb-5">
+          <div class="flex items-center justify-between gap-3 mb-3 shrink-0">
             <div class="flex items-center gap-3 min-w-0">
               <v-btn icon size="small" variant="text" @click="closeEditor">
                 <v-icon>arrow_back</v-icon>
@@ -132,38 +132,40 @@
             </v-alert>
           </div>
 
-          <div class="flex-1 min-h-0 flex flex-col justify-between">
-            <div class="flex flex-col gap-5 overflow-y-auto pr-1">
-              <div>
-                <div class="text-xs font-bold uppercase opacity-70 mb-2">
-                  {{ t('userSkin.skinName') }}
+          <div class="flex-1 min-h-0 flex flex-col">
+            <div class="min-h-0 flex-1 overflow-y-auto pr-2">
+              <div class="mb-3 grid grid-cols-1 items-end gap-3 md:grid-cols-2">
+                <div>
+                  <div class="text-xs font-bold uppercase opacity-70 mb-2">
+                    {{ t('userSkin.skinName') }}
+                  </div>
+                  <v-text-field
+                    v-model="draftName"
+                    :placeholder="t('userSkin.skinNamePlaceholder')"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  />
                 </div>
-                <v-text-field
-                  v-model="draftName"
-                  :placeholder="t('userSkin.skinNamePlaceholder')"
-                  variant="outlined"
-                  density="comfortable"
-                  hide-details
-                />
-              </div>
 
-              <div>
-                <v-btn-toggle
-                  v-model="draftSlim"
-                  mandatory
-                  density="comfortable"
-                  class="w-full surface-panel"
-                  rounded="lg"
-                >
-                  <v-btn :value="false" class="flex-1 font-semibold">
-                    <v-icon size="18" class="mr-2">accessibility_new</v-icon>
-                    {{ t('userSkin.classic') }}
-                  </v-btn>
-                  <v-btn :value="true" class="flex-1 font-semibold">
-                    <v-icon size="18" class="mr-2">accessibility</v-icon>
-                    {{ t('userSkin.slim') }}
-                  </v-btn>
-                </v-btn-toggle>
+                <div>
+                  <v-btn-toggle
+                    v-model="draftSlim"
+                    mandatory
+                    density="compact"
+                    class="w-full surface-panel"
+                    rounded="lg"
+                  >
+                    <v-btn :value="false" class="flex-1 font-semibold">
+                      <v-icon size="18" class="mr-2">accessibility_new</v-icon>
+                      {{ t('userSkin.classic') }}
+                    </v-btn>
+                    <v-btn :value="true" class="flex-1 font-semibold">
+                      <v-icon size="18" class="mr-2">accessibility</v-icon>
+                      {{ t('userSkin.slim') }}
+                    </v-btn>
+                  </v-btn-toggle>
+                </div>
               </div>
 
               <div v-if="!editingSkin">
@@ -259,7 +261,7 @@
               </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 mt-5 pt-5 border-t border-[rgba(var(--v-theme-on-surface),0.08)]">
+            <div class="flex items-center justify-end gap-2 mt-3 pt-3 shrink-0 flex-wrap border-t border-[rgba(var(--v-theme-on-surface),0.08)]">
               <v-btn variant="text" class="px-5" @click="closeEditor">
                 {{ t('shared.cancel') }}
               </v-btn>
@@ -792,6 +794,7 @@ function onEquipItem(item: SkinLibraryItem) {
 .skin-library-dialog {
   background: rgba(var(--v-theme-surface), 0.95);
   backdrop-filter: blur(20px);
+  max-height: calc(100dvh - 48px);
 }
 
 .file-drop-zone {

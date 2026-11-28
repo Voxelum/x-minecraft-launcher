@@ -2473,6 +2473,15 @@ userServices:
     password: NO PASSWORD
     uuid: USER UUID (OPSHUNAL)
 userSkin:
+  mosaicarySource: "Skinz frum Mosaicary"
+  mosaicarySearch: "Find by naym or tag"
+  mosaicaryModel: "Modul"
+  mosaicaryAllModels: "All modulz"
+  mosaicaryFailed: "Cant load Mosaicary catalog. Try findin again."
+  mosaicaryFound: "Found on a playur"
+  mosaicaryAuthor: "By {author}"
+  mosaicaryPrevious: "Prev payj"
+  mosaicaryNext: "Next payj"
   import: IMPORT SKIN
   importFile: OPEN FROM FILE
   importLink: OPEN FROM LINK
